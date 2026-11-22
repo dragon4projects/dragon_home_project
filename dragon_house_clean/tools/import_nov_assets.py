@@ -178,6 +178,13 @@ def intake(source: Path, project: Path, apply: bool, include_archive: bool, repo
             if rel in declared_hashes and declared_hashes[rel] != sha:
                 raise ValueError(f"SHA256 mismatch for {rel}")
             target = project / rel
+            # A pre-existing symlink in *any parent directory* could redirect
+            # an otherwise well-formed normalized path outside the new project.
+            ancestor = project
+            for component in PurePosixPath(rel).parts[:-1]:
+                ancestor = ancestor / component
+                if ancestor.is_symlink():
+                    raise ValueError(f"destination parent symlink refused: {rel}")
             if target.is_symlink():
                 raise ValueError(f"existing target symlink refused: {rel}")
             if target.exists():
@@ -189,6 +196,18 @@ def intake(source: Path, project: Path, apply: bool, include_archive: bool, repo
                 raise ValueError(f"existing file would be overwritten: {rel}")
             total_bytes += copied
             plan.append({"path": rel, "kind": what, "size": copied, "sha256": sha, "action": action})
+        # Check the two required indexes are actually parseable, not just named.
+        with (staging / "assets/manifests/asset_index.jsonl").open("r", encoding="utf-8-sig") as idx:
+            for line_number, line in enumerate(idx,1):
+                if line.strip():
+                    try:
+                        if not isinstance(json.loads(line), dict):
+                            raise ValueError("not an object")
+                    except (ValueError, json.JSONDecodeError) as err:
+                        raise ValueError(f"invalid asset_index.jsonl line {line_number}: {err}") from err
+        coverage = json.loads((staging / "assets/manifests/bank_coverage.json").read_text(encoding="utf-8-sig"))
+        if not isinstance(coverage,(list,dict)):
+            raise ValueError("bank_coverage must be a JSON list or dictionary")
         # Registry is untrusted metadata. Check basic shape and all declared profile IDs.
         reg = json.loads((staging / "data/asset_registry_nov2026.json").read_text(encoding="utf-8-sig"))
         residents = reg.get("residents", {}) if isinstance(reg, dict) else {}

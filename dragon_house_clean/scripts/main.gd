@@ -531,6 +531,10 @@ func build_interface() -> void:
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
 	media_panel.bind(world,life.media_runtime)
+	var qa_button := Button.new()
+	qa_button.text = "QA-спрайты [V]"
+	qa_button.pressed.connect(toggle_qa_art_preview)
+	col.add_child(qa_button)
 	var journal_button := Button.new()
 	journal_button.text = "Журнал дома [J]"
 	journal_button.pressed.connect(toggle_journal)
@@ -549,7 +553,7 @@ func build_interface() -> void:
 	import_button.pressed.connect(func(): catalog_picker.popup_centered_ratio(0.65))
 	col.add_child(import_button)
 	hud_help = Label.new()
-	hud_help.text = "Колесо: масштаб | ПКМ: перемещение\nЛКМ: выбрать | Q/E: поворот\nF: следить | B: строить | Esc: весь дом"
+	hud_help.text = "Колесо: масштаб | ПКМ: перемещение\nЛКМ: выбрать | Q/E: поворот\nF: следить | B: строить | Esc: весь дом\nV: QA-спрайты | M: медиа | J: журнал"
 	col.add_child(hud_help)
 	hud_help.visible = false
 	var help_button := Button.new()

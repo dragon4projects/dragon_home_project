@@ -54,5 +54,15 @@ with tempfile.TemporaryDirectory() as td:
     result=run("--source",attack,"--project",root,"--report",report,"--apply")
     assert result.returncode==2 and "traversal" in result.stderr
     assert not (work/"outside.txt").exists()
-    print("NOV_ASSET_INTAKE_TEST_PASS dry-run=5 applied=5 repeat=idempotent conflict=blocked traversal=blocked")
+    # Parent symlink must not redirect a perfectly valid relative file.
+    redirected = work / "external_destination"
+    redirected.mkdir()
+    alternate = work / "new_project_symlink"
+    (alternate/"assets").mkdir(parents=True)
+    (alternate/"project.godot").write_text("config_version=5")
+    (alternate/"assets/residents").symlink_to(redirected,target_is_directory=True)
+    result=run("--source",archive,"--project",alternate,"--report",report,"--apply")
+    assert result.returncode == 2 and "parent symlink refused" in result.stderr
+    assert not list(redirected.rglob("*.png"))
+    print("NOV_ASSET_INTAKE_TEST_PASS dry-run=5 applied=5 repeat=idempotent conflict=blocked traversal=blocked parent_symlink=blocked")
 
