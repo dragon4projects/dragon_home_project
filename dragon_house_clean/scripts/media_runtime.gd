@@ -97,10 +97,13 @@ func cleanup_abandoned(now: int) -> int:
 	return count
 
 func playable(kind: String) -> Array:
+	var allowed: Array = ["ogg", "mp3", "wav"] if kind == "tracks" else ["ogv"] if kind == "films" else []
 	var out: Array = []
 	for item in world.media.get(kind, []):
-		var file_path: String = str(item.get("file_path", ""))
-		if file_path != "" and (FileAccess.file_exists(file_path) or ResourceLoader.exists(file_path)):
+		var path: String = str(item.get("file_path", ""))
+		if path == "" or not allowed.has(path.get_extension().to_lower()):
+			continue
+		if FileAccess.file_exists(path) or ResourceLoader.exists(path):
 			out.append(item)
 	return out
 

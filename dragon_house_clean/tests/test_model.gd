@@ -8,6 +8,8 @@ func _initialize() -> void:
 	model.seed_world()
 	assert(model.rooms.size() == 21, "Initial cutaway map must be 21 cells")
 	assert(model.residents.size() == 25, "24 canonical slots + Manjka")
+	assert(model.residents["RES_24"]["name"] == "Язвочка")
+	assert(model.residents["RES_24"]["appearance_profile"] == "LISA_01")
 	assert(model.residents["RES_24"]["active"] == false, "Never invent unavailable identity")
 	var core: Dictionary = model.get_room(-2, 0)
 	assert(model.merged_run_length(-2, 0) == 3, "Three-wide common room")

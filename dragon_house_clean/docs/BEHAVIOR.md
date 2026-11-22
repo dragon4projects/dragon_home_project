@@ -37,3 +37,8 @@ Poster/book/track previews are derived from verified catalog art or created orig
 ## Determinism and persistence
 Each local autonomous plan has a bounded duration and cooldown; no re-plan every visual frame. Significant state snapshots persist to `user://`, independent of camera pose. Current prototype needs further reservation/event-log tests before being called full house-life behavior.
 
+
+## Media engine scope, verified Godot 4.7 runtime
+- Audio uses external local MP3/OGG/WAV files only when entries include their path and the file exists. Play/stop is a user action in the [M] panel.
+- Native VideoStreamTheora supports Ogg/Theora **.ogv** only. **MP4/MKV are not falsely marked playable**; conversion or an authorized extension is needed.
+- Static catalog metadata/previews work even when playable media is absent. Imported liked-YouTube metadata alone does not imply possession of media files.

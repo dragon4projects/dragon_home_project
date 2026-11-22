@@ -141,6 +141,26 @@ func merged_run_length(x: int, level: int) -> int:
 		at += 1
 	return length
 
+func read_resident_profiles() -> Array:
+	var f := FileAccess.open("res://data/resident_profiles.json", FileAccess.READ)
+	if f == null:
+		return []
+	var parsed = JSON.parse_string(f.get_as_text())
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return []
+	var roster = parsed.get("residents", [])
+	return roster if typeof(roster) == TYPE_ARRAY else []
+
+func sync_resident_profiles() -> void:
+	for profile in read_resident_profiles():
+		var id: String = str(profile.get("id", ""))
+		if residents.has(id):
+			var actor: Dictionary = residents[id]
+			actor["name"] = str(profile.get("display_name", actor.get("name", "")))
+			actor["appearance_profile"] = str(profile.get("appearance_profile", ""))
+			if not actor.has("production_visual_ready"):
+				actor["production_visual_ready"] = false # asset validation is separate
+
 func seed_world() -> void:
 	rooms.clear()
 	residents.clear()
@@ -158,28 +178,35 @@ func seed_world() -> void:
 		[2, -1, "private"], [1, -1, "artifact"]
 	]:
 		make_room(record[0], record[1], record[2])
-	# Known display names are provenance-backed. Others are not invented.
-	var names: Array = ["Мора", "Ника", "Шелест", "Иконочка", "Огонёк", "Тенька Дракона", "ЭВМочка", "Архитектор Сестринства"]
-	for i in range(names.size()):
-		var r: Dictionary = get_room(-3 + i, 0)
-		if r.is_empty() or not is_accessible(r):
-			r = get_room(1, 0)
-		var id := "RES_%02d" % (i + 1)
-		residents[id] = {
-			"id": id, "name": names[i], "active": true,
-			"room_id": r["id"], "x": float(r["x"]) * MODULE_W,
-			"level": int(r["level"]), "z": 0.15,
-			"intent": "REST", "phase": "idle", "until": 0.0,
-			"needs": {"rest": 0.5, "social": 0.4, "curiosity": 0.5},
-			"traits": {"reading": 0.45 + float(i % 3) * 0.15,
-				"music": 0.2 + float(i % 4) * 0.12},
-			"habits": {}, "last_location": "", "route": [], "path_index": 0
-		}
-	# Slots 9..24 are reserved without fabricated identities or appearance.
-	for i in range(9, 25):
-		var id := "RES_%02d" % i
-		residents[id] = {"id": id, "name": "", "active": false, "room_id": "",
-			"visual_status": "ASSET_AND_IDENTITY_GATED"}
+	# All 24 canonical names/profile IDs come from 2026-11-12 approved map.
+	# Only the original eight QA silhouettes are active pending actual sprite banks.
+	var profiles: Array = read_resident_profiles()
+	for i in range(profiles.size()):
+		var profile: Dictionary = profiles[i]
+		var id: String = profile["id"]
+		if i < 8:
+			var r: Dictionary = get_room(-3 + i, 0)
+			if r.is_empty() or not is_accessible(r):
+				r = get_room(1, 0)
+			residents[id] = {
+				"id": id, "name": profile["display_name"], "active": true,
+				"room_id": r["id"], "x": float(r["x"]) * MODULE_W,
+				"level": int(r["level"]), "z": 0.15,
+				"intent": "REST", "phase": "idle", "until": 0.0,
+				"needs": {"rest": 0.5, "social": 0.4, "curiosity": 0.5},
+				"traits": {"reading": 0.45 + float(i % 3) * 0.15,
+					"music": 0.2 + float(i % 4) * 0.12},
+				"habits": {}, "last_location": "", "route": [], "path_index": 0,
+				"appearance_profile": profile["appearance_profile"],
+				"production_visual_ready": false, "visual_status": "QA_ONLY"
+			}
+		else:
+			residents[id] = {
+				"id": id, "name": profile["display_name"], "active": false,
+				"room_id": "", "appearance_profile": profile["appearance_profile"],
+				"production_visual_ready": false,
+				"visual_status": "ASSET_GATED"
+			}
 	# Manka is not a generic human resident.
 	residents["MANJKA"] = {"id": "MANJKA", "name": "Манька", "active": true,
 		"room_id": get_room(0, 0)["id"], "x": 0.0, "level": 0, "z": 0.7,
@@ -189,50 +216,100 @@ func seed_world() -> void:
 		"route": [], "path_index": 0}
 	media = {"books": [], "films": [], "tracks": []}
 
+func _read_snapshot(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {}
+	var parser := JSON.new()
+	if parser.parse(file.get_as_text()) != OK:
+		return {}
+	var parsed = parser.data
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return {}
+	if int(parsed.get("schema",0)) != 1 or typeof(parsed.get("rooms",null)) != TYPE_ARRAY:
+		return {}
+	if typeof(parsed.get("residents",null)) != TYPE_DICTIONARY:
+		return {}
+	return parsed
+
 func load_or_seed() -> void:
-	if not FileAccess.file_exists(save_path):
+	var parsed: Dictionary = _read_snapshot(save_path)
+	if parsed.is_empty():
+		parsed = _read_snapshot(save_path + ".bak")
+	if parsed.is_empty():
 		seed_world()
 		save_world()
 		return
-	var f := FileAccess.open(save_path, FileAccess.READ)
-	if f == null:
-		seed_world()
-		return
-	var parsed = JSON.parse_string(f.get_as_text())
-	if typeof(parsed) != TYPE_DICTIONARY or not parsed.has("rooms") or not parsed.has("residents"):
-		seed_world()
-		return
 	rooms.assign(parsed["rooms"])
 	residents = parsed["residents"]
+	sync_resident_profiles()
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
 
 func save_world() -> bool:
-	var f := FileAccess.open(save_path, FileAccess.WRITE)
-	if f == null:
+	var scratch: String = save_path + ".tmp"
+	var backup: String = save_path + ".bak"
+	var data: Dictionary = {"schema": 1,"rooms": rooms,"residents": residents,
+		"media": media,"next_room_id": next_room_id,"sim_clock": sim_clock}
+	var file := FileAccess.open(scratch,FileAccess.WRITE)
+	if file == null:
 		return false
-	f.store_string(JSON.stringify({"schema": 1, "rooms": rooms, "residents": residents,
-		"media": media, "next_room_id": next_room_id, "sim_clock": sim_clock}, "\t"))
-	f.close()
+	file.store_string(JSON.stringify(data,"\t"))
+	file.flush()
+	file.close()
+	# Verify before touching the last readable snapshot.
+	if _read_snapshot(scratch).is_empty():
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+		return false
+	var absolute_save := ProjectSettings.globalize_path(save_path)
+	var absolute_tmp := ProjectSettings.globalize_path(scratch)
+	var absolute_backup := ProjectSettings.globalize_path(backup)
+	if FileAccess.file_exists(backup):
+		DirAccess.remove_absolute(absolute_backup)
+	if FileAccess.file_exists(save_path):
+		if DirAccess.rename_absolute(absolute_save,absolute_backup) != OK:
+			return false
+	if DirAccess.rename_absolute(absolute_tmp,absolute_save) != OK:
+		if FileAccess.file_exists(backup):
+			DirAccess.rename_absolute(absolute_backup,absolute_save)
+		return false
 	return true
 
 func import_catalog(path: String) -> bool:
-	# Import is explicit; no scraping or invented book/film/song content.
-	var f := FileAccess.open(path, FileAccess.READ)
-	if f == null:
+	# Explicit import of verified manifest, preserving physical book truth.
+	var file := FileAccess.open(path,FileAccess.READ)
+	if file == null:
 		return false
-	var parsed = JSON.parse_string(f.get_as_text())
-	if typeof(parsed) != TYPE_DICTIONARY:
+	var parser := JSON.new()
+	if parser.parse(file.get_as_text()) != OK or typeof(parser.data) != TYPE_DICTIONARY:
 		return false
-	for category in ["books", "films", "tracks"]:
-		var items = parsed.get(category, [])
+	var parsed: Dictionary = parser.data
+	var imported: Dictionary = {}
+	for category in ["books","films","tracks"]:
+		var items = parsed.get(category,parsed.get("audio",[]) if category == "tracks" else [])
 		if typeof(items) != TYPE_ARRAY:
 			return false
+		var unique: Dictionary = {}
 		for item in items:
 			if typeof(item) != TYPE_DICTIONARY or not item.has("id") or not item.has("title"):
 				return false
-	media = {"books": parsed.get("books", []), "films": parsed.get("films", []),
-		"tracks": parsed.get("tracks", [])}
+			var id: String = str(item["id"])
+			if id == "" or unique.has(id):
+				return false
+			unique[id] = true
+		imported[category] = items
+	var previous_books: Dictionary = {}
+	for book in media.get("books",[]):
+		previous_books[str(book["id"])] = book
+	for item in imported["books"]:
+		var old: Dictionary = previous_books.get(str(item["id"]),{})
+		if not old.is_empty():
+			for field in ["holder_id","location_room_id","idle_since","progress_by_actor",
+				"owner_id","borrowed_at"]:
+				if old.has(field):
+					item[field] = old[field]
+	media = imported
 	return save_world()
-

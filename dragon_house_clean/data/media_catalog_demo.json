@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "note": "TECHNICAL TEST FIXTURES ONLY, not Dragon's real film/music favourites.",
+  "books": [],
+  "films": [
+    {
+      "id": "QA_FILM_TEST_001",
+      "title": "Технический тест видео — абстрактная сцена",
+      "file_path": "res://tests/fixtures/test_video.ogv",
+      "source": "generated test fixture, no person/media claims"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "QA_AUDIO_TEST_001",
+      "title": "Технический тест звука — синус 523 Гц",
+      "file_path": "res://tests/fixtures/test_chime.wav",
+      "source": "generated test fixture, not canonical user music"
+    }
+  ]
+}

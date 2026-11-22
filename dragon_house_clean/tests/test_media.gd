@@ -20,6 +20,7 @@ func _initialize() -> void:
 	assert(m.cleanup_abandoned(201 + 86399) == 0)
 	assert(m.cleanup_abandoned(201 + 86400) == 1)
 	assert(m.available_books().size() == 1)
+	assert(m._lookup("books", "book:test")["progress_by_actor"]["RES_01"] == 90.0)
 	assert(not m.can_watch("RES_01", "missing", w.get_room(4, 0)["id"]))
 	assert(not m.can_listen("RES_01", "missing", w.get_room(3, 0)["id"]))
 	w.save_path = "user://test_media_world_only.json"

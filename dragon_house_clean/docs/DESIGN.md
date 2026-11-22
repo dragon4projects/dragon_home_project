@@ -54,3 +54,15 @@ At close range: geometric depth, foreground occluders, furniture anchors and res
 
 
 Book lifecycle proof: `tests/test_media.gd` covers double-borrow rejection, progress, legal return and 24-hour abandoned cleanup.
+
+## Navigation v0.2
+`room_locomotion.gd` builds doorway, aisle, lift-only vertical and per-activity authored station waypoints. Resident body travels in local XYZ; zoom mode does not alter the walk route. On target arrival, a bounded perform phase begins. See `tests/test_locomotion.gd`.
+
+## House camera v0.2
+HOUSE auto fits the current structural extents (window aspect aware). ROOM closes in. FOLLOW uses world-space X/Y deadzone, smooth interpolation, zoom independence, vertical following. Q/E is constrained to a shallow yaw so the cutaway is never presented from behind. A manual pan exits FOLLOW. All private rooms expose doors only.
+
+## Build and continuity
+Construction is a stable room-ID operation, not image placement. Adjacent same-type cells share side ribs visually; the object registry stays per cell and can be expanded to authored R1/R2/R3 geometry. The first geometry pass is not a final look match with Fallout Shelter. It deliberately does not copy Bethesda art or gameplay scripts.
+
+## Media
+Imported metadata is separate from actual local files. MP3/OGG/WAV and native Ogg/Theora are supported; ordinary MP4 isn't native. Media UI is optional and closed by default. Books are unique physical objects; catalog reimport by ID preserves holder, physical location and reading history.

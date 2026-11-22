@@ -3,6 +3,7 @@ extends Node3D
 ## room truth + autonomous life are independent of the camera.
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
+const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
@@ -21,6 +22,10 @@ var yaw := 0.0
 var current_mode := "HOUSE"
 var follow_id := ""
 var selected_room := ""
+var journal_panel: PanelContainer
+var journal_text: Label
+var journal_open := false
+var follow_deadzone_ratio := 0.12
 var build_mode := false
 var build_type := "corridor"
 var build_marker: MeshInstance3D
@@ -34,6 +39,7 @@ var media_label: Label
 var notice: Label
 var menu: OptionButton
 var catalog_picker: FileDialog
+var media_panel: PanelContainer
 var palette := {
 	"rock": Color("#665a5b"), "border": Color("#675957"),
 	"rock_light": Color("#83706a"), "wood": Color("#98755d"),
@@ -87,9 +93,10 @@ func _ready() -> void:
 	make_rooms()
 	make_residents()
 	build_interface()
-	desired_focus = Vector3(-1.0, 0.0, 0.0)
+	fit_house_camera()
 	smooth_focus = desired_focus
-	apply_camera(1.0)
+	zoom_current = zoom
+	apply_camera(0.1)
 	notice.text = "Независимый прототип: камера, постройка, автономная жизнь"
 
 func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
@@ -346,7 +353,7 @@ func update_residents() -> void:
 		actor_sprites[id].position = Vector3(float(actor.get("x", 0.0)), y, float(actor.get("z", 0.3)))
 		actor_labels[id].visible = zoom_current < 27 or id == follow_id
 		if id == follow_id:
-			actor_labels[id].text = actor["name"] + " • " + str(actor.get("intent", ""))
+			actor_labels[id].text = actor["name"] + " • " + life.status(actor)
 
 func build_interface() -> void:
 	var layer := CanvasLayer.new()
@@ -386,6 +393,26 @@ func build_interface() -> void:
 	menu.select(1)
 	menu.item_selected.connect(func(i): build_type = str(menu.get_item_metadata(i)))
 	col.add_child(menu)
+	var media_button := Button.new()
+	media_button.text = "Открыть библиотеку / медиа [M]"
+	media_button.pressed.connect(toggle_media_panel)
+	col.add_child(media_button)
+	media_panel = MediaPanelScript.new()
+	root.add_child(media_panel)
+	media_panel.bind(world,life.media_runtime)
+	var journal_button := Button.new()
+	journal_button.text = "Журнал дома [J]"
+	journal_button.pressed.connect(toggle_journal)
+	col.add_child(journal_button)
+	journal_panel = PanelContainer.new()
+	journal_panel.position = Vector2(925, 15)
+	journal_panel.custom_minimum_size = Vector2(335, 240)
+	journal_panel.visible = false
+	root.add_child(journal_panel)
+	journal_text = Label.new()
+	journal_text.custom_minimum_size = Vector2(310, 220)
+	journal_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	journal_panel.add_child(journal_text)
 	var import_button := Button.new()
 	import_button.text = "Импорт книг / фильмов / музыки (JSON)"
 	import_button.pressed.connect(func(): catalog_picker.popup_centered_ratio(0.65))
@@ -408,10 +435,50 @@ func build_interface() -> void:
 func _import_media(path: String) -> void:
 	if world.import_catalog(path):
 		life.media_runtime.setup(world)
+		media_panel.refresh()
 		notice.text = "Медиатека импортирована: " + path.get_file()
 	else:
 		notice.text = "Ошибка каталога: нужен JSON с books/films/tracks (id, title)"
 	update_hud()
+
+func toggle_media_panel() -> void:
+	if media_panel.visible:
+		media_panel.close_panel()
+	else:
+		media_panel.open_panel()
+
+func toggle_journal() -> void:
+	journal_open = not journal_open
+	journal_panel.visible = journal_open
+	if journal_open:
+		update_journal()
+
+func update_journal() -> void:
+	if journal_text == null:
+		return
+	var last: Array = life.log.slice(maxi(0, life.log.size() - 11))
+	journal_text.text = "ЖУРНАЛ ДОМА\n\n" + "\n".join(last)
+
+func camera_world_bounds() -> Rect2:
+	var lo := Vector2(99999,99999)
+	var hi := Vector2(-99999,-99999)
+	for room in world.rooms:
+		var pos := Vector2(float(room["x"]) * W, float(room["level"]) * H)
+		lo.x = minf(lo.x,pos.x - W * 0.5)
+		lo.y = minf(lo.y,pos.y - H * 0.5)
+		hi.x = maxf(hi.x,pos.x + W * 0.5)
+		hi.y = maxf(hi.y,pos.y + H * 0.5)
+	return Rect2(lo,hi-lo)
+
+func fit_house_camera() -> void:
+	var bounds: Rect2 = camera_world_bounds()
+	var size: Vector2 = get_viewport().get_visible_rect().size
+	var aspect: float = maxf(1.0, size.x / maxf(1.0,size.y))
+	var angle: float = deg_to_rad(camera.fov * 0.5)
+	var vertical_dist: float = (bounds.size.y + 2.0) / maxf(0.1, 2.0 * tan(angle))
+	var horizontal_dist: float = (bounds.size.x + 3.0) / maxf(0.1, 2.0 * aspect * tan(angle))
+	zoom = clampf(maxf(horizontal_dist,vertical_dist)*1.12, 12.0, 110.0)
+	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
 
 func set_mode(mode: String) -> void:
 	build_mode = false
@@ -420,11 +487,10 @@ func set_mode(mode: String) -> void:
 	current_mode = mode
 	match mode:
 		"HOUSE":
-			zoom = 49.0
-			desired_focus = Vector3(-0.6, 0, 0)
+			fit_house_camera()
 			follow_id = ""
 		"ROOM":
-			zoom = 9.0
+			zoom = 10.5
 			follow_id = ""
 			if selected_room != "":
 				var r: Dictionary = world.room_by_id(selected_room)
@@ -448,6 +514,8 @@ func toggle_build() -> void:
 	if build_mode:
 		follow_id = ""
 		current_mode = "BUILD"
+		if zoom < 16.0:
+			zoom = 22.0
 		if build_marker == null:
 			build_marker = MeshInstance3D.new()
 			var cube := BoxMesh.new()
@@ -468,10 +536,10 @@ func update_hud() -> void:
 	if hud_status == null:
 		return
 	var tracked: Dictionary = world.residents.get(follow_id, {})
-	hud_status.text = "Режим: %s | комнат: %d | жителей: %d" % [
-		current_mode, world.rooms.size(), actor_sprites.size()]
+	hud_status.text = "Режим: %s | комнат: %d | видимых: %d / 24" % [
+		current_mode, world.rooms.size(), actor_sprites.size()-1]
 	if not tracked.is_empty():
-		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), tracked.get("intent", "")]
+		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), life.status(tracked)]
 	media_label.text = "Книги: %d  •  Фильмы: %d  •  Музыка: %d" % [
 		world.media.get("books", []).size(), world.media.get("films", []).size(),
 		world.media.get("tracks", []).size()]
@@ -498,6 +566,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		var e: InputEventMouseMotion = event
 		if moving_view and not build_mode:
+			follow_id = "" # moving away manually cancels Follow
+			current_mode = "FREE"
 			var scale: float = zoom_current * 0.0019
 			desired_focus.x -= e.relative.x * scale
 			desired_focus.y += e.relative.y * scale
@@ -507,14 +577,17 @@ func _input(event: InputEvent) -> void:
 				build_cell = Vector2i(roundi(hit.x / W), roundi(hit.y / H))
 				build_marker.position = world.world_pos(build_cell.x, build_cell.y) + Vector3(0, 1.4, 0)
 				var permitted := world.can_build(build_cell.x, build_cell.y, build_type)
-				build_marker.modulate = Color("#6fd89e") if permitted else Color("#c35c61")
+				var preview_mat: StandardMaterial3D = build_marker.material_override
+				preview_mat.albedo_color = Color(0.22,0.90,0.55,0.28) if permitted else Color(0.82,0.23,0.26,0.28)
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_ESCAPE: set_mode("HOUSE")
 			KEY_F: follow_actor("MANJKA")
 			KEY_B: toggle_build()
-			KEY_Q: yaw -= 0.16
-			KEY_E: yaw += 0.16
+			KEY_Q: yaw = clampf(yaw - 0.10, -0.34, 0.34)
+			KEY_E: yaw = clampf(yaw + 0.10, -0.34, 0.34)
+			KEY_J: toggle_journal()
+			KEY_M: toggle_media_panel()
 			KEY_1: set_mode("HOUSE")
 			KEY_2: set_mode("ROOM")
 
@@ -524,6 +597,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if e.button_index != MOUSE_BUTTON_LEFT or not e.pressed:
 			return
 		if build_mode:
+			if build_cell == Vector2i(99,99):
+				return
 			if world.build(build_cell.x, build_cell.y, build_type):
 				make_rooms()
 				notice.text = "Построено: %s (%d, %d)" % [
@@ -563,16 +638,31 @@ func apply_camera(delta: float) -> void:
 		var actor: Dictionary = world.residents[follow_id]
 		var target_room: Dictionary = world.room_by_id(actor.get("room_id", ""))
 		if not target_room.is_empty() and target_room.get("privacy", "public") == "public":
-			desired_focus = Vector3(float(actor.get("x", 0)), float(actor.get("visual_y",
-				float(actor.get("level", 0)) * H)) + 0.95, float(actor.get("z", 0)))
-		# Follow does not pass a private threshold.
-	var k: float = 1.0 - exp(-4.0 * delta)
-	smooth_focus = smooth_focus.lerp(desired_focus, k)
-	zoom_current = lerpf(zoom_current, zoom, 1.0 - exp(-4.6 * delta))
+			var target := Vector3(float(actor.get("x", 0)),
+				float(actor.get("visual_y", float(actor.get("level", 0))*H)) + 1.05,
+				float(actor.get("z", 0)))
+			var half_height: float = tan(deg_to_rad(camera.fov*0.5))*zoom_current
+			var aspect: float = get_viewport().get_visible_rect().size.aspect()
+			var deadzone_x: float = half_height * aspect * follow_deadzone_ratio
+			var deadzone_y: float = half_height * follow_deadzone_ratio
+			if absf(target.x - desired_focus.x) > deadzone_x:
+				desired_focus.x = target.x - signf(target.x - desired_focus.x)*deadzone_x
+			if absf(target.y - desired_focus.y) > deadzone_y:
+				desired_focus.y = target.y - signf(target.y - desired_focus.y)*deadzone_y
+		# The follow target may reach a private room, but camera will not cross its threshold.
+	var bounds: Rect2 = camera_world_bounds()
+	var edge_padding := Vector2(W*1.2,H*1.0)
+	desired_focus.x = clampf(desired_focus.x,bounds.position.x-edge_padding.x,
+		bounds.end.x+edge_padding.x)
+	desired_focus.y = clampf(desired_focus.y,bounds.position.y-edge_padding.y,
+		bounds.end.y+edge_padding.y)
+	var k: float = 1.0 - exp(-4.0 * minf(delta,0.25))
+	smooth_focus = smooth_focus.lerp(desired_focus,k)
+	zoom_current = lerpf(zoom_current,zoom,1.0-exp(-4.6*minf(delta,0.25)))
 	var x_shift := sin(yaw) * zoom_current
 	var z_shift := cos(yaw) * zoom_current
-	camera.global_position = smooth_focus + Vector3(x_shift, zoom_current * 0.22, z_shift)
-	camera.look_at(smooth_focus, Vector3.UP)
+	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*0.19,z_shift)
+	camera.look_at(smooth_focus,Vector3.UP)
 
 func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
@@ -585,6 +675,8 @@ func _process(delta: float) -> void:
 		save_timer = 0.0
 	if Engine.get_process_frames() % 40 == 0:
 		update_hud()
+		if journal_open:
+			update_journal()
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:

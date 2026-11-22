@@ -12,10 +12,10 @@ The structural interaction target is **Fallout Shelter**: a 2.5D perspective cut
 - Real perspective camera, wheel zoom, right-mouse pan, Q/E yaw, click-select and F-to-follow Manka; Follow survives zoom changes.
 - Build mode (B or button) with adjacency constraints, occupied-cell rejection, persistent expansion, and color-coded preview.
 - Separate simulation planner: needs/daypart/preferences/habits -> purposeful room destinations -> graph pathing -> performing activities. No LLM or external world-event integration.
-- 24 canonical resident **slots**; 8 known names represented by temporary visual test silhouettes and 16 intentionally hidden until identities/approved visual banks are imported. Manka is her own roaming actor.
+- 24 documented resident identities + appearance profiles, retained in `data/resident_profiles.json`; 8 QA-only test silhouettes are currently visible and 16 characters remain asset-gated. All 24 names are documented, but the 24 validated production sprite banks have not been imported. Manka is her own roaming actor.
 - Private spaces render as a door only; unauthorized camera/actor route stops at threshold.
-- Library, cinema and audio room geometry/stations are present; JSON media manifest import exists. Physical-book borrowing, unique holder/location, progress and persistent 24-hour abandoned-return rules are implemented. Empty catalog stays empty rather than inventing songs, films or books.
-- Persistent JSON world snapshot. Current phase is a proof slice, not a release.
+- Library, cinema and audio room geometry/stations are present; JSON media manifest import exists. [M] opens a data-backed catalog browser and user-controlled playback for local MP3/OGG/WAV and Ogg/Theora OGV. Physical-book borrowing, unique holder/location, progress and persistent 24-hour abandoned-return rules are implemented. Empty catalog stays empty rather than inventing songs, films or books.
+- Persistent JSON world snapshot with verified scratch-file swap and fallback backup. Native Windows x64 and unsigned macOS Universal exports generated. This remains an early vertical slice, not a production release.
 
 ## Run
 
@@ -28,7 +28,7 @@ Windows uses the Compatibility renderer by default to reduce GPU requirements; m
 
 ## Controls
 
-Mouse wheel: zoom. Right-mouse drag: pan. Q/E: camera yaw. Left click: select a character/room. F: follow Manka. B: build mode. Choose type in left panel and click a free neighboring cell. Escape or 1: whole-house view. 2: room view. Import catalog button: choose a local JSON file.
+Mouse wheel: zoom. Right-mouse drag: pan (cancels Follow). Q/E: bounded camera yaw. Left click: select a character/room. F: follow Manka with a deadzone, crossing floors via the lift. B: build mode. M: media viewer/player. J: action journal. Choose room type in left panel and click a free neighboring cell. Escape or 1: whole-house view. 2: room view. Import catalog button: choose a local JSON file. `data/media_catalog_demo.json` is a **test-only** catalogue with a generated sine WAV and generated Theora clip; it is not Dragon's favourites.
 
 ## Media manifest format
 
@@ -44,9 +44,9 @@ Never treat these example IDs as canonical media entries.
 
 ## Current limitations (explicit)
 
-This is a structural prototype. It does **not** yet include finalized 24 resident art banks, movie/music playback, complete shelf UI, fine-grained seat reservations, collision-aware furniture navigation, full per-actor inventory, procedural rocks, user-approved private interiors, cross-platform performance evidence or a finished export. No external chat/AI bridge is planned for this new project. Follow/zoom/room building and autonomous scheduling are first implementation targets.
+This is a structural prototype. It does **not** yet include finalized 24 resident art banks, MP4 in-engine playback, a 3D TV-screen video viewport, complete shelf UI, fine-grained seat reservations, collision-aware furniture navigation, full per-actor inventory, procedural rocks, user-approved private interiors, cross-platform performance evidence or a production-ready export. No external chat/AI bridge is planned for this new project. Follow/zoom/room building and autonomous scheduling are first implementation targets.
 
 ## Source-grounded architecture notes
 
-See `docs/DESIGN.md` and `docs/BEHAVIOR.md`. Reference investigation: the project's September 2026 Fallout Shelter 2.6.0 APK/OBB analyses of authored room prefab width/upgrade variants, local XYZ paths, impostor far views and smooth follow controllers. Study architecture principles; never redistribute extracted proprietary assets.
+See `docs/DESIGN.md`, `docs/BEHAVIOR.md` and `docs/BUILD_REPORT_2026-11-22.md`. Reference investigation: the project's September 2026 Fallout Shelter 2.6.0 APK/OBB analyses of authored room prefab width/upgrade variants, local XYZ paths, impostor far views and smooth follow controllers. Study architecture principles; never redistribute extracted proprietary assets.
 

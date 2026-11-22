@@ -1,13 +1,39 @@
 extends RefCounted
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
+const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 ## Autonomous utility/need scheduler. No external events or AI dependency.
 var world
 var media_runtime = MediaRuntime.new()
+var locomotion = RoomLocomotion.new()
 var rng := RandomNumberGenerator.new()
 var clock := 0.0
 var max_jobs_per_tick := 2
 var log: Array = []
 var steps := 0
+var last_cleanup_wall_time := 0
+
+const HUMAN_STATUS := {
+	"REST": "отдыхает", "SLEEP": "спит",
+	"WORK_CREATE": "занимается делами", "READ_BOOK": "читает книгу",
+	"GET_COFFEE": "готовит кофе", "WATCH_FIRE": "смотрит на огонь",
+	"TALK_PAIR": "разговаривает", "LISTEN_MUSIC": "слушает музыку",
+	"WATCH_FILM": "смотрит фильм", "VIEW_ART": "рассматривает артефакты",
+	"PURPOSEFUL_EXPLORE": "исследует Дом"
+}
+const TRAVEL_STATUS := {
+	"REST": "идёт отдыхать", "SLEEP": "идёт спать",
+	"WORK_CREATE": "идёт работать", "READ_BOOK": "идёт читать",
+	"GET_COFFEE": "идёт за кофе", "WATCH_FIRE": "идёт к очагу",
+	"TALK_PAIR": "идёт на встречу", "LISTEN_MUSIC": "идёт слушать музыку",
+	"WATCH_FILM": "идёт смотреть фильм", "VIEW_ART": "идёт к артефактам",
+	"PURPOSEFUL_EXPLORE": "гуляет по Дому"
+}
+
+func status(actor: Dictionary) -> String:
+	var intent: String = str(actor.get("intent","REST"))
+	if actor.get("phase","idle") == "travel":
+		return str(TRAVEL_STATUS.get(intent, "идёт по делу"))
+	return str(HUMAN_STATUS.get(intent,"отдыхает"))
 
 const INTENTS := {
 	"REST": ["rest", "private"], "SLEEP": ["rest", "private"],
@@ -23,6 +49,9 @@ func setup(p_world) -> void:
 	media_runtime.setup(world)
 	rng.seed = 814223
 	clock = world.sim_clock
+	var now: int = int(Time.get_unix_time_from_system())
+	media_runtime.cleanup_abandoned(now)
+	last_cleanup_wall_time = now
 
 func daypart() -> String:
 	var hour: int = Time.get_datetime_dict_from_system().get("hour", 12)
@@ -154,7 +183,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		var other_route: Array = world.find_route(other["room_id"], room["id"], other["id"])
 		session_end = clock + maxf(float(route.size()), float(other_route.size())) * 3.2 + 34.0
 		other["intent"] = "TALK_PAIR"
-		other["phase"] = "travel" if other_route.size() > 1 else "perform"
+		other["waypoints"] = locomotion.build_waypoints(world, other, other_route, "TALK_PAIR")
+		other["waypoint_index"] = 0
+		other["phase"] = "travel" if not other["waypoints"].is_empty() else "perform"
 		other["route"] = other_route
 		other["path_index"] = 1
 		other["until"] = session_end
@@ -162,7 +193,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		actor["partner_id"] = other["id"]
 		_record("%s и %s — встретились для разговора" % [actor.get("name", ""), other.get("name", "")])
 	actor["intent"] = task["intent"]
-	actor["phase"] = "travel" if route.size() > 1 else "perform"
+	actor["waypoints"] = locomotion.build_waypoints(world, actor, route, task["intent"])
+	actor["waypoint_index"] = 0
+	actor["phase"] = "travel" if not actor["waypoints"].is_empty() else "perform"
 	actor["route"] = route
 	actor["path_index"] = 1
 	actor["until"] = session_end if task["intent"] == "TALK_PAIR" else clock + rng.randf_range(20.0, 40.0) + float(route.size()) * 2.0
@@ -170,40 +203,47 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	habits[task["intent"]] = minf(0.3, float(habits.get(task["intent"], 0.0)) + 0.012)
 	actor["habits"] = habits
 	if task["intent"] != "TALK_PAIR":
-		_record("%s → %s" % [actor.get("name", actor["id"]), task["intent"]])
+		_record("%s — %s" % [actor.get("name", actor["id"]), status(actor)])
 	steps += 1
 
 func _move(actor: Dictionary, delta: float) -> void:
-	var route: Array = actor.get("route", [])
-	var idx := int(actor.get("path_index", 0))
-	if idx >= route.size():
+	var waypoints: Array = actor.get("waypoints", [])
+	var idx: int = int(actor.get("waypoint_index", 0))
+	if idx >= waypoints.size():
 		actor["phase"] = "perform"
 		return
-	var room: Dictionary = world.room_by_id(route[idx])
-	if room.is_empty():
-		actor["phase"] = "idle"
-		actor["route"] = []
-		return
-	var at := Vector2(float(actor["x"]), float(actor.get("visual_y", float(actor["level"]) * world.FLOOR_H)))
-	var to := Vector2(float(room["x"]) * world.MODULE_W, float(room["level"]) * world.FLOOR_H)
-	var advance := 2.1 * delta if actor["id"] != "MANJKA" else 2.9 * delta
-	var next: Vector2 = at.move_toward(to, advance)
+	var point: Dictionary = waypoints[idx]
+	var target: Vector3 = locomotion.get_target(actor)
+	var at := Vector3(float(actor.get("x",0.0)),
+		float(actor.get("visual_y", float(actor.get("level",0)) * world.FLOOR_H)),
+		float(actor.get("z",0.0)))
+	var speed := 2.25 if actor["id"] != "MANJKA" else 3.25
+	if point["kind"] == "lift":
+		speed = 1.65
+	var next: Vector3 = at.move_toward(target, speed * minf(delta, 0.15))
 	actor["x"] = next.x
-	# Continuous vertical interpolated movement for lift motion.
 	actor["visual_y"] = next.y
-	if next.distance_to(to) <= 0.04:
-		actor["room_id"] = room["id"]
-		actor["level"] = room["level"]
-		actor["path_index"] = idx + 1
-		if int(actor["path_index"]) >= route.size():
+	actor["z"] = next.z
+	actor["moving_axis"] = "up" if point["kind"] == "lift" else ("right" if next.x > at.x else "left" if next.x < at.x else "depth")
+	if next.distance_to(target) <= 0.025:
+		actor["room_id"] = point["room_id"]
+		var current_room: Dictionary = world.room_by_id(point["room_id"])
+		if not current_room.is_empty():
+			actor["level"] = current_room["level"]
+		actor["waypoint_index"] = idx + 1
+		if int(actor["waypoint_index"]) >= waypoints.size():
 			actor["phase"] = "perform"
-	else:
-		# Keep logical floor stable until a waypoint is reached.
-		pass
+			actor["until"] = maxf(float(actor.get("until", 0.0)), clock + 12.0)
 
 func tick(delta: float) -> void:
 	clock += delta
 	world.sim_clock = clock
+	var now: int = int(Time.get_unix_time_from_system())
+	if now - last_cleanup_wall_time >= 60:
+		var recovered: int = media_runtime.cleanup_abandoned(now)
+		if recovered > 0:
+			_record("Дом вернул забытые книги на полку: %d" % recovered)
+		last_cleanup_wall_time = now
 	var jobs := 0
 	for id in world.residents:
 		var actor: Dictionary = world.residents[id]

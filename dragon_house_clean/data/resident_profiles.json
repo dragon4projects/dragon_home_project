@@ -1,0 +1,247 @@
+{
+  "schema": 1,
+  "source": "KEDR_RESIDENT_FRAME_BANK_IMPLEMENTATION_AUTHORIZATION_2026-11-12.md",
+  "note": "Profiles canonical; only initial eight test bodies visible without validated asset bank. Last three missing according to 2026-11-21 audit.",
+  "residents": [
+    {
+      "id": "RES_01",
+      "display_name": "Мора",
+      "appearance_profile": "HELGA_01",
+      "appearance_note": "graphite-black grunge",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_02",
+      "display_name": "Ника",
+      "appearance_profile": "VALENTA_01",
+      "appearance_note": "blonde",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_03",
+      "display_name": "Шелест",
+      "appearance_profile": "VALENTA_07",
+      "appearance_note": "light chestnut",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_04",
+      "display_name": "Иконочка",
+      "appearance_profile": "LISA_02",
+      "appearance_note": "dark blond",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_05",
+      "display_name": "Огонёк",
+      "appearance_profile": "HELGA_08",
+      "appearance_note": "dark blond",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_06",
+      "display_name": "Тенька Дракона",
+      "appearance_profile": "HELGA_02",
+      "appearance_note": "dark chestnut",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_07",
+      "display_name": "ЭВМочка",
+      "appearance_profile": "EXISTING_EVMOCHKA",
+      "appearance_note": "locked existing",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_08",
+      "display_name": "Архитектор Сестринства",
+      "appearance_profile": "HELGA_07",
+      "appearance_note": "light straw blonde",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": true,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_09",
+      "display_name": "Морок",
+      "appearance_profile": "HELGA_03",
+      "appearance_note": "light chestnut",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_10",
+      "display_name": "Химера",
+      "appearance_profile": "HELGA_04",
+      "appearance_note": "black, white streaks",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_11",
+      "display_name": "Тея",
+      "appearance_profile": "VALENTA_02",
+      "appearance_note": "ash blonde",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_12",
+      "display_name": "Вера / v1",
+      "appearance_profile": "HELGA_06",
+      "appearance_note": "dark red",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_13",
+      "display_name": "Вера / v2 — Искусница",
+      "appearance_profile": "HELGA_05",
+      "appearance_note": "light red",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_14",
+      "display_name": "Ива / v1",
+      "appearance_profile": "VALENTA_08",
+      "appearance_note": "dark blond",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_15",
+      "display_name": "Ива / v2",
+      "appearance_profile": "VALENTA_04",
+      "appearance_note": "bright red",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_16",
+      "display_name": "Руна / v1",
+      "appearance_profile": "LISA_07",
+      "appearance_note": "light chestnut",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_17",
+      "display_name": "Руна / v2",
+      "appearance_profile": "LISA_04",
+      "appearance_note": "dark chestnut",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_18",
+      "display_name": "Знаечка",
+      "appearance_profile": "VALENTA_06",
+      "appearance_note": "copper-red",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_19",
+      "display_name": "Персонажи 2",
+      "appearance_profile": "LISA_05",
+      "appearance_note": "black",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_20",
+      "display_name": "Другая Сторона Дракона",
+      "appearance_profile": "LISA_08",
+      "appearance_note": "bright red",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_21",
+      "display_name": "Пенечка",
+      "appearance_profile": "VALENTA_05",
+      "appearance_note": "black",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_22",
+      "display_name": "Вея",
+      "appearance_profile": "LISA_03",
+      "appearance_note": "ash blonde",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_23",
+      "display_name": "Хитрушка",
+      "appearance_profile": "VALENTA_03",
+      "appearance_note": "dark chestnut",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    },
+    {
+      "id": "RES_24",
+      "display_name": "Язвочка",
+      "appearance_profile": "LISA_01",
+      "appearance_note": "light straw blonde",
+      "requires_visual_bank": true,
+      "visual_bank_ready": false,
+      "runtime_actor_qa_active": false,
+      "production_autonomy_enabled": false
+    }
+  ]
+}
