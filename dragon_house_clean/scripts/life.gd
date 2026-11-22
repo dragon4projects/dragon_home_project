@@ -1,10 +1,12 @@
 extends RefCounted
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
 const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
+const RoomStations = preload("res://scripts/room_stations.gd")
 ## Autonomous utility/need scheduler. No external events or AI dependency.
 var world
 var media_runtime = MediaRuntime.new()
 var locomotion = RoomLocomotion.new()
+var stations = RoomStations.new()
 var rng := RandomNumberGenerator.new()
 var clock := 0.0
 var max_jobs_per_tick := 2
@@ -49,6 +51,7 @@ func setup(p_world) -> void:
 	media_runtime.setup(world)
 	rng.seed = 814223
 	clock = world.sim_clock
+	stations.reconcile(world)
 	var now: int = int(Time.get_unix_time_from_system())
 	media_runtime.cleanup_abandoned(now)
 	last_cleanup_wall_time = now
@@ -107,7 +110,10 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 	var best_room: Dictionary = {}
 	for intent in scored:
 		var types: Array = INTENTS[intent]
-		var candidates: Array = world.matching_rooms(types, actor["id"])
+		var candidates: Array = []
+		for room in world.matching_rooms(types, actor["id"]):
+			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
+				candidates.append(room)
 		if candidates.is_empty():
 			continue
 		var destination: Dictionary = candidates[rng.randi_range(0, candidates.size() - 1)]
@@ -138,6 +144,8 @@ func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 			continue
 		if other.get("partner_id", "") != "" or other.get("phase", "idle") == "travel":
 			continue
+		if other.get("held_book","") != "":
+			continue
 		if float(other.get("until", 0.0)) > clock:
 			continue
 		if float(other.get("needs", {}).get("social", 0.0)) < 0.15:
@@ -156,54 +164,93 @@ func _record(message: String) -> void:
 		log.pop_front()
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
+	# Previous reservation ends before a new activity; actor state owns the
+	# claim, making occupancy recoverable from JSON snapshots.
+	stations.release(actor)
 	if task.is_empty():
 		actor["until"] = clock + 15.0
 		return
 	var room: Dictionary = task["room"]
+	var intent: String = str(task["intent"])
 	var route: Array = world.find_route(actor["room_id"], room["id"], actor["id"])
 	if route.is_empty():
 		actor["until"] = clock + 15.0
 		return
-	if task["intent"] == "READ_BOOK":
+
+	var partner: Dictionary = {}
+	var partner_route: Array = []
+	var partner_claim: Dictionary = {}
+	var actor_claim: Dictionary = {}
+	var partner_waypoints: Array = []
+	var end_time := 0.0
+	if intent == "TALK_PAIR":
+		partner = _choose_partner(actor,room)
+		if partner.is_empty():
+			actor["until"] = clock + 10.0
+			return
+		partner_route = world.find_route(partner["room_id"],room["id"],str(partner["id"]))
+		var pair_claim: Dictionary = stations.pair(world,actor,partner,room)
+		if pair_claim.is_empty() or partner_route.is_empty():
+			actor["until"] = clock + 10.0
+			return
+		actor_claim = pair_claim["actor"]
+		partner_claim = pair_claim["partner"]
+		partner_waypoints = locomotion.build_waypoints(
+			world,partner,partner_route,intent,partner_claim["offset"])
+		if partner_waypoints.is_empty():
+			actor["until"] = clock + 10.0
+			return
+		end_time = clock + maxf(float(route.size()),float(partner_route.size()))*3.2+34.0
+	else:
+		actor_claim = stations.single(world,actor,room)
+		if actor_claim.is_empty():
+			actor["until"] = clock + 10.0
+			return
+	var actor_waypoints: Array = locomotion.build_waypoints(
+		world,actor,route,intent,actor_claim["offset"])
+	if actor_waypoints.is_empty():
+		actor["until"] = clock + 10.0
+		return
+	# Acquiring an object comes only after a destination and station are valid.
+	if intent == "READ_BOOK":
 		var books: Array = media_runtime.available_books()
 		if books.is_empty():
 			actor["until"] = clock + 12.0
 			return
-		var book_id: String = books[rng.randi_range(0, books.size() - 1)]["id"]
-		if not media_runtime.borrow(actor["id"], book_id, int(Time.get_unix_time_from_system())):
+		var book_id: String = str(books[rng.randi_range(0,books.size()-1)]["id"])
+		if not media_runtime.borrow(actor["id"],book_id,int(Time.get_unix_time_from_system())):
 			actor["until"] = clock + 12.0
 			return
 		actor["held_book"] = book_id
-	var session_end := 0.0
-	if task["intent"] == "TALK_PAIR":
-		var other: Dictionary = _choose_partner(actor, room)
-		if other.is_empty():
-			actor["until"] = clock + 10.0
-			return
-		var other_route: Array = world.find_route(other["room_id"], room["id"], other["id"])
-		session_end = clock + maxf(float(route.size()), float(other_route.size())) * 3.2 + 34.0
-		other["intent"] = "TALK_PAIR"
-		other["waypoints"] = locomotion.build_waypoints(world, other, other_route, "TALK_PAIR")
-		other["waypoint_index"] = 0
-		other["phase"] = "travel" if not other["waypoints"].is_empty() else "perform"
-		other["route"] = other_route
-		other["path_index"] = 1
-		other["until"] = session_end
-		other["partner_id"] = actor["id"]
-		actor["partner_id"] = other["id"]
-		_record("%s и %s — встретились для разговора" % [actor.get("name", ""), other.get("name", "")])
-	actor["intent"] = task["intent"]
-	actor["waypoints"] = locomotion.build_waypoints(world, actor, route, task["intent"])
+
+	if intent == "TALK_PAIR":
+		stations.release(partner)
+		stations.commit_claim(partner,partner_claim)
+		partner["intent"] = intent
+		partner["waypoints"] = partner_waypoints
+		partner["waypoint_index"] = 0
+		partner["phase"] = "travel"
+		partner["route"] = partner_route
+		partner["path_index"] = 1
+		partner["until"] = end_time
+		partner["partner_id"] = actor["id"]
+		actor["partner_id"] = partner["id"]
+		_record("%s и %s — договорились встретиться для разговора" %
+			[actor.get("name",""),partner.get("name","")])
+	stations.commit_claim(actor,actor_claim)
+	actor["intent"] = intent
+	actor["waypoints"] = actor_waypoints
 	actor["waypoint_index"] = 0
-	actor["phase"] = "travel" if not actor["waypoints"].is_empty() else "perform"
+	actor["phase"] = "travel"
 	actor["route"] = route
 	actor["path_index"] = 1
-	actor["until"] = session_end if task["intent"] == "TALK_PAIR" else clock + rng.randf_range(20.0, 40.0) + float(route.size()) * 2.0
-	var habits: Dictionary = actor.get("habits", {})
-	habits[task["intent"]] = minf(0.3, float(habits.get(task["intent"], 0.0)) + 0.012)
+	actor["until"] = end_time if intent == "TALK_PAIR" else (
+		clock + rng.randf_range(20.0,40.0)+float(route.size())*2.0)
+	var habits: Dictionary = actor.get("habits",{})
+	habits[intent] = minf(0.3,float(habits.get(intent,0.0))+0.012)
 	actor["habits"] = habits
-	if task["intent"] != "TALK_PAIR":
-		_record("%s — %s" % [actor.get("name", actor["id"]), status(actor)])
+	if intent != "TALK_PAIR":
+		_record("%s — %s" % [actor.get("name",actor["id"]),status(actor)])
 	steps += 1
 
 func _move(actor: Dictionary, delta: float) -> void:

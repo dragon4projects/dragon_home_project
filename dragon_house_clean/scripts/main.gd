@@ -962,6 +962,14 @@ func update_hud() -> void:
 			var merged: int = world.merged_run_length(int(r["x"]),int(r["level"]))
 			hud_status.text += "\n%s  R%d  |  уровень %d" % [
 				room_names.get(r["type"],r["type"]),merged,int(r["level"])]
+			var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
+			if r.get("privacy","public") == "public":
+				var occupied := 0
+				var capacity := 0
+				for cell in group.get("cells",[]):
+					occupied += life.stations.used_slots(world,str(cell["id"])).size()
+					capacity += life.stations.capacity(cell)
+				hud_status.text += "\nМеста действий: %d / %d" % [occupied,capacity]
 	media_label.text = "Книги: %d  •  Фильмы: %d  •  Музыка: %d" % [
 		world.media.get("books", []).size(), world.media.get("films", []).size(),
 		world.media.get("tracks", []).size()]
