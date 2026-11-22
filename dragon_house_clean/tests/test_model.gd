@@ -4,6 +4,7 @@ const LifeScript = preload("res://scripts/life.gd")
 
 func _initialize() -> void:
 	var model = WorldScript.new()
+	model.save_path = "user://test_model_world_only.json"
 	model.seed_world()
 	assert(model.rooms.size() == 21, "Initial cutaway map must be 21 cells")
 	assert(model.residents.size() == 25, "24 canonical slots + Manjka")
@@ -27,6 +28,7 @@ func _initialize() -> void:
 	assert(life.steps > 1, "Autonomous plan scheduler must make choices")
 	assert(life.log.size() > 0, "Human-readable house log must exist")
 	assert(model.media["films"].is_empty(), "Do not fabricate film catalog")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(model.save_path))
 	print("DRAGON_HOUSE_MODEL_TEST_PASS room=22 slot=24+Manka route=", route.size(),
 		" autonomy_actions=", life.steps)
 	quit(0)
