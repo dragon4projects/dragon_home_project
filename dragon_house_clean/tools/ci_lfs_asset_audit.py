@@ -72,6 +72,7 @@ def check(root: Path) -> dict:
     ready=[]
     frame_links=0
     checked_files=set()
+    evm_legacy_extra_frames = 0
     for id, resident in registry["residents"].items():
         if resident.get("appearance_profile")!=expected[id]:
             fail(f"appearance-profile mismatch: {id}")
@@ -92,12 +93,22 @@ def check(root: Path) -> dict:
                     fail(f"PASS without frames: {id}/{outfit}/{state}")
                 if len(frames)>24:
                     fail(f"too many frames in state: {id}/{outfit}/{state}")
-                pref=f"assets/residents/{id}/wardrobes/{outfit}/{state}/"
+                wardrobe_root=f"assets/residents/{id}/wardrobes/{outfit}/"
+                pref=wardrobe_root + state + "/"
+                # EVM's original extra actions intentionally use lowercase extra/
+                # while the manifest names the animation DANCE/RIDE/USE/etc.
+                evm_extra=(wardrobe_root + "extra/" + state.lower() + "/"
+                    if id=="RES_07" and state in {"DANCE","USE","CASUAL","LIE","RIDE"}
+                    else "")
                 for path in frames:
                     if not isinstance(path,str):
                         fail(f"bad frame entry: {id}/{state}")
                     normalized=path.removeprefix("res://")
-                    verified_path(root,normalized,pref)
+                    if not normalized.startswith(pref):
+                        if not (evm_extra and normalized.startswith(evm_extra)):
+                            fail(f"wrong state directory: {id}/{outfit}/{state}: {normalized}")
+                        evm_legacy_extra_frames+=1
+                    verified_path(root,normalized,wardrobe_root)
                     checked_files.add(normalized)
                     frame_links+=1
                 ok_states.add(state)
@@ -161,6 +172,7 @@ def check(root: Path) -> dict:
         "media_books_metadata_only":len(metadata),
         "sha256_files_verified":len(pairs),
         "frame_references_verified":frame_links,
+        "evm_legacy_extra_frames_verified":evm_legacy_extra_frames,
         "unique_frame_paths":len(checked_files),
         "old_project_edited":False,
         "human_visual_approval":False
