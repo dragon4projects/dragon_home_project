@@ -21,10 +21,11 @@ E. Manka: IMPLEMENTED. Her idle, walk left/right and rest technical frames are r
 F. Historic artifacts and drinks: IMPLEMENTED. Original master references stay intact. Smaller catalog previews are instanced in public Artifact Gallery and Common, never inside unauthorized private rooms.
 G. CC0 materials: IMPLEMENTED. Real source-licensed rock/wood albedos are preferred over placeholder textures if LFS bytes exist; reused shared materials.
 H. Catalog: IMPLEMENTED. Exactly 76 confirmed cloud book titles enter the media catalog as metadata, not physically owned books; reading/borrowing without an actual copy remains prohibited.
-I. Prove actual LFS bytes: AUDIT SCRIPT AND GITHUB WORKFLOW PREPARED. Check 2,409 hashes, 21 resident banks, 7 Manka states, 8 historical masters and metadata. Stage cannot be marked DONE until a remote job passes.
-J. Godot 4.7.2 engine test after checkout with full LFS: WORKFLOW PREPARED. Local synthetic tests do not substitute for a successful remote run.
+I. Prove actual LFS bytes: PASSED. Private GitHub Actions run 45042303230 audited 2,409 SHA-256 entries, 2,347 resident-frame references, 68 EVM-extra frames, 21 full candidate banks, 7 Manka states, 8 historical masters and 76 cloud titles. Stage cannot be marked DONE until a remote job passes.
+J. Godot 4.7.2 engine test after checkout with full LFS: PASSED in run 45042303230. Godot import and full scene/world/media tests all green.
 K. True R1/R2/R3 layered rooms: BLOCKED. The migration agent reports ZERO approved full layered interiors; user/owner approval or new art is necessary.
 L. Windows Dell 5300 / M1 8 GB performance: NOT TESTED ON ACTUAL HARDWARE.
+M. Owner-only contact sheet of reference vs current sprites and LFS-backed Win/Mac QA binaries: WORKFLOW IMPLEMENTED; awaiting artifact-producing run.
 
 ## Implementation contracts
 
@@ -45,3 +46,11 @@ tools/ci_lfs_asset_audit.py checks decoded image magic headers (not Git pointers
 
 Do not edit the old Dragon House repository or use Bethesda copyright art assets. Fallout Shelter is a mechanics, camera and topology reference, not a source of distributable graphics.
 
+
+## Green acceptance evidence (private repository)
+
+Completed workflow run: https://github.com/dragon4projects/songs_panels/actions/runs/45042303230
+
+Godot 4.7.2 resource import succeeded using actual Git LFS bytes from the private branch. All 13 Godot runtime/script tests in the workflow passed, plus the Python intake regression test. The QA audit reports LFS_BYTES_VERIFIED_QA_ONLY, complete_candidate_banks=21, approved_resident_banks=0, historical_master_sha256_pass=8, sha256_files_verified=2409, frame_references_verified=2347, evm_legacy_extra_frames_verified=68 and media_books_metadata_only=76. This is technical acceptance only; not user approval of faces, outfits or room art.
+
+The reviewed current workflow also prepares a *private-only* contact sheet and full-LFS Windows/Mac export archives. These are not treated as completed until the next run actually emits artifacts. No actor or owner privacy permission is changed.

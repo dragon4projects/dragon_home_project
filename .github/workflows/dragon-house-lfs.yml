@@ -15,7 +15,7 @@ jobs:
   asset-acceptance:
     name: Verify actual LFS bytes and Godot runtime
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 55
     steps:
       - name: Checkout with LFS content
         uses: actions/checkout@v4
@@ -38,6 +38,23 @@ jobs:
           python3 tools/ci_lfs_asset_audit.py --project . --report LFS_ACCEPTANCE_QA.json
           cat LFS_ACCEPTANCE_QA.json
 
+      - name: Render private QA contact sheet (24 IDs, original vs bank)
+        shell: bash
+        run: |
+          python3 -m venv /tmp/dragon-qa-venv
+          /tmp/dragon-qa-venv/bin/pip install --disable-pip-version-check --quiet Pillow
+          cd dragon_house_clean
+          /tmp/dragon-qa-venv/bin/python tools/create_private_review_sheet.py \
+            --project . --output private_review/nov2026_all_24.png
+          /tmp/dragon-qa-venv/bin/python tests/test_private_review_sheet.py
+
+      - name: Store private QA image for owner review only
+        uses: actions/upload-artifact@v4
+        with:
+          name: dragon-house-private-character-review
+          path: dragon_house_clean/private_review/nov2026_all_24.png
+          retention-days: 3
+
       - name: Download official Godot 4.7.2 Linux
         shell: bash
         run: |
@@ -51,7 +68,7 @@ jobs:
         shell: bash
         run: |
           cd dragon_house_clean
-          timeout 240s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --editor --quit > godot_import.log 2>&1
+          timeout 900s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --editor --quit > godot_import.log 2>&1
           if grep -Eq "SCRIPT ERROR|Parse Error" godot_import.log; then
             tail -80 godot_import.log
             exit 1
@@ -84,6 +101,57 @@ jobs:
             if echo "$result" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed";then exit 1;fi
           done
           python3 tests/test_import_nov_assets.py | tee -a godot_tests.log
+
+      - name: Download original Godot 4.7.2 export templates
+        shell: bash
+        run: |
+          curl -fLsS --retry 3 -o /tmp/godot_export.tpz \
+            https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          dest="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "$dest"
+          unzip -jo /tmp/godot_export.tpz \
+            templates/version.txt templates/windows_release_x86_64.exe \
+            templates/windows_debug_x86_64.exe templates/macos.zip -d "$dest"
+          ls -lh "$dest"
+
+      - name: Export private Windows and Mac builds with actual LFS textures
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases
+          cd dragon_house_clean
+          /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . \
+            --export-release "Windows Desktop" ../releases/DragonHouse_v05.exe \
+            > ../releases/win_export.log 2>&1
+          /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . \
+            --export-release "macOS" ../releases/DragonHouse_v05_macOS_Universal.zip \
+            > ../releases/mac_export.log 2>&1
+          cd ../releases
+          cat > PRIVATE_BUILD_NOTE.txt <<'NOTE'
+          Dragon House v0.5 independent Godot 4.7.2 prototype.
+          These exports contain private November source imagery fetched from Git LFS.
+          They are for owner visual QA only; no resident identity has final approval.
+          Windows: keep EXE and PCK together. Mac: universal UNSIGNED, may trigger Gatekeeper.
+          Real Windows Dell Latitude 5300 and Apple M1 8GB runs remain untested.
+          NOTE
+          zip -q9 DragonHouse_v05_Windows10_x64.zip DragonHouse_v05.exe \
+            DragonHouse_v05.pck PRIVATE_BUILD_NOTE.txt
+          cp DragonHouse_v05_macOS_Universal.zip DragonHouse_v05_macOS15_M1.zip
+          zip -q9 DragonHouse_v05_macOS15_M1.zip PRIVATE_BUILD_NOTE.txt
+          unzip -t DragonHouse_v05_Windows10_x64.zip | tail -1
+          unzip -t DragonHouse_v05_macOS15_M1.zip | tail -1
+
+      - name: Keep private QA binaries (not public releases)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dragon-house-private-v05-windows-mac
+          path: |
+            releases/DragonHouse_v05_Windows10_x64.zip
+            releases/DragonHouse_v05_macOS15_M1.zip
+            releases/win_export.log
+            releases/mac_export.log
+          if-no-files-found: error
+          retention-days: 3
 
       - name: Store private audit proof, never original personal imagery
         if: always()
