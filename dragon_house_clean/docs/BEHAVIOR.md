@@ -26,10 +26,10 @@ Unidentified resident slots: dormant; they do not perform invented actions.
 
 ## Actions in current executable slice
 REST/SLEEP, WORK_CREATE, GET_COFFEE, WATCH_FIRE, VIEW_ART, PURPOSEFUL_EXPLORE.
-READ_BOOK, WATCH_FILM and LISTEN_MUSIC become eligible only when imported catalog entries exist. TALK_PAIR is a rare **candidate** here, not yet a genuine paired reservation: must not be presented as confirmed social dialogue. This feature requires a later two-participant scheduler.
+READ_BOOK, WATCH_FILM and LISTEN_MUSIC become eligible only when imported catalog entries exist. TALK_PAIR now reserves **two eligible participants** and a common destination for a bounded neutral conversation, with compatible travel routes. It does not imply a personal relationship, intimacy or external chat event. Full furniture-seat collision/reservation remains future work.
 
 ## Media semantics to implement next
-Book: one physical inventory object with ownership separate from holder and shelf; borrow/free shelf slot immediately; reading progress; return to any compatible shelf; 24-hour overdue cleanup across restarts.
+Book (implemented in `media_runtime.gd`): one physical inventory object with ownership separate from holder and shelf; borrow/free shelf slot immediately; reading progress; return to any compatible shelf; 24-hour abandoned cleanup across restarts.
 Film: explicit title/file identity, available TVs + seats, watch duration/tracking, no phantom playback.
 Audio: explicit track/title/file, listening devices in common and audio rooms, no silent invented playlist.
 Poster/book/track previews are derived from verified catalog art or created originals with provenance, never random covers assigned to canonical media.

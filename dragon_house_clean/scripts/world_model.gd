@@ -1,6 +1,8 @@
 extends RefCounted
 ## One authoritative local simulation state. No chat/LLM interfaces.
 const SAVE_PATH := "user://dragon_house_world_v01.json"
+var save_path: String = SAVE_PATH
+var sim_clock: float = 0.0
 const MODULE_W := 4.8
 const FLOOR_H := 4.6
 const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "lift", "artifact"]
@@ -143,6 +145,7 @@ func seed_world() -> void:
 	rooms.clear()
 	residents.clear()
 	next_room_id = 1
+	sim_clock = 0.0
 	# CORE, a working lift shaft, two residential terraces, genuine cutaway depth.
 	for record in [
 		[-5, 0, "arrival"], [-4, 0, "corridor"], [-3, 0, "study"],
@@ -187,11 +190,11 @@ func seed_world() -> void:
 	media = {"books": [], "films": [], "tracks": []}
 
 func load_or_seed() -> void:
-	if not FileAccess.file_exists(SAVE_PATH):
+	if not FileAccess.file_exists(save_path):
 		seed_world()
 		save_world()
 		return
-	var f := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var f := FileAccess.open(save_path, FileAccess.READ)
 	if f == null:
 		seed_world()
 		return
@@ -203,13 +206,14 @@ func load_or_seed() -> void:
 	residents = parsed["residents"]
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
+	sim_clock = float(parsed.get("sim_clock", 0.0))
 
 func save_world() -> bool:
-	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	var f := FileAccess.open(save_path, FileAccess.WRITE)
 	if f == null:
 		return false
 	f.store_string(JSON.stringify({"schema": 1, "rooms": rooms, "residents": residents,
-		"media": media, "next_room_id": next_room_id}, "\t"))
+		"media": media, "next_room_id": next_room_id, "sim_clock": sim_clock}, "\t"))
 	f.close()
 	return true
 

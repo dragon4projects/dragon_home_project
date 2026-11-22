@@ -14,7 +14,7 @@ The structural interaction target is **Fallout Shelter**: a 2.5D perspective cut
 - Separate simulation planner: needs/daypart/preferences/habits -> purposeful room destinations -> graph pathing -> performing activities. No LLM or external world-event integration.
 - 24 canonical resident **slots**; 8 known names represented by temporary visual test silhouettes and 16 intentionally hidden until identities/approved visual banks are imported. Manka is her own roaming actor.
 - Private spaces render as a door only; unauthorized camera/actor route stops at threshold.
-- Library, cinema and audio room geometry/stations are present; JSON media manifest import exists. Empty catalog stays empty rather than inventing songs, films or books.
+- Library, cinema and audio room geometry/stations are present; JSON media manifest import exists. Physical-book borrowing, unique holder/location, progress and persistent 24-hour abandoned-return rules are implemented. Empty catalog stays empty rather than inventing songs, films or books.
 - Persistent JSON world snapshot. Current phase is a proof slice, not a release.
 
 ## Run
@@ -44,7 +44,7 @@ Never treat these example IDs as canonical media entries.
 
 ## Current limitations (explicit)
 
-This is a structural prototype. It does **not** yet include finalized 24 resident art banks, movie/music playback, book borrowing, precise social reservations, collision-aware furniture navigation, full per-actor inventory, procedural rocks, user-approved private interiors, cross-platform performance evidence or a finished export. No external chat/AI bridge is planned for this new project. Follow/zoom/room building and autonomous scheduling are first implementation targets.
+This is a structural prototype. It does **not** yet include finalized 24 resident art banks, movie/music playback, complete shelf UI, fine-grained seat reservations, collision-aware furniture navigation, full per-actor inventory, procedural rocks, user-approved private interiors, cross-platform performance evidence or a finished export. No external chat/AI bridge is planned for this new project. Follow/zoom/room building and autonomous scheduling are first implementation targets.
 
 ## Source-grounded architecture notes
 

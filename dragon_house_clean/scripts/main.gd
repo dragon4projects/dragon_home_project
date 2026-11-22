@@ -15,8 +15,8 @@ var actor_labels: Dictionary = {}
 var material_cache: Dictionary = {}
 var desired_focus := Vector3.ZERO
 var smooth_focus := Vector3.ZERO
-var zoom := 49.0
-var zoom_current := 49.0
+var zoom := 47.0
+var zoom_current := 47.0
 var yaw := 0.0
 var current_mode := "HOUSE"
 var follow_id := ""
@@ -35,12 +35,12 @@ var notice: Label
 var menu: OptionButton
 var catalog_picker: FileDialog
 var palette := {
-	"rock": Color("#302d32"), "border": Color("#48424a"),
-	"rock_light": Color("#5b5050"), "wood": Color("#654538"),
-	"bronze": Color("#90704d"), "copper": Color("#a76c48"),
+	"rock": Color("#665a5b"), "border": Color("#675957"),
+	"rock_light": Color("#83706a"), "wood": Color("#98755d"),
+	"bronze": Color("#ae8860"), "copper": Color("#bd8058"),
 	"couch": Color("#6e253a"), "rug": Color("#5c2d39"),
-	"light": Color("#dca365"), "screen": Color("#1b2839"),
-	"book": Color("#715d53"), "floor": Color("#5a4a47"),
+	"light": Color("#f0bb78"), "screen": Color("#32516f"),
+	"book": Color("#9a7966"), "floor": Color("#8d7569"),
 	"black": Color("#171418")
 }
 var room_names := {
@@ -68,10 +68,16 @@ func _ready() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#111018")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#998779")
-	env.ambient_light_energy = 0.62
+	env.ambient_light_color = Color("#c8b6a6")
+	env.ambient_light_energy = 1.04
 	ambient.environment = env
 	add_child(ambient)
+	var sun := DirectionalLight3D.new()
+	sun.rotation_degrees = Vector3(-30, -23, 0)
+	sun.light_energy = 0.78
+	sun.shadow_enabled = false
+	add_child(sun)
+	make_mountain()
 	room_root = Node3D.new()
 	room_root.name = "Rooms"
 	add_child(room_root)
@@ -93,6 +99,16 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = color
 	m.roughness = 0.88
+	var texture_path := ""
+	if color == palette["rock"] or color == palette["rock_light"]:
+		texture_path = "res://assets/textures/basalt.jpg"
+	elif color == palette["wood"]:
+		texture_path = "res://assets/textures/wood.jpg"
+	elif color == palette["floor"]:
+		texture_path = "res://assets/textures/floor.jpg"
+	if texture_path != "" and ResourceLoader.exists(texture_path):
+		m.albedo_texture = load(texture_path)
+		m.uv1_scale = Vector3(2.0, 2.0, 1.0)
 	if emissive:
 		m.emission_enabled = true
 		m.emission = color
@@ -109,6 +125,26 @@ func box(parent: Node3D, pos: Vector3, size: Vector3, color: Color, emissive: bo
 	node.material_override = mat(color, emissive)
 	parent.add_child(node)
 	return node
+
+func make_mountain() -> void:
+	# Tiled original basalt atlas behind the cutaway, not rectangular checkerboard.
+	var shell := Node3D.new()
+	shell.name = "MountainMassBehindRooms"
+	add_child(shell)
+	var rock := box(shell, Vector3(-0.5, -1.0, -5.6), Vector3(83, 26, 0.8), Color("#6f696a"))
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("#655d5e")
+	material.albedo_texture = load("res://assets/textures/basalt.jpg")
+	material.roughness = 1.0
+	material.uv1_scale = Vector3(19.0, 6.0, 1.0)
+	rock.material_override = material
+	# Only a few irregular framing buttresses, no regular brick mosaic.
+	for idx in range(10):
+		var x := float(idx - 4) * 8.5
+		var y := -7.0 + float(idx % 4) * 4.2
+		var support := box(shell, Vector3(x, y, -4.9),
+			Vector3(2.5 + float(idx % 3), 3.4, 0.28), Color("#4b4549"))
+		support.rotation.z = 0.07 * float((idx % 3) - 1)
 
 func label3(parent: Node3D, content: String, pos: Vector3, size: int, color: Color) -> Label3D:
 	var l := Label3D.new()
@@ -371,6 +407,7 @@ func build_interface() -> void:
 
 func _import_media(path: String) -> void:
 	if world.import_catalog(path):
+		life.media_runtime.setup(world)
 		notice.text = "Медиатека импортирована: " + path.get_file()
 	else:
 		notice.text = "Ошибка каталога: нужен JSON с books/films/tracks (id, title)"
@@ -383,11 +420,11 @@ func set_mode(mode: String) -> void:
 	current_mode = mode
 	match mode:
 		"HOUSE":
-			zoom = 54.0
+			zoom = 49.0
 			desired_focus = Vector3(-0.6, 0, 0)
 			follow_id = ""
 		"ROOM":
-			zoom = 14.0
+			zoom = 9.0
 			follow_id = ""
 			if selected_room != "":
 				var r: Dictionary = world.room_by_id(selected_room)
@@ -453,7 +490,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var e: InputEventMouseButton = event
 		if e.button_index == MOUSE_BUTTON_WHEEL_UP and e.pressed:
-			zoom = maxf(9.0, zoom * 0.87)
+			zoom = maxf(4.5, zoom * 0.87)
 		elif e.button_index == MOUSE_BUTTON_WHEEL_DOWN and e.pressed:
 			zoom = minf(89.0, zoom * 1.15)
 		elif e.button_index == MOUSE_BUTTON_RIGHT:

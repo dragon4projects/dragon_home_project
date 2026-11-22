@@ -52,3 +52,5 @@ At close range: geometric depth, foreground occluders, furniture anchors and res
 - [ ] Action commitment/reservations for social conversations and furniture.
 - [ ] Win64 portable export + macOS smoke test.
 
+
+Book lifecycle proof: `tests/test_media.gd` covers double-borrow rejection, progress, legal return and 24-hour abandoned cleanup.
