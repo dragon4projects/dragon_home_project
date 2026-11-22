@@ -1,7 +1,7 @@
 extends SceneTree
 const InteriorLayerScript = preload("res://scripts/interior_skin.gd")
 const TMP_MANIFEST := "user://test_interior_skin_v1.json"
-const BACKDROP := "res://assets/rooms/common/R3/qa_backdrop.png"
+const BACKDROP := "res://assets/rooms/qa_test_room/R3/qa_backdrop.png"
 
 func _initialize() -> void:
 	call_deferred("run")
@@ -14,10 +14,10 @@ func run() -> void:
 	var doc := {
 		"schema":1,
 		"room_types":{
-			"common":{"R3":{"layers":[
+			"qa_test_room":{"R3":{"layers":[
 				{"role":"backdrop","path":BACKDROP.trim_prefix("res://"),"approved":true},
 				{"role":"foreground","path":BACKDROP.trim_prefix("res://"),"approved":false},
-				{"role":"back_decor","path":"assets/rooms/common/R3/../private_unapproved.png","approved":true},
+				{"role":"back_decor","path":"assets/rooms/qa_test_room/R3/../private_unapproved.png","approved":true},
 				{"role":"front_trim","path":"assets/rooms/private/R3/private.png","approved":true}
 			]}}
 		}
@@ -27,13 +27,13 @@ func run() -> void:
 	f.close()
 	var skin = InteriorLayerScript.new()
 	assert(skin.initialize(TMP_MANIFEST))
-	var layers := skin.validated_layers("common",3)
+	var layers := skin.validated_layers("qa_test_room",3)
 	assert(layers.size()==1 and layers[0]["role"]=="backdrop")
 	assert(skin.validated_layers("private",3).is_empty(),"No private art from public manifest")
-	assert(skin.validated_layers("common",2).is_empty(),"Wrong room width")
+	assert(skin.validated_layers("qa_test_room",2).is_empty(),"Wrong room width")
 	var target := Node3D.new()
 	root.add_child(target)
-	var added: int = skin.add_layers(target,"common",3,14.4)
+	var added: int = skin.add_layers(target,"qa_test_room",3,14.4)
 	assert(added==1)
 	var art: Sprite3D = target.get_child(0)
 	assert(art.texture != null and art.name == "Art_backdrop")

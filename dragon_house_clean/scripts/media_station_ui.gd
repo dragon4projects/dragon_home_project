@@ -111,6 +111,8 @@ func _on_selected(index: int) -> void:
 	var item: Dictionary = media_runtime._lookup(category,item_ids[index])
 	if item.is_empty():
 		return
+	if category == "books" and not bool(item.get("physical", true)):
+		details.text += "\nКаталог: метаданные, физический экземпляр не подтверждён"
 	var source := str(item.get("source",""))
 	var artist := str(item.get("artist",item.get("author","")))
 	details.text = str(item.get("title","")) + (" — " + artist if artist != "" else "")

@@ -199,6 +199,32 @@ func visual_groups() -> Array:
 		groups.append(group)
 	return groups
 
+func merge_reference_book_metadata(items: Array) -> int:
+	# The documented cloud catalog is NOT a shelf inventory. No copy may be borrowed.
+	var existing: Dictionary = {}
+	for entry in media.get("books", []):
+		existing[str(entry.get("id", ""))] = true
+	var added := 0
+	for item in items:
+		if typeof(item) != TYPE_DICTIONARY:
+			continue
+		var id: String = str(item.get("id", ""))
+		var title: String = str(item.get("title", ""))
+		if id == "" or title == "" or existing.has(id) or str(item.get("status", "")) != "METADATA_ONLY":
+			continue
+		media["books"].append({
+			"id": id, "title": title, "author": str(item.get("author", "")),
+			"catalog_only": true, "physical": false,
+			"provenance": str(item.get("source", "")),
+			"preview": "", "holder_id": "", "location_room_id": "",
+			"idle_since": 0, "progress_by_actor": {}
+		})
+		existing[id] = true
+		added += 1
+	if added > 0:
+		save_world()
+	return added
+
 func read_resident_profiles() -> Array:
 	var f := FileAccess.open("res://data/resident_profiles.json", FileAccess.READ)
 	if f == null:

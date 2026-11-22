@@ -1,4 +1,4 @@
-# Дом Дракона — самостоятельная реализация v0.4
+# Дом Дракона — самостоятельная реализация v0.5
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -87,3 +87,6 @@ See \`docs/V03_CUTAWAY_ASSET_BINDING_QA.md\` for coverage and limitations.
 - [V] toggles explicit *QA candidate avatar preview* when the asset agent delivers technically PASS frames but `visual_bank_ready` is still false. These are not approved for final use.
 - `tools/make_qa_textures.py` produces original **placeholder-only** stone/floor/wood noise textures; not final artwork.
 - Tests: `python3 tests/test_import_nov_assets.py`; Godot `tests/test_interior_layers.gd` and `tests/test_asset_binding.gd`, along with existing movement/privacy/camera tests.
+
+## v0.5 — November Git LFS integration
+See docs/V05_NOV_LFS_INTEGRATION_PLAN.md. 21 out of 24 residents have technical sprite banks in private Git LFS; no resident has final artistic approval. [K] opens the 24-character gallery. [V] explicitly previews QA art on 8 existing actor bodies and Manka, without activating dormant residents. Eight authentic artifact masters, nine source-documented Poly Haven CC0 materials and 76 metadata-only cloud book titles are integrated where actual asset files are available. The repository-root GitHub Actions workflow verifies actual LFS bytes, imported Godot textures and tests. A successful run is still required for independent acceptance. No approved layered interiors exist yet.

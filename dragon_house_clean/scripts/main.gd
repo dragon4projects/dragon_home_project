@@ -6,6 +6,7 @@ const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
+const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
@@ -51,6 +52,8 @@ var notice: Label
 var menu: OptionButton
 var catalog_picker: FileDialog
 var media_panel: PanelContainer
+var bank_gallery: PanelContainer
+var catalog_metadata_added := 0
 var palette := {
 	"rock": Color("#665a5b"), "border": Color("#675957"),
 	"rock_light": Color("#83706a"), "wood": Color("#98755d"),
@@ -72,8 +75,12 @@ var room_names := {
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	world.load_or_seed()
-	life.setup(world)
 	asset_banks.initialize()
+	# Metadata is not a physical book or a movie/audio file.
+	if not asset_banks.manifest.is_empty():
+		catalog_metadata_added = world.merge_reference_book_metadata(
+			asset_banks.manifest.get("media_previews",{}).get("books",[]))
+	life.setup(world)
 	interior_skin.initialize()
 	validated_visual_banks = asset_banks.accepted_count(world.read_resident_profiles())
 	preview_visual_banks = asset_banks.preview_count(world.read_resident_profiles())
@@ -119,6 +126,22 @@ func _ready() -> void:
 	apply_camera(0.1)
 	notice.text = "Независимый прототип: камера, постройка, автономная жизнь"
 
+func surface_texture(color: Color) -> Texture2D:
+	# Poly Haven materials are CC0 per imported asset provenance registry.
+	# Reuse across modules. Geometry remains original and separately authored.
+	var preference := ""
+	if color == palette["rock"]:
+		preference = "res://assets/materials/texture_albedo/dark_rock_diff_2k.jpg"
+	elif color == palette["rock_light"]:
+		preference = "res://assets/materials/texture_albedo/tiger_rock_diff_2k.jpg"
+	elif color == palette["floor"]:
+		preference = "res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg"
+	elif color == palette["wood"]:
+		preference = "res://assets/materials/texture_albedo/weathered_brown_planks_diff_1k.jpg"
+	if preference != "" and ResourceLoader.exists(preference):
+		return load(preference)
+	return null
+
 func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 	var key: String = str(color.to_html()) + ("_e" if emissive else "_n")
 	if material_cache.has(key):
@@ -133,7 +156,11 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 		texture_path = "res://assets/textures/wood.jpg"
 	elif color == palette["floor"]:
 		texture_path = "res://assets/textures/floor.jpg"
-	if texture_path != "" and ResourceLoader.exists(texture_path):
+	var licensed: Texture2D = surface_texture(color)
+	if licensed != null:
+		m.albedo_texture = licensed
+		m.uv1_scale = Vector3(2.3, 1.35, 1.0)
+	elif texture_path != "" and ResourceLoader.exists(texture_path):
 		m.albedo_texture = load(texture_path)
 		m.uv1_scale = Vector3(2.0, 2.0, 1.0)
 	if emissive:
@@ -211,6 +238,21 @@ func add_sofa(parent: Node3D, at: Vector3, width: float = 2.5, color: Color = Co
 	box(parent, at + Vector3(-width * 0.47, 0.65, 0.0), Vector3(0.2, 0.65, 0.87), color.darkened(0.10))
 	box(parent, at + Vector3(width * 0.47, 0.65, 0.0), Vector3(0.2, 0.65, 0.87), color.darkened(0.10))
 
+func add_canonical_prop(parent: Node3D, prop_id: String, position: Vector3,
+		world_height: float = 0.8) -> bool:
+	var tex: Texture2D = asset_banks.prop_display_texture(prop_id)
+	if tex == null:
+		return false
+	var pic := Sprite3D.new()
+	pic.name = "Canon_" + prop_id
+	pic.texture = tex
+	pic.billboard = BaseMaterial3D.BILLBOARD_DISABLED
+	pic.pixel_size = world_height/maxf(1.0,float(tex.get_height()))
+	pic.position = position
+	pic.no_depth_test = false
+	parent.add_child(pic)
+	return true
+
 func add_tv(parent: Node3D, at: Vector3) -> void:
 	box(parent, at + Vector3(0, 0.65, -0.04), Vector3(2.2, 1.25, 0.16), palette["black"])
 	box(parent, at + Vector3(0, 0.65, 0.065), Vector3(1.98, 1.04, 0.035), palette["screen"], true)
@@ -236,6 +278,9 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 			elif x == -1:
 				add_sofa(parent, Vector3(0, 0, -1.06), 2.6)
 				box(parent, Vector3(0, 0.44, 0.86), Vector3(1.4, 0.30, 0.7), palette["wood"])
+				# Canonical historical mugs belong in the Common, not the Library.
+				add_canonical_prop(parent,"MUG_RED_A",Vector3(-0.37,0.91,0.90),0.45)
+				add_canonical_prop(parent,"MUG_BLUE_A",Vector3(0.34,0.91,0.90),0.45)
 			else:
 				add_sofa(parent, Vector3(0.0, 0, -0.88), 2.35, Color("#76513e"))
 				add_shelf(parent, Vector3(1.38, 0.25, -1.70), 1.25)
@@ -272,9 +317,17 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 			add_shelf(parent, Vector3(1.2, 0.15, -1.72), 1.2)
 		"artifact":
 			add_shelf(parent, Vector3(0, 0.1, -1.62), 3.1)
-			for side in [-1, 0, 1]:
-				var cube := box(parent, Vector3(float(side) * 0.65, 1.0, -1.26), Vector3(0.36, 0.36, 0.36), Color("#7b8a83"))
-				cube.transparency = 0.12
+			var canvas_ids := ["CUBE_LETTERS","POSTER_SHURSHUN","PHOTO_MOON","PORTRAIT_SHURS"]
+			var art_shown := 0
+			for i in range(canvas_ids.size()):
+				var world_x: float = -1.65 + float(i) * 1.1
+				if add_canonical_prop(parent,canvas_ids[i],Vector3(world_x,1.45,-1.52),0.95):
+					art_shown += 1
+			if art_shown == 0:
+				# Temporary placeholder only. Never present cubes as the real masters.
+				for side in [-1, 0, 1]:
+					var cube := box(parent, Vector3(float(side) * 0.65, 1.0, -1.26), Vector3(0.36, 0.36, 0.36), Color("#7b8a83"))
+					cube.transparency = 0.12
 		"lift":
 			box(parent, Vector3(-1.5, 1.0, -1.5), Vector3(0.14, 2.0, 0.30), palette["bronze"])
 			box(parent, Vector3(1.5, 1.0, -1.5), Vector3(0.14, 2.0, 0.30), palette["bronze"])
@@ -410,6 +463,15 @@ func make_residents() -> void:
 		sprite.pixel_size = 0.009 if id == "MANJKA" else 0.012
 		sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
 		actor["runtime_visual_bound"] = false
+		if id == "MANJKA" and qa_visual_preview:
+			var sprite_manka: Texture2D = asset_banks.manka_texture("IDLE_RIGHT",0)
+			if sprite_manka != null:
+				sprite.texture = sprite_manka
+				sprite.pixel_size = 1.55/maxf(1.0,float(sprite_manka.get_height()))
+				sprite.position.y = 0.77
+				actor["runtime_visual_bound"] = true
+				actor["visual_preview_only"] = true
+				actor_animations[id] = {"state":"IDLE_RIGHT","frame":0,"elapsed":0.0}
 		if id != "MANJKA":
 			var profile_id: String = str(actor.get("appearance_profile",""))
 			var chosen_wardrobe: String = asset_banks.preferred_wardrobe(id,profile_id,qa_visual_preview)
@@ -418,6 +480,9 @@ func make_residents() -> void:
 				if approved_idle != null:
 					sprite.texture = approved_idle
 					sprite.pixel_size = 1.9 / maxf(1.0,float(approved_idle.get_height()))
+					sprite.position.y = maxf(0.15,
+						(asset_banks.feet_anchor(id,chosen_wardrobe,approved_idle.get_height())
+						 - float(approved_idle.get_height())*0.5)*sprite.pixel_size)
 					actor["runtime_visual_bound"] = true
 					actor["visual_wardrobe"] = chosen_wardrobe
 					actor["visual_preview_only"] = not asset_banks.verified_bank(id,profile_id,chosen_wardrobe)
@@ -441,11 +506,39 @@ func update_residents(delta: float = 0.0) -> void:
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
 		actor_sprites[id].position = Vector3(float(actor.get("x", 0.0)), y, float(actor.get("z", 0.3)))
 		if actor.get("runtime_visual_bound",false):
-			animate_verified_actor(id,actor,delta)
+			if id == "MANJKA":
+				animate_manka(actor,delta)
+			else:
+				animate_verified_actor(id,actor,delta)
 		# Names live in the status panel, never stacked over actors or furniture.
 		actor_labels[id].visible = false
 		if id == follow_id:
 			actor_labels[id].text = actor["name"] + " • " + life.status(actor)
+
+func animate_manka(actor: Dictionary, delta: float) -> void:
+	var state := "IDLE_LEFT" if str(actor.get("moving_axis","")) == "left" else "IDLE_RIGHT"
+	if actor.get("phase","idle") == "travel":
+		state = "WALK_LEFT" if str(actor.get("moving_axis","")) == "left" else "WALK_RIGHT"
+	elif actor.get("intent","") == "REST" and actor.get("phase","") == "perform":
+		state = "REST"
+	if asset_banks.manka_frame_count(state) <= 0:
+		state = "IDLE_RIGHT"
+	var animation: Dictionary = actor_animations.get("MANJKA",{"state":"","frame":0,"elapsed":0.0})
+	if animation.get("state","") != state:
+		animation = {"state":state,"frame":0,"elapsed":0.0}
+	else:
+		animation["elapsed"] = float(animation["elapsed"])+minf(delta,0.1)
+		var period: float = 1.0/maxf(1.0,asset_banks.manka_fps(state))
+		if float(animation["elapsed"]) >= period:
+			animation["frame"] = (int(animation["frame"])+int(float(animation["elapsed"])/period)) % maxi(1,asset_banks.manka_frame_count(state))
+			animation["elapsed"] = fmod(float(animation["elapsed"]),period)
+	actor_animations["MANJKA"] = animation
+	var texture: Texture2D = asset_banks.manka_texture(state,int(animation["frame"]))
+	var sprite: Sprite3D = actor_sprites["MANJKA"].get_node("Body")
+	if texture != null and texture != sprite.texture:
+		sprite.texture = texture
+		sprite.pixel_size = 1.55/maxf(1.0,float(texture.get_height()))
+		sprite.position.y = 0.77
 
 func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void:
 	# Animation is presentation-only. Never wakes or changes the life scheduler.
@@ -485,6 +578,9 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 	if texture != null and sprite.texture != texture:
 		sprite.texture = texture
 		sprite.pixel_size = 1.9 / maxf(1.0,float(texture.get_height()))
+		sprite.position.y = maxf(0.15,
+			(asset_banks.feet_anchor(id,wardrobe,texture.get_height())
+			 - float(texture.get_height())*0.5)*sprite.pixel_size)
 
 func build_interface() -> void:
 	var layer := CanvasLayer.new()
@@ -531,6 +627,13 @@ func build_interface() -> void:
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
 	media_panel.bind(world,life.media_runtime)
+	bank_gallery = BankGalleryScript.new()
+	root.add_child(bank_gallery)
+	bank_gallery.bind(asset_banks,world.read_resident_profiles())
+	var gallery_button := Button.new()
+	gallery_button.text = "Галерея 24 банков [K]"
+	gallery_button.pressed.connect(toggle_bank_gallery)
+	col.add_child(gallery_button)
 	var qa_button := Button.new()
 	qa_button.text = "QA-спрайты [V]"
 	qa_button.pressed.connect(toggle_qa_art_preview)
@@ -580,6 +683,13 @@ func _import_media(path: String) -> void:
 	else:
 		notice.text = "Ошибка каталога: нужен JSON с books/films/tracks (id, title)"
 	update_hud()
+
+func toggle_bank_gallery() -> void:
+	if bank_gallery == null:
+		return
+	bank_gallery.visible = not bank_gallery.visible
+	if bank_gallery.visible:
+		bank_gallery.refresh()
 
 func toggle_qa_art_preview() -> void:
 	qa_visual_preview = not qa_visual_preview
@@ -782,6 +892,7 @@ func _input(event: InputEvent) -> void:
 			KEY_J: toggle_journal()
 			KEY_M: toggle_media_panel()
 			KEY_V: toggle_qa_art_preview()
+			KEY_K: toggle_bank_gallery()
 			KEY_1: set_mode("HOUSE")
 			KEY_2: set_mode("ROOM")
 

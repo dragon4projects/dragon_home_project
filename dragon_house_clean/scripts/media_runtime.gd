@@ -12,8 +12,11 @@ func _normalize_catalogue() -> void:
 		if not book.has("holder_id"):
 			book["holder_id"] = ""
 		if not book.has("location_room_id"):
-			var rooms: Array = world.matching_rooms(["library"])
-			book["location_room_id"] = rooms[0]["id"] if not rooms.is_empty() else ""
+			if not bool(book.get("physical", true)):
+				book["location_room_id"] = ""
+			else:
+				var rooms: Array = world.matching_rooms(["library"])
+				book["location_room_id"] = rooms[0]["id"] if not rooms.is_empty() else ""
 		if not book.has("idle_since"):
 			book["idle_since"] = 0
 		if not book.has("progress_by_actor"):
@@ -30,14 +33,14 @@ func _lookup(kind: String, id: String) -> Dictionary:
 func available_books() -> Array:
 	var out: Array = []
 	for book in world.media.get("books", []):
-		if book.get("holder_id", "") == "" and book.get("location_room_id", "") != "":
+		if bool(book.get("physical", true)) and book.get("holder_id", "") == "" and book.get("location_room_id", "") != "":
 			out.append(book)
 	return out
 
 func borrow(actor_id: String, book_id: String, now: int = 0) -> bool:
 	var actor: Dictionary = world.residents.get(actor_id, {})
 	var book: Dictionary = _lookup("books", book_id)
-	if not actor.get("active", false) or book.is_empty():
+	if not actor.get("active", false) or book.is_empty() or not bool(book.get("physical", true)):
 		return false
 	if book.get("holder_id", "") != "" or book.get("location_room_id", "") == "":
 		return false
@@ -83,6 +86,8 @@ func return_book(actor_id: String, book_id: String, destination_id: String = "")
 func cleanup_abandoned(now: int) -> int:
 	var count := 0
 	for book in world.media.get("books", []):
+		if not bool(book.get("physical", true)):
+			continue
 		if book.get("holder_id", "") != "" or book.get("location_room_id", "") != "":
 			continue
 		var abandoned_at: int = int(book.get("idle_since", 0))
