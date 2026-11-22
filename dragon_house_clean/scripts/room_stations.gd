@@ -219,23 +219,42 @@ func reconcile(world) -> int:
 		var invalid: bool = not bool(actor.get("active",false)) or room.is_empty() or (
 			not world.is_accessible(room,str(id))) or slot < 0 or slot >= capacity(room) or (
 			not ["travel","perform"].has(str(actor.get("phase","idle")))) or claimed.has(key)
+		if not invalid and str(actor.get("phase",""))=="travel":
+			var route: Array=actor.get("waypoints",[])
+			invalid = route.is_empty() or typeof(route[-1])!=TYPE_DICTIONARY or (
+				str(route[-1].get("kind",""))!="station") or (
+				str(route[-1].get("room_id",""))!=room_id)
 		if invalid:
 			release(actor)
-			# Don't keep an invalid station waypoint from a corrupted save.
-			if actor.get("phase","") == "travel":
-				actor["phase"] = "idle"
-				actor["waypoints"] = []
-				actor["waypoint_index"] = 0
-				actor["until"] = world.sim_clock
+			# Old/corrupt reservations cannot continue a phantom activity
+			# while another resident legitimately claims their former seat.
+			actor["phase"] = "idle"
+			actor["waypoints"] = []
+			actor["waypoint_index"] = 0
+			actor["until"] = world.sim_clock
 			fixed += 1
 		else:
 			claimed[key] = true
-			# Restore authored furniture metadata after a v0.7 snapshot.
+			# v0.7 stored generic coordinates and the SAME slot IDs. Rewrite
+			# the actor's true body location/terminal waypoint, not just the
+			# station metadata, or old saves still visually stack on furniture.
 			var spot: Dictionary = layout(room)[slot]
 			actor["station_kind"] = str(spot.get("kind","standing"))
 			actor["station_furniture_id"] = str(spot.get("furniture_id",""))
 			var offset: Vector2 = spot["offset"]
 			actor["station_point"] = [offset.x,offset.y]
+			var new_x:float=float(room["x"])*world.MODULE_W+offset.x
+			var new_y:float=float(room["level"])*world.FLOOR_H
+			if str(actor.get("phase",""))=="perform":
+				actor["x"]=new_x
+				actor["visual_y"]=new_y
+				actor["z"]=offset.y
+			else:
+				var route: Array=actor["waypoints"]
+				var last: Dictionary=route[-1]
+				last["position"]=[new_x,new_y,offset.y]
+				route[route.size()-1]=last
+				actor["waypoints"]=route
 	return fixed
 
 func migrate_legacy_positions(world) -> int:

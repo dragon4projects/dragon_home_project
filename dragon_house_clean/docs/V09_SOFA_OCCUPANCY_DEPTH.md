@@ -21,7 +21,7 @@ No changes to the legacy Dragon House repository, no AI integrations, and no ext
 
 Older snapshots may already contain two or three active residents at precisely the same sofa coordinates and no reservation fields.
 
-- On loading a saved world, `room_stations.reconcile()` repairs stale claims and reconstructs per-place identity.
+- On loading a saved world, `room_stations.reconcile()` repairs stale claims and reconstructs per-place identity. **It also rebases the actual resident body XYZ location (if already performing) or the final station waypoint (if traveling) for v0.7–v0.8 snapshots whose numeric slot IDs survived but old generic coordinates did not match the newly modeled sofa.**
 - `room_stations.migrate_legacy_positions()` migrates currently **performing** residents to a unique valid position in their existing public room before the first world render. A resident whose old room is full does not get assigned an occupied seat.
 - For old **traveling** residents, the last station waypoint is rebased to an available real point and future movement follows that route. The actor remains traveling; no teleportation is required.
 - This is a targeted render-position/state migration, not an assertion that a user-approved character or private identity is present in the home.
@@ -41,7 +41,7 @@ Older snapshots may already contain two or three active residents at precisely t
 
 ## 5. Test evidence
 
-- `tests/test_sofa_seating_v09.gd`: two REST actors take different ends of the same physical sofa, third does not sit on it, paths approach from the aisle, stage depth exists only in public rooms, private door is still denied, v0.6 triple-overlap save repaired immediately and survives a second restart, legacy travel endpoint corrected, closer camera yaw adds depth.
+- `tests/test_sofa_seating_v09.gd`: two REST actors take different ends of the same physical sofa, third does not sit on it, paths approach from the aisle, stage depth exists only in public rooms, private door is still denied, **v0.6 triple-overlap and v0.7 preserved-slot/obsolete-coordinate snapshots both repaired immediately**, legacy travel endpoint corrected, closer camera yaw adds depth.
 - `tests/test_room_stations_v07.gd`: reverified all 30 gathering spots and updated expected depth corridor bounds to include new physical front/back lane positions.
 - Every previous Godot test retained (camera, room merge, build, locomotion, social pair, media, JSON snapshot, actual LFS sprite anchor, privacy, UI and 49-cell LOD).
 - Local Godot 4.7.2 sandbox: **19 Godot tests and 2 Python QA tests PASS**. Virtual OpenGL cutaway screenshot rendered without script errors. Full-LFS GitHub CI must pass separately before binaries can be called accepted.

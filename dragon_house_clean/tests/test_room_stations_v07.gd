@@ -16,7 +16,7 @@ func _initialize() -> void:
 	# Synthetic guests are test-only; NO live/dormant resident is activated.
 	for ix in range(30):
 		var a_id: String="TEST_GUEST_%02d" % ix
-		var actor: Dictionary={"id":a_id,"active":true,"phase":"travel",
+		var actor: Dictionary={"id":a_id,"active":true,"phase":"perform",
 			"room_id":w.get_room(-5,0)["id"],"station_slot":-1}
 		w.residents[a_id]=actor
 		var destination: Dictionary=group["cells"][int(ix/10)]
@@ -41,7 +41,7 @@ func _initialize() -> void:
 	var origin: String=str(freed["station_room_id"])
 	station.release(freed)
 	assert(station.available_count(w,w.room_by_id(origin))==1)
-	var replacement: Dictionary={"id":"TEST_GUEST_31","active":true,"phase":"travel"}
+	var replacement: Dictionary={"id":"TEST_GUEST_31","active":true,"phase":"perform"}
 	w.residents[replacement["id"]]=replacement
 	var replacement_claim:Dictionary=station.single(w,replacement,w.room_by_id(origin))
 	assert(not replacement_claim.is_empty())
@@ -64,7 +64,7 @@ func _initialize() -> void:
 	assert(is_equal_approx(left.y,right.y))
 	station.commit_claim(pair_a,social["actor"])
 	station.commit_claim(pair_b,social["partner"])
-	pair_a["phase"]="travel"
+	pair_a["phase"]="perform"
 	pair_b["phase"]="travel"
 	assert(station.used_slots(w,str(pair_cell["id"])).size()==2)
 	# Stale duplicate in a snapshot is reconciled deterministically.

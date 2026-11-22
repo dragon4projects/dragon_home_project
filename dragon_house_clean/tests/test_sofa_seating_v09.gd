@@ -115,6 +115,35 @@ func run() -> void:
 	again.setup(reloaded)
 	assert(reloaded.residents["RES_01"]["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
 	assert(reloaded.residents["RES_01"]["station_kind"]=="seat")
+	# v0.7 and v0.8 saved numeric slot IDs but generic coordinates.
+	# Reconcile must reanchor body positions, not merely rename the slot.
+	var legacy7=W.new()
+	legacy7.save_path="user://test_v07_position_upgrade_v09.json"
+	legacy7.seed_world()
+	var old_resident:Dictionary=legacy7.residents["RES_01"]
+	var old_lounge:Dictionary=legacy7.get_room(-1,0)
+	old_resident["room_id"]=old_lounge["id"]
+	old_resident["intent"]="REST"
+	old_resident["phase"]="perform"
+	old_resident["station_room_id"]=old_lounge["id"]
+	old_resident["station_slot"]=0
+	old_resident["station_kind"]="standing"
+	old_resident["station_point"]=[-1.66,0.8]
+	old_resident["x"]=float(old_lounge["x"])*legacy7.MODULE_W-1.66
+	old_resident["z"]=0.8
+	assert(legacy7.save_world())
+	var imported7=W.new()
+	imported7.save_path=legacy7.save_path
+	imported7.load_or_seed()
+	var upgrading=L.new()
+	upgrading.setup(imported7)
+	var repaired:Dictionary=imported7.residents["RES_01"]
+	var new_offset:Vector2=S.new().layout(imported7.get_room(-1,0))[0]["offset"]
+	assert(repaired["station_kind"]=="seat")
+	assert(repaired["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
+	assert(is_equal_approx(float(repaired["x"]),float(old_lounge["x"])*imported7.MODULE_W+new_offset.x))
+	assert(is_equal_approx(float(repaired["z"]),new_offset.y))
+	assert(not is_equal_approx(float(repaired["z"]),0.8))
 	# Actor still en route in old save gets endpoint repaired too.
 	var walker:Dictionary=reloaded.residents["RES_04"]
 	var locomotion=R.new()
@@ -128,9 +157,9 @@ func run() -> void:
 	assert(walker.has("station_slot"))
 	var new_last: Array=walker["waypoints"][-1]["position"]
 	assert(old_last!=new_last,"Old walking route must be rebased to a unique station")
-	for path in [world.save_path,stage.world.save_path]:
+	for path in [world.save_path,stage.world.save_path,legacy7.save_path]:
 		for ext in ["",".bak",".tmp"]:
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(path+ext))
-	print("SOFA_SEATING_V09_PASS 2_seats=unique 3rd=standing private=blocked v06_save=migrated 3D_depth=R3")
+	print("SOFA_SEATING_V09_PASS sofa=exclusive overflow=standing v06_and_v07_save=repaired privacy=closed depth=R3")
 	quit(0)
 
