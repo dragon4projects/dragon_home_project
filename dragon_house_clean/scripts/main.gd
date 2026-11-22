@@ -415,16 +415,16 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 		# Underlit walk path is recessed relative to both front and back.
 		# Low thin lines suggest real floor plane perspective without painting
 		# stripes across the actors' feet.
-		for z in [-1.19,0.24,1.25]:
+		for z in [-1.19,0.18,1.10]:
 			box(module,Vector3(0,-0.004,float(z)),
-				Vector3(3.82,0.018,0.023),Color("#3f3637"))
+				Vector3(3.82,0.014,0.018),Color("#3f3637"))
 		# Front floor reveal with continuous floor lip and two small stone
 		# returns that stop below knee level.
-		box(module,Vector3(0,-0.25,1.63),
-			Vector3(4.42,0.13,0.28),palette["rock_light"])
+		box(module,Vector3(0,-0.17,1.40),
+			Vector3(4.42,0.09,0.16),palette["rock_light"])
 		for side in [-1.0,1.0]:
-			box(module,Vector3(side*2.02,0.24,1.59),
-				Vector3(0.16,0.49,0.35),palette["rock_light"])
+			box(module,Vector3(side*2.02,0.18,1.37),
+				Vector3(0.13,0.34,0.20),palette["rock_light"])
 		# Lower panel in a shadowed rear alcove, physically behind furniture.
 		box(module,Vector3(0,1.47,-1.87),
 			Vector3(3.45,2.24,0.09),Color("#393234"))
@@ -473,6 +473,35 @@ func _is_near_detail(group_node: Node3D) -> bool:
 	var radius_y: float = maxf(H*1.15,zoom_current*0.30)
 	return absf(group_node.position.x-smooth_focus.x) <= radius_x and absf(group_node.position.y-smooth_focus.y) <= radius_y
 
+func register_art_foreground(group_node: Node3D) -> void:
+	var layer:Node3D=group_node.get_node_or_null("Layer_ApprovedArt")
+	if layer==null or camera==null:
+		return
+	var fg:Sprite3D=layer.get_node_or_null("Art_foreground")
+	var reference:Sprite3D=layer.get_node_or_null("Art_furniture_back")
+	if fg==null or reference==null or not fg.has_meta("physical_z"):
+		return
+	var target_z:float=float(fg.get_meta("physical_z"))
+	var camera_local:Vector3=group_node.to_local(camera.global_position)
+	var denominator:float=reference.position.z-camera_local.z
+	if absf(denominator)<0.001:
+		return
+	var k:float=(target_z-camera_local.z)/denominator
+	if k<=0.0 or k>2.0:
+		return
+	fg.position=Vector3(
+		camera_local.x+(reference.position.x-camera_local.x)*k,
+		camera_local.y+(reference.position.y-camera_local.y)*k,
+		target_z)
+	fg.scale=Vector3(k,k,1.0)
+
+func register_loaded_foregrounds() -> void:
+	if room_root==null:
+		return
+	for group_node in room_root.get_children():
+		if art_loaded_groups.has(group_node.name):
+			register_art_foreground(group_node)
+
 func _load_room_art(group_node: Node3D) -> void:
 	if art_loaded_groups.has(group_node.name):
 		return
@@ -487,6 +516,11 @@ func _load_room_art(group_node: Node3D) -> void:
 	if count>0:
 		art_loaded_groups[group_node.name]=count
 		art_layer_count+=count
+		register_art_foreground(group_node)
+		# Hide only the old rear panels when a real accepted backdrop is mounted.
+		var stage:Node3D=group_node.get_node_or_null("Layer_Background/Stage_Backwall")
+		if stage!=null and layer.get_node_or_null("Art_backdrop")!=null:
+			stage.visible=false
 
 func _release_room_art(group_node: Node3D) -> void:
 	if not art_loaded_groups.has(group_node.name):
@@ -498,6 +532,9 @@ func _release_room_art(group_node: Node3D) -> void:
 	if layer:
 		for child in layer.get_children():
 			child.queue_free()
+	var stage:Node3D=group_node.get_node_or_null("Layer_Background/Stage_Backwall")
+	if stage!=null:
+		stage.visible=true
 
 func _populate_furniture(group_node: Node3D) -> void:
 	var group: Dictionary = visual_room_groups.get(group_node.name,{})
@@ -571,7 +608,7 @@ func make_room(group: Dictionary) -> void:
 	artwork.name = "Layer_ApprovedArt"
 	n.add_child(artwork)
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
-	box(structure,Vector3(0,-0.12,-0.07),Vector3(span*1.01,0.25,4.05),palette["floor"])
+	box(structure,Vector3(0,-0.09,-0.23),Vector3(span*1.01,0.18,3.58),palette["floor"])
 	if t != "private":
 		var cutaway_depth:=Node3D.new()
 		cutaway_depth.name="Stage_CutawayDepth"
@@ -583,27 +620,27 @@ func make_room(group: Dictionary) -> void:
 		rear_stage.name = "Stage_Backwall"
 		background.add_child(rear_stage)
 		add_backwall_stage(rear_stage,group)
-	box(structure,Vector3(0,3.12,-0.35),Vector3(span*1.01,0.22,3.55),palette["border"])
-	box(overlay,Vector3(0,-0.20,1.80),Vector3(span*1.01,0.22,0.18),palette["border"])
+	box(structure,Vector3(0,3.10,-0.47),Vector3(span*1.01,0.14,3.12),palette["border"])
+	box(overlay,Vector3(0,-0.12,1.46),Vector3(span*1.01,0.14,0.12),palette["border"])
 	# Expensive full-resolution artwork is loaded on demand by
 	# update_render_lod(), not permanently allocated for all 49+ rooms.
 	for side in [-1,1]:
 		var neighbour: Dictionary = side_left if side == -1 else side_right
 		var edge: float = float(side)*(span*0.5-0.10)
 		if neighbour.is_empty():
-			box(structure,Vector3(edge,1.39,-0.22),Vector3(0.35,2.90,3.82),palette["rock_light"])
+			box(structure,Vector3(edge,1.39,-0.27),Vector3(0.29,2.82,3.50),palette["rock_light"])
 			# Partial foreground pier emphasizes depth without hiding the entire actor.
-			box(overlay,Vector3(edge,0.36,1.73),Vector3(0.40,0.70,0.28),palette["rock_light"])
+			box(overlay,Vector3(edge,0.26,1.42),Vector3(0.30,0.48,0.18),palette["rock_light"])
 		else:
 			# Doorway frame: two pillars BEHIND the public front walking aisle.
-			box(structure,Vector3(edge,2.67,-0.3),Vector3(0.26,0.74,3.18),palette["rock_light"])
-			box(structure,Vector3(edge,0.56,-1.75),Vector3(0.26,1.2,0.28),palette["rock_light"])
+			box(structure,Vector3(edge,2.72,-0.44),Vector3(0.22,0.58,2.92),palette["rock_light"])
+			box(structure,Vector3(edge,0.54,-1.82),Vector3(0.22,1.12,0.20),palette["rock_light"])
 	# Merged runs: narrow arch ribs only, no full partitions or duplicate room names.
 	if int(group["width"]) > 1:
 		for i in range(int(group["width"])-1):
 			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
-			box(structure,Vector3(seam_x,2.93,-0.50),
-				Vector3(0.12,0.37,3.15),palette["rock_light"])
+			box(structure,Vector3(seam_x,2.96,-0.56),
+				Vector3(0.10,0.27,2.76),palette["rock_light"])
 	if t != "private":
 		var overview := Node3D.new()
 		overview.name = "Layer_OverviewCues"
@@ -1005,13 +1042,13 @@ func update_selection_outline() -> void:
 	var length: float = float(group["width"])*W
 	selected_outline.position = Vector3(cx,float(room["level"])*H,0.0)
 	var tone := Color("#e8b875")
-	box(selected_outline,Vector3(0,-0.08,1.92),
-		Vector3(length,0.065,0.08),tone,true)
-	box(selected_outline,Vector3(0,3.03,1.92),
-		Vector3(length,0.065,0.08),tone,true)
+	box(selected_outline,Vector3(0,-0.04,1.51),
+		Vector3(length,0.045,0.055),tone,true)
+	box(selected_outline,Vector3(0,3.08,1.51),
+		Vector3(length,0.045,0.055),tone,true)
 	for side in [-1,1]:
-		box(selected_outline,Vector3(float(side)*length*0.5,1.48,1.92),
-			Vector3(0.075,3.15,0.08),tone,true)
+		box(selected_outline,Vector3(float(side)*length*0.5,1.52,1.51),
+			Vector3(0.050,3.12,0.055),tone,true)
 	selected_outline.visible = true
 
 func set_mode(mode: String) -> void:
@@ -1221,7 +1258,7 @@ func effective_camera_yaw() -> float:
 	# A gentle Shelter-like oblique cutaway shows the rear and side depth
 	# of the 3D room at close zoom, then fades back to a readable flat
 	# overview. Q/E remains an additive *manual* adjustment.
-	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.115
+	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.14
 	return clampf(yaw+close_bias,-0.38,0.38)
 
 func apply_camera(delta: float) -> void:
@@ -1253,8 +1290,11 @@ func apply_camera(delta: float) -> void:
 	var view_yaw: float=effective_camera_yaw()
 	var x_shift := sin(view_yaw) * zoom_current
 	var z_shift := cos(view_yaw) * zoom_current
-	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*0.19,z_shift)
+	var height_ratio:float=lerpf(0.085,0.17,
+		clampf((zoom_current-12.0)/36.0,0.0,1.0))
+	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*height_ratio,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
+	register_loaded_foregrounds()
 
 func update_render_lod() -> void:
 	# Keep cutaway shell/cues visible, materialize nearby details on demand.

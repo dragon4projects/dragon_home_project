@@ -96,7 +96,13 @@ func validated_layers(room_type: String, width: int) -> Array:
 			continue
 		if not _actual_image_source(path):
 			continue
-		result.append({"role":role,"path":path})
+		var accepted:Dictionary={"role":role,"path":path}
+		if item.has("physical_z"):
+			var physical_z:float=float(item["physical_z"])
+			if is_nan(physical_z) or is_inf(physical_z) or physical_z < -1.65 or physical_z > 0.90:
+				continue
+			accepted["physical_z"]=physical_z
+		result.append(accepted)
 	return result
 
 func texture_for(path: String) -> Texture2D:
@@ -132,6 +138,8 @@ func add_layers(parent: Node3D, room_type: String, width: int, physical_width: f
 		sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED
 		sprite.pixel_size = physical_width / maxf(1.0,float(tex.get_width()))
 		sprite.position = Vector3(0.0,1.50,Z_FOR_ROLE[role])
+		if item.has("physical_z"):
+			sprite.set_meta("physical_z",float(item["physical_z"]))
 		sprite.no_depth_test = false
 		sprite.shaded = false
 		sprite.render_priority = 0

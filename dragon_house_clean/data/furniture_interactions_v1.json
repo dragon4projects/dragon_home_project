@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "source": "original_procedural_geometry_v09",
-  "approval_scope": "physical interaction anchors only; not artistic approval of a person's identity or Teea's layers",
+  "source": "accepted procedural baseline + owner-accepted TEEA_INT_20261122_002_REWORK_R1 measured anchors",
+  "approval_scope": "physical interaction anchors aligned with accepted 002 art; blocked geometry excluded",
   "room_profiles": {
     "common": [
       {
@@ -25,21 +25,30 @@
     ],
     "rest": [
       {
-        "id": "rest_left",
-        "x": -0.85,
-        "z": -0.39,
+        "id": "rest_sofa_seat_a",
+        "x": 0.4196,
+        "z": -0.6941,
         "kind": "seat",
-        "furniture_id": "SOFA_REST",
+        "furniture_id": "rest_sofa",
         "pose_hint": "RELAXED_SIT",
         "approach_z": 0.95
       },
       {
-        "id": "rest_right",
-        "x": 0.27,
-        "z": -0.39,
+        "id": "rest_sofa_seat_b",
+        "x": 1.0804,
+        "z": -0.6941,
         "kind": "seat",
-        "furniture_id": "SOFA_REST",
+        "furniture_id": "rest_sofa",
         "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      },
+      {
+        "id": "rest_lounge_seat_a",
+        "x": -1.35,
+        "z": -0.6235,
+        "kind": "seat",
+        "furniture_id": "rest_lounge",
+        "pose_hint": "READ",
         "approach_z": 0.95
       }
     ],
@@ -65,11 +74,11 @@
     ],
     "study": [
       {
-        "id": "work_station",
-        "x": -0.52,
-        "z": -0.38,
+        "id": "study_chair_work",
+        "x": -0.42,
+        "z": -0.33,
         "kind": "work",
-        "furniture_id": "DESK_STUDY",
+        "furniture_id": "study_heavy_desk",
         "pose_hint": "USE",
         "approach_z": 0.95
       }
@@ -138,45 +147,76 @@
   "cell_overrides": {
     "common:-2": [
       {
-        "id": "hearth_skin_left",
-        "x": -1.3,
-        "z": -0.32,
-        "kind": "floor_rest",
-        "furniture_id": "FIREPLACE_SKINS",
+        "id": "common_sofa_left_seat_a",
+        "x": -0.8171,
+        "z": -0.729,
+        "kind": "seat",
+        "furniture_id": "common_sofa_left",
         "pose_hint": "RELAXED_SIT",
         "approach_z": 0.95
       },
       {
-        "id": "hearth_skin_right",
-        "x": 1.28,
-        "z": -0.32,
-        "kind": "floor_rest",
-        "furniture_id": "FIREPLACE_SKINS",
+        "id": "common_sofa_left_seat_b",
+        "x": -0.0829,
+        "z": -0.729,
+        "kind": "seat",
+        "furniture_id": "common_sofa_left",
         "pose_hint": "RELAXED_SIT",
         "approach_z": 0.95
       }
     ],
-    "common:-1": [
+    "common:-1": [],
+    "common:0": [
       {
-        "id": "common_middle_left",
-        "x": -0.56,
-        "z": -0.57,
+        "id": "common_bench_right_seat_a",
+        "x": -1.45,
+        "z": -0.8099,
         "kind": "seat",
-        "furniture_id": "SOFA_COMMON_MIDDLE",
+        "furniture_id": "common_bench_right",
         "pose_hint": "RELAXED_SIT",
         "approach_z": 0.95
       },
       {
-        "id": "common_middle_right",
-        "x": 0.56,
-        "z": -0.57,
+        "id": "common_chair_right_seat_a",
+        "x": 0.55,
+        "z": -0.7307,
         "kind": "seat",
-        "furniture_id": "SOFA_COMMON_MIDDLE",
+        "furniture_id": "common_chair_right",
         "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      }
+    ],
+    "library:2": [
+      {
+        "id": "library_chair_left_seat_a",
+        "x": 0.25,
+        "z": -0.5835,
+        "kind": "seat",
+        "furniture_id": "library_chair_left",
+        "pose_hint": "READ",
+        "approach_z": 0.95
+      }
+    ],
+    "library:3": [
+      {
+        "id": "library_chair_right_seat_a",
+        "x": -0.25,
+        "z": -0.558,
+        "kind": "seat",
+        "furniture_id": "library_chair_right",
+        "pose_hint": "READ",
         "approach_z": 0.95
       }
     ]
   },
   "privacy_rule": "door_only rooms have no visible, reservable stations",
-  "hand_off_policy": "Teea or Znaechka may propose new coordinates only in data/asset_proposals/<batch>_furniture_anchors.json. ChatGPT validates, reviews and integrates."
+  "hand_off_policy": "Teea or Znaechka may propose new coordinates only in data/asset_proposals/<batch>_furniture_anchors.json. ChatGPT validates, reviews and integrates.",
+  "accepted_art_alignment": {
+    "batch_id": "TEEA_INT_20261122_002_REWORK_R1",
+    "owner_approved": "2026-11-22",
+    "blocked": [
+      "common_chair_left_seat_a"
+    ],
+    "library_table": "collision_only"
+  }
 }

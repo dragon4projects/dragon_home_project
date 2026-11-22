@@ -1,19 +1,232 @@
 {
   "schema": 1,
-  "_note": "Intentionally empty until room assets have verified provenance, room width and camera perspective. PRIVATE has no public interior layer.",
+  "_note": "Owner-accepted Teea 002 REWORK R1 variants. Unlisted variants remain procedural.",
   "room_types": {
-    "arrival": {"R1": {"layers": []}},
-    "corridor": {"R1": {"layers": []}},
-    "common": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "study": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "rest": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "library": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "cinema": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "music": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "workshop": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
-    "private": {"R1": {"layers": []}},
-    "lift": {"R1": {"layers": []}},
-    "artifact": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}}
+    "arrival": {
+      "R1": {
+        "layers": []
+      }
+    },
+    "corridor": {
+      "R1": {
+        "layers": []
+      }
+    },
+    "common": {
+      "R1": {
+        "layers": []
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": [
+          {
+            "role": "backdrop",
+            "path": "assets/rooms/common/R3/backdrop.png",
+            "approved": true,
+            "sha256": "f6c01f8e0c051938ce5d58e903ccafc2224a6ba13ebe276b86cfaea6a9939b00",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "back_decor",
+            "path": "assets/rooms/common/R3/back_decor.png",
+            "approved": true,
+            "sha256": "ed6f3c703641c0d8d4695ed2c5ae18b10519ca7363f3eb536e1823a9f8a2ca8b",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "furniture_back",
+            "path": "assets/rooms/common/R3/furniture_back.png",
+            "approved": true,
+            "sha256": "7809f05cabd1813d9dee93e57562e8aecf63bbff44152b02532641f5b06604a7",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "foreground",
+            "path": "assets/rooms/common/R3/foreground.png",
+            "approved": true,
+            "sha256": "ba74d0bd6bb7f9d8acf681c148fb4e1d0ad099c12a48580c311037518b9f1e0d",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1",
+            "physical_z": -0.4711
+          }
+        ]
+      }
+    },
+    "study": {
+      "R1": {
+        "layers": [
+          {
+            "role": "backdrop",
+            "path": "assets/rooms/study/R1/backdrop.png",
+            "approved": true,
+            "sha256": "ce4d42ae3c657d9c3e3d15b5788c01c73832646b0410f16f6aaf81ec55b8641b",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "back_decor",
+            "path": "assets/rooms/study/R1/back_decor.png",
+            "approved": true,
+            "sha256": "34080758cc64f8580c69c597fed9dfb393c73c2c9ad9d4135668df6cdf9cd19a",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "furniture_back",
+            "path": "assets/rooms/study/R1/furniture_back.png",
+            "approved": true,
+            "sha256": "be895a8a18e07e01df4e1cdd27e3f230eb42d7d37e57aac1e88ca93078591096",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          }
+        ]
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": []
+      }
+    },
+    "rest": {
+      "R1": {
+        "layers": [
+          {
+            "role": "backdrop",
+            "path": "assets/rooms/rest/R1/backdrop.png",
+            "approved": true,
+            "sha256": "c54dd9655e53d7e3e360c7380f52cba115087c0e2216a6e3299db50629863e16",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "back_decor",
+            "path": "assets/rooms/rest/R1/back_decor.png",
+            "approved": true,
+            "sha256": "76b90a3063d3b78b1e865e0d46a33aa71b41b38c1a00a9be2d6dc6f9fa7fd4d7",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "furniture_back",
+            "path": "assets/rooms/rest/R1/furniture_back.png",
+            "approved": true,
+            "sha256": "5334f0a81c285a0ac6db203ac754003a4b0e8f834c238295b5ccd7236789dbb7",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "foreground",
+            "path": "assets/rooms/rest/R1/foreground.png",
+            "approved": true,
+            "sha256": "e626bcdb3f0a49655bb06e81a8b9dbd95bd171f8e5bab364ca90ef14b7891ded",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1",
+            "physical_z": -0.347
+          }
+        ]
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": []
+      }
+    },
+    "library": {
+      "R1": {
+        "layers": []
+      },
+      "R2": {
+        "layers": [
+          {
+            "role": "backdrop",
+            "path": "assets/rooms/library/R2/backdrop.png",
+            "approved": true,
+            "sha256": "a07b11ea677a5f3230dbdb49e7b07f8b33f0b6b4744c636c621ce8a9ac448422",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "back_decor",
+            "path": "assets/rooms/library/R2/back_decor.png",
+            "approved": true,
+            "sha256": "29da9f7541c3e00e0d7ee7053ad4917f3becd6325c6a4d5e5c67857d89c45a90",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "furniture_back",
+            "path": "assets/rooms/library/R2/furniture_back.png",
+            "approved": true,
+            "sha256": "99c733d6604dd68810c2af9a7227f46a84ddb92d839e2e47603ff695c7c64621",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1"
+          },
+          {
+            "role": "foreground",
+            "path": "assets/rooms/library/R2/foreground.png",
+            "approved": true,
+            "sha256": "582292391c3d71d91e475e05b13018109560262700593ac2f87da954fe5867d4",
+            "source_batch": "TEEA_INT_20261122_002_REWORK_R1",
+            "physical_z": -0.2436
+          }
+        ]
+      },
+      "R3": {
+        "layers": []
+      }
+    },
+    "cinema": {
+      "R1": {
+        "layers": []
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": []
+      }
+    },
+    "music": {
+      "R1": {
+        "layers": []
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": []
+      }
+    },
+    "workshop": {
+      "R1": {
+        "layers": []
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": []
+      }
+    },
+    "private": {
+      "R1": {
+        "layers": []
+      }
+    },
+    "lift": {
+      "R1": {
+        "layers": []
+      }
+    },
+    "artifact": {
+      "R1": {
+        "layers": []
+      },
+      "R2": {
+        "layers": []
+      },
+      "R3": {
+        "layers": []
+      }
+    }
+  },
+  "acceptance": {
+    "date": "2026-11-22",
+    "batch_id": "TEEA_INT_20261122_002",
+    "rework_id": "TEEA_INT_20261122_002_REWORK_R1",
+    "owner_visual_pass": true
   }
 }
-
