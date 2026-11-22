@@ -1,5 +1,5 @@
 from pathlib import Path
-import json, subprocess, tempfile
+import json, subprocess, tempfile, sys
 from PIL import Image
 PROJECT=Path(__file__).resolve().parents[1]
 SCRIPT=PROJECT/"tools/create_private_review_sheet.py"
@@ -21,7 +21,7 @@ with tempfile.TemporaryDirectory() as temp:
     }}
     (root/"data/asset_registry_nov2026.json").write_text(json.dumps(doc,ensure_ascii=False),encoding="utf8")
     out=Path(temp)/"private.png"
-    r=subprocess.run(["python3",str(SCRIPT),"--project",str(root),"--output",str(out)],
+    r=subprocess.run([sys.executable,str(SCRIPT),"--project",str(root),"--output",str(out)],
                      capture_output=True,text=True)
     assert r.returncode==0,r.stderr
     stats=json.loads(r.stdout)

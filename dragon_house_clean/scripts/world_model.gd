@@ -212,8 +212,9 @@ func merge_reference_book_metadata(items: Array) -> int:
 		var title: String = str(item.get("title", ""))
 		if id == "" or title == "" or existing.has(id) or str(item.get("status", "")) != "METADATA_ONLY":
 			continue
+		var byline = item.get("author", "")
 		media["books"].append({
-			"id": id, "title": title, "author": str(item.get("author", "")),
+			"id": id, "title": title, "author": "" if byline == null else str(byline),
 			"catalog_only": true, "physical": false,
 			"provenance": str(item.get("source", "")),
 			"preview": "", "holder_id": "", "location_room_id": "",

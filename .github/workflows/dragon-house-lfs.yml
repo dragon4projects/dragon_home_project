@@ -49,10 +49,12 @@ jobs:
           /tmp/dragon-qa-venv/bin/python tests/test_private_review_sheet.py
 
       - name: Store private QA image for owner review only
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: dragon-house-private-character-review
           path: dragon_house_clean/private_review/nov2026_all_24.png
+          if-no-files-found: ignore
           retention-days: 3
 
       - name: Download official Godot 4.7.2 Linux

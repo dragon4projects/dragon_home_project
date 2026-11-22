@@ -7,7 +7,7 @@ func _initialize() -> void:
 	w.seed_world()
 	var metadata: Array = [
 		{"id":"REF_01","title":"Книга из облака","author":"Автор","status":"METADATA_ONLY","source":"test"},
-		{"id":"REF_02","title":"Другой том","author":"Автор","status":"METADATA_ONLY","source":"test"},
+		{"id":"REF_02","title":"Другой том","author":null,"status":"METADATA_ONLY","source":"test"},
 		{"id":"NOT_ALLOWED","title":"Не подтверждено","author":"Автор","status":"DRAFT"}
 	]
 	assert(w.merge_reference_book_metadata(metadata)==2)
@@ -15,6 +15,7 @@ func _initialize() -> void:
 	var m = M.new()
 	m.setup(w)
 	assert(w.media["books"].size()==2)
+	assert(w.media["books"][1]["author"]=="","Missing author stays blank, not string null")
 	assert(m.available_books().is_empty(),"Cloud metadata is not physically shelved")
 	assert(not m.borrow("RES_01","REF_01"),"No phantom book borrowing")
 	assert(w.media["books"][0]["catalog_only"])
