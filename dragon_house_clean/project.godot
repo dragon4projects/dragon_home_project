@@ -1,0 +1,25 @@
+; Dragon House — clean-room build. Godot 4.7.2
+config_version=5
+
+[application]
+config/name="Дом Дракона — Shelter Prototype"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7")
+config/description="Independent 2.5D cutaway cave-life simulation."
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/size/resizable=true
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.055, 0.045, 0.053, 1)
+textures/default_filters/use_nearest_mipmap_filter=false
+
+[physics]
+common/physics_ticks_per_second=30
+
