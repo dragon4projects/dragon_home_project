@@ -41,6 +41,15 @@ func run() -> void:
 	assert(is_equal_approx(float(art.pixel_size)*288.0,14.4))
 	var cache_tex: Texture2D = skin.texture_for(layers[0]["path"])
 	assert(cache_tex == art.texture)
+	# LFS pointer text has no pixels. It must not hide the old furniture.
+	var pointer_file:=FileAccess.open(BACKDROP,FileAccess.WRITE)
+	pointer_file.store_string("version https://git-lfs.github.com/spec/v1\n"
+		+"oid sha256:"+"0".repeat(64)+"\nsize 290000\n")
+	pointer_file.close()
+	assert(skin.validated_layers("qa_test_room",3).is_empty(),
+		"Pointer text named .png must never replace a rendered room")
+	assert(img.save_png(BACKDROP)==OK)
+	assert(skin.validated_layers("qa_test_room",3).size()==1)
 	target.queue_free()
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(BACKDROP))
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(TMP_MANIFEST))

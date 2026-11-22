@@ -53,6 +53,29 @@ func _safe_path(room_type: String, variant: String, path: String) -> bool:
 	var allowed_prefix := "assets/rooms/%s/%s/" % [room_type,variant]
 	return path.begins_with(allowed_prefix) and VALID_IMAGE_FORMATS.has(path.get_extension().to_lower())
 
+func _actual_image_source(path: String) -> bool:
+	# A Git LFS pointer has a .png filename but no pixels. Do not hide
+	# procedural furniture in favor of missing/undecodable room artwork.
+	var source: String="res://"+path
+	if FileAccess.file_exists(source):
+		var file := FileAccess.open(source,FileAccess.READ)
+		if file == null:
+			return false
+		var head: PackedByteArray=file.get_buffer(12)
+		var ext: String=path.get_extension().to_lower()
+		if ext=="png":
+			return head.size()>=8 and head.slice(0,8)==PackedByteArray(
+				[137,80,78,71,13,10,26,10])
+		if ext=="webp":
+			return head.size()>=12 and head.slice(0,4).get_string_from_ascii()=="RIFF" and (
+				head.slice(8,12).get_string_from_ascii()=="WEBP")
+		if ext in ["jpg","jpeg"]:
+			return head.size()>=3 and head[0]==255 and head[1]==216 and head[2]==255
+		return false
+	# In exported PCKs a valid imported texture can exist only as a remapped
+	# Godot Resource, without the source PNG bytes.
+	return ResourceLoader.exists(source)
+
 func validated_layers(room_type: String, width: int) -> Array:
 	var result: Array = []
 	if config.is_empty() or room_type == "private" or width < 1 or width > 3:
@@ -71,7 +94,7 @@ func validated_layers(room_type: String, width: int) -> Array:
 		var path := str(item.get("path","")).trim_prefix("res://")
 		if not _safe_path(room_type,variant,path):
 			continue
-		if not FileAccess.file_exists("res://"+path) and not ResourceLoader.exists("res://"+path):
+		if not _actual_image_source(path):
 			continue
 		result.append({"role":role,"path":path})
 	return result

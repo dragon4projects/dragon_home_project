@@ -66,3 +66,7 @@ The example is **not** a complete replacement for the live manifest; it is a pro
 - Native seated movement needs Znaechka's identity-matched, photorealistic sitting animation states. A correct seat position is not an animated sitting person.
 - Final QA on Windows 10 Dell Latitude 5300 and macOS M1 8GB remains to be performed by the owner; cloud Linux tests cannot prove hardware FPS or VRAM use.
 
+
+## Additional robustness: unreadable Git LFS art is never active
+
+The approved room-art validator checks actual PNG/JPEG/WebP file signatures. A text Git LFS pointer masquerading as a `.png` filename is not a drawable asset and must **not** hide the current procedural sofa or other furniture. Godot-imported texture remaps inside a packaged PCK remain supported. `test_interior_layers.gd` creates an intentionally invalid LFS pointer, verifies rejection, then restores the image. The loader's earlier 'file exists' check alone was insufficient to protect owners awaiting binary LFS delivery.
