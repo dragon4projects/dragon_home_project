@@ -70,15 +70,12 @@ func _entry(resident_id: String, wardrobe: String, state: String) -> Dictionary:
 	var states: Dictionary = bank.get("states",{})
 	return states.get(state,{})
 
-func verified_bank(resident_id: String, appearance_profile: String, wardrobe: String = "HOME") -> bool:
+func candidate_bank(resident_id: String, appearance_profile: String, wardrobe: String = "HOME") -> bool:
+	# Technical QA preview: path/state validation only. NOT artistic approval.
 	if manifest.is_empty() or not VALID_WARDROBES.has(wardrobe):
 		return false
 	var actor: Dictionary = manifest.get("residents",{}).get(resident_id,{})
-	if actor.is_empty():
-		return false
-	if str(actor.get("appearance_profile","")) != appearance_profile:
-		return false
-	if not bool(actor.get("visual_bank_ready",false)):
+	if actor.is_empty() or str(actor.get("appearance_profile","")) != appearance_profile:
 		return false
 	for state in REQUIRED_PREVIEW_STATES:
 		var entry: Dictionary = _entry(resident_id,wardrobe,state)
@@ -96,6 +93,34 @@ func verified_bank(resident_id: String, appearance_profile: String, wardrobe: St
 			if not (FileAccess.file_exists("res://"+relative) or ResourceLoader.exists("res://"+relative)):
 				return false
 	return true
+
+func verified_bank(resident_id: String, appearance_profile: String, wardrobe: String = "HOME") -> bool:
+	var actor: Dictionary = manifest.get("residents",{}).get(resident_id,{})
+	return bool(actor.get("visual_bank_ready",false)) and candidate_bank(resident_id,appearance_profile,wardrobe)
+
+func preferred_wardrobe(resident_id: String, appearance_profile: String, allow_candidate: bool = false) -> String:
+	for wardrobe in ["HOME", "CITY", "SHORT"]:
+		if verified_bank(resident_id, appearance_profile, wardrobe):
+			return wardrobe
+	if allow_candidate:
+		for wardrobe in ["HOME", "CITY", "SHORT"]:
+			if candidate_bank(resident_id, appearance_profile, wardrobe):
+				return wardrobe
+	return ""
+
+func available_wardrobes(resident_id: String, appearance_profile: String) -> Array:
+	var result: Array = []
+	for wardrobe in ["HOME", "CITY", "SHORT"]:
+		if verified_bank(resident_id, appearance_profile, wardrobe):
+			result.append(wardrobe)
+	return result
+
+func preview_count(profiles: Array) -> int:
+	var count := 0
+	for profile in profiles:
+		if preferred_wardrobe(str(profile.get("id","")),str(profile.get("appearance_profile","")),true) != "":
+			count += 1
+	return count
 
 func frame_count(resident_id: String, wardrobe: String, state: String) -> int:
 	var entry: Dictionary = _entry(resident_id,wardrobe,state)
@@ -143,6 +168,6 @@ func texture_for(resident_id: String, wardrobe: String, state: String, frame_ind
 func accepted_count(profiles: Array) -> int:
 	var count := 0
 	for profile in profiles:
-		if verified_bank(str(profile.get("id","")),str(profile.get("appearance_profile",""))):
+		if preferred_wardrobe(str(profile.get("id","")),str(profile.get("appearance_profile",""))) != "":
 			count += 1
 	return count

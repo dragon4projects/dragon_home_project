@@ -40,11 +40,15 @@ func _initialize() -> void:
 	actual_entries["WALK_LEFT"]["frames"] = ["assets/residents/RES_01/wardrobes/HOME/WALK_LEFT/0001.png"]
 	loader.manifest["residents"]["RES_01"]["visual_bank_ready"] = false
 	assert(not loader.verified_bank("RES_01","HELGA_01"),"Found does not mean verified")
+	assert(loader.candidate_bank("RES_01","HELGA_01"),"Technical PASS can be previewed explicitly")
+	assert(loader.preferred_wardrobe("RES_01","HELGA_01") == "","Unapproved default stays hidden")
+	assert(loader.preferred_wardrobe("RES_01","HELGA_01",true) == "HOME")
+	assert(loader.preview_count([{"id":"RES_01","appearance_profile":"HELGA_01"}])==1)
 	for state in ["IDLE_S","WALK_LEFT","WALK_RIGHT"]:
 		var absolute: String = ProjectSettings.globalize_path(ROOT+state+"/0001.png")
 		DirAccess.remove_absolute(absolute)
 		DirAccess.remove_absolute(absolute+".import")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(TMP))
-	print("ASSET_BINDING_TEST_PASS approved=1 wrong_identity=rejected traversal=rejected")
+	print("ASSET_BINDING_TEST_PASS approved=1 candidate_preview=separate wrong_identity=rejected traversal=rejected")
 	quit(0)
 

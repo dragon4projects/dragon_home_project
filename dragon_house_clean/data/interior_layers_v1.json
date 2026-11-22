@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "_note": "Intentionally empty until room assets have verified provenance, room width and camera perspective. PRIVATE has no public interior layer.",
+  "room_types": {
+    "arrival": {"R1": {"layers": []}},
+    "corridor": {"R1": {"layers": []}},
+    "common": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "study": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "rest": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "library": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "cinema": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "music": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "workshop": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}},
+    "private": {"R1": {"layers": []}},
+    "lift": {"R1": {"layers": []}},
+    "artifact": {"R1": {"layers": []}, "R2": {"layers": []}, "R3": {"layers": []}}
+  }
+}
+

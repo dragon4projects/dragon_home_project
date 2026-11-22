@@ -1,4 +1,4 @@
-# Дом Дракона — самостоятельная реализация v0.3
+# Дом Дракона — самостоятельная реализация v0.4
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -77,3 +77,13 @@ The local agent may push new asset/manifests on the same branch; runtime develop
 \`xvfb-run ... godot --path . --script res://tests/benchmark_render.gd\`
 
 See \`docs/V03_CUTAWAY_ASSET_BINDING_QA.md\` for coverage and limitations.
+
+## v0.4 — acceptance and layered interiors
+
+- Read `docs/V04_ASSET_ACCEPTANCE_AND_INTERIORS.md` before importing the local agent's November files. The 2026-11-22 report lists 2,409 locally checked assets but remote binary publication is still blocked.
+- Local ZIP intake (dry-run by default): `python3 tools/import_nov_assets.py --source /path/to/normalized.zip --project .`. Add `--apply` after reviewing.
+- `data/interior_layers_v1.json` is the strict width-specific approved room skin manifest (currently empty). The room renderer supports 6 authored Z-depth layer roles and private-room refusal.
+- Floating resident labels are hidden to avoid overlap; overview displays roof labels. Help is collapsed.
+- [V] toggles explicit *QA candidate avatar preview* when the asset agent delivers technically PASS frames but `visual_bank_ready` is still false. These are not approved for final use.
+- `tools/make_qa_textures.py` produces original **placeholder-only** stone/floor/wood noise textures; not final artwork.
+- Tests: `python3 tests/test_import_nov_assets.py`; Godot `tests/test_interior_layers.gd` and `tests/test_asset_binding.gd`, along with existing movement/privacy/camera tests.

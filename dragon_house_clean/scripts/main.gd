@@ -5,12 +5,17 @@ const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
+const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
 var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
+var interior_skin = InteriorSkinScript.new()
+var art_layer_count := 0
 var validated_visual_banks := 0
+var qa_visual_preview := false
+var preview_visual_banks := 0
 var actor_animations: Dictionary = {}
 var camera: Camera3D
 var room_root: Node3D
@@ -69,7 +74,9 @@ func _ready() -> void:
 	world.load_or_seed()
 	life.setup(world)
 	asset_banks.initialize()
+	interior_skin.initialize()
 	validated_visual_banks = asset_banks.accepted_count(world.read_resident_profiles())
+	preview_visual_banks = asset_banks.preview_count(world.read_resident_profiles())
 	camera = Camera3D.new()
 	camera.name = "ShelterPerspectiveCamera"
 	camera.current = true
@@ -291,31 +298,48 @@ func make_room(group: Dictionary) -> void:
 	var t: String = group["type"]
 	var side_left: Dictionary = world.get_room(x_start-1,level)
 	var side_right: Dictionary = world.get_room(x_end+1,level)
-	# A single continuous floor, back and roof for 1, 2 or 3 room modules.
-	box(n,Vector3(0,-0.12,-0.07),Vector3(span*1.01,0.25,4.05),palette["floor"])
-	box(n,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
-	box(n,Vector3(0,3.12,-0.35),Vector3(span*1.01,0.22,3.55),palette["border"])
-	box(n,Vector3(0,-0.20,1.80),Vector3(span*1.01,0.22,0.18),palette["border"])
+	# Render hierarchy is spatial, not a single baked background image.
+	var background := Node3D.new()
+	background.name = "Layer_Background"
+	n.add_child(background)
+	var structure := Node3D.new()
+	structure.name = "Layer_Structure"
+	n.add_child(structure)
+	var overlay := Node3D.new()
+	overlay.name = "Layer_Foreground"
+	n.add_child(overlay)
+	var artwork := Node3D.new()
+	artwork.name = "Layer_ApprovedArt"
+	n.add_child(artwork)
+	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
+	box(structure,Vector3(0,-0.12,-0.07),Vector3(span*1.01,0.25,4.05),palette["floor"])
+	box(background,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
+	box(structure,Vector3(0,3.12,-0.35),Vector3(span*1.01,0.22,3.55),palette["border"])
+	box(overlay,Vector3(0,-0.20,1.80),Vector3(span*1.01,0.22,0.18),palette["border"])
+	art_layer_count += interior_skin.add_layers(artwork,t,int(group["width"]),span)
 	for side in [-1,1]:
 		var neighbour: Dictionary = side_left if side == -1 else side_right
 		var edge: float = float(side)*(span*0.5-0.10)
 		if neighbour.is_empty():
-			box(n,Vector3(edge,1.39,-0.22),Vector3(0.35,2.90,3.82),palette["rock_light"])
+			box(structure,Vector3(edge,1.39,-0.22),Vector3(0.35,2.90,3.82),palette["rock_light"])
+			# Partial foreground pier emphasizes depth without hiding the entire actor.
+			box(overlay,Vector3(edge,0.36,1.73),Vector3(0.40,0.70,0.28),palette["rock_light"])
 		else:
 			# Doorway frame: two pillars BEHIND the public front walking aisle.
-			box(n,Vector3(edge,2.67,-0.3),Vector3(0.26,0.74,3.18),palette["rock_light"])
-			box(n,Vector3(edge,0.56,-1.75),Vector3(0.26,1.2,0.28),palette["rock_light"])
+			box(structure,Vector3(edge,2.67,-0.3),Vector3(0.26,0.74,3.18),palette["rock_light"])
+			box(structure,Vector3(edge,0.56,-1.75),Vector3(0.26,1.2,0.28),palette["rock_light"])
 	# Merged runs: narrow arch ribs only, no full partitions or duplicate room names.
 	if int(group["width"]) > 1:
 		for i in range(int(group["width"])-1):
 			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
-			box(n,Vector3(seam_x,2.93,-0.50),
+			box(structure,Vector3(seam_x,2.93,-0.50),
 				Vector3(0.12,0.37,3.15),palette["rock_light"])
 	if t == "private":
 		# Never materialize someone else's private interior: facade only.
 		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
 		box(n,Vector3(0.82,1.33,1.2),Vector3(0.12,0.12,0.07),palette["bronze"])
-		label3(n,"ЛИЧНОЕ",Vector3(0,2.80,1.2),31,Color("#d4bdb0"))
+		var door_label := label3(n,"ЛИЧНОЕ",Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
+		door_label.name = "RoomRoofLabel"
 	else:
 		var decoration_layer := Node3D.new()
 		decoration_layer.name = "LocalFurniture"
@@ -329,9 +353,11 @@ func make_room(group: Dictionary) -> void:
 		var title: String = room_names.get(t,t)
 		if int(group["width"]) > 1:
 			title += " · %d" % int(group["width"])
-		label3(n,title,Vector3(0,2.93,0.55),29,Color("#f4d9b9"))
+		var roof_label := label3(n,title,Vector3(0,3.35,0.40),24,Color("#f4d9b9"))
+		roof_label.name = "RoomRoofLabel"
 
 func make_rooms() -> void:
+	art_layer_count = 0
 	for child in room_root.get_children():
 		child.queue_free()
 	for group in world.visual_groups():
@@ -386,12 +412,15 @@ func make_residents() -> void:
 		actor["runtime_visual_bound"] = false
 		if id != "MANJKA":
 			var profile_id: String = str(actor.get("appearance_profile",""))
-			if asset_banks.verified_bank(id,profile_id):
-				var approved_idle: Texture2D = asset_banks.texture_for(id,"HOME","IDLE_S",0)
+			var chosen_wardrobe: String = asset_banks.preferred_wardrobe(id,profile_id,qa_visual_preview)
+			if chosen_wardrobe != "":
+				var approved_idle: Texture2D = asset_banks.texture_for(id,chosen_wardrobe,"IDLE_S",0)
 				if approved_idle != null:
 					sprite.texture = approved_idle
 					sprite.pixel_size = 1.9 / maxf(1.0,float(approved_idle.get_height()))
 					actor["runtime_visual_bound"] = true
+					actor["visual_wardrobe"] = chosen_wardrobe
+					actor["visual_preview_only"] = not asset_banks.verified_bank(id,profile_id,chosen_wardrobe)
 					actor_animations[id] = {"state":"IDLE_S","frame":0,"elapsed":0.0}
 
 		sprite.position = Vector3(0, 0.83 if id == "MANJKA" else 1.05, 0)
@@ -413,7 +442,8 @@ func update_residents(delta: float = 0.0) -> void:
 		actor_sprites[id].position = Vector3(float(actor.get("x", 0.0)), y, float(actor.get("z", 0.3)))
 		if actor.get("runtime_visual_bound",false):
 			animate_verified_actor(id,actor,delta)
-		actor_labels[id].visible = zoom_current < 27 or id == follow_id
+		# Names live in the status panel, never stacked over actors or furniture.
+		actor_labels[id].visible = false
 		if id == follow_id:
 			actor_labels[id].text = actor["name"] + " • " + life.status(actor)
 
@@ -435,7 +465,8 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 			"TALK_PAIR": requested = "TALK"
 			"GET_COFFEE": requested = "DRINK"
 			"WATCH_FIRE", "VIEW_ART": requested = "VIEW"
-	if asset_banks.frame_count(id,"HOME",requested) < 1:
+	var wardrobe: String = str(actor.get("visual_wardrobe","HOME"))
+	if asset_banks.frame_count(id,wardrobe,requested) < 1:
 		requested = "IDLE_S"
 	var state: Dictionary = actor_animations.get(id,{"state":"","frame":0,"elapsed":0.0})
 	if state["state"] != requested:
@@ -444,13 +475,13 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 		state["frame"] = 0
 	else:
 		state["elapsed"] = float(state["elapsed"])+minf(delta,0.1)
-		var period: float = 1.0 / float(asset_banks.fps(id,"HOME",requested))
+		var period: float = 1.0 / float(asset_banks.fps(id,wardrobe,requested))
 		if float(state["elapsed"]) >= period:
-			state["frame"] = (int(state["frame"])+int(float(state["elapsed"])/period)) % maxi(1,asset_banks.frame_count(id,"HOME",requested))
+			state["frame"] = (int(state["frame"])+int(float(state["elapsed"])/period)) % maxi(1,asset_banks.frame_count(id,wardrobe,requested))
 			state["elapsed"] = fmod(float(state["elapsed"]),period)
 	actor_animations[id] = state
 	var sprite: Sprite3D = actor_sprites[id].get_node("Body")
-	var texture: Texture2D = asset_banks.texture_for(id,"HOME",requested,int(state["frame"]))
+	var texture: Texture2D = asset_banks.texture_for(id,wardrobe,requested,int(state["frame"]))
 	if texture != null and sprite.texture != texture:
 		sprite.texture = texture
 		sprite.pixel_size = 1.9 / maxf(1.0,float(texture.get_height()))
@@ -520,6 +551,11 @@ func build_interface() -> void:
 	hud_help = Label.new()
 	hud_help.text = "Колесо: масштаб | ПКМ: перемещение\nЛКМ: выбрать | Q/E: поворот\nF: следить | B: строить | Esc: весь дом"
 	col.add_child(hud_help)
+	hud_help.visible = false
+	var help_button := Button.new()
+	help_button.text = "Управление [?]"
+	help_button.pressed.connect(func(): hud_help.visible = not hud_help.visible)
+	col.add_child(help_button)
 	notice = Label.new()
 	notice.position = Vector2(18, 690)
 	notice.add_theme_color_override("font_color", Color("#eac59d"))
@@ -540,6 +576,13 @@ func _import_media(path: String) -> void:
 	else:
 		notice.text = "Ошибка каталога: нужен JSON с books/films/tracks (id, title)"
 	update_hud()
+
+func toggle_qa_art_preview() -> void:
+	qa_visual_preview = not qa_visual_preview
+	make_residents()
+	update_hud()
+	if notice != null:
+		notice.text = "Визуальные банки: QA-ПРОСМОТР" if qa_visual_preview else "Визуальные банки: только утверждённые"
 
 func toggle_media_panel() -> void:
 	if media_panel.visible:
@@ -674,7 +717,9 @@ func update_hud() -> void:
 	var tracked: Dictionary = world.residents.get(follow_id, {})
 	hud_status.text = "Режим: %s | комнат: %d | видимых: %d / 24" % [
 		current_mode, world.rooms.size(), actor_sprites.size()-1]
-	hud_status.text += "\nПроверенных банков: %d / 24" % validated_visual_banks
+	hud_status.text += "\nУтверждено: %d / 24 | технически: %d" % [validated_visual_banks,preview_visual_banks]
+	if qa_visual_preview:
+		hud_status.text += "\nВИД: QA-ПРОСМОТР (не утверждено)"
 	if not tracked.is_empty():
 		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), life.status(tracked)]
 	if current_mode == "ROOM" and selected_room != "":
@@ -732,6 +777,7 @@ func _input(event: InputEvent) -> void:
 			KEY_E: yaw = clampf(yaw + 0.10, -0.34, 0.34)
 			KEY_J: toggle_journal()
 			KEY_M: toggle_media_panel()
+			KEY_V: toggle_qa_art_preview()
 			KEY_1: set_mode("HOUSE")
 			KEY_2: set_mode("ROOM")
 
@@ -815,6 +861,9 @@ func update_render_lod() -> void:
 		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
 		if furniture != null:
 			furniture.visible = detail_visible
+		var roof_label: Label3D = group_node.get_node_or_null("RoomRoofLabel")
+		if roof_label != null:
+			roof_label.visible = zoom_current >= 35.0 and current_mode != "FOLLOW"
 	var micro_detail_visible: bool = zoom_current < 31.0
 	for node in get_tree().get_nodes_in_group("low_end_micro_detail"):
 		if node is Node3D:
