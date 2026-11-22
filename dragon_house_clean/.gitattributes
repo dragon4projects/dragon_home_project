@@ -27,3 +27,8 @@
 *.tiff filter=lfs diff=lfs merge=lfs -text
 *.webp filter=lfs diff=lfs merge=lfs -text
 assets/manifests/dragon_proxy_components.json -text
+# Keep pre-existing QA binaries in their original Git storage.
+assets/textures/basalt.jpg !filter !diff !merge !text
+assets/textures/floor.jpg !filter !diff !merge !text
+assets/textures/wood.jpg !filter !diff !merge !text
+tests/fixtures/test_video.ogv !filter !diff !merge !text
