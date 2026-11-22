@@ -51,6 +51,10 @@ var save_timer := 0.0
 var hud_title: Label
 var hud_status: Label
 var hud_help: Label
+var hud_main_body: VBoxContainer
+var hud_toggle_button: Button
+var hud_brief: Label
+var hud_expanded := false
 var media_label: Label
 var notice: Label
 var menu: OptionButton
@@ -676,7 +680,7 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 			"SLEEP": requested = "SLEEP"
 			"TALK_PAIR": requested = "TALK"
 			"GET_COFFEE": requested = "DRINK"
-			"WATCH_FIRE", "VIEW_ART": requested = "VIEW"
+			"WATCH_FIRE", "VIEW_ART", "BROWSE_BOOK_CATALOG", "BROWSE_FILMS", "BROWSE_AUDIO": requested = "VIEW"
 	var wardrobe: String = str(actor.get("visual_wardrobe","HOME"))
 	if asset_banks.frame_count(id,wardrobe,requested) < 1:
 		requested = "IDLE_S"
@@ -714,15 +718,27 @@ func build_interface() -> void:
 	root.add_child(top)
 	var col := VBoxContainer.new()
 	top.add_child(col)
+	var header := HBoxContainer.new()
+	col.add_child(header)
 	hud_title = Label.new()
-	hud_title.text = "ДОМ ДРАКОНА  /  2.5D"
-	col.add_child(hud_title)
+	hud_title.text = "ДОМ ДРАКОНА"
+	header.add_child(hud_title)
+	hud_toggle_button = Button.new()
+	hud_toggle_button.text = "☰ Меню"
+	hud_toggle_button.pressed.connect(toggle_hud)
+	header.add_child(hud_toggle_button)
+	hud_brief = Label.new()
+	hud_brief.text = "Обзор"
+	col.add_child(hud_brief)
+	hud_main_body = VBoxContainer.new()
+	hud_main_body.visible = hud_expanded
+	col.add_child(hud_main_body)
 	hud_status = Label.new()
-	col.add_child(hud_status)
+	hud_main_body.add_child(hud_status)
 	media_label = Label.new()
-	col.add_child(media_label)
+	hud_main_body.add_child(media_label)
 	var controls := HBoxContainer.new()
-	col.add_child(controls)
+	hud_main_body.add_child(controls)
 	for item in ["Дом", "Комната", "Манька", "Строить"]:
 		var button := Button.new()
 		button.text = item
@@ -738,11 +754,11 @@ func build_interface() -> void:
 		menu.set_item_metadata(menu.item_count - 1, t)
 	menu.select(1)
 	menu.item_selected.connect(func(i): build_type = str(menu.get_item_metadata(i)))
-	col.add_child(menu)
+	hud_main_body.add_child(menu)
 	var media_button := Button.new()
 	media_button.text = "Открыть библиотеку / медиа [M]"
 	media_button.pressed.connect(toggle_media_panel)
-	col.add_child(media_button)
+	hud_main_body.add_child(media_button)
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
 	media_panel.bind(world,life.media_runtime)
@@ -752,15 +768,15 @@ func build_interface() -> void:
 	var gallery_button := Button.new()
 	gallery_button.text = "Галерея 24 банков [K]"
 	gallery_button.pressed.connect(toggle_bank_gallery)
-	col.add_child(gallery_button)
+	hud_main_body.add_child(gallery_button)
 	var qa_button := Button.new()
 	qa_button.text = "QA-спрайты [V]"
 	qa_button.pressed.connect(toggle_qa_art_preview)
-	col.add_child(qa_button)
+	hud_main_body.add_child(qa_button)
 	var journal_button := Button.new()
 	journal_button.text = "Журнал дома [J]"
 	journal_button.pressed.connect(toggle_journal)
-	col.add_child(journal_button)
+	hud_main_body.add_child(journal_button)
 	journal_panel = PanelContainer.new()
 	journal_panel.position = Vector2(925, 15)
 	journal_panel.custom_minimum_size = Vector2(335, 240)
@@ -773,15 +789,15 @@ func build_interface() -> void:
 	var import_button := Button.new()
 	import_button.text = "Импорт книг / фильмов / музыки (JSON)"
 	import_button.pressed.connect(func(): catalog_picker.popup_centered_ratio(0.65))
-	col.add_child(import_button)
+	hud_main_body.add_child(import_button)
 	hud_help = Label.new()
 	hud_help.text = "Колесо: масштаб | ПКМ: перемещение\nЛКМ: выбрать | Q/E: поворот\nF: следить | B: строить | Esc: весь дом\nV: QA-спрайты | M: медиа | J: журнал"
-	col.add_child(hud_help)
+	hud_main_body.add_child(hud_help)
 	hud_help.visible = false
 	var help_button := Button.new()
 	help_button.text = "Управление [?]"
 	help_button.pressed.connect(func(): hud_help.visible = not hud_help.visible)
-	col.add_child(help_button)
+	hud_main_body.add_child(help_button)
 	notice = Label.new()
 	notice.position = Vector2(18, 690)
 	notice.add_theme_color_override("font_color", Color("#eac59d"))
@@ -802,6 +818,13 @@ func _import_media(path: String) -> void:
 	else:
 		notice.text = "Ошибка каталога: нужен JSON с books/films/tracks (id, title)"
 	update_hud()
+
+func toggle_hud() -> void:
+	hud_expanded = not hud_expanded
+	if hud_main_body != null:
+		hud_main_body.visible = hud_expanded
+	if hud_toggle_button != null:
+		hud_toggle_button.text = "Скрыть ▲" if hud_expanded else "☰ Меню"
 
 func toggle_bank_gallery() -> void:
 	if bank_gallery == null:
@@ -951,6 +974,9 @@ func update_hud() -> void:
 	var tracked: Dictionary = world.residents.get(follow_id, {})
 	hud_status.text = "Режим: %s | комнат: %d | видимых: %d / 24" % [
 		current_mode, world.rooms.size(), actor_sprites.size()-1]
+	if hud_brief != null:
+		hud_brief.text = "%s · %d комнат · %d/24" % [
+			current_mode,world.rooms.size(),maxi(0,actor_sprites.size()-1)]
 	hud_status.text += "\nУтверждено: %d / 24 | технически: %d" % [validated_visual_banks,preview_visual_banks]
 	if qa_visual_preview:
 		hud_status.text += "\nВИД: QA-ПРОСМОТР (не утверждено)"
@@ -1036,6 +1062,7 @@ func _input(event: InputEvent) -> void:
 			KEY_M: toggle_media_panel()
 			KEY_V: toggle_qa_art_preview()
 			KEY_K: toggle_bank_gallery()
+			KEY_TAB: toggle_hud()
 			KEY_1: set_mode("HOUSE")
 			KEY_2: set_mode("ROOM")
 

@@ -1,4 +1,4 @@
-# Дом Дракона — самостоятельная реализация v0.7
+# Дом Дракона — самостоятельная реализация v0.8
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -96,3 +96,6 @@ See docs/V06_CUTAWAY_LOD_CAMERA.md. Mouse wheel zooms around cursor, preserving 
 
 ## v0.7 physical station reservations
 See docs/V07_STATIONS_AND_RESIDENT_LIFE.md. The autonomous scheduler reserves unique public-room activity stations, two adjacent positions for conversations, avoids overfull rooms and reconciles invalid claims after save/load. Common R3 can host 30 distinct gathering positions (not 30 modeled chairs). Visual assets and private-room consent remain unchanged.
+
+## v0.8 truthful media browsing and compact HUD
+See docs/V08_MEDIA_BROWSING_COMPACT_HUD.md. The catalog browser is a distinct action from borrowing/reading/watching/listening. Cinema/audio library listings can be visited even without a supported playback file, without fake playback or media consumption. The default left HUD collapses to a small header; expand with Tab or Menu. Media UI shows physical-book unavailability truthfully. Two new Godot tests cover both behaviors.

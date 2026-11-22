@@ -111,11 +111,12 @@ func _on_selected(index: int) -> void:
 	var item: Dictionary = media_runtime._lookup(category,item_ids[index])
 	if item.is_empty():
 		return
-	if category == "books" and not bool(item.get("physical", true)):
-		details.text += "\nКаталог: метаданные, физический экземпляр не подтверждён"
 	var source := str(item.get("source",""))
-	var artist := str(item.get("artist",item.get("author","")))
+	var raw_artist = item.get("artist",item.get("author",""))
+	var artist: String = "" if raw_artist == null else str(raw_artist)
 	details.text = str(item.get("title","")) + (" — " + artist if artist != "" else "")
+	if category == "books" and not bool(item.get("physical", true)):
+		details.text += "\nТолько каталог: физический экземпляр не подтверждён"
 	var path: String = str(item.get("file_path",""))
 	if path != "":
 		details.text += "\nФайл: " + path.get_file()

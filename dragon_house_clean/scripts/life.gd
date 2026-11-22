@@ -17,6 +17,8 @@ var last_cleanup_wall_time := 0
 const HUMAN_STATUS := {
 	"REST": "отдыхает", "SLEEP": "спит",
 	"WORK_CREATE": "занимается делами", "READ_BOOK": "читает книгу",
+	"BROWSE_BOOK_CATALOG": "просматривает книжный каталог",
+	"BROWSE_FILMS": "выбирает фильм", "BROWSE_AUDIO": "выбирает музыку",
 	"GET_COFFEE": "готовит кофе", "WATCH_FIRE": "смотрит на огонь",
 	"TALK_PAIR": "разговаривает", "LISTEN_MUSIC": "слушает музыку",
 	"WATCH_FILM": "смотрит фильм", "VIEW_ART": "рассматривает артефакты",
@@ -25,6 +27,8 @@ const HUMAN_STATUS := {
 const TRAVEL_STATUS := {
 	"REST": "идёт отдыхать", "SLEEP": "идёт спать",
 	"WORK_CREATE": "идёт работать", "READ_BOOK": "идёт читать",
+	"BROWSE_BOOK_CATALOG": "идёт к книжному каталогу",
+	"BROWSE_FILMS": "идёт выбирать фильм", "BROWSE_AUDIO": "идёт к аудиотеке",
 	"GET_COFFEE": "идёт за кофе", "WATCH_FIRE": "идёт к очагу",
 	"TALK_PAIR": "идёт на встречу", "LISTEN_MUSIC": "идёт слушать музыку",
 	"WATCH_FILM": "идёт смотреть фильм", "VIEW_ART": "идёт к артефактам",
@@ -40,6 +44,8 @@ func status(actor: Dictionary) -> String:
 const INTENTS := {
 	"REST": ["rest", "private"], "SLEEP": ["rest", "private"],
 	"WORK_CREATE": ["study", "workshop"], "READ_BOOK": ["library", "rest"],
+	"BROWSE_BOOK_CATALOG": ["library"],
+	"BROWSE_FILMS": ["cinema"], "BROWSE_AUDIO": ["music"],
 	"GET_COFFEE": ["common"], "WATCH_FIRE": ["common"],
 	"TALK_PAIR": ["common", "rest"], "LISTEN_MUSIC": ["music"],
 	"WATCH_FILM": ["cinema"], "VIEW_ART": ["artifact"],
@@ -80,6 +86,9 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		"WATCH_FIRE": 0.4 + (0.35 if phase == "evening" else 0.0),
 		"TALK_PAIR": 0.2 + social * 1.0,
 		"READ_BOOK": 0.3 + float(traits.get("reading", 0.3)) + curiosity * 0.3,
+		"BROWSE_BOOK_CATALOG": 0.28 + float(traits.get("reading",0.3))*0.65 + curiosity*0.40,
+		"BROWSE_FILMS": 0.25 + curiosity*0.35,
+		"BROWSE_AUDIO": 0.23 + float(traits.get("music",0.3))*0.6 + curiosity*0.24,
 		"LISTEN_MUSIC": 0.2 + float(traits.get("music", 0.3)),
 		"WATCH_FILM": 0.3 + (0.35 if phase == "evening" else 0.0),
 		"VIEW_ART": 0.2 + curiosity * 0.8,
@@ -97,6 +106,12 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		return {"REST": 0.2 + rest, "PURPOSEFUL_EXPLORE": 1.0 + curiosity}
 	if media_runtime.available_books().is_empty():
 		scores.erase("READ_BOOK")
+	if world.media.get("books",[]).is_empty():
+		scores.erase("BROWSE_BOOK_CATALOG")
+	if world.media.get("films",[]).is_empty():
+		scores.erase("BROWSE_FILMS")
+	if world.media.get("tracks",[]).is_empty():
+		scores.erase("BROWSE_AUDIO")
 	if media_runtime.playable("films").is_empty():
 		scores.erase("WATCH_FILM")
 	if media_runtime.playable("tracks").is_empty():
@@ -163,10 +178,16 @@ func _record(message: String) -> void:
 	while log.size() > 60:
 		log.pop_front()
 
+func end_catalog_browse(actor: Dictionary) -> void:
+	# Looking up a catalog entry is not borrowing, reading, watching or playing it.
+	actor.erase("browsing_item_id")
+	actor.erase("browsing_category")
+
 func _assign(actor: Dictionary, task: Dictionary) -> void:
 	# Previous reservation ends before a new activity; actor state owns the
 	# claim, making occupancy recoverable from JSON snapshots.
 	stations.release(actor)
+	end_catalog_browse(actor)
 	if task.is_empty():
 		actor["until"] = clock + 15.0
 		return
@@ -211,6 +232,24 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	if actor_waypoints.is_empty():
 		actor["until"] = clock + 10.0
 		return
+	# Catalog browsing is truthful even without playable audio/video or a
+	# physical book. It holds only a reference ID, never an imaginary object.
+	var browse_category := ""
+	var browse_id := ""
+	match intent:
+		"BROWSE_BOOK_CATALOG": browse_category = "books"
+		"BROWSE_FILMS": browse_category = "films"
+		"BROWSE_AUDIO": browse_category = "tracks"
+	if browse_category != "":
+		var entries: Array = world.media.get(browse_category,[])
+		if entries.is_empty():
+			actor["until"] = clock + 12.0
+			return
+		var selected: Dictionary = entries[rng.randi_range(0,entries.size()-1)]
+		browse_id = str(selected.get("id",""))
+		if browse_id == "":
+			actor["until"] = clock + 12.0
+			return
 	# Acquiring an object comes only after a destination and station are valid.
 	if intent == "READ_BOOK":
 		var books: Array = media_runtime.available_books()
@@ -238,6 +277,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		_record("%s и %s — договорились встретиться для разговора" %
 			[actor.get("name",""),partner.get("name","")])
 	stations.commit_claim(actor,actor_claim)
+	if browse_category != "":
+		actor["browsing_category"] = browse_category
+		actor["browsing_item_id"] = browse_id
 	actor["intent"] = intent
 	actor["waypoints"] = actor_waypoints
 	actor["waypoint_index"] = 0
@@ -307,7 +349,8 @@ func tick(delta: float) -> void:
 		if float(actor.get("until", 0.0)) > clock:
 			if actor["intent"] in ["REST", "SLEEP"]:
 				needs["rest"] = maxf(0.0, float(needs["rest"]) - delta * 0.004)
-			elif actor["intent"] == "PURPOSEFUL_EXPLORE":
+			elif actor["intent"] in ["PURPOSEFUL_EXPLORE","BROWSE_BOOK_CATALOG",
+				"BROWSE_FILMS","BROWSE_AUDIO"]:
 				needs["curiosity"] = maxf(0.0, float(needs["curiosity"]) - delta * 0.002)
 			continue
 		if jobs >= max_jobs_per_tick:
