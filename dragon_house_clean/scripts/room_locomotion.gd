@@ -80,6 +80,10 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 	var anchor: Vector2 = station(intent,str(actor.get("id","")))
 	if override_station is Vector2:
 		anchor = override_station
+		# Walk along the public aisle to the correct sofa/work position first,
+		# instead of taking a diagonal shortcut through other furniture.
+		if anchor.y < AISLE_Z - 0.45:
+			travel.append(waypoint(x+anchor.x,y,AISLE_Z,previous["id"],"station_approach"))
 	travel.append(waypoint(x+anchor.x,y,anchor.y,previous["id"],"station"))
 	return travel
 

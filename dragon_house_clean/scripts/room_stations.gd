@@ -16,23 +16,82 @@ func capacity(room: Dictionary) -> int:
 		return 0
 	return int(CAPACITY_BY_TYPE.get(str(room.get("type","")),2))
 
+func _spot(x: float, z: float, kind: String = "standing", object_id: String = "") -> Dictionary:
+	return {"offset":Vector2(x,z),"kind":kind,"furniture_id":object_id}
+
 func layout(room: Dictionary) -> Array:
-	# Stations are true local XYZ offsets (x,z) inside one module, not UI dots.
-	# Common R3 = 3 modules * 10 physical gathering positions = 30.
-	var count := capacity(room)
-	var columns := 5 if count >= 10 else 4 if count >= 8 else 3 if count >= 6 else 2
-	var rows := int(ceil(float(count)/float(columns)))
-	var x_span: float = minf(3.72, float(columns-1)*0.87)
-	var result: Array = []
-	for row in range(rows):
-		var z: float = BACK_Z if rows == 1 else lerpf(BACK_Z,FRONT_Z,float(row)/float(rows-1))
-		for column in range(columns):
-			if result.size() >= count:
+	# Every seat corresponds to actual procedural furniture in main.gd.
+	# The remaining stations are standing/ground-gathering positions.
+	# R3 Common: 30 unique positions, but only 4 actual sofa seats.
+	# Two Z rows are staggered so actors do not share identical silhouettes.
+	var count: int = capacity(room)
+	var kind: String = str(room.get("type",""))
+	var cell_x: int = int(room.get("x",0))
+	var positions: Array = []
+	if kind == "common":
+		if cell_x == -1:
+			positions.append(_spot(-0.56,-0.57,"seat","SOFA_COMMON_MIDDLE"))
+			positions.append(_spot(0.56,-0.57,"seat","SOFA_COMMON_MIDDLE"))
+		elif cell_x == 0:
+			positions.append(_spot(-0.53,-0.43,"seat","SOFA_COMMON_RIGHT"))
+			positions.append(_spot(0.53,-0.43,"seat","SOFA_COMMON_RIGHT"))
+		elif cell_x == -2:
+			# Skins near the hearth, not an imaginary third sofa.
+			positions.append(_spot(-1.30,-0.32,"floor_rest","FIREPLACE_SKINS"))
+			positions.append(_spot(1.28,-0.32,"floor_rest","FIREPLACE_SKINS"))
+	elif kind == "rest":
+		positions.append(_spot(-0.85,-0.39,"seat","SOFA_REST"))
+		positions.append(_spot(0.27,-0.39,"seat","SOFA_REST"))
+	elif kind == "cinema":
+		positions.append(_spot(-0.58,0.40,"seat","SOFA_CINEMA"))
+		positions.append(_spot(0.58,0.40,"seat","SOFA_CINEMA"))
+	elif kind == "study":
+		positions.append(_spot(-0.52,-0.38,"work","DESK_STUDY"))
+	elif kind == "library":
+		positions.append(_spot(-0.42,0.37,"work","TABLE_LIBRARY"))
+		positions.append(_spot(0.42,0.37,"work","TABLE_LIBRARY"))
+	elif kind == "workshop":
+		positions.append(_spot(-0.44,-0.65,"work","BENCH_WORKSHOP"))
+		positions.append(_spot(0.44,-0.65,"work","BENCH_WORKSHOP"))
+	# Remaining stations are not seats; avoid putting their feet on cushions.
+	# Back/front stagger: no duplicate 2D projected X positions between rows.
+	var candidates: Array = []
+	for z in [1.24,0.27,-1.30]:
+		var shift := 0.0 if z == 1.24 else 0.30 if z == 0.27 else -0.18
+		for x in [-1.75,-0.87,0.0,0.87,1.75]:
+			var xx: float = clampf(float(x)+shift,-1.87,1.87)
+			candidates.append(_spot(xx,float(z)))
+	for place in candidates:
+		if positions.size()>=count:
+			break
+		var pos: Vector2=place["offset"]
+		var conflict := false
+		for existing in positions:
+			var old: Vector2=existing["offset"]
+			if pos.distance_to(old)<0.73:
+				conflict=true
 				break
-			var x: float = -x_span*0.5+float(column)*(x_span/maxf(1.0,float(columns-1)))
-			assert(absf(x) < FLOOR_X_LIMIT)
-			result.append(Vector2(x,z))
-	return result
+		if not conflict:
+			positions.append(place)
+	assert(positions.size()==count, "A room must have its declared distinct spots")
+	for place in positions:
+		assert(absf(float(place["offset"].x))<FLOOR_X_LIMIT)
+	return positions
+
+func _intent_prefers_station(intent: String, kind: String) -> bool:
+	match intent:
+		"REST","SLEEP":
+			return kind in ["seat","floor_rest"]
+		"READ_BOOK":
+			return kind in ["seat","work"]
+		"WORK_CREATE","BROWSE_BOOK_CATALOG":
+			return kind=="work"
+		"WATCH_FILM":
+			return kind=="seat"
+		"TALK_PAIR":
+			return kind=="seat"
+		_:
+			return kind=="standing"
 
 func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
 	var used: Dictionary = {}
@@ -53,12 +112,14 @@ func available_count(world, room: Dictionary) -> int:
 		return 0
 	return maxi(0,capacity(room)-used_slots(world,str(room["id"])).size())
 
-func _claim(room: Dictionary, index: int, position: Vector2) -> Dictionary:
-	return {"room_id":str(room["id"]),"slot":index,"offset":position}
+func _claim(room: Dictionary, index: int, spot: Dictionary) -> Dictionary:
+	return {"room_id":str(room["id"]),"slot":index,
+		"offset":spot["offset"],"kind":str(spot.get("kind","standing")),
+		"furniture_id":str(spot.get("furniture_id",""))}
 
-func single(world, actor: Dictionary, room: Dictionary) -> Dictionary:
+func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> Dictionary:
 	var id: String = str(actor.get("id",""))
-	if room.is_empty() or not world.is_accessible(room,id) or capacity(room)==0:
+	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,id) or capacity(room)==0:
 		return {}
 	var used: Dictionary = used_slots(world,str(room["id"]),[id])
 	var points: Array = layout(room)
@@ -70,42 +131,57 @@ func single(world, actor: Dictionary, room: Dictionary) -> Dictionary:
 	var start: int = 0
 	for ch in id:
 		start = posmod(start*31+ch.unicode_at(0),997)
-	for step in range(points.size()):
-		var idx: int = (start+step)%points.size()
-		if not used.has(idx):
-			return _claim(room,idx,points[idx])
+	# Prefer a relevant *actual* seat/work surface, then use the remaining
+	# physical gathering spots. Never pretend the fallback spot is a sofa.
+	for preferred in [true,false]:
+		for step in range(points.size()):
+			var idx: int = (start+step)%points.size()
+			if used.has(idx):
+				continue
+			var spot: Dictionary=points[idx]
+			if _intent_prefers_station(intent,str(spot.get("kind","standing")))==preferred:
+				return _claim(room,idx,spot)
 	return {}
+
+func _paired_spots(points: Array, used: Dictionary, seats_only: bool = false) -> Array:
+	for left in range(points.size()-1):
+		if used.has(left):
+			continue
+		for right in range(left+1,points.size()):
+			if used.has(right):
+				continue
+			var a: Dictionary=points[left]
+			var b: Dictionary=points[right]
+			if seats_only and (a.get("kind","")!="seat" or b.get("kind","")!="seat"):
+				continue
+			var one: Vector2=a["offset"]
+			var two: Vector2=b["offset"]
+			if absf(one.y-two.y)>0.04:
+				continue
+			var dx:float=absf(one.x-two.x)
+			if dx>=0.72 and dx<=1.35:
+				return [left,right]
+	return []
 
 func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Dictionary:
-	if room.is_empty() or not world.is_accessible(room,str(actor.get("id",""))) or not world.is_accessible(room,str(partner.get("id",""))):
+	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,str(actor.get("id",""))) or not world.is_accessible(room,str(partner.get("id",""))):
 		return {}
-	var used: Dictionary = used_slots(world,str(room["id"]),[str(actor["id"]),str(partner["id"])])
-	var points: Array = layout(room)
-	var columns := 5 if points.size() >= 10 else 4 if points.size() >= 8 else 3 if points.size() >= 6 else 2
-	# Pair must be adjacent on the same depth row; never across the aisle.
-	for left in range(points.size()-1):
-		var right := left+1
-		if int(left/columns) != int(right/columns) or used.has(left) or used.has(right):
-			continue
-		if absf(points[right].x-points[left].x) > 1.30:
-			continue
-		return {"actor":_claim(room,left,points[left]),
-			"partner":_claim(room,right,points[right])}
-	return {}
+	var used: Dictionary=used_slots(world,str(room["id"]),[str(actor["id"]),str(partner["id"])])
+	var points: Array=layout(room)
+	var indexes: Array=_paired_spots(points,used,true)
+	if indexes.is_empty():
+		indexes=_paired_spots(points,used,false)
+	if indexes.size()!=2:
+		return {}
+	return {"actor":_claim(room,int(indexes[0]),points[int(indexes[0])]),
+		"partner":_claim(room,int(indexes[1]),points[int(indexes[1])])}
 
 func can_reserve(world, room: Dictionary, pair_needed: bool = false) -> bool:
-	if available_count(world,room) <= (1 if pair_needed else 0):
+	if available_count(world,room)<(2 if pair_needed else 1):
 		return false
 	if not pair_needed:
 		return true
-	# At least one adjacent free pair must exist.
-	var used: Dictionary = used_slots(world,str(room["id"]))
-	var points: Array = layout(room)
-	var cols: int = 5 if points.size() >= 10 else 4 if points.size() >= 8 else 3 if points.size() >= 6 else 2
-	for left in range(points.size()-1):
-		if int(left/cols) == int((left+1)/cols) and not used.has(left) and not used.has(left+1):
-			return true
-	return false
+	return not _paired_spots(layout(room),used_slots(world,str(room["id"]))).is_empty()
 
 func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 	if claim.is_empty():
@@ -114,11 +190,15 @@ func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 	actor["station_slot"] = claim["slot"]
 	var offset: Vector2 = claim["offset"]
 	actor["station_point"] = [offset.x,offset.y]
+	actor["station_kind"] = str(claim.get("kind","standing"))
+	actor["station_furniture_id"] = str(claim.get("furniture_id",""))
 
 func release(actor: Dictionary) -> void:
 	actor.erase("station_room_id")
 	actor.erase("station_slot")
 	actor.erase("station_point")
+	actor.erase("station_kind")
+	actor.erase("station_furniture_id")
 
 func reconcile(world) -> int:
 	# Restore station invariants after loading a snapshot, without new life.
@@ -150,4 +230,64 @@ func reconcile(world) -> int:
 			fixed += 1
 		else:
 			claimed[key] = true
+			# Restore authored furniture metadata after a v0.7 snapshot.
+			var spot: Dictionary = layout(room)[slot]
+			actor["station_kind"] = str(spot.get("kind","standing"))
+			actor["station_furniture_id"] = str(spot.get("furniture_id",""))
+			var offset: Vector2 = spot["offset"]
+			actor["station_point"] = [offset.x,offset.y]
 	return fixed
+
+func migrate_legacy_positions(world) -> int:
+	# v0.6 and older snapshots have positions and paths but no reserved seats.
+	# Reconcile immediately at load, before the first render, rather than
+	# waiting for the next autonomous task and showing stacked actors for 40s.
+	var changed := 0
+	var sorted_ids: Array = world.residents.keys()
+	sorted_ids.sort()
+	for id in sorted_ids:
+		var actor: Dictionary=world.residents[id]
+		if not bool(actor.get("active",false)) or actor.has("station_slot"):
+			continue
+		var phase: String=str(actor.get("phase","idle"))
+		if not phase in ["travel","perform"]:
+			continue
+		var room: Dictionary={}
+		var waypoint: Dictionary={}
+		if phase=="travel":
+			var route: Array=actor.get("waypoints",[])
+			if route.is_empty() or typeof(route[-1])!=TYPE_DICTIONARY:
+				continue
+			waypoint = route[-1]
+			if str(waypoint.get("kind",""))!="station":
+				continue
+			room=world.room_by_id(str(waypoint.get("room_id","")))
+		else:
+			room=world.room_by_id(str(actor.get("room_id","")))
+		if room.is_empty() or room.get("privacy","public")!="public":
+			continue
+		var claim: Dictionary=single(world,actor,room,str(actor.get("intent","")))
+		if claim.is_empty():
+			# An overfilled legacy room has no vacant station. Pause/replan,
+			# rather than leaving two people at the same destination.
+			actor["phase"]="idle"
+			actor["until"]=world.sim_clock
+			actor["waypoints"]=[]
+			actor["waypoint_index"]=0
+			changed+=1
+			continue
+		commit_claim(actor,claim)
+		var offset: Vector2=claim["offset"]
+		if phase=="travel":
+			var points: Array=actor["waypoints"]
+			var last: Dictionary=points[-1]
+			last["position"]=[float(room["x"])*world.MODULE_W+offset.x,
+				float(room["level"])*world.FLOOR_H,offset.y]
+			points[points.size()-1]=last
+			actor["waypoints"]=points
+		else:
+			actor["x"]=float(room["x"])*world.MODULE_W+offset.x
+			actor["z"]=offset.y
+			actor["visual_y"]=float(room["level"])*world.FLOOR_H
+		changed+=1
+	return changed

@@ -24,7 +24,7 @@ func _initialize() -> void:
 		assert(not claim.is_empty(),"30 positions must fit in R3 Common")
 		station.commit_claim(actor,claim)
 		var offset: Vector2=claim["offset"]
-		assert(absf(offset.x)<2.05 and offset.y>-0.90 and offset.y<0.9)
+		assert(absf(offset.x)<2.05 and offset.y>-1.40 and offset.y<1.40)
 		var absolute: String="%.3f:%0.3f:%s" % [
 			float(destination["x"])*w.MODULE_W+offset.x,offset.y,str(destination["level"])]
 		assert(not positions.has(absolute),"All 30 seats must be geometrically unique")

@@ -382,6 +382,40 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 				box(module,Vector3(side*1.43,2.43,-1.33),
 					Vector3(0.15,0.14,0.09),Color("#b17c55"),true)
 
+func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
+	# Shallow 3D, not a newly baked fake perspective image. These thin
+	# structural features preserve the exact contracted Z positions of the
+	# forthcoming photorealistic room sprites from Teea.
+	# Recesses, floor depth marks, and a *low* front edge produce an observable
+	# interior volume rather than a single wall/furniture cardboard plane.
+	var kind: String = str(group["type"])
+	if kind in ["private","lift"]:
+		return
+	var middle: float=(float(group["x_start"])+float(group["x_end"]))*0.5
+	for cell in group["cells"]:
+		var module:=Node3D.new()
+		module.name="Depth_"+str(cell["id"])
+		module.position.x=(float(cell["x"])-middle)*W
+		parent.add_child(module)
+		# Underlit walk path is recessed relative to both front and back.
+		# Low thin lines suggest real floor plane perspective without painting
+		# stripes across the actors' feet.
+		for z in [-1.19,0.24,1.25]:
+			box(module,Vector3(0,-0.004,float(z)),
+				Vector3(3.82,0.018,0.023),Color("#3f3637"))
+		# Front floor reveal with continuous floor lip and two small stone
+		# returns that stop below knee level.
+		box(module,Vector3(0,-0.25,1.63),
+			Vector3(4.42,0.13,0.28),palette["rock_light"])
+		for side in [-1.0,1.0]:
+			box(module,Vector3(side*2.02,0.24,1.59),
+				Vector3(0.16,0.49,0.35),palette["rock_light"])
+		# Lower panel in a shadowed rear alcove, physically behind furniture.
+		box(module,Vector3(0,1.47,-1.87),
+			Vector3(3.45,2.24,0.09),Color("#393234"))
+		box(module,Vector3(0,0.34,-1.74),
+			Vector3(3.49,0.18,0.18),palette["wood"])
+
 func add_room_overview_cues(parent: Node3D, group: Dictionary) -> void:
 	# Cheap silhouettes carry room identity when rich furniture is not instantiated.
 	# Never show the contents of private rooms; those only have a public facade.
@@ -482,6 +516,11 @@ func make_room(group: Dictionary) -> void:
 	n.add_child(artwork)
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
 	box(structure,Vector3(0,-0.12,-0.07),Vector3(span*1.01,0.25,4.05),palette["floor"])
+	if t != "private":
+		var cutaway_depth:=Node3D.new()
+		cutaway_depth.name="Stage_CutawayDepth"
+		structure.add_child(cutaway_depth)
+		add_cutaway_depth(cutaway_depth,group)
 	box(background,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
 	if t != "private":
 		var rear_stage := Node3D.new()
@@ -663,8 +702,9 @@ func animate_manka(actor: Dictionary, delta: float) -> void:
 		sprite.pixel_size = 1.55/maxf(1.0,float(texture.get_height()))
 		sprite.position.y = 0.77
 
-func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void:
-	# Animation is presentation-only. Never wakes or changes the life scheduler.
+func desired_actor_animation(actor: Dictionary) -> String:
+	# Pure pose selection. A sofa station is an actual authored seat, not
+	# simply two actors standing at the same arbitrary position in a room.
 	var requested := "IDLE_S"
 	if zoom_current < 55.0 and actor.get("phase","idle") == "travel":
 		var direction: String = str(actor.get("moving_axis",""))
@@ -676,11 +716,21 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 		var intent: String = str(actor.get("intent",""))
 		match intent:
 			"READ_BOOK": requested = "READ"
-			"REST": requested = "RELAXED_SIT"
-			"SLEEP": requested = "SLEEP"
+			"REST":
+				if str(actor.get("station_kind","")) == "seat":
+					requested = "RELAXED_SIT"
+			"SLEEP":
+				if str(actor.get("station_kind","")) == "seat":
+					requested = "SLEEP"
 			"TALK_PAIR": requested = "TALK"
 			"GET_COFFEE": requested = "DRINK"
-			"WATCH_FIRE", "VIEW_ART", "BROWSE_BOOK_CATALOG", "BROWSE_FILMS", "BROWSE_AUDIO": requested = "VIEW"
+			"WATCH_FIRE", "VIEW_ART", "BROWSE_BOOK_CATALOG", "BROWSE_FILMS", "BROWSE_AUDIO":
+				requested = "VIEW"
+	return requested
+
+func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void:
+	# Visual state does not change life and cannot assume a real chair exists.
+	var requested: String = desired_actor_animation(actor)
 	var wardrobe: String = str(actor.get("visual_wardrobe","HOME"))
 	if asset_banks.frame_count(id,wardrobe,requested) < 1:
 		requested = "IDLE_S"
@@ -1109,6 +1159,13 @@ func _unhandled_input(event: InputEvent) -> void:
 					notice.text = room_names.get(room["type"], room["type"])
 				set_mode("ROOM")
 
+func effective_camera_yaw() -> float:
+	# A gentle Shelter-like oblique cutaway shows the rear and side depth
+	# of the 3D room at close zoom, then fades back to a readable flat
+	# overview. Q/E remains an additive *manual* adjustment.
+	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.115
+	return clampf(yaw+close_bias,-0.38,0.38)
+
 func apply_camera(delta: float) -> void:
 	if follow_id != "" and world.residents.has(follow_id):
 		var actor: Dictionary = world.residents[follow_id]
@@ -1135,8 +1192,9 @@ func apply_camera(delta: float) -> void:
 	var k: float = 1.0 - exp(-4.0 * minf(delta,0.25))
 	smooth_focus = smooth_focus.lerp(desired_focus,k)
 	zoom_current = lerpf(zoom_current,zoom,1.0-exp(-4.6*minf(delta,0.25)))
-	var x_shift := sin(yaw) * zoom_current
-	var z_shift := cos(yaw) * zoom_current
+	var view_yaw: float=effective_camera_yaw()
+	var x_shift := sin(view_yaw) * zoom_current
+	var z_shift := cos(view_yaw) * zoom_current
 	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*0.19,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
 

@@ -1,4 +1,4 @@
-# Дом Дракона — самостоятельная реализация v0.8
+# Дом Дракона — самостоятельная реализация v0.9
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -99,3 +99,6 @@ See docs/V07_STATIONS_AND_RESIDENT_LIFE.md. The autonomous scheduler reserves un
 
 ## v0.8 truthful media browsing and compact HUD
 See docs/V08_MEDIA_BROWSING_COMPACT_HUD.md. The catalog browser is a distinct action from borrowing/reading/watching/listening. Cinema/audio library listings can be visited even without a supported playback file, without fake playback or media consumption. The default left HUD collapses to a small header; expand with Tab or Menu. Media UI shows physical-book unavailability truthfully. Two new Godot tests cover both behaviors.
+
+## v0.9 Real sofa occupancy and repair of overlapping saved actors
+See docs/V09_SOFA_OCCUPANCY_DEPTH.md. Common middle/right sofas have two exclusive physical seating stations apiece; a third visitor remains standing rather than visually sitting on the same furniture. Movement approaches the seat along the aisle. Existing overlapping v0.6 saved positions are redistributed at load and old travel endpoints are remapped. The camera adds a gentle oblique depth cue as it zooms into room scale; no actor or room art is marked approved.

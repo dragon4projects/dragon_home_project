@@ -58,6 +58,7 @@ func setup(p_world) -> void:
 	rng.seed = 814223
 	clock = world.sim_clock
 	stations.reconcile(world)
+	stations.migrate_legacy_positions(world)
 	var now: int = int(Time.get_unix_time_from_system())
 	media_runtime.cleanup_abandoned(now)
 	last_cleanup_wall_time = now
@@ -223,7 +224,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			return
 		end_time = clock + maxf(float(route.size()),float(partner_route.size()))*3.2+34.0
 	else:
-		actor_claim = stations.single(world,actor,room)
+		actor_claim = stations.single(world,actor,room,intent)
 		if actor_claim.is_empty():
 			actor["until"] = clock + 10.0
 			return
