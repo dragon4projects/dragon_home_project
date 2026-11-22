@@ -6,6 +6,8 @@ var sim_clock: float = 0.0
 const MODULE_W := 4.8
 const FLOOR_H := 4.6
 const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "lift", "artifact"]
+const MERGEABLE_TYPES := ["common", "study", "rest", "library", "cinema", "music", "workshop", "artifact"]
+const MAX_MERGE := 3
 const SHARED_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "lift", "artifact"]
 
 var rooms: Array = []
@@ -39,21 +41,38 @@ func make_room(x: int, level: int, room_type: String) -> Dictionary:
 		"type": room_type,
 		"privacy": "door_only" if room_type == "private" else "public",
 		"owner_id": "",
+		"public_frontage": room_type == "private",
 	}
 	next_room_id += 1
 	rooms.append(room)
 	return room
+
+func _left_right_run(x: int, level: int, room_type: String) -> int:
+	var count := 1
+	var xx := x - 1
+	while get_room(xx, level).get("type", "") == room_type:
+		count += 1
+		xx -= 1
+	xx = x + 1
+	while get_room(xx, level).get("type", "") == room_type:
+		count += 1
+		xx += 1
+	return count
 
 func can_build(x: int, level: int, room_type: String) -> bool:
 	if not ROOM_TYPES.has(room_type) or not get_room(x, level).is_empty():
 		return false
 	if abs(x) > 28 or abs(level) > 5:
 		return false
+	if MERGEABLE_TYPES.has(room_type) and _left_right_run(x, level, room_type) > MAX_MERGE:
+		return false
 	if rooms.is_empty():
 		return true
-	if not get_room(x - 1, level).is_empty() or not get_room(x + 1, level).is_empty():
-		return true
-	# Vertical shafts must be continuous lift-to-lift.
+	for dx in [-1, 1]:
+		var adjacent: Dictionary = get_room(x + dx, level)
+		if allows_transit(adjacent):
+			return true
+	# Shaft can grow vertically, without opening a hole in an unrelated ceiling.
 	if room_type == "lift":
 		return get_room(x, level - 1).get("type", "") == "lift" or get_room(x, level + 1).get("type", "") == "lift"
 	return false
@@ -69,9 +88,15 @@ func is_accessible(room: Dictionary, actor_id: String = "") -> bool:
 	if room.is_empty():
 		return false
 	if room.get("privacy", "public") != "public":
-		# The private interior is not rendered or routed by the public simulation.
 		return actor_id != "" and room.get("owner_id", "") == actor_id
 	return true
+
+func allows_transit(room: Dictionary) -> bool:
+	# The publicly visible walking aisle is IN FRONT of a private door.
+	# Walking past a room is not permission to enter its interior.
+	if room.is_empty():
+		return false
+	return room.get("privacy", "public") == "public" or bool(room.get("public_frontage", false))
 
 func neighbors(room: Dictionary, actor_id: String = "") -> Array:
 	var out: Array = []
@@ -79,7 +104,7 @@ func neighbors(room: Dictionary, actor_id: String = "") -> Array:
 	var level: int = int(room["level"])
 	for dx in [-1, 1]:
 		var candidate: Dictionary = get_room(x + dx, level)
-		if is_accessible(candidate, actor_id):
+		if allows_transit(candidate) or is_accessible(candidate, actor_id):
 			out.append(candidate)
 	if room["type"] == "lift":
 		for dy in [-1, 1]:
@@ -129,17 +154,50 @@ func merged_run_length(x: int, level: int) -> int:
 	var original: Dictionary = get_room(x, level)
 	if original.is_empty():
 		return 0
-	var t: String = original["type"]
-	var length := 1
-	var at := x - 1
-	while get_room(at, level).get("type", "none") == t:
-		length += 1
-		at -= 1
-	at = x + 1
-	while get_room(at, level).get("type", "none") == t:
-		length += 1
-		at += 1
-	return length
+	if not MERGEABLE_TYPES.has(original["type"]):
+		return 1
+	return _left_right_run(x, level, original["type"])
+
+func merged_group(x: int, level: int) -> Dictionary:
+	var anchor: Dictionary = get_room(x, level)
+	if anchor.is_empty():
+		return {}
+	var t: String = anchor["type"]
+	var first := x
+	if MERGEABLE_TYPES.has(t):
+		while get_room(first - 1, level).get("type", "none") == t:
+			first -= 1
+	var cells: Array = []
+	var ix := first
+	while get_room(ix, level).get("type", "none") == t:
+		cells.append(get_room(ix, level))
+		ix += 1
+		if not MERGEABLE_TYPES.has(t):
+			break
+	return {"type": t, "level": level, "x_start": first,
+		"x_end": ix - 1, "width": cells.size(), "cells": cells,
+		"primary_id": cells[0]["id"]}
+
+func visual_groups() -> Array:
+	# Authored width variants R1/R2/R3 have ONE shared cutaway shell,
+	# while all logical cell IDs remain stable for paths and persistence.
+	var groups: Array = []
+	var sorted_rooms: Array = rooms.duplicate()
+	sorted_rooms.sort_custom(func(a, b):
+		if int(a["level"]) != int(b["level"]):
+			return int(a["level"]) < int(b["level"])
+		return int(a["x"]) < int(b["x"]))
+	var visited: Dictionary = {}
+	for room in sorted_rooms:
+		if visited.has(room["id"]):
+			continue
+		var group: Dictionary = merged_group(int(room["x"]), int(room["level"]))
+		if group.is_empty():
+			continue
+		for cell in group["cells"]:
+			visited[cell["id"]] = true
+		groups.append(group)
+	return groups
 
 func read_resident_profiles() -> Array:
 	var f := FileAccess.open("res://data/resident_profiles.json", FileAccess.READ)
@@ -243,6 +301,9 @@ func load_or_seed() -> void:
 		save_world()
 		return
 	rooms.assign(parsed["rooms"])
+	for saved_room in rooms:
+		if saved_room.get("type", "") == "private" and not saved_room.has("public_frontage"):
+			saved_room["public_frontage"] = true
 	residents = parsed["residents"]
 	sync_resident_profiles()
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})

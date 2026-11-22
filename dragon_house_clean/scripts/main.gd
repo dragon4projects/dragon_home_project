@@ -4,16 +4,21 @@ extends Node3D
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
+const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
 var life = LifeScript.new()
+var asset_banks = AssetBankResolverScript.new()
+var validated_visual_banks := 0
+var actor_animations: Dictionary = {}
 var camera: Camera3D
 var room_root: Node3D
 var actor_root: Node3D
 var actor_sprites: Dictionary = {}
 var actor_labels: Dictionary = {}
 var material_cache: Dictionary = {}
+var mesh_cache: Dictionary = {}
 var desired_focus := Vector3.ZERO
 var smooth_focus := Vector3.ZERO
 var zoom := 47.0
@@ -22,6 +27,7 @@ var yaw := 0.0
 var current_mode := "HOUSE"
 var follow_id := ""
 var selected_room := ""
+var selected_outline: Node3D
 var journal_panel: PanelContainer
 var journal_text: Label
 var journal_open := false
@@ -59,8 +65,11 @@ var room_names := {
 }
 
 func _ready() -> void:
+	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	world.load_or_seed()
 	life.setup(world)
+	asset_banks.initialize()
+	validated_visual_banks = asset_banks.accepted_count(world.read_resident_profiles())
 	camera = Camera3D.new()
 	camera.name = "ShelterPerspectiveCamera"
 	camera.current = true
@@ -87,6 +96,10 @@ func _ready() -> void:
 	room_root = Node3D.new()
 	room_root.name = "Rooms"
 	add_child(room_root)
+	selected_outline = Node3D.new()
+	selected_outline.name = "RoomSelectionOutline"
+	selected_outline.visible = false
+	add_child(selected_outline)
 	actor_root = Node3D.new()
 	actor_root.name = "Residents"
 	add_child(actor_root)
@@ -125,12 +138,21 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 
 func box(parent: Node3D, pos: Vector3, size: Vector3, color: Color, emissive: bool = false) -> MeshInstance3D:
 	var node := MeshInstance3D.new()
-	var mesh := BoxMesh.new()
-	mesh.size = size
+	# Reuse geometry resources for repeated furniture elements / rock modules.
+	var geometry_key := "%.4f:%.4f:%.4f" % [size.x,size.y,size.z]
+	var mesh: BoxMesh
+	if mesh_cache.has(geometry_key):
+		mesh = mesh_cache[geometry_key]
+	else:
+		mesh = BoxMesh.new()
+		mesh.size = size
+		mesh_cache[geometry_key] = mesh
 	node.mesh = mesh
 	node.position = pos
 	node.material_override = mat(color, emissive)
 	parent.add_child(node)
+	if not emissive and size.x < 0.57 and size.y < 0.69 and size.z < 0.62:
+		node.add_to_group("low_end_micro_detail")
 	return node
 
 func make_mountain() -> void:
@@ -196,6 +218,14 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 				box(parent, Vector3(-1.35, 1.38, -1.73), Vector3(1.25, 1.48, 0.25), palette["rock_light"])
 				box(parent, Vector3(-1.35, 0.92, -1.45), Vector3(0.80, 0.58, 0.17), palette["black"])
 				box(parent, Vector3(-1.32, 0.88, -1.30), Vector3(0.53, 0.45, 0.08), Color("#f4943c"), true)
+				var fire_light := OmniLight3D.new()
+				fire_light.name = "WarmHearthLight"
+				fire_light.position = Vector3(-1.32,1.22,-1.12)
+				fire_light.light_color = Color("#efaa68")
+				fire_light.light_energy = 0.68
+				fire_light.omni_range = 6.5
+				fire_light.shadow_enabled = false
+				parent.add_child(fire_light)
 			elif x == -1:
 				add_sofa(parent, Vector3(0, 0, -1.06), 2.6)
 				box(parent, Vector3(0, 0.44, 0.86), Vector3(1.4, 0.30, 0.7), palette["wood"])
@@ -246,48 +276,66 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 			if offset == 0:
 				box(parent, Vector3(0, 0.5, -1.70), Vector3(1.0, 1.05, 0.16), palette["wood"])
 
-func make_room(room: Dictionary) -> void:
+func make_room(group: Dictionary) -> void:
+	# One shell per logical R1/R2/R3 merge group, not N adjacent full-walled rooms.
+	# Individual module IDs remain in the World Core so residents keep legal routes.
 	var n := Node3D.new()
-	n.name = room["id"]
-	n.position = world.world_pos(int(room["x"]), int(room["level"]))
+	n.name = group["primary_id"]
+	var level: int = int(group["level"])
+	var x_start: int = int(group["x_start"])
+	var x_end: int = int(group["x_end"])
+	var center_cell: float = (float(x_start)+float(x_end))*0.5
+	var span: float = float(group["width"])*W
+	n.position = Vector3(center_cell*W,float(level)*H,0.0)
 	room_root.add_child(n)
-	var t: String = room["type"]
-	var side_left := world.get_room(int(room["x"]) - 1, int(room["level"]))
-	var side_right := world.get_room(int(room["x"]) + 1, int(room["level"]))
-	# Structural cutaway: open camera-side face, solid perspective floor and back.
-	box(n, Vector3(0, -0.12, -0.07), Vector3(W * 1.01, 0.25, 4.05), palette["floor"])
-	box(n, Vector3(0, 1.45, -2.04), Vector3(W * 1.01, 3.25, 0.35), palette["rock"])
-	box(n, Vector3(0, 3.12, -0.35), Vector3(W * 1.01, 0.22, 3.55), palette["border"])
-	box(n, Vector3(0, -0.20, 1.80), Vector3(W * 1.01, 0.22, 0.18), palette["border"])
-	for side in [-1, 1]:
-		var next_r: Dictionary = side_left if side == -1 else side_right
-		if next_r.get("type", "") == t and t != "private":
-			# Real visually merged shell, structural rib instead of full partition.
-			box(n, Vector3(float(side) * W / 2, 2.67, -0.5),
-				Vector3(0.13, 0.8, 3.6), palette["rock_light"])
-		elif next_r.is_empty():
-			box(n, Vector3(float(side) * (W / 2 - 0.1), 1.39, -0.22),
-				Vector3(0.35, 2.90, 3.82), palette["rock_light"])
+	var t: String = group["type"]
+	var side_left: Dictionary = world.get_room(x_start-1,level)
+	var side_right: Dictionary = world.get_room(x_end+1,level)
+	# A single continuous floor, back and roof for 1, 2 or 3 room modules.
+	box(n,Vector3(0,-0.12,-0.07),Vector3(span*1.01,0.25,4.05),palette["floor"])
+	box(n,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
+	box(n,Vector3(0,3.12,-0.35),Vector3(span*1.01,0.22,3.55),palette["border"])
+	box(n,Vector3(0,-0.20,1.80),Vector3(span*1.01,0.22,0.18),palette["border"])
+	for side in [-1,1]:
+		var neighbour: Dictionary = side_left if side == -1 else side_right
+		var edge: float = float(side)*(span*0.5-0.10)
+		if neighbour.is_empty():
+			box(n,Vector3(edge,1.39,-0.22),Vector3(0.35,2.90,3.82),palette["rock_light"])
 		else:
-			# Arched threshold: open through middle with framing pillars.
-			box(n, Vector3(float(side) * (W / 2 - 0.10), 2.67, -0.3),
-				Vector3(0.26, 0.74, 3.18), palette["rock_light"])
-			box(n, Vector3(float(side) * (W / 2 - 0.10), 0.56, -1.75),
-				Vector3(0.26, 1.2, 0.28), palette["rock_light"])
+			# Doorway frame: two pillars BEHIND the public front walking aisle.
+			box(n,Vector3(edge,2.67,-0.3),Vector3(0.26,0.74,3.18),palette["rock_light"])
+			box(n,Vector3(edge,0.56,-1.75),Vector3(0.26,1.2,0.28),palette["rock_light"])
+	# Merged runs: narrow arch ribs only, no full partitions or duplicate room names.
+	if int(group["width"]) > 1:
+		for i in range(int(group["width"])-1):
+			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
+			box(n,Vector3(seam_x,2.93,-0.50),
+				Vector3(0.12,0.37,3.15),palette["rock_light"])
 	if t == "private":
-		# No interior meshes, no character leakage behind private threshold.
-		box(n, Vector3(0, 1.4, 1.05), Vector3(2.08, 2.8, 0.22), palette["wood"])
-		box(n, Vector3(0.82, 1.33, 1.2), Vector3(0.12, 0.12, 0.07), palette["bronze"])
-		label3(n, "ЛИЧНОЕ", Vector3(0, 2.80, 1.2), 31, Color("#d4bdb0"))
+		# Never materialize someone else's private interior: facade only.
+		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
+		box(n,Vector3(0.82,1.33,1.2),Vector3(0.12,0.12,0.07),palette["bronze"])
+		label3(n,"ЛИЧНОЕ",Vector3(0,2.80,1.2),31,Color("#d4bdb0"))
 	else:
-		furnish(n, t, int(room["x"]), int(room["level"]))
-		label3(n, room_names.get(t, t), Vector3(0.0, 2.93, 0.55), 29, Color("#f4d9b9"))
+		var decoration_layer := Node3D.new()
+		decoration_layer.name = "LocalFurniture"
+		n.add_child(decoration_layer)
+		for cell in group["cells"]:
+			var module := Node3D.new()
+			module.name = cell["id"] + "_furniture"
+			module.position.x = (float(cell["x"])-center_cell)*W
+			decoration_layer.add_child(module)
+			furnish(module,t,int(cell["x"]),level)
+		var title: String = room_names.get(t,t)
+		if int(group["width"]) > 1:
+			title += " · %d" % int(group["width"])
+		label3(n,title,Vector3(0,2.93,0.55),29,Color("#f4d9b9"))
 
 func make_rooms() -> void:
 	for child in room_root.get_children():
 		child.queue_free()
-	for room in world.rooms:
-		make_room(room)
+	for group in world.visual_groups():
+		make_room(group)
 
 func make_sprite_texture(is_manka: bool) -> Texture2D:
 	var img := Image.create(96, 144, false, Image.FORMAT_RGBA8)
@@ -321,6 +369,7 @@ func make_residents() -> void:
 		child.queue_free()
 	actor_sprites.clear()
 	actor_labels.clear()
+	actor_animations.clear()
 	var n := 0
 	for id in world.residents:
 		var actor: Dictionary = world.residents[id]
@@ -334,8 +383,19 @@ func make_residents() -> void:
 		sprite.texture = manka_tex if id == "MANJKA" else resident_tex
 		sprite.pixel_size = 0.009 if id == "MANJKA" else 0.012
 		sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
-		sprite.position = Vector3(0, 0.83 if id == "MANJKA" else 1.05, 0)
+		actor["runtime_visual_bound"] = false
 		if id != "MANJKA":
+			var profile_id: String = str(actor.get("appearance_profile",""))
+			if asset_banks.verified_bank(id,profile_id):
+				var approved_idle: Texture2D = asset_banks.texture_for(id,"HOME","IDLE_S",0)
+				if approved_idle != null:
+					sprite.texture = approved_idle
+					sprite.pixel_size = 1.9 / maxf(1.0,float(approved_idle.get_height()))
+					actor["runtime_visual_bound"] = true
+					actor_animations[id] = {"state":"IDLE_S","frame":0,"elapsed":0.0}
+
+		sprite.position = Vector3(0, 0.83 if id == "MANJKA" else 1.05, 0)
+		if id != "MANJKA" and not actor["runtime_visual_bound"]:
 			var colors = [Color("#bfa4c1"), Color("#dca39e"), Color("#a3aeb3"), Color("#d4b78a"),
 				Color("#c6c0c4"), Color("#9b9fbf"), Color("#bc9e97"), Color("#9ab4a9")]
 			sprite.modulate = colors[n % colors.size()]
@@ -346,14 +406,54 @@ func make_residents() -> void:
 		n += 1
 	update_residents()
 
-func update_residents() -> void:
+func update_residents(delta: float = 0.0) -> void:
 	for id in actor_sprites:
 		var actor: Dictionary = world.residents[id]
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
 		actor_sprites[id].position = Vector3(float(actor.get("x", 0.0)), y, float(actor.get("z", 0.3)))
+		if actor.get("runtime_visual_bound",false):
+			animate_verified_actor(id,actor,delta)
 		actor_labels[id].visible = zoom_current < 27 or id == follow_id
 		if id == follow_id:
 			actor_labels[id].text = actor["name"] + " • " + life.status(actor)
+
+func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void:
+	# Animation is presentation-only. Never wakes or changes the life scheduler.
+	var requested := "IDLE_S"
+	if zoom_current < 55.0 and actor.get("phase","idle") == "travel":
+		var direction: String = str(actor.get("moving_axis",""))
+		if direction == "left":
+			requested = "WALK_LEFT"
+		elif direction == "right":
+			requested = "WALK_RIGHT"
+	elif zoom_current < 55.0 and actor.get("phase","idle") == "perform":
+		var intent: String = str(actor.get("intent",""))
+		match intent:
+			"READ_BOOK": requested = "READ"
+			"REST": requested = "RELAXED_SIT"
+			"SLEEP": requested = "SLEEP"
+			"TALK_PAIR": requested = "TALK"
+			"GET_COFFEE": requested = "DRINK"
+			"WATCH_FIRE", "VIEW_ART": requested = "VIEW"
+	if asset_banks.frame_count(id,"HOME",requested) < 1:
+		requested = "IDLE_S"
+	var state: Dictionary = actor_animations.get(id,{"state":"","frame":0,"elapsed":0.0})
+	if state["state"] != requested:
+		state["state"] = requested
+		state["elapsed"] = 0.0
+		state["frame"] = 0
+	else:
+		state["elapsed"] = float(state["elapsed"])+minf(delta,0.1)
+		var period: float = 1.0 / float(asset_banks.fps(id,"HOME",requested))
+		if float(state["elapsed"]) >= period:
+			state["frame"] = (int(state["frame"])+int(float(state["elapsed"])/period)) % maxi(1,asset_banks.frame_count(id,"HOME",requested))
+			state["elapsed"] = fmod(float(state["elapsed"]),period)
+	actor_animations[id] = state
+	var sprite: Sprite3D = actor_sprites[id].get_node("Body")
+	var texture: Texture2D = asset_banks.texture_for(id,"HOME",requested,int(state["frame"]))
+	if texture != null and sprite.texture != texture:
+		sprite.texture = texture
+		sprite.pixel_size = 1.9 / maxf(1.0,float(texture.get_height()))
 
 func build_interface() -> void:
 	var layer := CanvasLayer.new()
@@ -480,7 +580,35 @@ func fit_house_camera() -> void:
 	zoom = clampf(maxf(horizontal_dist,vertical_dist)*1.12, 12.0, 110.0)
 	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
 
+func update_selection_outline() -> void:
+	if selected_outline == null:
+		return
+	for child in selected_outline.get_children():
+		child.queue_free()
+	selected_outline.visible = false
+	if selected_room == "" or current_mode != "ROOM":
+		return
+	var room: Dictionary = world.room_by_id(selected_room)
+	if room.is_empty():
+		return
+	var group: Dictionary = world.merged_group(int(room["x"]),int(room["level"]))
+	if group.is_empty():
+		return
+	var cx: float = (float(group["x_start"])+float(group["x_end"]))*0.5*W
+	var length: float = float(group["width"])*W
+	selected_outline.position = Vector3(cx,float(room["level"])*H,0.0)
+	var tone := Color("#e8b875")
+	box(selected_outline,Vector3(0,-0.08,1.92),
+		Vector3(length,0.065,0.08),tone,true)
+	box(selected_outline,Vector3(0,3.03,1.92),
+		Vector3(length,0.065,0.08),tone,true)
+	for side in [-1,1]:
+		box(selected_outline,Vector3(float(side)*length*0.5,1.48,1.92),
+			Vector3(0.075,3.15,0.08),tone,true)
+	selected_outline.visible = true
+
 func set_mode(mode: String) -> void:
+	Engine.max_fps = 30 if mode == "HOUSE" else 60
 	build_mode = false
 	if build_marker:
 		build_marker.visible = false
@@ -495,9 +623,13 @@ func set_mode(mode: String) -> void:
 			if selected_room != "":
 				var r: Dictionary = world.room_by_id(selected_room)
 				if not r.is_empty():
-					desired_focus = world.world_pos(r["x"], r["level"]) + Vector3(0, 1.1, 0)
+					var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
+					var cx: float = (float(group["x_start"])+float(group["x_end"]))*0.5*W
+					desired_focus = Vector3(cx,float(r["level"])*H+1.1,0.0)
+					zoom = 10.5 + maxf(0.0,float(group["width"]-1))*3.4
 		"FOLLOW":
 			zoom = 16.0
+	update_selection_outline()
 	update_hud()
 
 func follow_actor(id: String) -> void:
@@ -505,7 +637,9 @@ func follow_actor(id: String) -> void:
 		return
 	follow_id = id
 	current_mode = "FOLLOW"
+	Engine.max_fps = 60
 	build_mode = false
+	update_selection_outline()
 	zoom = minf(zoom, 20.0)
 	update_hud()
 
@@ -514,6 +648,8 @@ func toggle_build() -> void:
 	if build_mode:
 		follow_id = ""
 		current_mode = "BUILD"
+		Engine.max_fps = 60
+		update_selection_outline()
 		if zoom < 16.0:
 			zoom = 22.0
 		if build_marker == null:
@@ -538,8 +674,15 @@ func update_hud() -> void:
 	var tracked: Dictionary = world.residents.get(follow_id, {})
 	hud_status.text = "Режим: %s | комнат: %d | видимых: %d / 24" % [
 		current_mode, world.rooms.size(), actor_sprites.size()-1]
+	hud_status.text += "\nПроверенных банков: %d / 24" % validated_visual_banks
 	if not tracked.is_empty():
 		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), life.status(tracked)]
+	if current_mode == "ROOM" and selected_room != "":
+		var r: Dictionary = world.room_by_id(selected_room)
+		if not r.is_empty():
+			var merged: int = world.merged_run_length(int(r["x"]),int(r["level"]))
+			hud_status.text += "\n%s  R%d  |  уровень %d" % [
+				room_names.get(r["type"],r["type"]),merged,int(r["level"])]
 	media_label.text = "Книги: %d  •  Фильмы: %d  •  Музыка: %d" % [
 		world.media.get("books", []).size(), world.media.get("films", []).size(),
 		world.media.get("tracks", []).size()]
@@ -568,6 +711,7 @@ func _input(event: InputEvent) -> void:
 		if moving_view and not build_mode:
 			follow_id = "" # moving away manually cancels Follow
 			current_mode = "FREE"
+			Engine.max_fps = 60
 			var scale: float = zoom_current * 0.0019
 			desired_focus.x -= e.relative.x * scale
 			desired_focus.y += e.relative.y * scale
@@ -637,7 +781,7 @@ func apply_camera(delta: float) -> void:
 	if follow_id != "" and world.residents.has(follow_id):
 		var actor: Dictionary = world.residents[follow_id]
 		var target_room: Dictionary = world.room_by_id(actor.get("room_id", ""))
-		if not target_room.is_empty() and target_room.get("privacy", "public") == "public":
+		if not target_room.is_empty() and world.allows_transit(target_room):
 			var target := Vector3(float(actor.get("x", 0)),
 				float(actor.get("visual_y", float(actor.get("level", 0))*H)) + 1.05,
 				float(actor.get("z", 0)))
@@ -664,10 +808,22 @@ func apply_camera(delta: float) -> void:
 	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*0.19,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
 
+func update_render_lod() -> void:
+	# Lightweight authored shell remains; high-detail decorations can stream later.
+	var detail_visible: bool = zoom_current < 72.0
+	for group_node in room_root.get_children():
+		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
+		if furniture != null:
+			furniture.visible = detail_visible
+	var micro_detail_visible: bool = zoom_current < 31.0
+	for node in get_tree().get_nodes_in_group("low_end_micro_detail"):
+		if node is Node3D:
+			node.visible = micro_detail_visible
+
 func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
 	life.tick(delta)
-	update_residents()
+	update_residents(delta)
 	apply_camera(delta)
 	save_timer += delta
 	if save_timer > 20.0:
@@ -675,6 +831,7 @@ func _process(delta: float) -> void:
 		save_timer = 0.0
 	if Engine.get_process_frames() % 40 == 0:
 		update_hud()
+		update_render_lod()
 		if journal_open:
 			update_journal()
 

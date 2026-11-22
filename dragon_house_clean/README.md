@@ -1,4 +1,4 @@
-# Дом Дракона — чистая независимая реализация
+# Дом Дракона — самостоятельная реализация v0.3
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -8,14 +8,14 @@ The structural interaction target is **Fallout Shelter**: a 2.5D perspective cut
 ## Current vertical slice
 
 - 21 structural room modules over three levels with stable room IDs.
-- 3-wide contiguous Common reads as one open space, rather than three fully separated boxes.
-- Real perspective camera, wheel zoom, right-mouse pan, Q/E yaw, click-select and F-to-follow Manka; Follow survives zoom changes.
-- Build mode (B or button) with adjacency constraints, occupied-cell rejection, persistent expansion, and color-coded preview.
+- **True cutaway R1/R2/R3 groups:** same-type connected modules share one continuous floor, wall, roof and label, with stable logical cell IDs; a fourth module is rejected.
+- Real perspective camera, wheel zoom, right-mouse pan, bounded Q/E yaw, R3-aware room selection outline, actor follow with deadzone across lift levels; Follow survives zoom changes.
+- Build mode (B or button) with public-corridor adjacency, occupied-cell rejection, R3 merge cap, persistent expansion, and color-coded preview.
 - Separate simulation planner: needs/daypart/preferences/habits -> purposeful room destinations -> graph pathing -> performing activities. No LLM or external world-event integration.
 - 24 documented resident identities + appearance profiles, retained in `data/resident_profiles.json`; 8 QA-only test silhouettes are currently visible and 16 characters remain asset-gated. All 24 names are documented, but the 24 validated production sprite banks have not been imported. Manka is her own roaming actor.
-- Private spaces render as a door only; unauthorized camera/actor route stops at threshold.
+- Private spaces render as a **door only**. Residents may cross their **public frontage corridor** without being allowed to enter the room. Targeting private interiors still fails closed.
 - Library, cinema and audio room geometry/stations are present; JSON media manifest import exists. [M] opens a data-backed catalog browser and user-controlled playback for local MP3/OGG/WAV and Ogg/Theora OGV. Physical-book borrowing, unique holder/location, progress and persistent 24-hour abandoned-return rules are implemented. Empty catalog stays empty rather than inventing songs, films or books.
-- Persistent JSON world snapshot with verified scratch-file swap and fallback backup. Native Windows x64 and unsigned macOS Universal exports generated. This remains an early vertical slice, not a production release.
+- Persistent JSON world snapshot with verified scratch-file swap and fallback backup. Native Windows x64 and unsigned macOS Universal exports were generated for the previous v0.2 revision; **rebuild export after v0.3 changes**. This remains an early vertical slice, not a production release.
 
 ## Run
 
@@ -50,3 +50,30 @@ This is a structural prototype. It does **not** yet include finalized 24 residen
 
 See `docs/DESIGN.md`, `docs/BEHAVIOR.md` and `docs/BUILD_REPORT_2026-11-22.md`. Reference investigation: the project's September 2026 Fallout Shelter 2.6.0 APK/OBB analyses of authored room prefab width/upgrade variants, local XYZ paths, impostor far views and smooth follow controllers. Study architecture principles; never redistribute extracted proprietary assets.
 
+
+
+## November asset-agent integration (v0.3)
+
+The local migration agent delivers an **independent verified candidate registry** at \`data/asset_registry_nov2026.json\` and images under \`assets/residents/RES_XX/wardrobes/HOME|CITY|SHORT/STATE/frame.png\`.
+
+\`scripts/asset_bank_resolver.gd\` now consumes that registry **read-only** and binds the \`HOME\` visual bank for an already-active resident **only if**:
+- the claimed appearance profile exactly matches \`data/resident_profiles.json\`;
+- the registry sets \`visual_bank_ready=true\`;
+- \`IDLE_S\`, \`WALK_LEFT\`, \`WALK_RIGHT\` all report \`PASS\`, have valid frame counts and real files;
+- all paths remain inside the expected resident + wardrobe root.
+
+Additional available \`READ\`, \`TALK\`, \`REST\`, \`SLEEP\`, \`DRINK\` states are selected according to action, with safe idle fallback if absent. **No dormant residents are activated just because art has arrived**. The 8 current QA silhouettes will convert to verified banks automatically on the next launch when compatible art exists. Assets, approvals, ownership and autonomy remain separate.
+
+The local agent may push new asset/manifests on the same branch; runtime development must **fetch its branch updates and avoid overwriting imported art**. This v0.3 code modifies only \`scripts/\`, \`tests/\`, \`docs/\` and project metadata, not asset directories.
+
+## More tests
+
+\`godot --headless --path . --script res://tests/test_cutaway_groups.gd\`
+
+\`godot --headless --path . --script res://tests/test_camera_construction.gd\`
+
+\`godot --headless --path . --script res://tests/test_asset_binding.gd\`
+
+\`xvfb-run ... godot --path . --script res://tests/benchmark_render.gd\`
+
+See \`docs/V03_CUTAWAY_ASSET_BINDING_QA.md\` for coverage and limitations.

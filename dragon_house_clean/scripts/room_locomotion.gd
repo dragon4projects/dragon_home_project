@@ -15,6 +15,7 @@ const STATIONS := {
 	"PURPOSEFUL_EXPLORE": Vector2(0.7, 0.05)
 }
 const AISLE_Z := 0.95
+const PUBLIC_FRONTAGE_Z := 1.54
 const STATION_OFFSET := 0.66
 
 func station(intent: String, actor_id: String) -> Vector2:
@@ -36,6 +37,10 @@ func _stable_suffix(actor_id: String) -> int:
 func waypoint(x: float, y: float, z: float, room_id: String, kind: String) -> Dictionary:
 	return {"position": [x, y, z], "room_id": room_id, "kind": kind}
 
+func corridor_depth(room: Dictionary) -> float:
+	# Passing a private door is permitted only in the public hallway in front of it.
+	return PUBLIC_FRONTAGE_Z if bool(room.get("public_frontage", false)) else AISLE_Z
+
 func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String) -> Array:
 	if room_path.is_empty():
 		return []
@@ -46,12 +51,11 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String)
 	var previous: Dictionary = first
 	var x: float = float(first["x"]) * world.MODULE_W
 	var y: float = float(first["level"]) * world.FLOOR_H
-	# Leave current furniture via public aisle, never cut diagonally through sofa.
-	travel.append(waypoint(float(actor.get("x",x)), y, AISLE_Z, first["id"], "leave_station"))
-	travel.append(waypoint(x, y, AISLE_Z, first["id"], "room_center"))
+	travel.append(waypoint(float(actor.get("x",x)), y, corridor_depth(first), first["id"], "leave_station"))
+	travel.append(waypoint(x, y, corridor_depth(first), first["id"], "room_center"))
 	for i in range(1,room_path.size()):
 		var room: Dictionary = world.room_by_id(room_path[i])
-		if room.is_empty():
+		if room.is_empty() or not world.allows_transit(room):
 			return []
 		var nx: float = float(room["x"]) * world.MODULE_W
 		var ny: float = float(room["level"]) * world.FLOOR_H
@@ -61,12 +65,18 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String)
 			travel.append(waypoint(nx, ny, AISLE_Z, room["id"], "lift"))
 		else:
 			var direction: float = signf(nx-x)
-			travel.append(waypoint(x+direction*world.MODULE_W*0.49,y,AISLE_Z,previous["id"],"door_out"))
-			travel.append(waypoint(nx-direction*world.MODULE_W*0.49,ny,AISLE_Z,room["id"],"door_in"))
-			travel.append(waypoint(nx,ny,AISLE_Z,room["id"],"room_center"))
+			var depth: float = maxf(corridor_depth(previous),corridor_depth(room))
+			if depth > corridor_depth(previous):
+				travel.append(waypoint(x,y,depth,previous["id"],"approach_public_frontage"))
+			travel.append(waypoint(x+direction*world.MODULE_W*0.49,y,depth,previous["id"],"door_out"))
+			travel.append(waypoint(nx-direction*world.MODULE_W*0.49,ny,depth,room["id"],"door_in"))
+			travel.append(waypoint(nx,ny,corridor_depth(room),room["id"],"room_center"))
 		x=nx
 		y=ny
 		previous=room
+	# Only public destinations can become activity stations.
+	if not world.is_accessible(previous,str(actor.get("id",""))):
+		return []
 	var anchor: Vector2 = station(intent,str(actor.get("id","")))
 	travel.append(waypoint(x+anchor.x,y,anchor.y,previous["id"],"station"))
 	return travel
