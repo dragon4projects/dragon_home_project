@@ -1,0 +1,377 @@
+{
+  "source_file": "DRAGON_TECH_OCCUPANCY_PACKAGE_v0_1.md",
+  "source_sha256": "475cd5709638a262d1745494e5ad84be433a1fc5f1e5b034e54e0d84e53ca73e",
+  "classification": "EXACT_OWNER_APPROVED_TECHNICAL_PROXY_NOT_FINAL_BODY",
+  "poses": {
+    "HOME": {
+      "components": [
+        {
+          "id": "torso_obb",
+          "center": [
+            0.0,
+            1.8,
+            0.8
+          ],
+          "size": [
+            4.4,
+            3.2,
+            6.0
+          ]
+        },
+        {
+          "id": "neck_head_obb",
+          "center": [
+            0.0,
+            2.75,
+            -3.2
+          ],
+          "size": [
+            2.6,
+            2.9,
+            2.8
+          ]
+        },
+        {
+          "id": "folded_wing_left_obb",
+          "center": [
+            -2.35,
+            2.4,
+            1.1
+          ],
+          "size": [
+            1.4,
+            2.5,
+            5.8
+          ]
+        },
+        {
+          "id": "folded_wing_right_obb",
+          "center": [
+            2.35,
+            2.4,
+            1.1
+          ],
+          "size": [
+            1.4,
+            2.5,
+            5.8
+          ]
+        },
+        {
+          "id": "forelimb_paw_left_obb",
+          "center": [
+            -1.45,
+            0.6,
+            -1.35
+          ],
+          "size": [
+            1.2,
+            1.2,
+            2.4
+          ]
+        },
+        {
+          "id": "forelimb_paw_right_obb",
+          "center": [
+            1.45,
+            0.6,
+            -1.35
+          ],
+          "size": [
+            1.2,
+            1.2,
+            2.4
+          ]
+        },
+        {
+          "id": "hindlimb_left_obb",
+          "center": [
+            -1.7,
+            0.75,
+            2.55
+          ],
+          "size": [
+            1.5,
+            1.5,
+            2.6
+          ]
+        },
+        {
+          "id": "hindlimb_right_obb",
+          "center": [
+            1.7,
+            0.75,
+            2.55
+          ],
+          "size": [
+            1.5,
+            1.5,
+            2.6
+          ]
+        },
+        {
+          "id": "crown_horn_obb",
+          "center": [
+            0.0,
+            4.15,
+            -3.9
+          ],
+          "size": [
+            2.6,
+            1.1,
+            1.4
+          ]
+        }
+      ],
+      "tail_segments": [
+        {
+          "start": [
+            0.0,
+            1.2,
+            3.2
+          ],
+          "end": [
+            0.7,
+            1.0,
+            4.95
+          ],
+          "radius": 0.75
+        },
+        {
+          "start": [
+            0.7,
+            1.0,
+            4.95
+          ],
+          "end": [
+            1.85,
+            0.82,
+            6.4
+          ],
+          "radius": 0.6
+        },
+        {
+          "start": [
+            1.85,
+            0.82,
+            6.4
+          ],
+          "end": [
+            2.35,
+            0.72,
+            7.55
+          ],
+          "radius": 0.43
+        },
+        {
+          "start": [
+            2.35,
+            0.72,
+            7.55
+          ],
+          "end": [
+            1.8,
+            0.88,
+            8.25
+          ],
+          "radius": 0.25
+        }
+      ],
+      "outer_min": [
+        -3.4,
+        0.0,
+        -4.6
+      ],
+      "outer_max": [
+        3.4,
+        4.8,
+        8.6
+      ]
+    },
+    "WORK": {
+      "components": [
+        {
+          "id": "torso_obb",
+          "center": [
+            0.0,
+            2.2,
+            0.7
+          ],
+          "size": [
+            4.6,
+            3.8,
+            6.2
+          ]
+        },
+        {
+          "id": "neck_head_obb",
+          "center": [
+            0.0,
+            3.65,
+            -3.6
+          ],
+          "size": [
+            2.7,
+            3.1,
+            3.2
+          ]
+        },
+        {
+          "id": "folded_wing_left_obb",
+          "center": [
+            -2.45,
+            2.7,
+            1.3
+          ],
+          "size": [
+            1.5,
+            3.0,
+            6.0
+          ]
+        },
+        {
+          "id": "folded_wing_right_obb",
+          "center": [
+            2.45,
+            2.7,
+            1.3
+          ],
+          "size": [
+            1.5,
+            3.0,
+            6.0
+          ]
+        },
+        {
+          "id": "forelimb_paw_left_support_obb",
+          "center": [
+            -1.45,
+            0.65,
+            -1.55
+          ],
+          "size": [
+            1.2,
+            1.3,
+            2.6
+          ]
+        },
+        {
+          "id": "forelimb_paw_right_work_reach_obb",
+          "center": [
+            1.3,
+            1.0,
+            -2.35
+          ],
+          "size": [
+            1.2,
+            1.6,
+            3.0
+          ]
+        },
+        {
+          "id": "hindlimb_left_obb",
+          "center": [
+            -1.8,
+            0.8,
+            2.45
+          ],
+          "size": [
+            1.6,
+            1.6,
+            2.8
+          ]
+        },
+        {
+          "id": "hindlimb_right_obb",
+          "center": [
+            1.8,
+            0.8,
+            2.45
+          ],
+          "size": [
+            1.6,
+            1.6,
+            2.8
+          ]
+        },
+        {
+          "id": "crown_horn_obb",
+          "center": [
+            0.0,
+            4.95,
+            -4.1
+          ],
+          "size": [
+            2.7,
+            1.0,
+            1.6
+          ]
+        }
+      ],
+      "tail_segments": [
+        {
+          "start": [
+            0.0,
+            1.35,
+            3.25
+          ],
+          "end": [
+            -0.55,
+            1.1,
+            5.05
+          ],
+          "radius": 0.78
+        },
+        {
+          "start": [
+            -0.55,
+            1.1,
+            5.05
+          ],
+          "end": [
+            -1.7,
+            0.9,
+            6.55
+          ],
+          "radius": 0.62
+        },
+        {
+          "start": [
+            -1.7,
+            0.9,
+            6.55
+          ],
+          "end": [
+            -2.25,
+            0.8,
+            7.7
+          ],
+          "radius": 0.44
+        },
+        {
+          "start": [
+            -2.25,
+            0.8,
+            7.7
+          ],
+          "end": [
+            -1.65,
+            0.95,
+            8.4
+          ],
+          "radius": 0.25
+        }
+      ],
+      "outer_min": [
+        -3.5,
+        0.0,
+        -5.2
+      ],
+      "outer_max": [
+        3.5,
+        5.5,
+        8.8
+      ]
+    }
+  }
+}

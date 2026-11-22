@@ -1,0 +1,23 @@
+{
+  "resident_banks": [
+    {
+      "resident_id": "RES_22",
+      "raw_candidate_occurrences": 37,
+      "status": "MISSING",
+      "reason": "No production-bound legacy bank with validated source identity"
+    },
+    {
+      "resident_id": "RES_23",
+      "raw_candidate_occurrences": 83,
+      "status": "MISSING",
+      "reason": "No production-bound legacy bank with validated source identity"
+    },
+    {
+      "resident_id": "RES_24",
+      "raw_candidate_occurrences": 36,
+      "status": "MISSING",
+      "reason": "No production-bound legacy bank with validated source identity"
+    }
+  ],
+  "archive_scope": "Complete archive, quarantined candidate images and raw provenance remain local."
+}

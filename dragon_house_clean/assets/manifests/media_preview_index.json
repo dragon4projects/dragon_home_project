@@ -1,0 +1,767 @@
+{
+  "books": [
+    {
+      "id": "BOOK_DIVOV_01",
+      "title": "Леди не движется. Книга 1",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1UIM71KEyeZt5-Tdf1DoRhuJWqRB-418v",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_02",
+      "title": "Леди не движется. Книга 2",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1gexqWNBtXlfi_o8xzI2TmEnUHoIf1I85",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_03",
+      "title": "Дама с собачкой",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1RmzSycbtx0HbSFJUIyNuWV6pjOH7pem1",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_04",
+      "title": "Настоящие индейцы",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "12ysEQB2A0snriLIsHRahxAVnpcMIKNhR",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_05",
+      "title": "Великий Дракон",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "16QgWyaqxD1yOsyc8PXrDCFTqwevNPudz",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_06",
+      "title": "Новый мир",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1zS1zaUQ67mGirT2LW2rjGuH4KSa2lWsF",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_07",
+      "title": "Война миров",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "14uMQkMdp8jB_MtcCngZoetCOGUgdqqbT",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_CONSULTANT",
+      "title": "Консультант по дурацким вопросам",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "138syrxGFXbsFxUSS6hB87ose7CQ3HywH",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_MIRROR",
+      "title": "Объекты в зеркале заднего вида",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1y0D6RQgRv3ZAzE8seTTJF8xXkRAtqFPP",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_DIVOV_WUNDER",
+      "title": "Вундервафля",
+      "author": "Олег Дивов",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "155O8-KsSxNCIDNBkuTHlq2I3K9HNGH-6",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_MONSTER_01",
+      "title": "Я твой монстр",
+      "author": "Елена Звёздная",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1WK6Lh-R88hvDmLwYIKS7R4XqGReqMlNf",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_MONSTER_02",
+      "title": "Я твой монстр. Книга 2",
+      "author": "Елена Звёздная",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1sAdSl9vDy4AsdemMkwUKU9AJjs2UBF5Y",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_01",
+      "title": "Пересекая границы",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1oqUdT1sXAkSi9n1gMngzdkLFysPubQ8q",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_02",
+      "title": "О пользе проклятий",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1U2izpHwkvymE-RIe_JfdK9aMXuTuEFZN",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_03",
+      "title": "Поспорить с судьбой",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1h209j8_r3w6ajRxmBRQJD2ILZe1aI4VJ",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_04",
+      "title": "Люди и призраки",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1DByM6V86nRyAZTvze5Ac-DOPSARO8z5X",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_05",
+      "title": "Шёпот тёмного прошлого",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1sdLJFiBvFE8WB7aa-pubq9o2aa43EKiw",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_06",
+      "title": "Рассмешить богов",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1DzH_LnN_JoFgCGv4mInHu2fGObMrNMAw",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_07",
+      "title": "Путь, выбирающий нас",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1doDeqPa_F0bzrskrhY_bR7RhMzo9h-yo",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_08",
+      "title": "Песня на двоих",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1D3KoPSyvBQ7h9P4kd_Y2E4pF95paaXs6",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_09",
+      "title": "Поступь Повелителя",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1pRX-Q2UW8Klw2FKTJScP55Ye9OTEdFTs",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_10",
+      "title": "Дороги и сны",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1EcGOOU0EpgpWpwVXC1YU39HsiF_wDqwr",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_11",
+      "title": "Обратная сторона пути",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "11lF2-SWjvo4u9-SANrjG7cFg2jPZCG0p",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_12",
+      "title": "Распутья. Наследие повелителя",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1Wwe85GPot4E-QqSh_CufrfQQXuPAd0T2",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_PANKEEVA_13",
+      "title": "Распутья. Добрые соседи",
+      "author": "Оксана Панкеева",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "189n063u4Z_irqEedu_fboCB69mryEjjj",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_REEVE_01",
+      "title": "Смертные машины",
+      "author": "Филип Рив",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1GTiJFbEnyrxxnWiRbRdWRy0IL0S9QnrY",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_REEVE_02",
+      "title": "Золото хищников",
+      "author": "Филип Рив",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1VXg5oW317gXTeTNUUSlwZeYHER7L77uM",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_REEVE_03",
+      "title": "Адские конструкции",
+      "author": "Филип Рив",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1vG12ixrZzOGzA0duxR_dqyrnVbFg4Z_t",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_REEVE_04",
+      "title": "Надвинувшаяся тьма",
+      "author": "Филип Рив",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1hmkcHsO_-EgapFVB48AF-D-QXn9i7W03",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1_-yudHB8gt2hZY-v2r6b1edlgjyMYXKN",
+      "title": "Shumil K voprosu o dolgoy zhizni",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1_-yudHB8gt2hZY-v2r6b1edlgjyMYXKN",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_10rzDviU9veOkM14rTvsNbGHmMy-3idGa",
+      "title": "Lyapunov Slovo o drakone Poputnyiy veter 1 Kratkie polyotyi Stelsi",
+      "author": null,
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "10rzDviU9veOkM14rTvsNbGHmMy-3idGa",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_13v83rdBizh7f8SXxT2F0__KdJoFmIgac",
+      "title": "shumil pavel drakon zamka kongov",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "13v83rdBizh7f8SXxT2F0__KdJoFmIgac",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_13YWyL129WyQC5VmLKf1SvEvkj_QMTu4F",
+      "title": "Dom Komandora",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "13YWyL129WyQC5VmLKf1SvEvkj_QMTu4F",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_14sngKg5ucPcIfFW0f4Ypv-Okplt-GoXh",
+      "title": "shumil pavel davno zabytaya planeta",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "14sngKg5ucPcIfFW0f4Ypv-Okplt-GoXh",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_15HixiLfCNaNGIrcJ8vxZATHP68PZEozE",
+      "title": "shumil pavel koshkin dom",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "15HixiLfCNaNGIrcJ8vxZATHP68PZEozE",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_179kLp-W4nGyY-70adFB98ytvM6Omqd0T",
+      "title": "Shumil Spor o mire Slova o drakone",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "179kLp-W4nGyY-70adFB98ytvM6Omqd0T",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1AznzADV8O74-KngLJKYUHvhFPrtA1aQC",
+      "title": "shumil pavel oskolki yedema",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1AznzADV8O74-KngLJKYUHvhFPrtA1aQC",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1Cq9lAHrJjgI1ge6pxNRgkdkydD0EBUDl",
+      "title": "shumil pavel dolzhny lyubit",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1Cq9lAHrJjgI1ge6pxNRgkdkydD0EBUDl",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1DakA-w0DRItL-AMoJCRARaVzaYYjkpZL",
+      "title": "shumil pavel adam i eva 2",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1DakA-w0DRItL-AMoJCRARaVzaYYjkpZL",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1faYQzjMnkowu7ZyH57KrdmBrDJnyEv5-",
+      "title": "Mikromifyi polnaya versiya",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1faYQzjMnkowu7ZyH57KrdmBrDJnyEv5-",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1giQp4YW0uoImlSGDX-fA5qyd8NI6Fw1h",
+      "title": "Shumil Pochemu ili Otkuda berutsya lyudi",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1giQp4YW0uoImlSGDX-fA5qyd8NI6Fw1h",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1hcvHxcWKELjiPnuLkbDCNZ0seJqxDb6Q",
+      "title": "Tryukach",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1hcvHxcWKELjiPnuLkbDCNZ0seJqxDb6Q",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1hHI8fPkuC2FExlcf4xzTDqZSMPOVdd4j",
+      "title": "Shumil Retsenziya na Plamya nad bezdnoy Vernora Vindzha",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1hHI8fPkuC2FExlcf4xzTDqZSMPOVdd4j",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1iQT2WDrOC1yjVxp9sT6vCAFEz1b0gB5K",
+      "title": "shumil pavel stat drakonom",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1iQT2WDrOC1yjVxp9sT6vCAFEz1b0gB5K",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1iYf_pJ0yG5y6_AYc_qbeQ7-vwHZ0p4WT",
+      "title": "shumil pavel perevedi menya cherez maidan",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1iYf_pJ0yG5y6_AYc_qbeQ7-vwHZ0p4WT",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1KmYfYBSa5giCP3P7mvyMB6Ky77RdzeO9",
+      "title": "shumil pavel yember chuzhaya igra",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1KmYfYBSa5giCP3P7mvyMB6Ky77RdzeO9",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1Mf7Gx4rQ5z2FzLDHpLe1MwDqgXaPR6Da",
+      "title": "shumil pavel k voprosu o prirode semeinogo schastya",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1Mf7Gx4rQ5z2FzLDHpLe1MwDqgXaPR6Da",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1p-yCHK6OwtZfHE_DLDfhIg3_j0PQ6SwO",
+      "title": "shumil pavel k voprosu o smysle zhizni",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1p-yCHK6OwtZfHE_DLDfhIg3_j0PQ6SwO",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1P5b59nVQ8OVauCTCYOgmUzUuPUEuSmqM",
+      "title": "shumilov slovo o drakone 1 slovo o drakone odinokiyi drakon",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1P5b59nVQ8OVauCTCYOgmUzUuPUEuSmqM",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1p7wFkc_u8W6Ye3ieEsYvbDMVWmIcBcoL",
+      "title": "shumil pavel masterlomaster",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1p7wFkc_u8W6Ye3ieEsYvbDMVWmIcBcoL",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1qlkzRoq5QKzSGEStEdURtxyDV3i0wJ-m",
+      "title": "Жизнь в потоке Коучинг",
+      "author": null,
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1qlkzRoq5QKzSGEStEdURtxyDV3i0wJ-m",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1R4TqYwvNkRJE6T5UTojOyS40xoULNfq1",
+      "title": "Полное руководство по методам, принципам и навыкам персонального коучинга",
+      "author": null,
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1R4TqYwvNkRJE6T5UTojOyS40xoULNfq1",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1rlNMYBhL0R14Xeq0hTdCcy3ijD_p3PTH",
+      "title": "shumil pavel poslednii povelitel",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1rlNMYBhL0R14Xeq0hTdCcy3ijD_p3PTH",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1saQMHu94tfR6rdy5ToGxfqnbonCSIPFg",
+      "title": "shumil pavel dolg pered vidom",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1saQMHu94tfR6rdy5ToGxfqnbonCSIPFg",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1ScHKFR7RViw_OiPzM5aH81UxbG8QCohE",
+      "title": "Shumil Sem dney po lunnomu kalendaryu",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1ScHKFR7RViw_OiPzM5aH81UxbG8QCohE",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1TA62qTBLyQsG7825cE4MEFtRzCpWVvKI",
+      "title": "K voprosu ob ohote na drakonov",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1TA62qTBLyQsG7825cE4MEFtRzCpWVvKI",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1TDo1SEl5agBQv-fdFsuYpyIvZGrVRoyw",
+      "title": "shumil pavel lyubit ne lyubit",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1TDo1SEl5agBQv-fdFsuYpyIvZGrVRoyw",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1tj4bQBw6wnDtH183rr6X8T1bCsEkg0D1",
+      "title": "shumil pavel procent sootvetstviya",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1tj4bQBw6wnDtH183rr6X8T1bCsEkg0D1",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1tqslmgeDivNRPJ1O-Ai5dXQQjnenFMf9",
+      "title": "Shumil Cetevyie istorii",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1tqslmgeDivNRPJ1O-Ai5dXQQjnenFMf9",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1tTN1c1q5menm8Pz37KWAZbSOCwiGV8sI",
+      "title": "Bayki u kostra",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1tTN1c1q5menm8Pz37KWAZbSOCwiGV8sI",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1uiYTYrMzVpDr-ppEYg3rnJOxjC9ajivV",
+      "title": "Logger Katti Snark",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1uiYTYrMzVpDr-ppEYg3rnJOxjC9ajivV",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1WhHhNL4n11JX3y1bdcJHg6C3BnR5lFxX",
+      "title": "Spasateli",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1WhHhNL4n11JX3y1bdcJHg6C3BnR5lFxX",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1WrdfH0ThcAIz4R2Vbo-Lx5GBdYbehx9e",
+      "title": "Ruchnoy zverek Sherloka Draksa",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1WrdfH0ThcAIz4R2Vbo-Lx5GBdYbehx9e",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1wx2qyEJGsi0cKTGbrqqEC2FQ6P9k-ihf",
+      "title": "shumil pavel k voprosu o ravenstve polov",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1wx2qyEJGsi0cKTGbrqqEC2FQ6P9k-ihf",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1YHa-QQNfdBPXgOQ4KaUhDOunkYTRoBFI",
+      "title": "shumil pavel karavan mertvecov",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1YHa-QQNfdBPXgOQ4KaUhDOunkYTRoBFI",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1z7tKj8qowepe1C6FuVF5abgtckcPabRf",
+      "title": "shumil pavel idi poimai svoyu zvezdu",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1z7tKj8qowepe1C6FuVF5abgtckcPabRf",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_SOURCE_1ZRFvgfPdMSxLIfNR7w_wicmUu9gu59NM",
+      "title": "Iz nenapisannogo Byit drakonom",
+      "author": "Павел Шумил",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1ZRFvgfPdMSxLIfNR7w_wicmUu9gu59NM",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_01",
+      "title": "Последнее желание",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1jbCWkQ61_wXaFJqbzqQSt501GAqHiPl0",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_02",
+      "title": "Меч Предназначения",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "15RYGaxryfxS2jSqzwN8OQrYa-RlI4wwt",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_03",
+      "title": "Кровь эльфов",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "17YxoLbJy8y_Q8YnN6FJ2DKkbJ44jrv0T",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_04",
+      "title": "Час презрения",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "109_wtVMiznvy9H1J--jWN0KlqhvXSxoB",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_05",
+      "title": "Крещение огнем",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1eV5ZNhxznd5zgazjlwKG2VuIl-W0GLH9",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_06",
+      "title": "Башня ласточки",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1La5OY849g_KNbQxmUtT20GOZ8cC_q16M",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_07",
+      "title": "Владычица озера",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1X3-ofael6QaslfXZWiFlSmnjZAfqyDEl",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_08",
+      "title": "Что-то кончается, что-то начинается",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "10Ageu3ieHguBnKd4LRIGH_0AWqlDfO5B",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    },
+    {
+      "id": "BOOK_WITCHER_09",
+      "title": "Сезон Гроз",
+      "author": "Анджей Сапковский",
+      "kind": "book",
+      "source": "common30/book_registry.json",
+      "source_drive_id": "1v1eLTTETae6vui4YQMG6XHzWPJjRYeLr",
+      "preview_path": null,
+      "status": "METADATA_ONLY"
+    }
+  ],
+  "film": [],
+  "audio": [],
+  "unclassified": []
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "asset_id": "CUBE_LETTERS",
+    "historical_source_sha256": "d82d626db0e7d108feaf026b16c5c0ac6d4918e49513ad3d8ee7f003f46b91cd",
+    "source": "frame_slot_v01/project/runtime_display/masters/CUBE_LETTERS.source",
+    "path": "assets/props/artifacts/cubes/masters/cube_letters.png"
+  },
+  {
+    "asset_id": "POSTER_SHURSHUN",
+    "historical_source_sha256": "c9de29faabb8ac071dac50f1b99c393a96d4b2faa4bd7366d98ef47d24a47609",
+    "source": "frame_slot_v01/project/runtime_display/masters/POSTER_SHURSHUN.source",
+    "path": "assets/props/artifacts/posters/masters/poster_shurshun.png"
+  },
+  {
+    "asset_id": "PHOTO_MOON",
+    "historical_source_sha256": "9a700858492f90e19c2c2fd070c4186b0663dec939ce9707829718c8768fcb4b",
+    "source": "frame_slot_v01/project/runtime_display/masters/PHOTO_MOON.source",
+    "path": "assets/props/artifacts/paintings/masters/photo_moon.png"
+  },
+  {
+    "asset_id": "PORTRAIT_SHURS",
+    "historical_source_sha256": "5d160c598db3a431354fb53419648571e19f4de9d82b7fe945af38421cd2dc65",
+    "source": "frame_slot_v01/project/runtime_display/masters/PORTRAIT_SHURS.source",
+    "path": "assets/props/artifacts/paintings/masters/portrait_shurs.png"
+  },
+  {
+    "asset_id": "MUG_BLUE_A",
+    "historical_source_sha256": "26c0560be9b4fd295f1eb5ee3ea78319d13011a72f71504f486daf82354d1a92",
+    "source": "frame_slot_v01/project/runtime_display/masters/MUG_BLUE_A.source",
+    "path": "assets/props/drinks/cups/masters/mug_blue_a.png"
+  },
+  {
+    "asset_id": "MUG_BLUE_B",
+    "historical_source_sha256": "d341de2ab28ef48976945627fdec5c995c06796fda22c13e15d4619760c5927b",
+    "source": "frame_slot_v01/project/runtime_display/masters/MUG_BLUE_B.source",
+    "path": "assets/props/drinks/cups/masters/mug_blue_b.png"
+  },
+  {
+    "asset_id": "MUG_RED_A",
+    "historical_source_sha256": "f5ac722e768b9c3fa5ebdccf7fb36daca43331ac5c094430ca7641c7c5c0ab3c",
+    "source": "frame_slot_v01/project/runtime_display/masters/MUG_RED_A.source",
+    "path": "assets/props/drinks/cups/masters/mug_red_a.png"
+  },
+  {
+    "asset_id": "MUG_RED_B",
+    "historical_source_sha256": "c655dfb1c8dbefb092cbc6ae7ac9e65d927d53b084e32a8910a5e5c06efeab62",
+    "source": "frame_slot_v01/project/runtime_display/masters/MUG_RED_B.source",
+    "path": "assets/props/drinks/cups/masters/mug_red_b.png"
+  }
+]

@@ -1,0 +1,93 @@
+[
+  {
+    "room_type": "arrival",
+    "variant_id": null,
+    "room_mapping": "candidate only",
+    "camera_orientation": null,
+    "observed_layer_hints": [],
+    "layer_completeness": {
+      "shell": "MISSING",
+      "back": "MISSING",
+      "mid": "MISSING",
+      "floor": "MISSING",
+      "ceiling": "MISSING",
+      "foreground": "MISSING",
+      "occluders": "MISSING",
+      "lighting": "MISSING",
+      "details": "MISSING",
+      "thumbnails": "MISSING"
+    },
+    "candidate_count": 40,
+    "source_scope": "local archive only"
+  },
+  {
+    "room_type": "common",
+    "variant_id": null,
+    "room_mapping": "candidate only",
+    "camera_orientation": null,
+    "observed_layer_hints": [
+      "floor",
+      "foreground",
+      "thumbnails"
+    ],
+    "layer_completeness": {
+      "shell": "MISSING",
+      "back": "MISSING",
+      "mid": "MISSING",
+      "floor": "CANDIDATE",
+      "ceiling": "MISSING",
+      "foreground": "CANDIDATE",
+      "occluders": "MISSING",
+      "lighting": "MISSING",
+      "details": "MISSING",
+      "thumbnails": "CANDIDATE"
+    },
+    "candidate_count": 224,
+    "source_scope": "local archive only"
+  },
+  {
+    "room_type": "private",
+    "variant_id": null,
+    "room_mapping": "candidate only",
+    "camera_orientation": null,
+    "observed_layer_hints": [
+      "floor",
+      "thumbnails"
+    ],
+    "layer_completeness": {
+      "shell": "MISSING",
+      "back": "MISSING",
+      "mid": "MISSING",
+      "floor": "CANDIDATE",
+      "ceiling": "MISSING",
+      "foreground": "MISSING",
+      "occluders": "MISSING",
+      "lighting": "MISSING",
+      "details": "MISSING",
+      "thumbnails": "CANDIDATE"
+    },
+    "candidate_count": 1452,
+    "source_scope": "local archive only"
+  },
+  {
+    "room_type": "private",
+    "variant_id": "R2",
+    "room_mapping": "candidate only",
+    "camera_orientation": null,
+    "observed_layer_hints": [],
+    "layer_completeness": {
+      "shell": "MISSING",
+      "back": "MISSING",
+      "mid": "MISSING",
+      "floor": "MISSING",
+      "ceiling": "MISSING",
+      "foreground": "MISSING",
+      "occluders": "MISSING",
+      "lighting": "MISSING",
+      "details": "MISSING",
+      "thumbnails": "MISSING"
+    },
+    "candidate_count": 4,
+    "source_scope": "local archive only"
+  }
+]
