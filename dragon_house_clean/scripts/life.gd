@@ -119,6 +119,46 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("LISTEN_MUSIC")
 	return scores
 
+func _destination_pressure(actor: Dictionary, room: Dictionary) -> Dictionary:
+	var path:Array=world.find_route(actor["room_id"],room["id"],actor["id"])
+	if path.is_empty():
+		return {}
+	var room_capacity:int=maxi(1,stations.capacity(room))
+	var room_used:int=stations.used_slots(world,str(room["id"]),[str(actor["id"])]).size()
+	var room_ratio:float=float(room_used)/float(room_capacity)
+
+	var group:Dictionary=world.merged_group(int(room["x"]),int(room["level"]))
+	var group_used:=0
+	var group_capacity:=0
+	for cell in group.get("cells",[]):
+		group_used+=stations.used_slots(world,str(cell["id"]),[str(actor["id"])]).size()
+		group_capacity+=stations.capacity(cell)
+	var group_ratio:float=float(group_used)/float(maxi(1,group_capacity))
+
+	# Cell pressure spreads residents across merged R2/R3 rooms; group pressure
+	# prevents one visual room from becoming a crowd magnet when another room
+	# of the same purpose is available. Route cost remains deliberately weak.
+	var pressure:float=room_ratio*0.95+group_ratio*0.30+float(path.size()-1)*0.035
+	return {"room":room,"path":path,"pressure":pressure}
+
+func best_destination(actor: Dictionary, candidates: Array) -> Dictionary:
+	var best:Dictionary={}
+	var best_pressure:=INF
+	for room in candidates:
+		var option:Dictionary=_destination_pressure(actor,room)
+		if option.is_empty():
+			continue
+		var pressure:float=float(option["pressure"])
+		if pressure<best_pressure-0.0001:
+			best=option
+			best_pressure=pressure
+		elif is_equal_approx(pressure,best_pressure) and not best.is_empty():
+			# Stable tie-break: do not let RNG make all residents pile into one
+			# cell simply because identical candidates happened to repeat.
+			if str(room["id"])<str(best["room"]["id"]):
+				best=option
+	return best
+
 func choose_intent(actor: Dictionary) -> Dictionary:
 	var scored: Dictionary = _utilities(actor)
 	var best := ""
@@ -132,10 +172,11 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 				candidates.append(room)
 		if candidates.is_empty():
 			continue
-		var destination: Dictionary = candidates[rng.randi_range(0, candidates.size() - 1)]
-		var path: Array = world.find_route(actor["room_id"], destination["id"], actor["id"])
-		if path.is_empty():
+		var selected:Dictionary=best_destination(actor,candidates)
+		if selected.is_empty():
 			continue
+		var destination:Dictionary=selected["room"]
+		var path:Array=selected["path"]
 		var habits: Dictionary = actor.get("habits", {})
 		var repeat_bonus := minf(float(habits.get(intent, 0.0)), 0.3)
 		var path_cost: float = maxf(0.0, float(path.size() - 1) * 0.045)
