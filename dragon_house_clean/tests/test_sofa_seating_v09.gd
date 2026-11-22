@@ -27,6 +27,8 @@ func run() -> void:
 	assert(body_b.get("station_kind","")=="seat")
 	assert(body_c.get("station_kind","")!="seat",
 		"A third guest cannot be shown sitting on a two-seat sofa")
+	assert(absf(float(body_c["station_point"][0]))>1.45,
+		"Overcrowding fallback must stand beside the sofa, not block sitters")
 	assert(body_a["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
 	assert(body_b["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
 	assert(body_a["station_slot"] != body_b["station_slot"])

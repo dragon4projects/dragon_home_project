@@ -131,16 +131,26 @@ func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> 
 	var start: int = 0
 	for ch in id:
 		start = posmod(start*31+ch.unicode_at(0),997)
-	# Prefer a relevant *actual* seat/work surface, then use the remaining
-	# physical gathering spots. Never pretend the fallback spot is a sofa.
-	for preferred in [true,false]:
+	# Prefer a real seat/work surface. When full, side-space is safer than
+	# putting a standing person's sprite directly in front of two seated
+	# people, even if its (x,z) coordinates are technically unique.
+	var resting: bool=intent in ["REST","SLEEP","READ_BOOK","WATCH_FILM"]
+	for pass_id in range(3):
+		if pass_id==1 and not resting:
+			continue
+		var prefer_functional: bool=pass_id==0
+		var prefer_side: bool=pass_id==1
 		for step in range(points.size()):
-			var idx: int = (start+step)%points.size()
+			var idx: int=(start+step)%points.size()
 			if used.has(idx):
 				continue
 			var spot: Dictionary=points[idx]
-			if _intent_prefers_station(intent,str(spot.get("kind","standing")))==preferred:
-				return _claim(room,idx,spot)
+			var matches: bool=_intent_prefers_station(intent,str(spot.get("kind","standing")))
+			if matches!=prefer_functional:
+				continue
+			if prefer_side and absf(float(spot["offset"].x))<1.45:
+				continue
+			return _claim(room,idx,spot)
 	return {}
 
 func _paired_spots(points: Array, used: Dictionary, seats_only: bool = false) -> Array:

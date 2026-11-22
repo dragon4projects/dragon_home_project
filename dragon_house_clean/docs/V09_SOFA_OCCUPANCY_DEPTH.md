@@ -13,7 +13,7 @@ No changes to the legacy Dragon House repository, no AI integrations, and no ext
 - `room_stations.layout(room)` is now semantically typed. Each place has: stable index, local (x,z) offset, `kind` (`seat`, `floor_rest`, `work`, `standing`) and `furniture_id` when it belongs to an existing, physically rendered object.
 - The actual existing sofas in Common module x=−1 (`SOFA_COMMON_MIDDLE`) and x=0 (`SOFA_COMMON_RIGHT`) have **two** exclusive seats each. Rest lounge sofa, cinema sofa, workbenches and library desk points have individually modeled coordinates. At the hearth (x=−2) the two floor-rest points are **skins**, not fictitious sofas.
 - An R3 Common still offers 30 unique physical gathering positions across three modules. **Only four sofa seats exist** in its current procedural geometry; 30 gathering positions do not mean 30 chairs.
-- `single(world, actor, room, intent)` prioritizes an appropriate seat/work position where present. When the seats are occupied, a third REST actor gets a different standing position rather than playing a seated animation on the same furniture.
+- `single(world, actor, room, intent)` prioritizes an appropriate seat/work position where present. When the seats are occupied, a third REST actor gets a different **side-of-sofa standing position** rather than standing directly in front of and visually hiding both seated residents. A real three-actor room screenshot was used to catch and correct this extra projected-sprite occlusion.
 - `pair(...)` prefers two adjacent available seats of the same depth, then safe same-row standing positions if all seats are in use; no same-slot pair assignments. Fallback positions are explicitly labeled as non-seats.
 - All kinds and furniture links are stored as primitive actor fields in the world snapshot. Private room fronts are traversable but **not** valid public seating destinations, even if someone is the named room owner (private interiors remain unrendered).
 
@@ -41,7 +41,7 @@ Older snapshots may already contain two or three active residents at precisely t
 
 ## 5. Test evidence
 
-- `tests/test_sofa_seating_v09.gd`: two REST actors take different ends of the same physical sofa, third does not sit on it, paths approach from the aisle, stage depth exists only in public rooms, private door is still denied, **v0.6 triple-overlap and v0.7 preserved-slot/obsolete-coordinate snapshots both repaired immediately**, legacy travel endpoint corrected, closer camera yaw adds depth.
+- `tests/test_sofa_seating_v09.gd`: two REST actors take different ends of the same physical sofa, third stands at the sofa's side without obscuring seated figures, paths approach from the aisle, stage depth exists only in public rooms, private door is still denied, **v0.6 triple-overlap and v0.7 preserved-slot/obsolete-coordinate snapshots both repaired immediately**, legacy travel endpoint corrected, closer camera yaw adds depth.
 - `tests/test_room_stations_v07.gd`: reverified all 30 gathering spots and updated expected depth corridor bounds to include new physical front/back lane positions.
 - Every previous Godot test retained (camera, room merge, build, locomotion, social pair, media, JSON snapshot, actual LFS sprite anchor, privacy, UI and 49-cell LOD).
 - Local Godot 4.7.2 sandbox: **19 Godot tests and 2 Python QA tests PASS**. Virtual OpenGL cutaway screenshot rendered without script errors. Full-LFS GitHub CI must pass separately before binaries can be called accepted.
