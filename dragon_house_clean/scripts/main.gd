@@ -14,6 +14,10 @@ var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
 var art_layer_count := 0
+var detailed_room_groups: Dictionary = {}
+var visual_room_groups: Dictionary = {}
+var detail_materialization_count := 0
+var detail_eviction_count := 0
 var validated_visual_banks := 0
 var qa_visual_preview := false
 var preview_visual_banks := 0
@@ -124,6 +128,7 @@ func _ready() -> void:
 	smooth_focus = desired_focus
 	zoom_current = zoom
 	apply_camera(0.1)
+	update_render_lod()
 	notice.text = "Независимый прототип: камера, постройка, автономная жизнь"
 
 func surface_texture(color: Color) -> Texture2D:
@@ -336,6 +341,112 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 			if offset == 0:
 				box(parent, Vector3(0, 0.5, -1.70), Vector3(1.0, 1.05, 0.16), palette["wood"])
 
+func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
+	# Cutaway has actual depth: the rear alcove is inset and all details remain
+	# behind the mid-depth actor walkway. Shared R2/R3 rooms have continuous
+	# floors plus repeated architectural bays, never full mid-room partitions.
+	# No private room interiors are ever instantiated.
+	var kind: String = str(group["type"])
+	if kind == "private" or kind == "lift":
+		return
+	var base_color := Color("#4a4143")
+	match kind:
+		"common": base_color = Color("#514046")
+		"library", "artifact": base_color = Color("#433739")
+		"cinema": base_color = Color("#26242b")
+		"study", "workshop": base_color = Color("#554843")
+		"music": base_color = Color("#403842")
+		"rest": base_color = Color("#51473f")
+	var center: float = (float(group["x_start"])+float(group["x_end"]))*0.5
+	for cell in group["cells"]:
+		var module := Node3D.new()
+		module.name = "RearBay_"+str(cell["id"])
+		module.position.x = (float(cell["x"])-center)*W
+		parent.add_child(module)
+		# Dark matte recess, crown moulding, vertical stone returns and wainscot.
+		box(module,Vector3(0,1.49,-1.78),Vector3(3.84,2.67,0.08),base_color)
+		box(module,Vector3(-1.89,1.47,-1.59),Vector3(0.12,2.76,0.24),palette["rock_light"])
+		box(module,Vector3(1.89,1.47,-1.59),Vector3(0.12,2.76,0.24),palette["rock_light"])
+		box(module,Vector3(0,2.83,-1.58),Vector3(3.87,0.15,0.25),palette["border"])
+		box(module,Vector3(0,0.19,-1.55),Vector3(3.72,0.31,0.27),palette["border"])
+		# Minimal practical wall sconces: emissive material instead of eight real
+		# omni lights per room (target Dell 5300 Compatibility renderer).
+		if ["common","rest","study","library","arrival"].has(kind):
+			for side in [-1.0,1.0]:
+				box(module,Vector3(side*1.43,2.22,-1.41),
+					Vector3(0.09,0.34,0.10),palette["bronze"])
+				box(module,Vector3(side*1.43,2.43,-1.33),
+					Vector3(0.15,0.14,0.09),Color("#b17c55"),true)
+
+func add_room_overview_cues(parent: Node3D, group: Dictionary) -> void:
+	# Cheap silhouettes carry room identity when rich furniture is not instantiated.
+	# Never show the contents of private rooms; those only have a public facade.
+	var kind: String = str(group["type"])
+	if kind == "private":
+		return
+	var start_x: int = int(group["x_start"])
+	var end_x: int = int(group["x_end"])
+	var center_x: float = (float(start_x)+float(end_x))*0.5
+	for cell in group["cells"]:
+		var x: float = (float(cell["x"])-center_x)*W
+		match kind:
+			"common", "rest":
+				box(parent, Vector3(x,0.39,-1.24), Vector3(1.9,0.70,0.48),palette["rug"])
+			"library", "artifact":
+				box(parent, Vector3(x,1.16,-1.70), Vector3(2.8,1.80,0.22),palette["wood"])
+				box(parent, Vector3(x,1.74,-1.54), Vector3(2.48,0.055,0.20),palette["rock_light"])
+			"cinema":
+				box(parent, Vector3(x,1.65,-1.74), Vector3(2.5,1.42,0.15),palette["black"])
+				box(parent, Vector3(x,1.65,-1.63), Vector3(2.16,1.10,0.07),palette["screen"],true)
+			"music":
+				for side in [-1.0,1.0]:
+					box(parent, Vector3(x+side*1.0,1.09,-1.67), Vector3(0.54,1.40,0.24),palette["black"])
+			"study", "workshop":
+				box(parent, Vector3(x,0.66,-1.26), Vector3(2.72,0.18,0.66),palette["wood"])
+			"arrival":
+				box(parent, Vector3(x,1.20,-1.67), Vector3(0.10,2.15,0.12),palette["bronze"])
+			"lift":
+				box(parent, Vector3(x,0.06,-0.35), Vector3(3.5,0.08,3.1),palette["copper"])
+			_:
+				pass
+
+func _is_near_detail(group_node: Node3D) -> bool:
+	# Detail follows the camera position but never drives simulation.
+	# R1/R2/R3 shells stay drawn; rich furniture is mounted only near focus.
+	if zoom_current >= 44.0:
+		return false
+	var half_width: float = float(visual_room_groups.get(group_node.name,{}).get("width",1))*W*0.5
+	var radius_x: float = maxf(7.0,zoom_current*0.63)+half_width
+	var radius_y: float = maxf(H*1.15,zoom_current*0.30)
+	return absf(group_node.position.x-smooth_focus.x) <= radius_x and absf(group_node.position.y-smooth_focus.y) <= radius_y
+
+func _populate_furniture(group_node: Node3D) -> void:
+	var group: Dictionary = visual_room_groups.get(group_node.name,{})
+	if group.is_empty() or str(group.get("type","")) == "private":
+		return
+	var decoration_layer: Node3D = group_node.get_node_or_null("LocalFurniture")
+	if decoration_layer == null or detailed_room_groups.has(group_node.name):
+		return
+	var center_cell: float = (float(group["x_start"])+float(group["x_end"]))*0.5
+	for cell in group["cells"]:
+		var module := Node3D.new()
+		module.name = str(cell["id"])+"_furniture"
+		module.position.x = (float(cell["x"])-center_cell)*W
+		decoration_layer.add_child(module)
+		furnish(module,str(group["type"]),int(cell["x"]),int(group["level"]))
+	detailed_room_groups[group_node.name] = true
+	detail_materialization_count += 1
+
+func _release_furniture(group_node: Node3D) -> void:
+	if not detailed_room_groups.has(group_node.name):
+		return
+	var decoration_layer: Node3D = group_node.get_node_or_null("LocalFurniture")
+	if decoration_layer:
+		for child in decoration_layer.get_children():
+			child.queue_free()
+	detailed_room_groups.erase(group_node.name)
+	detail_eviction_count += 1
+
 func make_room(group: Dictionary) -> void:
 	# One shell per logical R1/R2/R3 merge group, not N adjacent full-walled rooms.
 	# Individual module IDs remain in the World Core so residents keep legal routes.
@@ -348,6 +459,7 @@ func make_room(group: Dictionary) -> void:
 	var span: float = float(group["width"])*W
 	n.position = Vector3(center_cell*W,float(level)*H,0.0)
 	room_root.add_child(n)
+	visual_room_groups[n.name] = group
 	var t: String = group["type"]
 	var side_left: Dictionary = world.get_room(x_start-1,level)
 	var side_right: Dictionary = world.get_room(x_end+1,level)
@@ -367,6 +479,11 @@ func make_room(group: Dictionary) -> void:
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
 	box(structure,Vector3(0,-0.12,-0.07),Vector3(span*1.01,0.25,4.05),palette["floor"])
 	box(background,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
+	if t != "private":
+		var rear_stage := Node3D.new()
+		rear_stage.name = "Stage_Backwall"
+		background.add_child(rear_stage)
+		add_backwall_stage(rear_stage,group)
 	box(structure,Vector3(0,3.12,-0.35),Vector3(span*1.01,0.22,3.55),palette["border"])
 	box(overlay,Vector3(0,-0.20,1.80),Vector3(span*1.01,0.22,0.18),palette["border"])
 	art_layer_count += interior_skin.add_layers(artwork,t,int(group["width"]),span)
@@ -387,6 +504,11 @@ func make_room(group: Dictionary) -> void:
 			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
 			box(structure,Vector3(seam_x,2.93,-0.50),
 				Vector3(0.12,0.37,3.15),palette["rock_light"])
+	if t != "private":
+		var overview := Node3D.new()
+		overview.name = "Layer_OverviewCues"
+		n.add_child(overview)
+		add_room_overview_cues(overview,group)
 	if t == "private":
 		# Never materialize someone else's private interior: facade only.
 		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
@@ -397,12 +519,6 @@ func make_room(group: Dictionary) -> void:
 		var decoration_layer := Node3D.new()
 		decoration_layer.name = "LocalFurniture"
 		n.add_child(decoration_layer)
-		for cell in group["cells"]:
-			var module := Node3D.new()
-			module.name = cell["id"] + "_furniture"
-			module.position.x = (float(cell["x"])-center_cell)*W
-			decoration_layer.add_child(module)
-			furnish(module,t,int(cell["x"]),level)
 		var title: String = room_names.get(t,t)
 		if int(group["width"]) > 1:
 			title += " · %d" % int(group["width"])
@@ -411,6 +527,8 @@ func make_room(group: Dictionary) -> void:
 
 func make_rooms() -> void:
 	art_layer_count = 0
+	detailed_room_groups.clear()
+	visual_room_groups.clear()
 	for child in room_root.get_children():
 		child.queue_free()
 	for group in world.visual_groups():
@@ -488,7 +606,8 @@ func make_residents() -> void:
 					actor["visual_preview_only"] = not asset_banks.verified_bank(id,profile_id,chosen_wardrobe)
 					actor_animations[id] = {"state":"IDLE_S","frame":0,"elapsed":0.0}
 
-		sprite.position = Vector3(0, 0.83 if id == "MANJKA" else 1.05, 0)
+		if not actor["runtime_visual_bound"]:
+			sprite.position = Vector3(0, 0.83 if id == "MANJKA" else 1.05, 0)
 		if id != "MANJKA" and not actor["runtime_visual_bound"]:
 			var colors = [Color("#bfa4c1"), Color("#dca39e"), Color("#a3aeb3"), Color("#d4b78a"),
 				Color("#c6c0c4"), Color("#9b9fbf"), Color("#bc9e97"), Color("#9ab4a9")]
@@ -788,6 +907,7 @@ func set_mode(mode: String) -> void:
 			zoom = 16.0
 	update_selection_outline()
 	update_hud()
+	update_render_lod()
 
 func follow_actor(id: String) -> void:
 	if not actor_sprites.has(id):
@@ -856,13 +976,28 @@ func ray_to_front_plane(mouse: Vector2) -> Variant:
 		return null
 	return start + direction * distance
 
+func zoom_around_pointer(mouse: Vector2, multiplier: float) -> void:
+	# Shelter-style anchoring: keep the world point under the cursor stable
+	# while zooming the camera. Following a resident takes precedence.
+	var old_zoom: float = zoom
+	var new_zoom: float = clampf(old_zoom*multiplier,4.5,110.0)
+	if is_equal_approx(new_zoom,old_zoom):
+		return
+	if follow_id == "":
+		var target = ray_to_front_plane(mouse)
+		if target != null:
+			var ratio: float = new_zoom / old_zoom
+			desired_focus.x = float(target.x) - (float(target.x)-desired_focus.x)*ratio
+			desired_focus.y = float(target.y) - (float(target.y)-desired_focus.y)*ratio
+	zoom = new_zoom
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var e: InputEventMouseButton = event
 		if e.button_index == MOUSE_BUTTON_WHEEL_UP and e.pressed:
-			zoom = maxf(4.5, zoom * 0.87)
+			zoom_around_pointer(e.position,0.87)
 		elif e.button_index == MOUSE_BUTTON_WHEEL_DOWN and e.pressed:
-			zoom = minf(89.0, zoom * 1.15)
+			zoom_around_pointer(e.position,1.15)
 		elif e.button_index == MOUSE_BUTTON_RIGHT:
 			moving_view = e.pressed
 	if event is InputEventMouseMotion:
@@ -906,6 +1041,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				return
 			if world.build(build_cell.x, build_cell.y, build_type):
 				make_rooms()
+				update_render_lod()
 				notice.text = "Построено: %s (%d, %d)" % [
 					room_names.get(build_type, build_type), build_cell.x, build_cell.y]
 			else:
@@ -970,12 +1106,20 @@ func apply_camera(delta: float) -> void:
 	camera.look_at(smooth_focus,Vector3.UP)
 
 func update_render_lod() -> void:
-	# Lightweight authored shell remains; high-detail decorations can stream later.
-	var detail_visible: bool = zoom_current < 72.0
+	# Keep cutaway shell/cues visible, materialize nearby details on demand.
+	# The camera never activates an owner-private interior.
 	for group_node in room_root.get_children():
 		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
+		var cues: Node3D = group_node.get_node_or_null("Layer_OverviewCues")
 		if furniture != null:
-			furniture.visible = detail_visible
+			var near: bool = _is_near_detail(group_node)
+			if near:
+				_populate_furniture(group_node)
+			else:
+				_release_furniture(group_node)
+			furniture.visible = near
+			if cues != null:
+				cues.visible = not near
 		var roof_label: Label3D = group_node.get_node_or_null("RoomRoofLabel")
 		if roof_label != null:
 			roof_label.visible = zoom_current >= 35.0 and current_mode != "FOLLOW"

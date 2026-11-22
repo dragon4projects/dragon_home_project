@@ -1,4 +1,4 @@
-# Дом Дракона — самостоятельная реализация v0.5
+# Дом Дракона — самостоятельная реализация v0.6
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -90,3 +90,6 @@ See \`docs/V03_CUTAWAY_ASSET_BINDING_QA.md\` for coverage and limitations.
 
 ## v0.5 — November Git LFS integration
 See docs/V05_NOV_LFS_INTEGRATION_PLAN.md. 21 out of 24 residents have technical sprite banks in private Git LFS; no resident has final artistic approval. [K] opens the 24-character gallery. [V] explicitly previews QA art on 8 existing actor bodies and Manka, without activating dormant residents. Eight authentic artifact masters, nine source-documented Poly Haven CC0 materials and 76 metadata-only cloud book titles are integrated where actual asset files are available. The repository-root GitHub Actions workflow verifies actual LFS bytes, imported Godot textures and tests. A successful run is still required for independent acceptance. No approved layered interiors exist yet.
+
+## v0.6 — Cutaway detail, camera anchor and 8GB-aware scene scaling
+See docs/V06_CUTAWAY_LOD_CAMERA.md. Mouse wheel zooms around cursor, preserving FOLLOW. R1/R2/R3 shell and coarse cues remain at HOUSE zoom, full furniture is lazy-instantiated near the camera and released when distant, private rooms never receive furnishings or rear-bay interiors. Resident sprite feet use source bank feet anchors without overwrite. A synthetic 49-room test keeps only 4 groups with full detail near the camera. This is not a physical Windows/M1 performance benchmark.
