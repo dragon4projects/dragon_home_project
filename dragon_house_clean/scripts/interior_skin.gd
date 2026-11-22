@@ -15,7 +15,7 @@ const Z_FOR_ROLE := {
 }
 var config: Dictionary = {}
 var textures: Dictionary = {}
-var max_cache := 32
+var max_cache := 6
 var cache_order: Array = []
 var error := ""
 

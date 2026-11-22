@@ -1,4 +1,4 @@
-# Дом Дракона — самостоятельная реализация v0.9
+# Дом Дракона — самостоятельная реализация v0.10
 
 Godot **4.7.2** / GDScript / Windows 10 primary, macOS 15 Apple Silicon secondary.
 This is a new project, **not a patch** of the separate existing House.
@@ -102,3 +102,6 @@ See docs/V08_MEDIA_BROWSING_COMPACT_HUD.md. The catalog browser is a distinct ac
 
 ## v0.9 Real sofa occupancy and repair of overlapping saved actors
 See docs/V09_SOFA_OCCUPANCY_DEPTH.md. Common middle/right sofas have two exclusive physical seating stations apiece; a third visitor remains standing rather than visually sitting on the same furniture. Movement approaches the seat along the aisle. Existing overlapping v0.6 saved positions are redistributed at load and old travel endpoints are remapped. The camera adds a gentle oblique depth cue as it zooms into room scale; no actor or room art is marked approved.
+
+## v0.10 — stable data-driven furniture and streamed photorealistic art
+See docs/V10_FURNITURE_INTERACTIONS_AND_ART_STREAMING.md. Physical seats and work locations now come from `data/furniture_interactions_v1.json`, validated by `interaction_anchor_registry.gd`. Stable IDs survive position reorder, exact named furniture nodes make 3D geometry verifiable, and rejected art-agent proposals never silently alter resident life. Approved room art is mounted only near the camera, and a complete `furniture_back` replacement suppresses duplicate procedural furniture while retaining invisible interaction points. Synthetic tests cover both transitions. No unreviewed AI portraits or room art is promoted.

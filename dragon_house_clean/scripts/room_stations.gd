@@ -1,4 +1,5 @@
 extends RefCounted
+const InteractionAnchors = preload("res://scripts/interaction_anchor_registry.gd")
 ## Explicit, deterministic local station reservations. No AI/external dependency.
 ## Reservations live on actor state so save/load can reconstruct occupancy.
 ## PRIVATE rooms are never public station pools.
@@ -10,6 +11,11 @@ const CAPACITY_BY_TYPE := {
 const FLOOR_X_LIMIT := 2.05
 const BACK_Z := -0.70
 const FRONT_Z := 0.51
+var furniture = InteractionAnchors.new()
+
+func _init() -> void:
+	if not furniture.initialize():
+		push_warning("Interaction anchor manifest unavailable: "+furniture.last_error)
 
 func capacity(room: Dictionary) -> int:
 	if room.is_empty():
@@ -20,52 +26,44 @@ func _spot(x: float, z: float, kind: String = "standing", object_id: String = ""
 	return {"offset":Vector2(x,z),"kind":kind,"furniture_id":object_id}
 
 func layout(room: Dictionary) -> Array:
-	# Every seat corresponds to actual procedural furniture in main.gd.
-	# The remaining stations are standing/ground-gathering positions.
-	# R3 Common: 30 unique positions, but only 4 actual sofa seats.
-	# Two Z rows are staggered so actors do not share identical silhouettes.
-	var count: int = capacity(room)
-	var kind: String = str(room.get("type",""))
-	var cell_x: int = int(room.get("x",0))
-	var positions: Array = []
-	if kind == "common":
-		if cell_x == -1:
-			positions.append(_spot(-0.56,-0.57,"seat","SOFA_COMMON_MIDDLE"))
-			positions.append(_spot(0.56,-0.57,"seat","SOFA_COMMON_MIDDLE"))
-		elif cell_x == 0:
-			positions.append(_spot(-0.53,-0.43,"seat","SOFA_COMMON_RIGHT"))
-			positions.append(_spot(0.53,-0.43,"seat","SOFA_COMMON_RIGHT"))
-		elif cell_x == -2:
-			# Skins near the hearth, not an imaginary third sofa.
-			positions.append(_spot(-1.30,-0.32,"floor_rest","FIREPLACE_SKINS"))
-			positions.append(_spot(1.28,-0.32,"floor_rest","FIREPLACE_SKINS"))
-	elif kind == "rest":
-		positions.append(_spot(-0.85,-0.39,"seat","SOFA_REST"))
-		positions.append(_spot(0.27,-0.39,"seat","SOFA_REST"))
-	elif kind == "cinema":
-		positions.append(_spot(-0.58,0.40,"seat","SOFA_CINEMA"))
-		positions.append(_spot(0.58,0.40,"seat","SOFA_CINEMA"))
-	elif kind == "study":
-		positions.append(_spot(-0.52,-0.38,"work","DESK_STUDY"))
-	elif kind == "library":
-		positions.append(_spot(-0.42,0.37,"work","TABLE_LIBRARY"))
-		positions.append(_spot(0.42,0.37,"work","TABLE_LIBRARY"))
-	elif kind == "workshop":
-		positions.append(_spot(-0.44,-0.65,"work","BENCH_WORKSHOP"))
-		positions.append(_spot(0.44,-0.65,"work","BENCH_WORKSHOP"))
-	# Remaining stations are not seats; avoid putting their feet on cushions.
-	# Back/front stagger: no duplicate 2D projected X positions between rows.
-	var candidates: Array = []
+	# The physical furniture anchors are data, never inferred from a painted
+	# backdrop. Art-agent proposals do not automatically change simulation.
+	var count: int=capacity(room)
+	var positions: Array=[]
+	for item in furniture.for_room(room):
+		positions.append({
+			"id":str(item["id"]),
+			"offset":Vector2(float(item["x"]),float(item["z"])),
+			"kind":str(item["kind"]),
+			"furniture_id":str(item.get("furniture_id","")),
+			"pose_hint":str(item.get("pose_hint","IDLE_S")),
+			"approach_z":float(item.get("approach_z",0.95))
+		})
+	if positions.size()>count:
+		push_error("Furniture spots exceed room capacity, ignoring duplicates")
+		positions.resize(count)
+	# The remainder is physically present for standing and social gatherings.
+	# These aren't furniture seats and cannot trigger a seated sprite.
+	var candidates: Array=[]
+	var idx:=0
 	for z in [1.24,0.27,-1.30]:
 		var shift := 0.0 if z == 1.24 else 0.30 if z == 0.27 else -0.18
 		for x in [-1.75,-0.87,0.0,0.87,1.75]:
-			var xx: float = clampf(float(x)+shift,-1.87,1.87)
-			candidates.append(_spot(xx,float(z)))
+			var xx: float=clampf(float(x)+shift,-1.87,1.87)
+			candidates.append({
+				"id":"stand_%02d" % idx,
+				"offset":Vector2(xx,float(z)),
+				"kind":"standing",
+				"furniture_id":"",
+				"pose_hint":"IDLE_S",
+				"approach_z":0.95
+			})
+			idx+=1
 	for place in candidates:
 		if positions.size()>=count:
 			break
 		var pos: Vector2=place["offset"]
-		var conflict := false
+		var conflict:=false
 		for existing in positions:
 			var old: Vector2=existing["offset"]
 			if pos.distance_to(old)<0.73:
@@ -73,7 +71,7 @@ func layout(room: Dictionary) -> Array:
 				break
 		if not conflict:
 			positions.append(place)
-	assert(positions.size()==count, "A room must have its declared distinct spots")
+	assert(positions.size()==count,"A room must have distinct physical stations")
 	for place in positions:
 		assert(absf(float(place["offset"].x))<FLOOR_X_LIMIT)
 	return positions
@@ -115,7 +113,10 @@ func available_count(world, room: Dictionary) -> int:
 func _claim(room: Dictionary, index: int, spot: Dictionary) -> Dictionary:
 	return {"room_id":str(room["id"]),"slot":index,
 		"offset":spot["offset"],"kind":str(spot.get("kind","standing")),
-		"furniture_id":str(spot.get("furniture_id",""))}
+		"furniture_id":str(spot.get("furniture_id","")),
+		"anchor_id":str(spot.get("id","")),
+		"pose_hint":str(spot.get("pose_hint","IDLE_S")),
+		"approach_z":float(spot.get("approach_z",0.95))}
 
 func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> Dictionary:
 	var id: String = str(actor.get("id",""))
@@ -202,6 +203,9 @@ func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 	actor["station_point"] = [offset.x,offset.y]
 	actor["station_kind"] = str(claim.get("kind","standing"))
 	actor["station_furniture_id"] = str(claim.get("furniture_id",""))
+	actor["station_anchor_id"] = str(claim.get("anchor_id",""))
+	actor["station_pose_hint"] = str(claim.get("pose_hint","IDLE_S"))
+	actor["station_approach_z"] = float(claim.get("approach_z",0.95))
 
 func release(actor: Dictionary) -> void:
 	actor.erase("station_room_id")
@@ -209,6 +213,9 @@ func release(actor: Dictionary) -> void:
 	actor.erase("station_point")
 	actor.erase("station_kind")
 	actor.erase("station_furniture_id")
+	actor.erase("station_anchor_id")
+	actor.erase("station_pose_hint")
+	actor.erase("station_approach_z")
 
 func reconcile(world) -> int:
 	# Restore station invariants after loading a snapshot, without new life.
@@ -225,6 +232,16 @@ func reconcile(world) -> int:
 		if room_id == "" and slot == -1:
 			continue
 		var room: Dictionary = world.room_by_id(room_id)
+		var authored: Array = layout(room) if not room.is_empty() else []
+		var stable_id: String=str(actor.get("station_anchor_id",""))
+		if stable_id!="":
+			slot = -1
+			for index in range(authored.size()):
+				if str(authored[index].get("id",""))==stable_id:
+					slot=index
+					break
+			if slot>=0:
+				actor["station_slot"]=slot
 		var key: String = "%s:%d" % [room_id,slot]
 		var invalid: bool = not bool(actor.get("active",false)) or room.is_empty() or (
 			not world.is_accessible(room,str(id))) or slot < 0 or slot >= capacity(room) or (
@@ -248,9 +265,12 @@ func reconcile(world) -> int:
 			# v0.7 stored generic coordinates and the SAME slot IDs. Rewrite
 			# the actor's true body location/terminal waypoint, not just the
 			# station metadata, or old saves still visually stack on furniture.
-			var spot: Dictionary = layout(room)[slot]
+			var spot: Dictionary = authored[slot]
 			actor["station_kind"] = str(spot.get("kind","standing"))
 			actor["station_furniture_id"] = str(spot.get("furniture_id",""))
+			actor["station_anchor_id"] = str(spot.get("id",""))
+			actor["station_pose_hint"] = str(spot.get("pose_hint","IDLE_S"))
+			actor["station_approach_z"] = float(spot.get("approach_z",0.95))
 			var offset: Vector2 = spot["offset"]
 			actor["station_point"] = [offset.x,offset.y]
 			var new_x:float=float(room["x"])*world.MODULE_W+offset.x

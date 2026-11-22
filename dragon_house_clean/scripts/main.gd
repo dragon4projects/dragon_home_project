@@ -15,6 +15,7 @@ var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
 var art_layer_count := 0
 var detailed_room_groups: Dictionary = {}
+var art_loaded_groups: Dictionary = {}
 var visual_room_groups: Dictionary = {}
 var detail_materialization_count := 0
 var detail_eviction_count := 0
@@ -267,12 +268,25 @@ func add_tv(parent: Node3D, at: Vector3) -> void:
 	box(parent, at + Vector3(0, 0.65, 0.065), Vector3(1.98, 1.04, 0.035), palette["screen"], true)
 	box(parent, at + Vector3(0, -0.12, 0), Vector3(1.15, 0.18, 0.46), palette["wood"])
 
+func furniture_object(parent: Node3D, object_id: String) -> Node3D:
+	# Stable scene names mirror data/furniture_interactions_v1.json.
+	# The node exists only while the camera materializes this room's detail,
+	# but the simulation's data-owned station IDs persist independently.
+	var object := Node3D.new()
+	object.name = object_id
+	parent.add_child(object)
+	return object
+
 func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 	var offset := int(abs(x) + abs(level)) % 2
 	match kind:
 		"common":
 			box(parent, Vector3(0, 0.05, 0.45), Vector3(3.8, 0.04, 2.15), palette["rug"])
 			if x == -2:
+				var skins := furniture_object(parent, "FIREPLACE_SKINS")
+				for side in [-1.0,1.0]:
+					box(skins,Vector3(side*1.29,0.022,-0.32),
+						Vector3(0.84,0.025,0.70),palette["rug"])
 				box(parent, Vector3(-1.35, 1.38, -1.73), Vector3(1.25, 1.48, 0.25), palette["rock_light"])
 				box(parent, Vector3(-1.35, 0.92, -1.45), Vector3(0.80, 0.58, 0.17), palette["black"])
 				box(parent, Vector3(-1.32, 0.88, -1.30), Vector3(0.53, 0.45, 0.08), Color("#f4943c"), true)
@@ -285,26 +299,27 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 				fire_light.shadow_enabled = false
 				parent.add_child(fire_light)
 			elif x == -1:
-				add_sofa(parent, Vector3(0, 0, -1.06), 2.6)
+				add_sofa(furniture_object(parent,"SOFA_COMMON_MIDDLE"), Vector3(0, 0, -1.06), 2.6)
 				box(parent, Vector3(0, 0.44, 0.86), Vector3(1.4, 0.30, 0.7), palette["wood"])
 				# Canonical historical mugs belong in the Common, not the Library.
 				add_canonical_prop(parent,"MUG_RED_A",Vector3(-0.37,0.91,0.90),0.45)
 				add_canonical_prop(parent,"MUG_BLUE_A",Vector3(0.34,0.91,0.90),0.45)
 			else:
-				add_sofa(parent, Vector3(0.0, 0, -0.88), 2.35, Color("#76513e"))
+				add_sofa(furniture_object(parent,"SOFA_COMMON_GENERIC"), Vector3(0.0, 0, -0.88), 2.35, Color("#76513e"))
 				add_shelf(parent, Vector3(1.38, 0.25, -1.70), 1.25)
 		"library":
 			add_shelf(parent, Vector3(-1.24, 0.15, -1.64), 1.75)
 			add_shelf(parent, Vector3(1.12, 0.15, -1.64), 1.55)
-			box(parent, Vector3(0.0, 0.48, 0.82), Vector3(0.9, 0.35, 0.65), palette["wood"])
+			box(furniture_object(parent,"TABLE_LIBRARY"), Vector3(0.0, 0.48, 0.82), Vector3(0.9, 0.35, 0.65), palette["wood"])
 		"rest":
-			add_sofa(parent, Vector3(-0.30, 0.0, -0.83), 2.4, Color("#766049"))
+			add_sofa(furniture_object(parent,"SOFA_REST"), Vector3(-0.30, 0.0, -0.83), 2.4, Color("#766049"))
 			add_shelf(parent, Vector3(1.42, 0.23, -1.58), 1.1)
 			box(parent, Vector3(0.72, 0.30, 0.70), Vector3(0.80, 0.35, 0.62), palette["wood"])
 		"study":
-			box(parent, Vector3(0.0, 0.7, -1.05), Vector3(2.5, 0.18, 0.89), palette["wood"])
-			box(parent, Vector3(-0.9, 0.38, -1.0), Vector3(0.15, 0.65, 0.50), palette["wood"])
-			box(parent, Vector3(0.9, 0.38, -1.0), Vector3(0.15, 0.65, 0.50), palette["wood"])
+			var desk := furniture_object(parent,"DESK_STUDY")
+			box(desk, Vector3(0.0, 0.7, -1.05), Vector3(2.5, 0.18, 0.89), palette["wood"])
+			box(desk, Vector3(-0.9, 0.38, -1.0), Vector3(0.15, 0.65, 0.50), palette["wood"])
+			box(desk, Vector3(0.9, 0.38, -1.0), Vector3(0.15, 0.65, 0.50), palette["wood"])
 			box(parent, Vector3(-0.1, 0.96, -1.0), Vector3(0.75, 0.52, 0.045), palette["screen"])
 			add_shelf(parent, Vector3(1.50, 0.10, -1.7), 0.9)
 		"music":
@@ -312,17 +327,17 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 			box(parent, Vector3(1.3, 0.7, -1.5), Vector3(1.2, 1.2, 0.58), palette["black"])
 			for side in [-1, 1]:
 				box(parent, Vector3(side * 1.3, 0.89, -1.16), Vector3(0.7, 0.58, 0.10), palette["screen"])
-			box(parent, Vector3(0, 0.68, -1.2), Vector3(1.25, 0.17, 0.75), palette["wood"])
+			box(furniture_object(parent,"DESK_MUSIC"), Vector3(0, 0.68, -1.2), Vector3(1.25, 0.17, 0.75), palette["wood"])
 		"cinema":
 			add_tv(parent, Vector3(0.0, 0.70, -1.68))
-			add_sofa(parent, Vector3(0, 0, 0.84), 2.9, Color("#71423b"))
+			add_sofa(furniture_object(parent,"SOFA_CINEMA"), Vector3(0, 0, 0.84), 2.9, Color("#71423b"))
 		"arrival":
 			# Coat rack and shoe storage; deliberately no bench.
 			box(parent, Vector3(-1.30, 1.28, -1.65), Vector3(0.1, 2.4, 0.1), palette["bronze"])
 			box(parent, Vector3(-1.30, 2.24, -1.65), Vector3(0.85, 0.11, 0.13), palette["bronze"])
 			box(parent, Vector3(1.08, 0.25, -1.5), Vector3(1.70, 0.50, 0.40), palette["wood"])
 		"workshop":
-			box(parent, Vector3(0, 0.85, -1.30), Vector3(2.95, 0.20, 0.8), palette["wood"])
+			box(furniture_object(parent,"BENCH_WORKSHOP"), Vector3(0, 0.85, -1.30), Vector3(2.95, 0.20, 0.8), palette["wood"])
 			add_shelf(parent, Vector3(1.2, 0.15, -1.72), 1.2)
 		"artifact":
 			add_shelf(parent, Vector3(0, 0.1, -1.62), 3.1)
@@ -458,6 +473,32 @@ func _is_near_detail(group_node: Node3D) -> bool:
 	var radius_y: float = maxf(H*1.15,zoom_current*0.30)
 	return absf(group_node.position.x-smooth_focus.x) <= radius_x and absf(group_node.position.y-smooth_focus.y) <= radius_y
 
+func _load_room_art(group_node: Node3D) -> void:
+	if art_loaded_groups.has(group_node.name):
+		return
+	var group: Dictionary=visual_room_groups.get(group_node.name,{})
+	if not bool(group.get("has_art",false)):
+		return
+	var layer: Node3D=group_node.get_node_or_null("Layer_ApprovedArt")
+	if layer==null:
+		return
+	var count: int=interior_skin.add_layers(layer,str(group["type"]),
+		int(group["width"]),float(group["width"])*W)
+	if count>0:
+		art_loaded_groups[group_node.name]=count
+		art_layer_count+=count
+
+func _release_room_art(group_node: Node3D) -> void:
+	if not art_loaded_groups.has(group_node.name):
+		return
+	var count: int=int(art_loaded_groups[group_node.name])
+	art_loaded_groups.erase(group_node.name)
+	art_layer_count=maxi(0,art_layer_count-count)
+	var layer: Node3D=group_node.get_node_or_null("Layer_ApprovedArt")
+	if layer:
+		for child in layer.get_children():
+			child.queue_free()
+
 func _populate_furniture(group_node: Node3D) -> void:
 	var group: Dictionary = visual_room_groups.get(group_node.name,{})
 	if group.is_empty() or str(group.get("type","")) == "private":
@@ -471,7 +512,18 @@ func _populate_furniture(group_node: Node3D) -> void:
 		module.name = str(cell["id"])+"_furniture"
 		module.position.x = (float(cell["x"])-center_cell)*W
 		decoration_layer.add_child(module)
-		furnish(module,str(group["type"]),int(cell["x"]),int(group["level"]))
+		if bool(group.get("replaces_furniture",false)):
+			# Teea's approved furniture art replaces interim geometry.
+			# Keep named invisible anchors for existing room interaction
+			# contracts but do NOT draw a second 3D sofa on top of the art.
+			var seen: Dictionary={}
+			for station in life.stations.furniture.for_room(cell):
+				var name: String=str(station.get("furniture_id",""))
+				if name!="" and not seen.has(name):
+					furniture_object(module,name)
+					seen[name]=true
+		else:
+			furnish(module,str(group["type"]),int(cell["x"]),int(group["level"]))
 	detailed_room_groups[group_node.name] = true
 	detail_materialization_count += 1
 
@@ -499,6 +551,10 @@ func make_room(group: Dictionary) -> void:
 	room_root.add_child(n)
 	visual_room_groups[n.name] = group
 	var t: String = group["type"]
+	var accepted: Array=interior_skin.validated_layers(t,int(group["width"]))
+	visual_room_groups[n.name]["has_art"] = not accepted.is_empty()
+	visual_room_groups[n.name]["replaces_furniture"] = accepted.any(
+		func(item): return str(item.get("role","")) == "furniture_back")
 	var side_left: Dictionary = world.get_room(x_start-1,level)
 	var side_right: Dictionary = world.get_room(x_end+1,level)
 	# Render hierarchy is spatial, not a single baked background image.
@@ -529,7 +585,8 @@ func make_room(group: Dictionary) -> void:
 		add_backwall_stage(rear_stage,group)
 	box(structure,Vector3(0,3.12,-0.35),Vector3(span*1.01,0.22,3.55),palette["border"])
 	box(overlay,Vector3(0,-0.20,1.80),Vector3(span*1.01,0.22,0.18),palette["border"])
-	art_layer_count += interior_skin.add_layers(artwork,t,int(group["width"]),span)
+	# Expensive full-resolution artwork is loaded on demand by
+	# update_render_lod(), not permanently allocated for all 49+ rooms.
 	for side in [-1,1]:
 		var neighbour: Dictionary = side_left if side == -1 else side_right
 		var edge: float = float(side)*(span*0.5-0.10)
@@ -571,6 +628,7 @@ func make_room(group: Dictionary) -> void:
 func make_rooms() -> void:
 	art_layer_count = 0
 	detailed_room_groups.clear()
+	art_loaded_groups.clear()
 	visual_room_groups.clear()
 	for child in room_root.get_children():
 		child.queue_free()
@@ -718,7 +776,7 @@ func desired_actor_animation(actor: Dictionary) -> String:
 			"READ_BOOK": requested = "READ"
 			"REST":
 				if str(actor.get("station_kind","")) == "seat":
-					requested = "RELAXED_SIT"
+					requested = str(actor.get("station_pose_hint","RELAXED_SIT"))
 			"SLEEP":
 				if str(actor.get("station_kind","")) == "seat":
 					requested = "SLEEP"
@@ -1207,8 +1265,10 @@ func update_render_lod() -> void:
 		if furniture != null:
 			var near: bool = _is_near_detail(group_node)
 			if near:
+				_load_room_art(group_node)
 				_populate_furniture(group_node)
 			else:
+				_release_room_art(group_node)
 				_release_furniture(group_node)
 			furniture.visible = near
 			if cues != null:

@@ -41,7 +41,8 @@ func corridor_depth(room: Dictionary) -> float:
 	# Passing a private door is permitted only in the public hallway in front of it.
 	return PUBLIC_FRONTAGE_Z if bool(room.get("public_frontage", false)) else AISLE_Z
 
-func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String, override_station: Variant = null) -> Array:
+func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
+		override_station: Variant = null, override_approach_z: float = AISLE_Z) -> Array:
 	if room_path.is_empty():
 		return []
 	var travel: Array = []
@@ -82,8 +83,9 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 		anchor = override_station
 		# Walk along the public aisle to the correct sofa/work position first,
 		# instead of taking a diagonal shortcut through other furniture.
-		if anchor.y < AISLE_Z - 0.45:
-			travel.append(waypoint(x+anchor.x,y,AISLE_Z,previous["id"],"station_approach"))
+		var aisle: float=clampf(override_approach_z,-1.50,1.65)
+		if anchor.y < aisle - 0.45:
+			travel.append(waypoint(x+anchor.x,y,aisle,previous["id"],"station_approach"))
 	travel.append(waypoint(x+anchor.x,y,anchor.y,previous["id"],"station"))
 	return travel
 

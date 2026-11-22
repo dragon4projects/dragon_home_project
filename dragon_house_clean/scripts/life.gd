@@ -218,7 +218,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		actor_claim = pair_claim["actor"]
 		partner_claim = pair_claim["partner"]
 		partner_waypoints = locomotion.build_waypoints(
-			world,partner,partner_route,intent,partner_claim["offset"])
+			world,partner,partner_route,intent,partner_claim["offset"],
+			float(partner_claim.get("approach_z",0.95)))
 		if partner_waypoints.is_empty():
 			actor["until"] = clock + 10.0
 			return
@@ -229,7 +230,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			actor["until"] = clock + 10.0
 			return
 	var actor_waypoints: Array = locomotion.build_waypoints(
-		world,actor,route,intent,actor_claim["offset"])
+		world,actor,route,intent,actor_claim["offset"],
+		float(actor_claim.get("approach_z",0.95)))
 	if actor_waypoints.is_empty():
 		actor["until"] = clock + 10.0
 		return

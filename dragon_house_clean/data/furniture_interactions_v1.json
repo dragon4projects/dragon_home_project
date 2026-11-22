@@ -1,0 +1,182 @@
+{
+  "schema": 1,
+  "source": "original_procedural_geometry_v09",
+  "approval_scope": "physical interaction anchors only; not artistic approval of a person's identity or Teea's layers",
+  "room_profiles": {
+    "common": [
+      {
+        "id": "sofa_left",
+        "x": -0.53,
+        "z": -0.43,
+        "kind": "seat",
+        "furniture_id": "SOFA_COMMON_GENERIC",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      },
+      {
+        "id": "sofa_right",
+        "x": 0.53,
+        "z": -0.43,
+        "kind": "seat",
+        "furniture_id": "SOFA_COMMON_GENERIC",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      }
+    ],
+    "rest": [
+      {
+        "id": "rest_left",
+        "x": -0.85,
+        "z": -0.39,
+        "kind": "seat",
+        "furniture_id": "SOFA_REST",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      },
+      {
+        "id": "rest_right",
+        "x": 0.27,
+        "z": -0.39,
+        "kind": "seat",
+        "furniture_id": "SOFA_REST",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      }
+    ],
+    "cinema": [
+      {
+        "id": "cinema_left",
+        "x": -0.58,
+        "z": 0.4,
+        "kind": "seat",
+        "furniture_id": "SOFA_CINEMA",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 1.35
+      },
+      {
+        "id": "cinema_right",
+        "x": 0.58,
+        "z": 0.4,
+        "kind": "seat",
+        "furniture_id": "SOFA_CINEMA",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 1.35
+      }
+    ],
+    "study": [
+      {
+        "id": "work_station",
+        "x": -0.52,
+        "z": -0.38,
+        "kind": "work",
+        "furniture_id": "DESK_STUDY",
+        "pose_hint": "USE",
+        "approach_z": 0.95
+      }
+    ],
+    "library": [
+      {
+        "id": "table_left",
+        "x": -0.42,
+        "z": 0.37,
+        "kind": "work",
+        "furniture_id": "TABLE_LIBRARY",
+        "pose_hint": "READ",
+        "approach_z": 0.95
+      },
+      {
+        "id": "table_right",
+        "x": 0.42,
+        "z": 0.37,
+        "kind": "work",
+        "furniture_id": "TABLE_LIBRARY",
+        "pose_hint": "READ",
+        "approach_z": 0.95
+      }
+    ],
+    "workshop": [
+      {
+        "id": "workbench_left",
+        "x": -0.44,
+        "z": -0.65,
+        "kind": "work",
+        "furniture_id": "BENCH_WORKSHOP",
+        "pose_hint": "USE",
+        "approach_z": 0.95
+      },
+      {
+        "id": "workbench_right",
+        "x": 0.44,
+        "z": -0.65,
+        "kind": "work",
+        "furniture_id": "BENCH_WORKSHOP",
+        "pose_hint": "USE",
+        "approach_z": 0.95
+      }
+    ],
+    "music": [
+      {
+        "id": "audio_desk_left",
+        "x": -0.48,
+        "z": -0.65,
+        "kind": "work",
+        "furniture_id": "DESK_MUSIC",
+        "pose_hint": "VIEW",
+        "approach_z": 0.95
+      },
+      {
+        "id": "audio_desk_right",
+        "x": 0.48,
+        "z": -0.65,
+        "kind": "work",
+        "furniture_id": "DESK_MUSIC",
+        "pose_hint": "VIEW",
+        "approach_z": 0.95
+      }
+    ]
+  },
+  "cell_overrides": {
+    "common:-2": [
+      {
+        "id": "hearth_skin_left",
+        "x": -1.3,
+        "z": -0.32,
+        "kind": "floor_rest",
+        "furniture_id": "FIREPLACE_SKINS",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      },
+      {
+        "id": "hearth_skin_right",
+        "x": 1.28,
+        "z": -0.32,
+        "kind": "floor_rest",
+        "furniture_id": "FIREPLACE_SKINS",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      }
+    ],
+    "common:-1": [
+      {
+        "id": "common_middle_left",
+        "x": -0.56,
+        "z": -0.57,
+        "kind": "seat",
+        "furniture_id": "SOFA_COMMON_MIDDLE",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      },
+      {
+        "id": "common_middle_right",
+        "x": 0.56,
+        "z": -0.57,
+        "kind": "seat",
+        "furniture_id": "SOFA_COMMON_MIDDLE",
+        "pose_hint": "RELAXED_SIT",
+        "approach_z": 0.95
+      }
+    ]
+  },
+  "privacy_rule": "door_only rooms have no visible, reservable stations",
+  "hand_off_policy": "Teea or Znaechka may propose new coordinates only in data/asset_proposals/<batch>_furniture_anchors.json. ChatGPT validates, reviews and integrates."
+}
