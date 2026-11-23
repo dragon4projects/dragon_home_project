@@ -5,7 +5,13 @@ func _initialize()->void:
 	call_deferred("run")
 
 func _cleanup(path:String)->void:
-	for suffix in ["",".bak",".tmp"]:
+	for suffix in [
+		"",".bak",".tmp",
+		".world_events_v1.json",
+		".world_events_v1.json.bak",
+		".world_events_v1.json.tmp",
+		".world_events_v1.json.corrupt"
+	]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path+suffix))
 
 func run()->void:
