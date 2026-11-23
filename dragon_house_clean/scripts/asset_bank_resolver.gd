@@ -165,6 +165,87 @@ func feet_anchor(resident_id: String, wardrobe: String, height: int) -> float:
 			return y
 	return float(height)-minf(12.0,float(height)*0.07)
 
+func _creature_entry(bank_id: String, state: String) -> Dictionary:
+	if manifest.is_empty() or bank_id == "" or state == "":
+		return {}
+	var creature: Dictionary = manifest.get("creatures",{}).get(bank_id,{})
+	if creature.is_empty():
+		return {}
+	var states = creature.get("states",{})
+	if typeof(states) != TYPE_DICTIONARY:
+		return {}
+	var entry = states.get(state,{})
+	return entry if typeof(entry) == TYPE_DICTIONARY else {}
+
+func _safe_creature_frame_path(bank_id: String, path: String) -> bool:
+	if bank_id == "":
+		return false
+	path = path.trim_prefix("res://")
+	if path.contains("..") or path.contains("\\") or path.begins_with("/"):
+		return false
+	if not path.begins_with("assets/creatures/%s/" % bank_id):
+		return false
+	return ALLOWED_EXTENSIONS.has(path.get_extension().to_lower())
+
+func candidate_creature_bank(bank_id: String) -> bool:
+	# Technical binary/path validation only. Presence does not register/activate a creature.
+	if manifest.is_empty() or bank_id == "":
+		return false
+	var creature: Dictionary = manifest.get("creatures",{}).get(bank_id,{})
+	if creature.is_empty():
+		return false
+	for state in ["FRONT","IDLE_LEFT","IDLE_RIGHT","SIT","REST","WALK_LEFT","WALK_RIGHT"]:
+		var entry: Dictionary = _creature_entry(bank_id,state)
+		if str(entry.get("status","")) != "PASS":
+			return false
+		var frames = entry.get("frames",[])
+		if typeof(frames) != TYPE_ARRAY or frames.is_empty() or frames.size() > MAX_FRAMES_PER_STATE:
+			return false
+		for frame in frames:
+			var relative := _normalize_frame(frame)
+			if not _safe_creature_frame_path(bank_id,relative) or not _real_image_bytes(relative):
+				return false
+	return true
+
+func creature_states(bank_id: String) -> Array:
+	var result: Array = []
+	if manifest.is_empty():
+		return result
+	var creature: Dictionary = manifest.get("creatures",{}).get(bank_id,{})
+	var states = creature.get("states",{})
+	if typeof(states) != TYPE_DICTIONARY:
+		return result
+	for key in states.keys():
+		var entry: Dictionary = _creature_entry(bank_id,str(key))
+		var frames = entry.get("frames",[])
+		if str(entry.get("status","")) == "PASS" and typeof(frames) == TYPE_ARRAY and 				not frames.is_empty() and frames.size() <= MAX_FRAMES_PER_STATE:
+			result.append(str(key))
+	result.sort()
+	return result
+
+func creature_frame_count(bank_id: String, state: String) -> int:
+	var entry: Dictionary = _creature_entry(bank_id,state)
+	if str(entry.get("status","")) != "PASS":
+		return 0
+	var frames = entry.get("frames",[])
+	return frames.size() if typeof(frames) == TYPE_ARRAY else 0
+
+func creature_fps(bank_id: String, state: String) -> float:
+	return clampf(float(_creature_entry(bank_id,state).get("fps",2)),1.0,30.0)
+
+func creature_texture(bank_id: String, state: String, index: int) -> Texture2D:
+	# Rendering helper only; callers must already possess an explicit runtime creature.
+	var entry: Dictionary = _creature_entry(bank_id,state)
+	if str(entry.get("status","")) != "PASS":
+		return null
+	var frames = entry.get("frames",[])
+	if typeof(frames) != TYPE_ARRAY or frames.is_empty() or frames.size() > MAX_FRAMES_PER_STATE:
+		return null
+	var path := _normalize_frame(frames[posmod(index,frames.size())])
+	if not _safe_creature_frame_path(bank_id,path) or not _real_image_bytes(path):
+		return null
+	return _load_checked_texture(path)
+
 func manka_frame_count(state: String) -> int:
 	var entry: Dictionary = manifest.get("creatures",{}).get("manjka",{}).get("states",{}).get(state,{})
 	if str(entry.get("status","")) != "PASS":
