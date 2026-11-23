@@ -140,7 +140,8 @@ func run() -> void:
 	var upgrading=L.new()
 	upgrading.setup(imported7)
 	var repaired:Dictionary=imported7.residents["RES_01"]
-	var new_offset:Vector2=S.new().layout(imported7.get_room(-2,0))[0]["offset"]
+	var new_offset:Vector2=S.new().layout_for_world(
+		imported7,imported7.get_room(-2,0))[0]["offset"]
 	assert(repaired["station_kind"]=="seat")
 	assert(repaired["station_furniture_id"]=="common_sofa_left")
 	assert(is_equal_approx(float(repaired["x"]),float(old_lounge["x"])*imported7.MODULE_W+new_offset.x))
