@@ -77,13 +77,17 @@ func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 	return positions
 
 func layout(room: Dictionary) -> Array:
+	# Private/door-only rooms have no public interaction layout at all.
+	# Do not let the generic fallback generator manufacture a standing slot.
+	if room.is_empty() or str(room.get("privacy","public"))!="public":
+		return []
 	# Context-free fallback used by legacy migration/tests. Width-specific art
 	# requires layout_for_world(), because a room dictionary alone cannot know
 	# whether its logical cell is currently part of R1, R2 or R3.
 	return _layout_from_anchors(room,furniture.for_room(room))
 
 func layout_for_world(world, room: Dictionary) -> Array:
-	if room.is_empty():
+	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
 	var group:Dictionary=world.merged_group(int(room.get("x",0)),int(room.get("level",0)))
 	if group.is_empty():

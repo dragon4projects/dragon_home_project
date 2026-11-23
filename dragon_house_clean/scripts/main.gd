@@ -7,12 +7,14 @@ const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
+const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
 var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
+var door_registry = PrivateDoorRegistryScript.new()
 var art_layer_count := 0
 var detailed_room_groups: Dictionary = {}
 var art_loaded_groups: Dictionary = {}
@@ -28,6 +30,7 @@ var room_root: Node3D
 var actor_root: Node3D
 var actor_sprites: Dictionary = {}
 var actor_labels: Dictionary = {}
+var door_note_anchors: Dictionary = {}
 var material_cache: Dictionary = {}
 var mesh_cache: Dictionary = {}
 var desired_focus := Vector3.ZERO
@@ -62,6 +65,9 @@ var menu: OptionButton
 var catalog_picker: FileDialog
 var media_panel: PanelContainer
 var bank_gallery: PanelContainer
+var door_note_panel: PanelContainer
+var door_note_title: Label
+var door_note_text: RichTextLabel
 var catalog_metadata_added := 0
 var palette := {
 	"rock": Color("#665a5b"), "border": Color("#675957"),
@@ -91,6 +97,7 @@ func _ready() -> void:
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
 	life.setup(world)
 	interior_skin.initialize()
+	door_registry.initialize()
 	validated_visual_banks = asset_banks.accepted_count(world.read_resident_profiles())
 	preview_visual_banks = asset_banks.preview_count(world.read_resident_profiles())
 	camera = Camera3D.new()
@@ -667,8 +674,20 @@ func make_room(group: Dictionary) -> void:
 		# Never materialize someone else's private interior: facade only.
 		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
 		box(n,Vector3(0.82,1.33,1.2),Vector3(0.12,0.12,0.07),palette["bronze"])
-		var door_label := label3(n,"ЛИЧНОЕ",Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
+		var private_room:Dictionary=group["cells"][0]
+		var owner_id:String=str(private_room.get("owner_id",""))
+		var sign:String=door_registry.sign_text(owner_id,world.read_resident_profiles())
+		var door_label := label3(n,sign,Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
 		door_label.name = "RoomRoofLabel"
+		if door_registry.has_public_note(owner_id):
+			# Public framed note is a clickable threshold object, never interior access.
+			box(n,Vector3(-0.58,1.67,1.19),Vector3(0.52,0.70,0.055),palette["bronze"])
+			box(n,Vector3(-0.58,1.67,1.225),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
+			var note_anchor:=Node3D.new()
+			note_anchor.name="DoorPublicNoteAnchor"
+			note_anchor.position=Vector3(-0.58,1.67,1.27)
+			n.add_child(note_anchor)
+			door_note_anchors[str(private_room["id"])]=note_anchor
 	else:
 		var decoration_layer := Node3D.new()
 		decoration_layer.name = "LocalFurniture"
@@ -684,6 +703,7 @@ func make_rooms() -> void:
 	detailed_room_groups.clear()
 	art_loaded_groups.clear()
 	visual_room_groups.clear()
+	door_note_anchors.clear()
 	for child in room_root.get_children():
 		child.queue_free()
 	for group in world.visual_groups():
@@ -973,7 +993,75 @@ func build_interface() -> void:
 	catalog_picker.add_filter("*.json", "Media catalog JSON")
 	catalog_picker.file_selected.connect(_import_media)
 	root.add_child(catalog_picker)
+
+	# Full-screen owner-public door note. This panel never grants room access.
+	door_note_panel = PanelContainer.new()
+	door_note_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	door_note_panel.offset_left = 42
+	door_note_panel.offset_top = 32
+	door_note_panel.offset_right = -42
+	door_note_panel.offset_bottom = -32
+	door_note_panel.visible = false
+	door_note_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	root.add_child(door_note_panel)
+	var door_col:=VBoxContainer.new()
+	door_note_panel.add_child(door_col)
+	var door_header:=HBoxContainer.new()
+	door_col.add_child(door_header)
+	door_note_title=Label.new()
+	door_note_title.text="ДВЕРЬ"
+	door_note_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	door_header.add_child(door_note_title)
+	var door_close:=Button.new()
+	door_close.text="Закрыть [Esc]"
+	door_close.pressed.connect(close_door_note)
+	door_header.add_child(door_close)
+	door_note_text=RichTextLabel.new()
+	door_note_text.bbcode_enabled=false
+	door_note_text.fit_content=false
+	door_note_text.scroll_active=true
+	door_note_text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	door_note_text.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	door_note_text.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	door_note_text.custom_minimum_size=Vector2(640,520)
+	door_col.add_child(door_note_text)
 	update_hud()
+
+func close_door_note()->void:
+	if door_note_panel!=null:
+		door_note_panel.visible=false
+
+func open_door_note(room_id:String)->bool:
+	var room:Dictionary=world.room_by_id(room_id)
+	if room.is_empty() or str(room.get("privacy","public"))!="door_only":
+		return false
+	var owner_id:String=str(room.get("owner_id",""))
+	var body:String=door_registry.note_text(owner_id)
+	if body=="":
+		return false
+	door_note_title.text=door_registry.sign_text(owner_id,world.read_resident_profiles())
+	door_note_text.text=body
+	door_note_text.scroll_to_line(0)
+	door_note_panel.visible=true
+	return true
+
+func door_note_at_screen(point:Vector2)->String:
+	if camera==null:
+		return ""
+	var best:=44.0
+	var found:=""
+	for room_id in door_note_anchors:
+		var anchor:Node3D=door_note_anchors[room_id]
+		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree():
+			continue
+		if camera.is_position_behind(anchor.global_position):
+			continue
+		var screen:Vector2=camera.unproject_position(anchor.global_position)
+		var distance:float=screen.distance_to(point)
+		if distance<best:
+			best=distance
+			found=str(room_id)
+	return found
 
 func _import_media(path: String) -> void:
 	if world.import_catalog(path):
@@ -1244,6 +1332,9 @@ func _input(event: InputEvent) -> void:
 				var preview_mat: StandardMaterial3D = build_marker.material_override
 				preview_mat.albedo_color = Color(0.22,0.90,0.55,0.28) if permitted else Color(0.82,0.23,0.26,0.28)
 	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode==KEY_ESCAPE and door_note_panel!=null and door_note_panel.visible:
+			close_door_note()
+			return
 		match event.keycode:
 			KEY_ESCAPE: set_mode("HOUSE")
 			KEY_F: follow_actor("MANJKA")
@@ -1263,6 +1354,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		var e: InputEventMouseButton = event
 		if e.button_index != MOUSE_BUTTON_LEFT or not e.pressed:
 			return
+		if door_note_panel!=null and door_note_panel.visible:
+			return
+		var note_room_id:String=door_note_at_screen(e.position)
+		if note_room_id!="":
+			if open_door_note(note_room_id):
+				return
 		if build_mode:
 			if build_cell == Vector2i(99,99):
 				return
