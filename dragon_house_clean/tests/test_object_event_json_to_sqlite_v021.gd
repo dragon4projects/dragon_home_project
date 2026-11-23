@@ -11,7 +11,9 @@ func _cleanup(path: String) -> void:
 		".world_events_v1.json.tmp",".world_events_v1.json.corrupt",
 		".world_events_v1.sqlite",".world_events_v1.sqlite.bak",
 		".world_events_v1.sqlite-wal",".world_events_v1.sqlite-shm",
-		".world_events_v1.sqlite.corrupt"
+		".world_events_v1.sqlite.corrupt",
+		".world_events_v1.sqlite.canonical.json",
+		".world_events_v1.sqlite.canonical.json.tmp"
 	]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path+suffix))
 
