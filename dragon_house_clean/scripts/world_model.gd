@@ -16,6 +16,8 @@ var residents: Dictionary = {}
 var creatures: Dictionary = {}
 # Bounded causal House journal. This is world evidence, not UI presentation text.
 var journal: Array = []
+# Runtime compatibility state for scheduler/event strangler. Presentation never owns this.
+var runtime_state: Dictionary = {}
 var media: Dictionary = {"books": [], "films": [], "tracks": []}
 # Persistent physical-object identities. Registration is explicit; seed_world does not
 # invent owner artifacts merely because the lifecycle exists.
@@ -538,6 +540,7 @@ func seed_world() -> void:
 	residents.clear()
 	creatures.clear()
 	journal.clear()
+	runtime_state.clear()
 	next_room_id = 1
 	sim_clock = 0.0
 	# CORE, a working lift shaft, two residential terraces, genuine cutaway depth.
@@ -592,6 +595,7 @@ func seed_world() -> void:
 	objects = {}
 	creatures = {}
 	journal = []
+	runtime_state = {}
 
 func _read_snapshot(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
@@ -636,6 +640,7 @@ func load_or_seed() -> void:
 	objects = parsed.get("objects", {})
 	creatures = parsed.get("creatures", {})
 	journal = parsed.get("journal", [])
+	runtime_state = parsed.get("runtime_state", {})
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
 
@@ -643,7 +648,7 @@ func save_world() -> bool:
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
 	var data: Dictionary = {"schema": 1,"rooms": rooms,"residents": residents,
-		"creatures":creatures,"journal":journal,"media": media,"objects": objects,
+		"creatures":creatures,"journal":journal,"runtime_state":runtime_state,"media": media,"objects": objects,
 		"next_room_id": next_room_id,"sim_clock": sim_clock}
 	var file := FileAccess.open(scratch,FileAccess.WRITE)
 	if file == null:
