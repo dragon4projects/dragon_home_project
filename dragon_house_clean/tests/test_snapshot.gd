@@ -25,7 +25,13 @@ func _initialize() -> void:
 	final.save_path = w.save_path
 	final.load_or_seed()
 	assert(is_equal_approx(final.sim_clock,111.0))
-	for suffix in ["",".bak",".tmp"]:
+	for suffix in [
+		"",".bak",".tmp",
+		".world_events_v1.json",
+		".world_events_v1.json.bak",
+		".world_events_v1.json.tmp",
+		".world_events_v1.json.corrupt"
+	]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(w.save_path+suffix))
 	print("SNAPSHOT_RECOVERY_TEST_PASS backup=restored roster=24")
 	quit(0)
