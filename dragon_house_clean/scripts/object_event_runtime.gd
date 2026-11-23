@@ -34,7 +34,7 @@ func setup(p_world) -> bool:
 			_update_runtime_state()
 			return false
 		_publish_projection(projection)
-		status = "REPLAYED"
+		status = "REPLAYED_FROM_BACKUP" if store.status == "RECOVERED_FROM_BACKUP" else "REPLAYED"
 	elif not world.objects.is_empty():
 		if not _migrate_snapshot_objects():
 			status = "MIGRATION_FAILED"
