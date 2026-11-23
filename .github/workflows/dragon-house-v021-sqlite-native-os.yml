@@ -10,6 +10,8 @@ on:
       - 'dragon_house_clean/tests/test_object_event_sqlite_v021.gd'
       - 'dragon_house_clean/tests/test_object_event_json_to_sqlite_v021.gd'
       - 'dragon_house_clean/tests/test_object_event_sqlite_recovery_v021.gd'
+      - 'dragon_house_clean/tests/test_object_event_snapshot_to_sqlite_v021.gd'
+      - 'dragon_house_clean/tests/test_object_event_projection_rebuild_v021.gd'
       - '.github/workflows/dragon-house-v021-sqlite-native-os.yml'
   workflow_dispatch:
 
@@ -59,7 +61,9 @@ jobs:
           $tests = @(
             "res://tests/test_object_event_sqlite_v021.gd",
             "res://tests/test_object_event_json_to_sqlite_v021.gd",
-            "res://tests/test_object_event_sqlite_recovery_v021.gd"
+            "res://tests/test_object_event_sqlite_recovery_v021.gd",
+            "res://tests/test_object_event_snapshot_to_sqlite_v021.gd",
+            "res://tests/test_object_event_projection_rebuild_v021.gd"
           )
           foreach ($test in $tests) {
             Write-Host "RUN $test"
@@ -118,7 +122,9 @@ jobs:
           for t in \
             tests/test_object_event_sqlite_v021.gd \
             tests/test_object_event_json_to_sqlite_v021.gd \
-            tests/test_object_event_sqlite_recovery_v021.gd; do
+            tests/test_object_event_sqlite_recovery_v021.gd \
+            tests/test_object_event_snapshot_to_sqlite_v021.gd \
+            tests/test_object_event_projection_rebuild_v021.gd; do
             echo "RUN $t"
             out="$("$GODOT_BIN" --headless --path . --script "res://$t" 2>&1)" || { echo "$out"; exit 1; }
             echo "$out"
