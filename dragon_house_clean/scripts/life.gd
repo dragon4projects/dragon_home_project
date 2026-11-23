@@ -70,7 +70,7 @@ func status(actor: Dictionary) -> String:
 	return str(HUMAN_STATUS.get(intent,"отдыхает"))
 
 const INTENTS := {
-	"REST": ["rest", "private"], "SLEEP": ["rest", "private"],
+	"REST": ["rest", "private", "guest"], "SLEEP": ["rest", "private", "guest"],
 	"WORK_CREATE": ["study", "workshop"], "READ_BOOK": ["library", "rest"],
 	"BROWSE_BOOK_CATALOG": ["library"],
 	"BROWSE_FILMS": ["cinema"], "BROWSE_AUDIO": ["music"],
@@ -198,6 +198,9 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 		var types: Array = INTENTS[intent]
 		var candidates: Array = []
 		for room in world.matching_rooms(types, actor["id"]):
+			if str(room.get("type","")) == "guest" and intent in ["REST","SLEEP"] \
+					and str(room.get("owner_id","")) != str(actor.get("id","")):
+				continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
 				candidates.append(room)
 		if candidates.is_empty():
