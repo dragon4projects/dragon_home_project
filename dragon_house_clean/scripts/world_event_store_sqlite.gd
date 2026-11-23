@@ -417,6 +417,29 @@ func import_canonical_events(input_events: Array, projection: Dictionary) -> Arr
 	last_error = ""
 	return snapshot_events()
 
+func rebuild_projection(projection: Dictionary) -> bool:
+	# Derived tables are disposable. Canonical events are not.
+	if db == null:
+		last_error = "SQLite connection is unavailable"
+		return false
+	if not _query("BEGIN IMMEDIATE;"):
+		status = "WRITE_FAILED"
+		return false
+	if not _sync_projection(projection):
+		_query("ROLLBACK;")
+		status = "WRITE_FAILED"
+		return false
+	if not _query("COMMIT;"):
+		_query("ROLLBACK;")
+		status = "WRITE_FAILED"
+		return false
+	if not _backup():
+		status = "WRITE_FAILED"
+		return false
+	status = "READY"
+	last_error = ""
+	return true
+
 func append_with_projection(event: Dictionary, projection: Dictionary) -> Dictionary:
 	var rows: Array = append_many_with_projection([event],projection)
 	return rows[0] if rows.size() == 1 else {}
