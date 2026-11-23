@@ -1,4 +1,5 @@
 extends SceneTree
+# Regression set updated with seated/standing TALK_PAIR split.
 
 func _initialize()->void:
 	call_deferred("run")
