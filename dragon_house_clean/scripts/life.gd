@@ -198,8 +198,9 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 		var types: Array = INTENTS[intent]
 		var candidates: Array = []
 		for room in world.matching_rooms(types, actor["id"]):
-			if str(room.get("type","")) == "guest" and intent in ["REST","SLEEP"] \
-					and str(room.get("owner_id","")) != str(actor.get("id","")):
+			if (str(room.get("type","")) == "guest"
+					and intent in ["REST","SLEEP"]
+					and str(room.get("owner_id","")) != str(actor.get("id",""))):
 				continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
 				candidates.append(room)
