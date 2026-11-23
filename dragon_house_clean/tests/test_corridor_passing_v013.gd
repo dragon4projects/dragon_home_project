@@ -44,9 +44,9 @@ func run()->void:
 		var pb:=Vector3(float(b["x"]),float(b["visual_y"]),float(b["z"]))
 		minimum_distance=minf(minimum_distance,pa.distance_to(pb))
 		maximum_lane_separation=maxf(maximum_lane_separation,absf(pa.z-pb.z))
-	assert(maximum_lane_separation>=0.22,
+	assert(maximum_lane_separation>=0.45,
 		"Opposing walkers never formed visible passing lanes")
-	assert(minimum_distance>=0.18,
+	assert(minimum_distance>=0.42,
 		"Opposing walkers still occupied effectively the same point")
 	assert(str(a["phase"])=="perform" and str(b["phase"])=="perform")
 	assert(absf(float(a["z"])-0.95)<0.03 and absf(float(b["z"])-0.95)<0.03,
