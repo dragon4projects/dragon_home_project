@@ -864,6 +864,11 @@ func update_physical_objects() -> void:
 				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
 				float(holder.get("z",0.25))+0.18) + _object_offset(str(object_id))*0.25
 			continue
+		if str(object.get("state","")) == "STASHED":
+			# Hidden means hidden: the canonical location remains in world state,
+			# but the normal renderer and hover hit-test expose no visible copy.
+			anchor.visible = false
+			continue
 		var room_id := str(object.get("current_room_id",""))
 		var room: Dictionary = world.room_by_id(room_id)
 		if room.is_empty() or str(room.get("privacy","public")) != "public":
@@ -1329,12 +1334,15 @@ func _world_journal_line(entry: Dictionary) -> String:
 		subject_name = str(object.get("display_name",subject_id))
 	match event_name:
 		"CREATURE_ROAMED":
-			return "%s перешла: %s → %s" % [
+			return "%s — перемещение: %s → %s" % [
 				actor_name,str(entry.get("from","")),str(entry.get("to",""))]
+		"CREATURE_ACCESS_REJECTED":
+			return "%s — доступ отклонён: %s" % [
+				actor_name,str(entry.get("to",""))]
 		"OBJECT_PICKED_UP":
-			return "%s унесла: %s" % [actor_name,subject_name]
+			return "%s — переносит: %s" % [actor_name,subject_name]
 		"OBJECT_STASHED":
-			return "%s спрятала: %s" % [actor_name,subject_name]
+			return "%s — прячет: %s" % [actor_name,subject_name]
 		"OBJECT_LOST_FOUND":
 			return "Дом нашёл: %s" % subject_name
 		"OBJECT_RESTORED_HOME":
