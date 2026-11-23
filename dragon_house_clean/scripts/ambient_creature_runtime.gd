@@ -50,6 +50,11 @@ func roam_one_step(creature_id: String, target_room_id: String = "") -> bool:
 				target = candidate
 				break
 		if target.is_empty():
+			var rejected: Dictionary = world.room_by_id(target_room_id)
+			if not rejected.is_empty():
+				world._append_journal("CREATURE_ACCESS_REJECTED",creature_id,creature_id,
+					str(creature.get("room_id","")),target_room_id,
+					{"reason":"ROOM_NOT_ACCESSIBLE","privacy":str(rejected.get("privacy",""))})
 			return false
 	else:
 		target = candidates[rng.randi_range(0,candidates.size()-1)]
