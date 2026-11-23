@@ -1250,6 +1250,12 @@ func register_content_hotspot(anchor: Node3D, category: String,
 		item_id: String, display_name: String) -> void:
 	if anchor == null or category == "" or item_id == "":
 		return
+	for entry in content_hotspots:
+		if entry.get("anchor") == anchor:
+			entry["category"] = category
+			entry["item_id"] = item_id
+			entry["display_name"] = display_name
+			return
 	content_hotspots.append({
 		"anchor":anchor, "category":category,
 		"item_id":item_id, "display_name":display_name
