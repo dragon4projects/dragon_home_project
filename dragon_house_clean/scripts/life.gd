@@ -339,6 +339,59 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		_record("%s — %s" % [actor.get("name",actor["id"]),status(actor)])
 	steps += 1
 
+const PASS_TRIGGER_X := 1.10
+const PASS_LANE_OFFSET := 0.16
+const FOLLOW_GAP := 0.58
+const PASSING_WAYPOINT_KINDS := [
+	"leave_station","room_center","approach_public_frontage","door_out","door_in"
+]
+
+func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
+		point: Dictionary) -> Dictionary:
+	# Cheap deterministic local avoidance for the public walking aisle.
+	# It changes only the transient movement target; authored waypoints and
+	# station coordinates remain untouched.
+	if not PASSING_WAYPOINT_KINDS.has(str(point.get("kind",""))):
+		return {"target":target,"wait":false}
+	var dx:float=target.x-at.x
+	if absf(dx)<0.05:
+		return {"target":target,"wait":false}
+	var direction:float=signf(dx)
+	var actor_id:String=str(actor.get("id",""))
+	var adjusted:=target
+	for other_id in world.residents:
+		if str(other_id)==actor_id:
+			continue
+		var other:Dictionary=world.residents[other_id]
+		if not bool(other.get("active",false)) or str(other.get("phase",""))!="travel":
+			continue
+		var other_at:=Vector3(
+			float(other.get("x",0.0)),
+			float(other.get("visual_y",float(other.get("level",0))*world.FLOOR_H)),
+			float(other.get("z",0.0)))
+		if absf(other_at.y-at.y)>0.18 or absf(other_at.x-at.x)>PASS_TRIGGER_X:
+			continue
+		if absf(other_at.z-at.z)>0.50:
+			continue
+		var other_target:Vector3=locomotion.get_target(other)
+		var other_dx:float=other_target.x-other_at.x
+		if absf(other_dx)<0.05:
+			continue
+		var other_direction:float=signf(other_dx)
+		var relative_x:float=other_at.x-at.x
+		if is_equal_approx(direction,other_direction):
+			# Same direction: the rear resident yields instead of walking
+			# through the resident immediately ahead.
+			if direction*relative_x>0.0 and absf(relative_x)<FOLLOW_GAP:
+				return {"target":adjusted,"wait":true}
+			continue
+		if direction*other_direction<0.0 and direction*relative_x>0.0:
+			# Opposing traffic gets two shallow depth lanes. Stable ID order
+			# makes the choice deterministic across saves and machines.
+			var lane_sign:float=-1.0 if actor_id<str(other_id) else 1.0
+			adjusted.z=clampf(target.z+lane_sign*PASS_LANE_OFFSET,-1.45,1.64)
+	return {"target":adjusted,"wait":false}
+
 func _move(actor: Dictionary, delta: float) -> void:
 	var waypoints: Array = actor.get("waypoints", [])
 	var idx: int = int(actor.get("waypoint_index", 0))
@@ -350,6 +403,11 @@ func _move(actor: Dictionary, delta: float) -> void:
 	var at := Vector3(float(actor.get("x",0.0)),
 		float(actor.get("visual_y", float(actor.get("level",0)) * world.FLOOR_H)),
 		float(actor.get("z",0.0)))
+	var adjustment:Dictionary=_travel_adjustment(actor,at,target,point)
+	if bool(adjustment.get("wait",false)):
+		actor["moving_axis"]="wait"
+		return
+	target=adjustment.get("target",target)
 	var speed := 2.25 if actor["id"] != "MANJKA" else 3.25
 	if point["kind"] == "lift":
 		speed = 1.65
