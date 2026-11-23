@@ -58,6 +58,10 @@ func run()->void:
 	var sleft:Dictionary=scene.world.make_room(-1,2,"library")
 	scene.world.make_room(0,2,"library")
 	scene.make_rooms()
+	# v0.19 semantic LOD: width-specific detailed anchors are a ROOM/FOLLOW
+	# contract, not a side effect of close numeric zoom in HOUSE.
+	scene.selected_room=str(sleft["id"])
+	scene.set_mode("ROOM")
 	scene.zoom_current=10.0
 	scene.smooth_focus=Vector3(-0.5*scene.W,2.0*scene.H,0.0)
 	scene.update_render_lod()

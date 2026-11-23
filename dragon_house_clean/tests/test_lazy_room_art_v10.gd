@@ -33,6 +33,10 @@ func run() -> void:
 	}
 	scene.visual_room_groups[room_node.name]["has_art"]=true
 	scene.visual_room_groups[room_node.name]["replaces_furniture"]=true
+	# v0.19: art/detail residency is semantic. Enter the room explicitly;
+	# numeric zoom inside HOUSE must not materialize full room art.
+	scene.selected_room=str(scene.world.get_room(-2,0)["id"])
+	scene.set_mode("ROOM")
 	scene.zoom_current=10.0
 	scene.smooth_focus=Vector3(-scene.W,1.15,0.0)
 	scene.update_render_lod()

@@ -570,6 +570,39 @@ func _group_facade_only(group: Dictionary) -> bool:
 		return false
 	return not world.public_cutaway_allowed(cells[0])
 
+func _ensure_fallback_anchor_furniture(module: Node3D, anchors: Array) -> void:
+	# Approved furniture_back art carries the visible furniture itself and uses
+	# invisible named anchors. When that art is unavailable/rejected (including
+	# an LFS pointer instead of real image bytes), procedural fallback must still
+	# keep the data-owned interaction contract truthful: every advertised
+	# furniture_id has one visible proxy object in this room module.
+	var created: Dictionary = {}
+	for raw in anchors:
+		if typeof(raw)!=TYPE_DICTIONARY:
+			continue
+		var anchor: Dictionary=raw
+		var object_id:String=str(anchor.get("furniture_id",""))
+		if object_id=="" or module.get_node_or_null(object_id)!=null or created.has(object_id):
+			continue
+		var object:=furniture_object(module,object_id)
+		var x:float=float(anchor.get("x",0.0))
+		var z:float=float(anchor.get("z",0.0))
+		match str(anchor.get("kind","standing")):
+			"seat","floor_rest":
+				# Low seat + back. Anchor is the pelvis/interaction position.
+				box(object,Vector3(x,0.28,z),Vector3(0.64,0.42,0.58),palette["wood"])
+				box(object,Vector3(x,0.70,z-0.24),Vector3(0.64,0.72,0.12),palette["wood"])
+			"work":
+				# Work anchor is in front of the work surface; keep the proxy
+				# behind the resident's approach aisle.
+				box(object,Vector3(x,0.72,z-0.38),Vector3(1.15,0.16,0.66),palette["wood"])
+				box(object,Vector3(x-0.47,0.37,z-0.38),Vector3(0.12,0.70,0.48),palette["wood"])
+				box(object,Vector3(x+0.47,0.37,z-0.38),Vector3(0.12,0.70,0.48),palette["wood"])
+			_:
+				# Standing/view anchors point at an object rather than a seat.
+				box(object,Vector3(x,0.66,z-0.48),Vector3(0.62,1.20,0.34),palette["wood"])
+		created[object_id]=true
+
 func _populate_furniture(group_node: Node3D) -> void:
 	var group: Dictionary = visual_room_groups.get(group_node.name,{})
 	if group.is_empty() or _group_facade_only(group):
@@ -598,6 +631,9 @@ func _populate_furniture(group_node: Node3D) -> void:
 					seen[name]=true
 		else:
 			furnish(module,str(group["type"]),int(cell["x"]),int(group["level"]))
+			var anchors:Array=life.stations.furniture.for_room_variant(
+				cell,int(group.get("width",1)),cell_index)
+			_ensure_fallback_anchor_furniture(module,anchors)
 	detailed_room_groups[group_node.name] = true
 	detail_materialization_count += 1
 
