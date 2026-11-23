@@ -848,6 +848,9 @@ func desired_actor_animation(actor: Dictionary) -> String:
 		var intent: String = str(actor.get("intent",""))
 		match intent:
 			"READ_BOOK": requested = "READ"
+			"WORK_CREATE":
+				if str(actor.get("station_kind","")) == "work":
+					requested = str(actor.get("station_pose_hint","USE"))
 			"REST":
 				if str(actor.get("station_kind","")) in ["seat","floor_rest"]:
 					requested = str(actor.get("station_pose_hint","RELAXED_SIT"))
