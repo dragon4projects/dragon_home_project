@@ -30,7 +30,7 @@ func _copy_file(source: String, target: String) -> void:
 func run() -> void:
 	var path := "user://object_event_sqlite_canonical_loss_v021.json"
 	_cleanup(path)
-	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 
 	# Create an accepted v0.20 JSON stream that will intentionally become stale.
 	var legacy := World.new()
@@ -46,7 +46,7 @@ func run() -> void:
 	assert(stale_json_sha!="")
 
 	# Cut over to SQLite and advance one event beyond the old JSON stream.
-	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","sqlite")
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	var cutover := World.new()
 	cutover.save_path = path
 	cutover.load_or_seed()
