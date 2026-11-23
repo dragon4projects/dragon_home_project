@@ -10,6 +10,8 @@ const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
+const CandidateContentRuntimeScript = preload("res://scripts/candidate_content_runtime.gd")
+const ITER1_REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
@@ -18,6 +20,8 @@ var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
 var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
+var candidate_content = CandidateContentRuntimeScript.new()
+var iter1_owner_review := false
 var art_layer_count := 0
 var detailed_room_groups: Dictionary = {}
 var art_loaded_groups: Dictionary = {}
@@ -34,6 +38,7 @@ var actor_root: Node3D
 var creature_root: Node3D
 var creature_nodes: Dictionary = {}
 var creature_labels: Dictionary = {}
+var creature_animations: Dictionary = {}
 var object_root: Node3D
 var object_nodes: Dictionary = {}
 var actor_sprites: Dictionary = {}
@@ -100,9 +105,21 @@ var room_names := {
 
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
+	iter1_owner_review = FileAccess.file_exists(ITER1_REVIEW_MARKER)
+	if iter1_owner_review:
+		world.save_path = "user://dragon_house_iter1_owner_review.json"
 	world.load_or_seed()
+	if iter1_owner_review:
+		if candidate_content.initialize():
+			var guest_review_result: Dictionary = candidate_content.apply_guest_candidate(world)
+			if not bool(guest_review_result.get("ok",false)):
+				push_warning("Iteration-1 guest candidate activation failed: "+str(guest_review_result))
+		else:
+			push_warning("Iteration-1 candidate contract could not be initialized: "+candidate_content.last_error)
 	semantic_view.install(world,"HOUSE")
 	asset_banks.initialize()
+	if iter1_owner_review:
+		_register_iter1_review_creatures()
 	# Metadata is not a physical book or a movie/audio file.
 	if not asset_banks.manifest.is_empty():
 		catalog_metadata_added = world.merge_reference_book_metadata(
@@ -161,7 +178,71 @@ func _ready() -> void:
 	zoom_current = zoom
 	apply_camera(0.1)
 	update_render_lod()
-	notice.text = "Независимый прототип: камера, постройка, автономная жизнь"
+	notice.text = ("ITER1 OWNER REVIEW · candidate art/guests/fauna · approved=false"
+		if iter1_owner_review else
+		"Независимый прототип: камера, постройка, автономная жизнь")
+
+func _first_public_room_id(room_type: String) -> String:
+	for room in world.rooms:
+		if str(room.get("type","")) == room_type and str(room.get("privacy","public")) == "public":
+			return str(room.get("id",""))
+	return ""
+
+func _register_iter1_review_creatures() -> void:
+	var specs := [
+		{"id":"CREATURE_SHURSHUN","name":"Шуршун","bank":"npc_cat_black_hero","owner":"RES_03","room":"common"},
+		{"id":"CREATURE_CAT_CALICO_REVIEW","name":"Кошка","bank":"npc_cat_calico","owner":"","room":"rest"},
+		{"id":"CREATURE_MOUSE_GRAY_REVIEW","name":"Мышь","bank":"npc_mouse_gray","owner":"","room":"library"},
+		{"id":"CREATURE_RAT_HERO_REVIEW","name":"Крыса","bank":"npc_rat_hero","owner":"","room":"study"},
+		{"id":"CREATURE_HEDGEHOG_REVIEW","name":"Ёж","bank":"npc_hedgehog_01","owner":"","room":"arrival"},
+		{"id":"CREATURE_AI_SPHERE_REVIEW","name":"Сфера","bank":"npc_ai_magic_sphere","owner":"","room":"artifact"}
+	]
+	var changed := false
+	for spec in specs:
+		var creature_id := str(spec["id"])
+		if world.creatures.has(creature_id):
+			continue
+		var bank_id := str(spec["bank"])
+		if not asset_banks.candidate_creature_bank(bank_id):
+			push_warning("Iteration-1 creature bank failed validation: "+bank_id)
+			continue
+		var room_id := _first_public_room_id(str(spec["room"]))
+		if room_id == "":
+			continue
+		if world.register_creature(creature_id,str(spec["name"]),room_id,bank_id,
+				str(spec["owner"]),false,false,false):
+			changed = true
+	if changed:
+		world.save_world()
+
+func _review_room_art_type(group: Dictionary) -> String:
+	var room_type := str(group.get("type",""))
+	if not iter1_owner_review or room_type != "guest":
+		return room_type
+	var cells: Array = group.get("cells",[])
+	if cells.size() != 1:
+		return room_type
+	match str(cells[0].get("candidate_room_id","")):
+		"guest_centaur_01":
+			return "guest_centaur"
+		"guest_vampire_01":
+			return "guest_vampire"
+		"guest_miu_01":
+			return "guest_miu"
+	return room_type
+
+func _creature_canvas_width(bank_id: String) -> float:
+	if bank_id.contains("mouse"):
+		return 0.65
+	if bank_id.contains("rat"):
+		return 0.85
+	if bank_id.contains("hedgehog"):
+		return 0.85
+	if bank_id.contains("cat"):
+		return 1.20
+	if bank_id.contains("sphere"):
+		return 0.95
+	return 1.0
 
 func surface_texture(color: Color) -> Texture2D:
 	# Poly Haven materials are CC0 per imported asset provenance registry.
@@ -539,7 +620,8 @@ func _load_room_art(group_node: Node3D) -> void:
 	var layer: Node3D=group_node.get_node_or_null("Layer_ApprovedArt")
 	if layer==null:
 		return
-	var count: int=interior_skin.add_layers(layer,str(group["type"]),
+	var art_type := str(group.get("art_type",group["type"]))
+	var count: int=interior_skin.add_layers(layer,art_type,
 		int(group["width"]),float(group["width"])*W)
 	if count>0:
 		art_loaded_groups[group_node.name]=count
@@ -662,7 +744,9 @@ func make_room(group: Dictionary) -> void:
 	visual_room_groups[n.name] = group
 	var t: String = group["type"]
 	var facade_only := _group_facade_only(group)
-	var accepted: Array=interior_skin.validated_layers(t,int(group["width"]))
+	var art_type := _review_room_art_type(group)
+	visual_room_groups[n.name]["art_type"] = art_type
+	var accepted: Array=interior_skin.validated_layers(art_type,int(group["width"]))
 	visual_room_groups[n.name]["has_art"] = not accepted.is_empty()
 	visual_room_groups[n.name]["replaces_furniture"] = accepted.any(
 		func(item): return str(item.get("role","")) == "furniture_back")
