@@ -214,6 +214,19 @@ func append_many(input_events: Array) -> Array:
 func snapshot_events() -> Array:
 	return events.duplicate(true)
 
+func events_for_object(object_id: String, limit: int = 64) -> Array:
+	if object_id == "" or limit <= 0:
+		return []
+	var matches: Array = []
+	for raw_event in events:
+		var event: Dictionary = raw_event
+		var payload: Dictionary = event.get("payload",{})
+		if str(event.get("object_id",payload.get("object_id",""))) != object_id:
+			continue
+		matches.append(event.duplicate(true))
+	var start: int = maxi(0,matches.size()-limit)
+	return matches.slice(start,matches.size())
+
 func last_sequence() -> int:
 	return sequence
 
