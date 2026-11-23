@@ -1500,7 +1500,7 @@ func set_mode(mode: String) -> void:
 			fit_house_camera()
 		"LEVEL":
 			follow_id = ""
-			var requested_level := semantic_view.level
+			var requested_level: int = int(semantic_view.level)
 			if selected_room != "":
 				var selected: Dictionary = world.room_by_id(selected_room)
 				if not selected.is_empty():
