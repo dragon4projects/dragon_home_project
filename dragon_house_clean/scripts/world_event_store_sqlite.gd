@@ -12,6 +12,7 @@ var events: Array = []
 var sequence: int = 0
 var status: String = "UNINITIALIZED"
 var last_error: String = ""
+var last_warning: String = ""
 var db: Object = null
 
 func backend_name() -> String:
@@ -220,6 +221,7 @@ func setup(base_save_path: String) -> bool:
 	sequence = 0
 	status = "INITIALIZING"
 	last_error = ""
+	last_warning = ""
 	var primary_exists := FileAccess.file_exists(path)
 	var backup := path + ".bak"
 	var backup_exists := FileAccess.file_exists(backup)
@@ -364,11 +366,17 @@ func _sync_projection(projection: Dictionary) -> bool:
 	return true
 
 func _backup() -> bool:
+	last_warning = ""
 	if db == null:
+		last_warning = "SQLite recovery backup skipped: connection unavailable"
 		return false
 	var ok := bool(db.call("backup_to",path+".bak"))
 	if not ok:
-		return _db_error("SQLite backup failed")
+		var detail: String = str(db.get("error_message"))
+		last_warning = "SQLite recovery backup failed"
+		if detail != "":
+			last_warning += ": " + detail
+		return false
 	return true
 
 func import_canonical_events(input_events: Array, projection: Dictionary) -> Array:
@@ -423,10 +431,8 @@ func import_canonical_events(input_events: Array, projection: Dictionary) -> Arr
 			last_error = "SQLite canonical import changed event identity/order"
 			status = "WRITE_FAILED"
 			return []
-	if not _backup():
-		status = "WRITE_FAILED"
-		return []
-	status = "READY"
+	var backup_ok: bool = _backup()
+	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
 	return snapshot_events()
 
@@ -446,10 +452,8 @@ func rebuild_projection(projection: Dictionary) -> bool:
 		_query("ROLLBACK;")
 		status = "WRITE_FAILED"
 		return false
-	if not _backup():
-		status = "WRITE_FAILED"
-		return false
-	status = "READY"
+	var backup_ok: bool = _backup()
+	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
 	return true
 
@@ -493,10 +497,8 @@ func append_many_with_projection(input_events: Array, projection: Dictionary) ->
 	if not _load_events():
 		status = "WRITE_FAILED"
 		return []
-	if not _backup():
-		status = "WRITE_FAILED"
-		return []
-	status = "READY"
+	var backup_ok: bool = _backup()
+	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
 	var committed: Array = []
 	var wanted: Dictionary = {}
