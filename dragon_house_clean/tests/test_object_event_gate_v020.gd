@@ -123,6 +123,16 @@ func run() -> void:
 	assert(world.object_event_revision()==revision_before)
 	assert(world.journal.size()==journal_before)
 
+	var elevated: Dictionary = _manual_event(
+		"QA_RENDERER_ELEVATION","OBJECT_MOVED","EXPLICIT_WORLD_FACT",
+		"DRAGON_DECLARED",object,str(room["id"]),presentation_payload)
+	elevated["source_type"] = "renderer"
+	var elevated_result: Dictionary = world.submit_object_event(elevated)
+	assert(not bool(elevated_result.get("ok",false)))
+	assert(str(elevated_result.get("error","")).contains("elevate"))
+	assert(world.object_event_revision()==revision_before)
+	assert(world.journal.size()==journal_before)
+
 	var owner_result: Dictionary = world.submit_object_event(_manual_event(
 		"QA_AMBIENT_OWNER_CHANGE","OBJECT_OWNER_CHANGED","AMBIENT_SIMULATION",
 		"AMBIENT",object,str(room["id"]),
@@ -155,5 +165,5 @@ func run() -> void:
 			assert(event.has(field),"accepted event missing "+field)
 
 	_cleanup(path)
-	print("OBJECT_EVENT_GATE_V020_PASS direct_bypass=blocked protected=blocked creature_caps=central hide_caps=central presentation=no_truth owner=stable duplicate=idempotent envelope=typed")
+	print("OBJECT_EVENT_GATE_V020_PASS direct_bypass=blocked protected=blocked creature_caps=central hide_caps=central presentation=no_truth renderer_elevation=blocked owner=stable duplicate=idempotent envelope=typed")
 	quit(0)
