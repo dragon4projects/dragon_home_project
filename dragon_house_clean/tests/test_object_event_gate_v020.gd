@@ -42,6 +42,7 @@ func _manual_event(event_id: String, event_type: String, truth_class: String,
 func run() -> void:
 	var path := "user://object_event_gate_v020.json"
 	_cleanup(path)
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 	var world := World.new()
 	world.save_path = path
 	world.seed_world()
@@ -164,6 +165,7 @@ func run() -> void:
 		]:
 			assert(event.has(field),"accepted event missing "+field)
 
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
 	print("OBJECT_EVENT_GATE_V020_PASS direct_bypass=blocked protected=blocked creature_caps=central hide_caps=central presentation=no_truth renderer_elevation=blocked owner=stable duplicate=idempotent envelope=typed")
 	quit(0)
