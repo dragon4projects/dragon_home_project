@@ -890,6 +890,7 @@ func make_creatures() -> void:
 	creature_nodes.clear()
 	creature_labels.clear()
 	var placeholder := make_sprite_texture(true)
+	creature_animations.clear()
 	for creature_id in world.creatures:
 		var creature: Dictionary = world.creatures[creature_id]
 		if not bool(creature.get("active",false)):
@@ -899,10 +900,20 @@ func make_creatures() -> void:
 		creature_root.add_child(anchor)
 		var sprite := Sprite3D.new()
 		sprite.name = "Body"
-		sprite.texture = placeholder
-		sprite.pixel_size = 0.0055
+		var bank_id := str(creature.get("bank_id",""))
+		var bank_texture: Texture2D = null
 		sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
-		sprite.position.y = 0.38
+		if bank_id != "" and asset_banks.candidate_creature_bank(bank_id):
+			bank_texture = asset_banks.creature_texture(bank_id,"IDLE_RIGHT",0)
+		sprite.texture = bank_texture if bank_texture != null else placeholder
+		if bank_texture != null:
+			sprite.pixel_size = _creature_canvas_width(bank_id) / maxf(1.0,float(bank_texture.get_width()))
+			sprite.position.y = float(bank_texture.get_height()) * 0.43 * sprite.pixel_size
+			sprite.set_meta("candidate_bank",bank_id)
+			creature_animations[str(creature_id)] = {"state":"IDLE_RIGHT","frame":0,"elapsed":0.0}
+		else:
+			sprite.pixel_size = 0.0055
+			sprite.position.y = 0.38
 		anchor.add_child(sprite)
 		var label := label3(anchor,world.creature_display_label(str(creature_id)),
 			Vector3(0,0.92,0.15),21,Color("#ead8bf"))
@@ -911,7 +922,7 @@ func make_creatures() -> void:
 		creature_labels[str(creature_id)] = label
 	update_creatures()
 
-func update_creatures() -> void:
+func update_creatures(delta: float = 0.0) -> void:
 	var active_count := 0
 	for creature_id in world.creatures:
 		if bool(world.creatures[creature_id].get("active",false)):
@@ -932,6 +943,28 @@ func update_creatures() -> void:
 			float(creature.get("level",0))*H))
 		anchor.position = Vector3(
 			float(creature.get("x",0.0)),y,float(creature.get("z",0.25)))
+		var body: Sprite3D = anchor.get_node_or_null("Body")
+		var bank_id := str(creature.get("bank_id",""))
+		if body != null and bank_id != "" and body.has_meta("candidate_bank"):
+			var moving_left := str(creature.get("moving_axis","right")) == "left"
+			var state := ("WALK_LEFT" if moving_left else "WALK_RIGHT") if (
+				str(creature.get("phase","idle")) == "travel") else (
+				"IDLE_LEFT" if moving_left else "IDLE_RIGHT")
+			var anim: Dictionary = creature_animations.get(creature_id,
+				{"state":state,"frame":0,"elapsed":0.0})
+			if str(anim.get("state","")) != state:
+				anim = {"state":state,"frame":0,"elapsed":0.0}
+			else:
+				anim["elapsed"] = float(anim.get("elapsed",0.0)) + delta
+			var frame_count := asset_banks.creature_frame_count(bank_id,state)
+			var frame_time := 1.0 / asset_banks.creature_fps(bank_id,state)
+			if frame_count > 0 and float(anim["elapsed"]) >= frame_time:
+				anim["frame"] = (int(anim.get("frame",0)) + 1) % frame_count
+				anim["elapsed"] = 0.0
+			var tex := asset_banks.creature_texture(bank_id,state,int(anim.get("frame",0)))
+			if tex != null:
+				body.texture = tex
+			creature_animations[creature_id] = anim
 		var label: Label3D = creature_labels.get(creature_id)
 		if label != null:
 			label.text = world.creature_display_label(creature_id)
@@ -1996,7 +2029,7 @@ func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
 	life.tick(delta)
 	update_residents(delta)
-	update_creatures()
+	update_creatures(delta)
 	update_physical_objects()
 	apply_camera(delta)
 	save_timer += delta
