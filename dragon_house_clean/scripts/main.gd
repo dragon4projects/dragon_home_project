@@ -966,7 +966,11 @@ func make_residents() -> void:
 				actor_animations[id] = {"state":"IDLE_RIGHT","frame":0,"elapsed":0.0}
 		if id != "MANJKA":
 			var profile_id: String = str(actor.get("appearance_profile",""))
-			var chosen_wardrobe: String = asset_banks.preferred_wardrobe(id,profile_id,qa_visual_preview)
+			var candidate_guest := str(actor.get("entity_type","")) == "guest" and \
+				str(actor.get("visual_status","")) == "CANDIDATE" and \
+				str(actor.get("bank_id","")) == id
+			var chosen_wardrobe: String = asset_banks.preferred_wardrobe(
+				id,profile_id,qa_visual_preview or candidate_guest)
 			if chosen_wardrobe != "":
 				var approved_idle: Texture2D = asset_banks.texture_for(id,chosen_wardrobe,"IDLE_S",0)
 				if approved_idle != null:
