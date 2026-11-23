@@ -26,6 +26,49 @@ func _select_store() -> void:
 		store = JsonEventStore.new()
 		backend_requested = "json"
 
+func _legacy_json_event_store_exists() -> bool:
+	var base := str(world.save_path)+".world_events_v1.json"
+	return FileAccess.file_exists(base) or FileAccess.file_exists(base+".bak")
+
+func _migrate_json_event_store_to_sqlite() -> int:
+	if backend_requested != "sqlite" or not store.events.is_empty() or 			not _legacy_json_event_store_exists():
+		return 0
+	var legacy = JsonEventStore.new()
+	if not legacy.setup(str(world.save_path)):
+		last_error = "Canonical v0.20 JSON event stream is unreadable: "+legacy.last_error
+		return -1
+	var source_events: Array = legacy.snapshot_events()
+	if source_events.is_empty():
+		return 0
+	var projection: Dictionary = reducer.replay(source_events)
+	if projection.is_empty():
+		last_error = "Cannot reduce canonical v0.20 JSON stream: "+reducer.last_error
+		return -1
+	if not store.has_method("import_canonical_events"):
+		last_error = "Selected SQLite backend cannot import canonical events"
+		return -1
+	var imported: Array = store.import_canonical_events(source_events,projection)
+	if imported.size() != source_events.size():
+		last_error = "SQLite canonical import failed: "+str(store.last_error)
+		return -1
+	for i in range(source_events.size()):
+		var before: Dictionary = source_events[i]
+		var after: Dictionary = imported[i]
+		if str(before.get("event_id","")) != str(after.get("event_id","")) or 				int(before.get("seq",0)) != int(after.get("seq",0)):
+			last_error = "SQLite migration changed canonical event identity/order"
+			return -1
+	if store.has_method("derived_objects_snapshot"):
+		var persisted_projection: Dictionary = store.derived_objects_snapshot()
+		if persisted_projection != projection:
+			last_error = "SQLite migration projection differs from reducer projection"
+			return -1
+	_publish_projection(projection)
+	world.runtime_state["object_event_migrated_from_backend"] = "json_append_compat_v1"
+	world.runtime_state["object_event_migrated_event_count"] = imported.size()
+	world.runtime_state["object_event_migration_source"] = 		str(world.save_path)+".world_events_v1.json"
+	_reconcile_journal_from_store()
+	return imported.size()
+
 func setup(p_world) -> bool:
 	world = p_world
 	_select_store()
@@ -37,8 +80,15 @@ func setup(p_world) -> bool:
 		last_error = store.last_error
 		_update_runtime_state()
 		return false
+	var canonical_migrated := _migrate_json_event_store_to_sqlite()
+	if canonical_migrated < 0:
+		status = "JSON_EVENT_MIGRATION_FAILED"
+		_update_runtime_state()
+		return false
 	event_nonce = store.last_sequence()
-	if not store.events.is_empty():
+	if canonical_migrated > 0:
+		status = "MIGRATED_JSON_EVENT_STORE"
+	elif not store.events.is_empty():
 		var projection: Dictionary = reducer.replay(store.snapshot_events())
 		if projection.is_empty():
 			status = "REDUCER_REPLAY_FAILED"
