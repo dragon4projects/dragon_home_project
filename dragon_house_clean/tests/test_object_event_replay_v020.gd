@@ -14,6 +14,13 @@ func _cleanup(path: String) -> void:
 	]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path+suffix))
 
+func _journal_event(entries: Array, event_name: String) -> Dictionary:
+	for raw_entry in entries:
+		var entry: Dictionary = raw_entry
+		if str(entry.get("event","")) == event_name:
+			return entry
+	return {}
+
 func run() -> void:
 	var path := "user://object_event_replay_v020.json"
 	_cleanup(path)
@@ -58,6 +65,21 @@ func run() -> void:
 	assert(restarted.object_event_revision()==committed_revision)
 	assert(str(restarted.runtime_state.get("object_event_status",""))=="REPLAYED")
 	assert((object.get("history",[]) as Array).size()==3)
+	var canonical_history: Array = restarted.object_event_history("CRASH_GAP_OBJECT")
+	assert(canonical_history.size()==3)
+	var explanation: Dictionary = restarted.explain_physical_object("CRASH_GAP_OBJECT")
+	assert(int(explanation.get("event_count",0))==3)
+	assert(str(explanation.get("movement_reason",""))=="STASHED")
+	var latest: Dictionary = explanation.get("latest_event",{})
+	assert(str(latest.get("truth_class",""))=="AMBIENT_SIMULATION")
+	assert(str(latest.get("authority",""))=="AMBIENT")
+	assert(str(latest.get("provenance",""))=="AMBIENT_OBJECT_RUNTIME_V020")
+	var replayed_journal: Dictionary = _journal_event(
+		restarted.journal_entries(64),"OBJECT_STASHED")
+	assert(not replayed_journal.is_empty(),
+		"crash-gap replay must restore a visible causal journal trace")
+	var journal_details: Dictionary = replayed_journal.get("details",{})
+	assert(str(journal_details.get("event_id",""))==str(latest.get("event_id","")))
 
 	# load_or_seed writes a compatibility checkpoint after replay. A second
 	# restart must produce exactly the same canonical object projection.
@@ -69,5 +91,5 @@ func run() -> void:
 	assert(restarted_again.object_event_revision()==committed_revision)
 
 	_cleanup(path)
-	print("OBJECT_EVENT_REPLAY_V020_PASS crash_gap=recovered event_stream=authoritative ambient_keeps_explicit_location=yes restart=equivalent")
+	print("OBJECT_EVENT_REPLAY_V020_PASS crash_gap=recovered event_stream=authoritative provenance=queryable journal=reconciled ambient_keeps_explicit_location=yes restart=equivalent")
 	quit(0)
