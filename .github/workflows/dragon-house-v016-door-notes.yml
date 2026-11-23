@@ -1,0 +1,93 @@
+name: Dragon House v0.16 private door notes QA
+
+on:
+  push:
+    branches: [dev/dragon-house-v016-door-notes]
+    paths:
+      - '.github/workflows/dragon-house-v016-door-notes.yml'
+      - 'dragon_house_clean/scripts/main.gd'
+      - 'dragon_house_clean/scripts/private_door_registry.gd'
+      - 'dragon_house_clean/scripts/room_stations.gd'
+      - 'dragon_house_clean/data/private_doors_v1.json'
+      - 'dragon_house_clean/data/door_notes/**'
+      - 'dragon_house_clean/tests/test_private_door_note_v016.gd'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  door-notes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+
+      - name: Pull current LFS bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git lfs pull
+
+      - name: Download Godot 4.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/Godot_4.7.2.zip             https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/Godot_4.7.2.zip -d /tmp
+          chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
+
+      - name: Import and reject script errors
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean
+          timeout 900s /tmp/Godot_v4.7.2-stable_linux.x86_64             --headless --path . --editor --quit > door_import.log 2>&1
+          if grep -Eq 'SCRIPT ERROR|Parse Error|Parser Error' door_import.log; then
+            tail -160 door_import.log
+            exit 1
+          fi
+
+      - name: Door-note and privacy regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean
+          : > door_tests.log
+          for t in             tests/test_private_door_note_v016.gd             tests/test_room_stations_v07.gd             tests/test_sofa_seating_v09.gd             tests/test_furniture_contract_v10.gd             tests/test_corridor_passing_v013.gd; do
+            echo "RUN $t" | tee -a door_tests.log
+            result="$(timeout 240s /tmp/Godot_v4.7.2-stable_linux.x86_64               --headless --path . --script "res://$t" 2>&1)" || {
+                echo "$result" | tee -a door_tests.log
+                exit 1
+              }
+            echo "$result" | tee -a door_tests.log
+            echo "$result" | grep -q '_PASS'
+            if echo "$result" | grep -qE 'SCRIPT ERROR|Parse Error|Assertion failed'; then
+              exit 1
+            fi
+          done
+
+      - name: Prove public-note boundary is explicit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean
+          grep -q '"owner_public_note": true' data/private_doors_v1.json
+          grep -q '"room_assignment": null' data/private_doors_v1.json
+          grep -q 'TECHNICAL ACCESS ≠ CONSENT' data/door_notes/RES_08/00_ДВЕРЬ.md
+          grep -q 'PRIVATE ≠ SECRET' data/door_notes/RES_08/00_ДВЕРЬ.md
+
+      - name: Upload QA logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dragon-house-v016-door-notes-qa
+          path: |
+            dragon_house_clean/door_import.log
+            dragon_house_clean/door_tests.log
+          if-no-files-found: ignore
+          retention-days: 7
