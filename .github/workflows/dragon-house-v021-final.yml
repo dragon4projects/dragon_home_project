@@ -226,29 +226,14 @@ jobs:
             tests/test_object_event_projection_rebuild_v021.gd; do
             echo "RUN $t"
             out_file="$RUNNER_TEMP/v021-native-test.out"
-            if ! python3 - "$GODOT_BIN" "$t" "$PWD" >"$out_file" 2>&1 <<'PY'
-import subprocess, sys
-godot, test, cwd = sys.argv[1:4]
-try:
-    p = subprocess.run(
-        [godot, "--headless", "--path", cwd, "--script", "res://" + test],
-        cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        text=True, timeout=90)
-except subprocess.TimeoutExpired as e:
-    print(e.stdout or "")
-    print("NATIVE_TEST_TIMEOUT", test)
-    raise SystemExit(124)
-print(p.stdout or "")
-raise SystemExit(p.returncode)
-PY
-            then
+            if ! python3 -c 'import subprocess,sys; godot,test,cwd=sys.argv[1:4]; p=subprocess.run([godot,"--headless","--path",cwd,"--script","res://"+test],cwd=cwd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=90); print(p.stdout or ""); sys.exit(p.returncode)' "$GODOT_BIN" "$t" "$PWD" >"$out_file" 2>&1; then
               cat "$out_file"
               exit 1
             fi
             out="$(cat "$out_file")"
             echo "$out"
             echo "$out" | grep -q "_PASS"
-            ! echo "$out" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed|NATIVE_TEST_TIMEOUT"
+            ! echo "$out" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed|TimeoutExpired"
           done
           echo "SQLITE_FINAL_MACOS_V021_PASS"
 
