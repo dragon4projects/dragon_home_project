@@ -12,6 +12,19 @@ func _write_test_json(path: String, doc: Dictionary) -> void:
 	f.store_string(JSON.stringify(doc))
 	f.close()
 
+func _active_anchors(reg,world,room:Dictionary)->Array:
+	if room.is_empty():
+		return []
+	var group:Dictionary=world.merged_group(int(room["x"]),int(room["level"]))
+	if group.is_empty():
+		return reg.for_room(room)
+	var module_index:=-1
+	for i in range(group["cells"].size()):
+		if str(group["cells"][i]["id"])==str(room["id"]):
+			module_index=i
+			break
+	return reg.for_room_variant(room,int(group["width"]),module_index)
+
 func run() -> void:
 	var reg=R.new()
 	assert(reg.initialize(), "Baseline interaction registry MUST load")
@@ -22,7 +35,7 @@ func run() -> void:
 	assert(station.furniture.source_path==R.DEFAULT_PATH)
 	var rooms_with_props:=0
 	for room in world.rooms:
-		var spots: Array=reg.for_room(room)
+		var spots: Array=_active_anchors(reg,world,room)
 		if room.get("privacy","public")!="public":
 			assert(spots.is_empty(),"Private interior cannot have public anchors")
 			continue
@@ -37,7 +50,7 @@ func run() -> void:
 	assert(rooms_with_props>=8) # accepted 002 removes the blocked Common chair / empty middle cell
 
 	var common=world.get_room(-2,0)
-	var sofa: Array=reg.for_room(common)
+	var sofa: Array=_active_anchors(reg,world,common)
 	assert(sofa.size()==2)
 	assert(sofa[0]["furniture_id"]=="common_sofa_left")
 	assert(sofa[1]["furniture_id"]=="common_sofa_left")
@@ -60,7 +73,7 @@ func run() -> void:
 	current_scene=scene
 	var checked:=0
 	for room in scene.world.rooms:
-		var anchors: Array=reg.for_room(room)
+		var anchors: Array=_active_anchors(reg,scene.world,room)
 		if anchors.is_empty():
 			continue
 		scene.zoom_current=10.0
@@ -122,7 +135,7 @@ func run() -> void:
 	malformed["room_profiles"]["rest"][1]["id"]=malformed["room_profiles"]["rest"][0]["id"]
 	_write_test_json(candidate_path,malformed)
 	assert(not reg.check_candidate_patch(candidate_path)["valid"])
-	assert(reg.for_room(common).size()==2,"Unapproved malformed proposals cannot affect real anchors")
+	assert(_active_anchors(reg,world,common).size()==2,"Unapproved malformed proposals cannot affect real anchors")
 	for p in [candidate_path,world.save_path,scene.world.save_path]:
 		for suffix in ["",".bak",".tmp"]:
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(p+suffix))
