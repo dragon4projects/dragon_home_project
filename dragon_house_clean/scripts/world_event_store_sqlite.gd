@@ -222,14 +222,27 @@ func setup(base_save_path: String) -> bool:
 	last_error = ""
 	var primary_exists := FileAccess.file_exists(path)
 	var backup := path + ".bak"
+	var backup_exists := FileAccess.file_exists(backup)
+	var restored_missing_primary := false
+
+	# SQLite open_db() creates a new file when the primary path is missing.
+	# Never let that behavior shadow a readable canonical backup.
+	if not primary_exists and backup_exists:
+		if not _copy_file(backup,path):
+			status = "CORRUPT_NO_RECOVERY"
+			last_error = "Cannot restore missing SQLite primary from backup"
+			return false
+		primary_exists = true
+		restored_missing_primary = true
 
 	if _open_initialize_load():
-		status = "READY" if not events.is_empty() else "EMPTY"
+		status = "RECOVERED_FROM_BACKUP" if restored_missing_primary else (
+			"READY" if not events.is_empty() else "EMPTY")
 		return true
 
 	var primary_error := last_error
 	_close()
-	if primary_exists and FileAccess.file_exists(backup):
+	if primary_exists and backup_exists:
 		_quarantine_primary()
 		if not _copy_file(backup,path):
 			status = "CORRUPT_NO_RECOVERY"
