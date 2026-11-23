@@ -1109,11 +1109,52 @@ func toggle_journal() -> void:
 	if journal_open:
 		update_journal()
 
+func _world_journal_line(entry: Dictionary) -> String:
+	var event_name: String = str(entry.get("event",""))
+	var actor_id: String = str(entry.get("actor_id",""))
+	var subject_id: String = str(entry.get("subject_id",""))
+	var actor_name: String = actor_id
+	if world.residents.has(actor_id):
+		actor_name = str(world.residents[actor_id].get("name",actor_id))
+	elif world.creatures.has(actor_id):
+		actor_name = str(world.creatures[actor_id].get("name",actor_id))
+	var subject_name: String = subject_id
+	var object: Dictionary = world.physical_object(subject_id)
+	if not object.is_empty():
+		subject_name = str(object.get("display_name",subject_id))
+	match event_name:
+		"CREATURE_ROAMED":
+			return "%s перешла: %s → %s" % [
+				actor_name,str(entry.get("from","")),str(entry.get("to",""))]
+		"OBJECT_PICKED_UP":
+			return "%s унесла: %s" % [actor_name,subject_name]
+		"OBJECT_STASHED":
+			return "%s спрятала: %s" % [actor_name,subject_name]
+		"OBJECT_LOST_FOUND":
+			return "Дом нашёл: %s" % subject_name
+		"OBJECT_RESTORED_HOME":
+			return "На место возвращено: %s" % subject_name
+		"GUEST_REGISTERED":
+			return "Гостья в Доме: %s" % actor_name
+		"CREATURE_REGISTERED":
+			return "В Доме появилась живность: %s" % actor_name
+		_:
+			if event_name.begins_with("OBJECT_"):
+				return "%s · %s" % [subject_name,event_name.trim_prefix("OBJECT_").to_lower()]
+			return "%s · %s" % [actor_name,event_name]
+
 func update_journal() -> void:
 	if journal_text == null:
 		return
-	var last: Array = life.log.slice(maxi(0, life.log.size() - 11))
-	journal_text.text = "ЖУРНАЛ ДОМА\n\n" + "\n".join(last)
+	var lines: Array[String] = []
+	for message in life.log.slice(maxi(0, life.log.size() - 6)):
+		lines.append(str(message))
+	for entry in world.journal_entries(8):
+		if typeof(entry) == TYPE_DICTIONARY:
+			lines.append(_world_journal_line(entry))
+	if lines.size() > 14:
+		lines = lines.slice(lines.size()-14,lines.size())
+	journal_text.text = "ЖУРНАЛ ДОМА\n\n" + "\n".join(lines)
 
 func camera_world_bounds() -> Rect2:
 	var lo := Vector2(99999,99999)
