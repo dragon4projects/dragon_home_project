@@ -29,6 +29,8 @@ var actor_animations: Dictionary = {}
 var camera: Camera3D
 var room_root: Node3D
 var actor_root: Node3D
+var object_root: Node3D
+var object_nodes: Dictionary = {}
 var actor_sprites: Dictionary = {}
 var actor_labels: Dictionary = {}
 var door_note_anchors: Dictionary = {}
@@ -137,9 +139,13 @@ func _ready() -> void:
 	actor_root = Node3D.new()
 	actor_root.name = "Residents"
 	add_child(actor_root)
+	object_root = Node3D.new()
+	object_root.name = "PhysicalObjects"
+	add_child(object_root)
 	make_rooms()
 	make_residents()
 	build_interface()
+	make_physical_objects()
 	fit_house_camera()
 	smooth_focus = desired_focus
 	zoom_current = zoom
@@ -737,6 +743,75 @@ func make_sprite_texture(is_manka: bool) -> Texture2D:
 					color = Color("#713a4e")
 				img.set_pixel(px, py, color)
 	return ImageTexture.create_from_image(img)
+
+func _object_offset(object_id: String) -> Vector3:
+	var code := 0
+	for i in range(object_id.length()):
+		code = (code * 33 + object_id.unicode_at(i)) & 0x7fffffff
+	var ox := (float(code % 7) - 3.0) * 0.16
+	var oz := (float((code / 7) % 5) - 2.0) * 0.12
+	return Vector3(ox,0.0,oz)
+
+func make_physical_objects() -> void:
+	if object_root == null:
+		return
+	for child in object_root.get_children():
+		child.queue_free()
+	object_nodes.clear()
+	clear_content_hotspots()
+	for object_id in world.objects:
+		var object: Dictionary = world.objects[object_id]
+		var anchor := Node3D.new()
+		anchor.name = "Object_" + str(object_id)
+		object_root.add_child(anchor)
+		var asset_id := str(object.get("asset_id",""))
+		var texture: Texture2D = asset_banks.prop_display_texture(asset_id) if asset_id != "" else null
+		if texture != null:
+			var sprite := Sprite3D.new()
+			sprite.name = "Visual"
+			sprite.texture = texture
+			sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+			sprite.pixel_size = 0.48 / maxf(1.0,float(texture.get_height()))
+			sprite.position.y = 0.28
+			anchor.add_child(sprite)
+		else:
+			var marker := box(anchor,Vector3(0,0.12,0),Vector3(0.22,0.22,0.22),palette["bronze"])
+			marker.name = "VisualFallback"
+		object_nodes[str(object_id)] = anchor
+		register_content_hotspot(anchor,
+			str(object.get("viewer_category","artifacts")),str(object_id),
+			str(object.get("display_name",object_id)))
+	update_physical_objects()
+
+func update_physical_objects() -> void:
+	for object_id in object_nodes:
+		var anchor: Node3D = object_nodes[object_id]
+		var object: Dictionary = world.physical_object(str(object_id))
+		if object.is_empty():
+			anchor.visible = false
+			continue
+		var holder_id := str(object.get("current_holder_id",""))
+		if holder_id != "":
+			var holder: Dictionary = world._physical_actor(holder_id)
+			if holder.is_empty():
+				anchor.visible = false
+				continue
+			anchor.visible = true
+			anchor.position = Vector3(
+				float(holder.get("x",0.0)),
+				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
+				float(holder.get("z",0.25))+0.18) + _object_offset(str(object_id))*0.25
+			continue
+		var room_id := str(object.get("current_room_id",""))
+		var room: Dictionary = world.room_by_id(room_id)
+		if room.is_empty() or str(room.get("privacy","public")) != "public":
+			anchor.visible = false
+			continue
+		anchor.visible = true
+		anchor.position = Vector3(
+			float(room["x"])*W,
+			float(room["level"])*H+0.22,
+			0.72) + _object_offset(str(object_id))
 
 func make_residents() -> void:
 	var resident_tex := make_sprite_texture(false)
@@ -1606,6 +1681,7 @@ func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
 	life.tick(delta)
 	update_residents(delta)
+	update_physical_objects()
 	apply_camera(delta)
 	save_timer += delta
 	if save_timer > 20.0:
