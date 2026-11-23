@@ -85,3 +85,23 @@ Private export artifact names are updated to v0.11.
 ## 5. Production validation trigger
 
 The v0.11 development line was fast-forwarded to `dragon-house-fallout-fresh` on 2026-11-23 after the standalone Godot 4.7.2 depth regression passed. This commit exists to record the promotion and trigger the branch-scoped full LFS/Godot/export workflow. It does not change art approval state.
+
+
+## 6. Width-safe interaction correction
+
+Full LFS CI exposed a real interaction-contract mismatch after owner acceptance of TEEA 002: the measured Library **R2** chair anchors had been installed as cell overrides for the seeded Library **R1**. That made gameplay advertise furniture which the active R1 procedural room did not draw.
+
+Correction:
+- the seeded Library R1 now uses its existing `TABLE_LIBRARY` pair;
+- the accepted Library R2 artwork and measurements remain preserved for the future actual R2 merge;
+- no R2-only station is installed into an R1 room;
+- this is a runtime contract correction, not an art rollback.
+
+Independent Godot 4.7.2 verification with the real accepted 002 PNG payload:
+- `FURNITURE_CONTRACT_V10_PASS scene_objects=17`
+- `DRAGON_V011_ACCEPTED_ART_PASS layers=15`
+- `SOFA_SEATING_V09_PASS`
+- `LAZY_ART_V10_PASS`
+- `DRAGON_V011_ROOM_DISTRIBUTION_PASS`
+- `DRAGON_V011_DEPTH_PASS`
+- `ARTIST_ANCHOR_V2_REVIEW_PASS`
