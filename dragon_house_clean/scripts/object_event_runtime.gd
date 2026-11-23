@@ -1,5 +1,6 @@
 extends RefCounted
-const EventStore = preload("res://scripts/world_event_store.gd")
+const JsonEventStore = preload("res://scripts/world_event_store.gd")
+const SQLiteEventStore = preload("res://scripts/world_event_store_sqlite.gd")
 const EventGate = preload("res://scripts/world_event_gate.gd")
 const ObjectReducer = preload("res://scripts/object_event_reducer.gd")
 
@@ -7,7 +8,8 @@ const ObjectReducer = preload("res://scripts/object_event_reducer.gd")
 ## their durable truth path to gate -> append-only event -> reducer projection.
 
 var world
-var store = EventStore.new()
+var store = JsonEventStore.new()
+var backend_requested: String = "json"
 var gate = EventGate.new()
 var reducer = ObjectReducer.new()
 var ready: bool = false
@@ -15,8 +17,18 @@ var status: String = "UNINITIALIZED"
 var last_error: String = ""
 var event_nonce: int = 0
 
+func _select_store() -> void:
+	var requested := OS.get_environment("DRAGON_OBJECT_EVENT_BACKEND").strip_edges().to_lower()
+	if requested == "sqlite":
+		store = SQLiteEventStore.new()
+		backend_requested = "sqlite"
+	else:
+		store = JsonEventStore.new()
+		backend_requested = "json"
+
 func setup(p_world) -> bool:
 	world = p_world
+	_select_store()
 	ready = false
 	status = "INITIALIZING"
 	last_error = ""
@@ -53,7 +65,7 @@ func _update_runtime_state() -> void:
 		return
 	world.runtime_state["object_event_revision"] = store.last_sequence()
 	world.runtime_state["object_event_status"] = status
-	world.runtime_state["object_event_backend"] = "json_append_compat_v1"
+	world.runtime_state["object_event_backend"] = str(store.backend_name()) if store.has_method("backend_name") else backend_requested
 	world.runtime_state["object_event_store_path"] = store.storage_path()
 	if last_error != "":
 		world.runtime_state["object_event_last_error"] = last_error
@@ -183,7 +195,7 @@ func _migrate_snapshot_objects() -> bool:
 			return false
 		candidate = next
 		migration_events.append(event)
-	var committed: Array = store.append_many(migration_events)
+	var committed: Array = store.append_many_with_projection(migration_events,candidate) if store.has_method("append_many_with_projection") else store.append_many(migration_events)
 	if committed.size() != migration_events.size():
 		last_error = "migration store: "+store.last_error
 		return false
@@ -302,7 +314,7 @@ func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 	if candidate.is_empty():
 		last_error = reducer.last_error
 		return {"ok":false,"error":last_error}
-	var committed: Dictionary = store.append(event)
+	var committed: Dictionary = store.append_with_projection(event,candidate) if store.has_method("append_with_projection") else store.append(event)
 	if committed.is_empty():
 		last_error = store.last_error
 		status = store.status
