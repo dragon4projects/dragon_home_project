@@ -1,0 +1,49 @@
+{
+  "schema": 3,
+  "batch_id": "TEEA_INT_20261123_007",
+  "machine_status": "READY_FOR_INTEGRATOR_QA",
+  "owner_approved": false,
+  "approved": false,
+  "production_touched": false,
+  "gates": {
+    "PASS-A": {
+      "status": "PASS",
+      "reason": "Exact canonical guest PNG bytes were materialized by TEEA007 QA workflow run 45207278966 (artifact 14833608303) with LFS enabled and per-file SHA verification. Actual alpha world footprint under current 1.9/512 runtime scale passes 2.10x2.45 m door visual clearance for Centaur, Vampire Girl and Miu; Centaur separate 2.50 m physical turning-envelope QA remains PASS."
+    },
+    "PASS-B": {
+      "status": "PASS",
+      "reason": "32 neutral media-hook records exist. 5 Library surfaces remain exact TEEA005 bindings; 27 Music/Cinema/Artifact surfaces are now bound to final TEEA006 geometry. Separate Cinema screen/viewing function and TV+console+gamepad nook are preserved. Runtime content is not baked."
+    },
+    "PASS-C": {
+      "status": "PASS",
+      "reason": "Project-original polygon mug LOD0 empty/filled + LOD1, source BLEND + GLB, weld-aware topology QA, tabletop hand-envelope proof and Godot GLTF parse PASS."
+    },
+    "PASS-D": {
+      "status": "PASS",
+      "reason": "All prior payload/provenance/SHA/Godot/HOUSE-LEVEL-ROOM/current-camera/media evidence passes. Exact canonical guest PNGs were rendered in current R1 ROOM camera at manual yaw -0.18/0/+0.18: 9/9 actual-sprite proofs PASS, 9/9 projected alpha bboxes remain inside frame, no guest foreground layer exists, and selected sprite QA positions remain in front of baked furniture_back."
+    },
+    "PASS-E": {
+      "status": "PASS",
+      "reason": "owner_approved=false; approved=false; production untouched; isolated 007 art branch; no production PR. Final branch/head and immutable binary are reported by the Library pointer."
+    }
+  },
+  "subdeliverables": {
+    "guest_room_candidates": "PASS_GEOMETRY_ACCESS_EXACT_VISUAL_ALPHA",
+    "guest_actual_alpha_body_footprint": "PASS_EXACT_LFS_ALPHA",
+    "common_function_addendum": "PASS",
+    "library_function_addendum": "PASS",
+    "media_holder_geometry": "PASS",
+    "media_runtime_api_mapping": "PASS",
+    "cinema_music_artifact_final_holder_placement": "PASS_TEEA006_FINAL",
+    "media_yaw_proof": "PASS_27_OF_27",
+    "mug_geometry": "PASS",
+    "godot_decode_glb": "PASS",
+    "guest_actual_sprite_yaw_proof": "PASS_9_OF_9"
+  },
+  "closure_addendum": {
+    "url": "https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/b5c3b121-8d02-4aae-b278-499c886f6033.zip",
+    "sha256": "abc63bc791fb5bd90e08dcc57bf9447df68385373675fec2ecd4a928f562292b",
+    "size": "~4 MiB",
+    "base_payload_unchanged": true
+  }
+}
