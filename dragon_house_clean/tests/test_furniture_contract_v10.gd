@@ -36,11 +36,11 @@ func run() -> void:
 			rooms_with_props+=1
 	assert(rooms_with_props>=9)
 
-	var common=world.get_room(-1,0)
+	var common=world.get_room(-2,0)
 	var sofa: Array=reg.for_room(common)
 	assert(sofa.size()==2)
-	assert(sofa[0]["furniture_id"]=="SOFA_COMMON_MIDDLE")
-	assert(sofa[1]["furniture_id"]=="SOFA_COMMON_MIDDLE")
+	assert(sofa[0]["furniture_id"]=="common_sofa_left")
+	assert(sofa[1]["furniture_id"]=="common_sofa_left")
 	var person: Dictionary=world.residents["RES_01"]
 	var claim: Dictionary=station.single(world,person,common,"REST")
 	assert(claim.get("kind","")=="seat")
