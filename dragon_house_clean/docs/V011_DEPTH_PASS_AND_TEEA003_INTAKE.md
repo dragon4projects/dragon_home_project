@@ -105,3 +105,8 @@ Independent Godot 4.7.2 verification with the real accepted 002 PNG payload:
 - `DRAGON_V011_ROOM_DISTRIBUTION_PASS`
 - `DRAGON_V011_DEPTH_PASS`
 - `ARTIST_ANCHOR_V2_REVIEW_PASS`
+
+
+## 7. Full CI rerun trigger
+
+The width-safe Library correction and its real-002 targeted regression package are now on the fresh branch. This commit intentionally triggers the full LFS/Godot/Windows/macOS acceptance workflow from the corrected branch head.
