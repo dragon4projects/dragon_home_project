@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "source": "accepted procedural baseline + owner-accepted TEEA_INT_20261122_002_REWORK_R1 measured anchors",
-  "approval_scope": "physical interaction anchors aligned with accepted 002 art; blocked geometry excluded",
+  "source": "accepted procedural baseline + owner-accepted TEEA_INT_20261122_002_REWORK_R1 measured anchors, width-safe activation",
+  "approval_scope": "physical interaction anchors aligned with currently active accepted art; R2-only library measurements remain review data until an actual Library R2 exists",
   "room_profiles": {
     "common": [
       {
@@ -185,28 +185,6 @@
         "pose_hint": "RELAXED_SIT",
         "approach_z": 0.95
       }
-    ],
-    "library:2": [
-      {
-        "id": "library_chair_left_seat_a",
-        "x": 0.25,
-        "z": -0.5835,
-        "kind": "seat",
-        "furniture_id": "library_chair_left",
-        "pose_hint": "READ",
-        "approach_z": 0.95
-      }
-    ],
-    "library:3": [
-      {
-        "id": "library_chair_right_seat_a",
-        "x": -0.25,
-        "z": -0.558,
-        "kind": "seat",
-        "furniture_id": "library_chair_right",
-        "pose_hint": "READ",
-        "approach_z": 0.95
-      }
     ]
   },
   "privacy_rule": "door_only rooms have no visible, reservable stations",
@@ -217,6 +195,7 @@
     "blocked": [
       "common_chair_left_seat_a"
     ],
-    "library_table": "collision_only"
+    "library_table": "collision_only",
+    "library_R2": "accepted art/measurements retained, not installed into current default Library R1"
   }
 }
