@@ -3,15 +3,22 @@ const MediaRuntime = preload("res://scripts/media_runtime.gd")
 const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 const RoomStations = preload("res://scripts/room_stations.gd")
 const AmbientCreatureRuntime = preload("res://scripts/ambient_creature_runtime.gd")
+const LifeScheduler = preload("res://scripts/life_scheduler_v2.gd")
 ## Autonomous utility/need scheduler. No external events or AI dependency.
 var world
 var media_runtime = MediaRuntime.new()
 var locomotion = RoomLocomotion.new()
 var stations = RoomStations.new()
 var creature_runtime = AmbientCreatureRuntime.new()
+var life_scheduler = LifeScheduler.new()
 var rng := RandomNumberGenerator.new()
 var clock := 0.0
 var max_jobs_per_tick := 2
+var idle_retry_seconds := 8.0
+var moving_ids: Dictionary = {}
+var planner_calls := 0
+var planner_usec_total := 0
+var planner_usec_max := 0
 var log: Array = []
 var steps := 0
 var last_cleanup_wall_time := 0
@@ -92,6 +99,21 @@ func setup(p_world) -> void:
 	var now: int = int(Time.get_unix_time_from_system())
 	media_runtime.cleanup_abandoned(now)
 	last_cleanup_wall_time = now
+	moving_ids.clear()
+	var active_ids: Array = []
+	for id in world.residents:
+		var actor: Dictionary = world.residents[id]
+		if not bool(actor.get("active",false)):
+			continue
+		active_ids.append(str(id))
+		if str(actor.get("phase","idle")) == "travel":
+			moving_ids[str(id)] = true
+	active_ids.sort()
+	var saved_scheduler: Dictionary = world.runtime_state.get("life_scheduler",{})
+	life_scheduler.restore(saved_scheduler,active_ids,clock,idle_retry_seconds,3.0)
+	# Existing pre-scheduler saves retain their commitments. First wake only
+	# reconciles/schedules them; it does not cancel an unexpired action.
+	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
 
 func daypart() -> String:
 	var hour: int = Time.get_datetime_dict_from_system().get("hour", 12)
@@ -102,6 +124,50 @@ func daypart() -> String:
 	if hour < 18:
 		return "day"
 	return "evening"
+
+func _advance_needs(actor: Dictionary, elapsed: float) -> void:
+	if elapsed <= 0.0:
+		return
+	var needs: Dictionary = actor.get("needs",{})
+	needs["rest"] = clampf(float(needs.get("rest",0.5)) + elapsed*0.00065,0,1)
+	needs["curiosity"] = clampf(float(needs.get("curiosity",0.4)) + elapsed*0.0004,0,1)
+	needs["social"] = clampf(float(needs.get("social",0.4)) + elapsed*0.00025,0,1)
+	if str(actor.get("phase","idle")) == "perform":
+		var intent := str(actor.get("intent",""))
+		if intent in ["REST","SLEEP"]:
+			needs["rest"] = maxf(0.0,float(needs["rest"]) - elapsed*0.004)
+		elif intent in ["PURPOSEFUL_EXPLORE","BROWSE_BOOK_CATALOG","BROWSE_FILMS","BROWSE_AUDIO"]:
+			needs["curiosity"] = maxf(0.0,float(needs["curiosity"]) - elapsed*0.002)
+	actor["needs"] = needs
+
+func _schedule_actor(actor: Dictionary, reason: String = "PERIODIC_LOW_CADENCE") -> void:
+	var id := str(actor.get("id",""))
+	if id == "" or not bool(actor.get("active",false)):
+		return
+	if str(actor.get("phase","idle")) == "travel":
+		moving_ids[id] = true
+		# Travel itself is frame-driven. This wake is only a bounded safety check.
+		life_scheduler.schedule_in(id,clock,2.0,"TRAVEL_ACTIVE")
+		return
+	var until := float(actor.get("until",0.0))
+	if until > clock:
+		life_scheduler.schedule_at(id,until,reason)
+	else:
+		life_scheduler.schedule_in(id,clock,idle_retry_seconds,reason)
+
+func wake_actor(id: String, reason: String) -> void:
+	if world == null or not world.residents.has(id):
+		return
+	life_scheduler.wake(id,clock,reason)
+
+func scheduler_metrics() -> Dictionary:
+	return {
+		"planner_calls":planner_calls,
+		"planner_usec_total":planner_usec_total,
+		"planner_usec_max":planner_usec_max,
+		"scheduled":life_scheduler.due_at.size(),
+		"moving":moving_ids.size()
+	}
 
 func _utilities(actor: Dictionary) -> Dictionary:
 	var need: Dictionary = actor.get("needs", {})
@@ -455,6 +521,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		partner["until"] = end_time
 		partner["partner_id"] = actor["id"]
 		actor["partner_id"] = partner["id"]
+		_schedule_actor(partner,"PAIR_COMMITMENT")
 		_record("%s и %s — договорились встретиться для разговора" %
 			[actor.get("name",""),partner.get("name","")])
 	stations.commit_claim(actor,actor_claim)
@@ -467,6 +534,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	actor["waypoints"] = actor_waypoints
 	actor["waypoint_index"] = 0
 	actor["phase"] = "travel"
+	moving_ids[str(actor["id"])] = true
 	actor["route"] = route
 	actor["path_index"] = 1
 	actor["until"] = end_time if intent == "TALK_PAIR" else (
@@ -573,53 +641,72 @@ func _move(actor: Dictionary, delta: float) -> void:
 			actor["level"] = current_room["level"]
 		actor["waypoint_index"] = idx + 1
 		if int(actor["waypoint_index"]) >= waypoints.size():
+			# Consume only the travel interval before switching need semantics.
+			var actor_id := str(actor.get("id",""))
+			_advance_needs(actor,life_scheduler.consume_elapsed(actor_id,clock))
 			actor["phase"] = "perform"
-			actor["until"] = maxf(float(actor.get("until", 0.0)), clock + 12.0)
+			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
+			moving_ids.erase(actor_id)
+			life_scheduler.schedule_at(actor_id,float(actor["until"]),"ACTION_COMMITMENT")
+
+func _process_due_actor(id: String, wake_reason: String) -> void:
+	var actor: Dictionary = world.residents.get(id,{})
+	if actor.is_empty() or not bool(actor.get("active",false)):
+		life_scheduler.cancel(id)
+		moving_ids.erase(id)
+		return
+	var elapsed := life_scheduler.consume_elapsed(id,clock)
+	_advance_needs(actor,elapsed)
+	if str(actor.get("phase","idle")) == "travel":
+		moving_ids[id] = true
+		life_scheduler.schedule_in(id,clock,2.0,"TRAVEL_ACTIVE")
+		return
+	if float(actor.get("until",0.0)) > clock:
+		life_scheduler.schedule_at(id,float(actor["until"]),"COMMITMENT_ACTIVE")
+		return
+	if actor.get("partner_id","") != "":
+		var partner_id := str(actor["partner_id"])
+		actor.erase("partner_id")
+		var partner: Dictionary = world.residents.get(partner_id,{})
+		if partner.get("partner_id","") == id:
+			partner.erase("partner_id")
+			wake_actor(partner_id,"PAIR_RELEASED")
+	if actor.get("held_book","") != "":
+		var book_id := str(actor["held_book"])
+		media_runtime.read(id,book_id,25.0)
+		media_runtime.return_book(id,book_id)
+		actor.erase("held_book")
+		_record("%s — вернула книгу" % actor.get("name",id))
+	var started := Time.get_ticks_usec()
+	var task := choose_intent(actor)
+	_assign(actor,task)
+	var spent := int(Time.get_ticks_usec()-started)
+	planner_calls += 1
+	planner_usec_total += spent
+	planner_usec_max = maxi(planner_usec_max,spent)
+	_schedule_actor(actor,"PLANNER_RESULT")
+	world._append_journal("LIFE_PLANNER_RAN",id,id,wake_reason,str(actor.get("intent","")),
+		{"planner_usec":spent,"next_due":life_scheduler.peek_due_at(id)})
 
 func tick(delta: float) -> void:
 	clock += delta
 	world.sim_clock = clock
 	creature_runtime.tick(delta)
-	var now: int = int(Time.get_unix_time_from_system())
-	if now - last_cleanup_wall_time >= 60:
-		var recovered: int = media_runtime.cleanup_abandoned(now)
+	# Movement stays frame-driven, but only actors actually travelling are touched.
+	for raw_id in moving_ids.keys().duplicate():
+		var id := str(raw_id)
+		var actor: Dictionary = world.residents.get(id,{})
+		if actor.is_empty() or not bool(actor.get("active",false)) or str(actor.get("phase","idle")) != "travel":
+			moving_ids.erase(id)
+			continue
+		_move(actor,delta)
+	var wall_now := int(Time.get_unix_time_from_system())
+	if wall_now-last_cleanup_wall_time >= 60:
+		var recovered := media_runtime.cleanup_abandoned(wall_now)
 		if recovered > 0:
 			_record("Дом вернул забытые книги на полку: %d" % recovered)
-		last_cleanup_wall_time = now
-	var jobs := 0
-	for id in world.residents:
-		var actor: Dictionary = world.residents[id]
-		if not actor.get("active", false):
-			continue
-		var needs: Dictionary = actor.get("needs", {})
-		needs["rest"] = clampf(float(needs.get("rest", 0.5)) + delta * 0.00065, 0, 1)
-		needs["curiosity"] = clampf(float(needs.get("curiosity", 0.4)) + delta * 0.0004, 0, 1)
-		needs["social"] = clampf(float(needs.get("social", 0.4)) + delta * 0.00025, 0, 1)
-		actor["needs"] = needs
-		if actor.get("phase", "idle") == "travel":
-			_move(actor, delta)
-			continue
-		if float(actor.get("until", 0.0)) > clock:
-			if actor["intent"] in ["REST", "SLEEP"]:
-				needs["rest"] = maxf(0.0, float(needs["rest"]) - delta * 0.004)
-			elif actor["intent"] in ["PURPOSEFUL_EXPLORE","BROWSE_BOOK_CATALOG",
-				"BROWSE_FILMS","BROWSE_AUDIO"]:
-				needs["curiosity"] = maxf(0.0, float(needs["curiosity"]) - delta * 0.002)
-			continue
-		if jobs >= max_jobs_per_tick:
-			continue
-		if actor.get("partner_id", "") != "":
-			var partner_id: String = actor["partner_id"]
-			actor.erase("partner_id")
-			var partner: Dictionary = world.residents.get(partner_id, {})
-			if partner.get("partner_id", "") == id:
-				partner.erase("partner_id")
-		if actor.get("held_book", "") != "":
-			var book_id: String = actor["held_book"]
-			media_runtime.read(id, book_id, 25.0)
-			media_runtime.return_book(id, book_id)
-			actor.erase("held_book")
-			_record("%s — вернула книгу" % actor.get("name", id))
-		jobs += 1
-		_assign(actor, choose_intent(actor))
-
+		last_cleanup_wall_time = wall_now
+	for due in life_scheduler.pop_due(clock,max_jobs_per_tick):
+		_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
+	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
+	world.runtime_state["life_scheduler_metrics"] = scheduler_metrics()
