@@ -13,9 +13,19 @@ func _cleanup(path: String) -> void:
 		".world_events_v1.sqlite-wal",".world_events_v1.sqlite-shm",
 		".world_events_v1.sqlite.corrupt",
 		".world_events_v1.sqlite.canonical.json",
-		".world_events_v1.sqlite.canonical.json.tmp"
+		".world_events_v1.sqlite.canonical.json.tmp",
+		".world_events_v1.sqlite.seq1.bak"
 	]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path+suffix))
+
+func _copy_file(source: String, target: String) -> void:
+	var bytes: PackedByteArray = FileAccess.get_file_as_bytes(source)
+	var file := FileAccess.open(target,FileAccess.WRITE)
+	assert(file!=null)
+	file.store_buffer(bytes)
+	file.flush()
+	assert(file.get_error()==OK)
+	file.close()
 
 func run() -> void:
 	var path := "user://object_event_sqlite_canonical_loss_v021.json"
@@ -42,12 +52,16 @@ func run() -> void:
 	cutover.load_or_seed()
 	assert(str(cutover.runtime_state.get("object_event_backend",""))=="sqlite_v021_proof")
 	assert(cutover.object_event_revision()==1)
-	assert(cutover.set_object_ambient_protection("CANONICAL_LOSS_OBJECT",true))
-	assert(cutover.object_event_revision()==2)
-	assert(cutover.save_world())
 	var sqlite_path := path+".world_events_v1.sqlite"
 	var backup_path := sqlite_path+".bak"
 	var marker_path := sqlite_path+".canonical.json"
+	var stale_backup_path := sqlite_path+".seq1.bak"
+	assert(FileAccess.file_exists(sqlite_path))
+	assert(FileAccess.file_exists(backup_path))
+	_copy_file(backup_path,stale_backup_path)
+	assert(cutover.set_object_ambient_protection("CANONICAL_LOSS_OBJECT",true))
+	assert(cutover.object_event_revision()==2)
+	assert(cutover.save_world())
 	assert(FileAccess.file_exists(sqlite_path))
 	assert(FileAccess.file_exists(backup_path))
 	assert(FileAccess.file_exists(marker_path))
@@ -69,6 +83,24 @@ func run() -> void:
 	assert(bool(recovered.physical_object("CANONICAL_LOSS_OBJECT")["ambient_protected"]))
 	assert(FileAccess.get_sha256(stale_json_path)==stale_json_sha)
 	recovered.object_events.store.close()
+
+	# A readable but stale backup is also unsafe. The canonical marker remembers
+	# sequence 2; restoring the preserved sequence-1 backup must therefore stop
+	# at startup instead of accepting a silent rollback.
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(backup_path))
+	_copy_file(stale_backup_path,backup_path)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(sqlite_path))
+	for suffix in ["-wal","-shm"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(sqlite_path+suffix))
+	var rollback := World.new()
+	rollback.save_path = path
+	rollback.load_or_seed()
+	assert(str(rollback.runtime_state.get("object_event_backend",""))=="sqlite_v021_proof")
+	assert(str(rollback.runtime_state.get("object_event_status",""))=="SQLITE_ROLLBACK_DETECTED")
+	assert(rollback.object_event_revision()==2)
+	assert(not rollback.set_object_ambient_protection("CANONICAL_LOSS_OBJECT",false))
+	assert(FileAccess.get_sha256(stale_json_path)==stale_json_sha)
+	rollback.object_events.store.close()
 
 	# Now remove BOTH canonical SQLite copies. Marker + saved backend prove that
 	# SQLite had already won. Stale JSON must never be promoted back to truth.
@@ -97,5 +129,5 @@ func run() -> void:
 
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
-	print("OBJECT_EVENT_SQLITE_CANONICAL_LOSS_V021_PASS missing_primary=backup_restored canonical_loss=fail_closed stale_json=no_rollback revision=evidence_preserved")
+	print("OBJECT_EVENT_SQLITE_CANONICAL_LOSS_V021_PASS missing_primary=backup_restored stale_backup=rollback_detected canonical_loss=fail_closed stale_json=no_rollback revision=evidence_preserved")
 	quit(0)
