@@ -13,6 +13,9 @@ const SHARED_TYPES := ["arrival", "corridor", "common", "study", "rest", "librar
 var rooms: Array = []
 var residents: Dictionary = {}
 var media: Dictionary = {"books": [], "films": [], "tracks": []}
+# Persistent physical-object identities. Registration is explicit; seed_world does not
+# invent owner artifacts merely because the lifecycle exists.
+var objects: Dictionary = {}
 var next_room_id := 1
 
 func cell_key(x: int, level: int) -> String:
@@ -199,6 +202,127 @@ func visual_groups() -> Array:
 		groups.append(group)
 	return groups
 
+func _object_event(object: Dictionary, event_name: String, actor_id: String,
+		from_value: String, to_value: String) -> void:
+	var history: Array = object.get("history", [])
+	history.append({
+		"event": event_name,
+		"actor_id": actor_id,
+		"from": from_value,
+		"to": to_value,
+		"sim_clock": sim_clock
+	})
+	while history.size() > 64:
+		history.pop_front()
+	object["history"] = history
+
+func register_physical_object(object_id: String, display_name: String,
+		canonical_owner_id: String, home_room_id: String,
+		movable: bool = true, recoverable: bool = true,
+		ambient_pickup_allowed: bool = false) -> bool:
+	if object_id == "" or display_name == "" or objects.has(object_id):
+		return false
+	var home: Dictionary = room_by_id(home_room_id)
+	if home.is_empty():
+		return false
+	objects[object_id] = {
+		"id": object_id,
+		"display_name": display_name,
+		"canonical_owner_id": canonical_owner_id,
+		"home_room_id": home_room_id,
+		"current_holder_id": "",
+		"current_room_id": home_room_id,
+		"state": "PLACED",
+		"movable": movable,
+		"recoverable": recoverable,
+		"ambient_pickup_allowed": ambient_pickup_allowed,
+		"history": [{
+			"event": "REGISTERED",
+			"actor_id": "",
+			"from": "",
+			"to": home_room_id,
+			"sim_clock": sim_clock
+		}]
+	}
+	return true
+
+func physical_object(object_id: String) -> Dictionary:
+	return objects.get(object_id, {})
+
+func pickup_physical_object(object_id: String, actor_id: String) -> bool:
+	var object: Dictionary = physical_object(object_id)
+	var actor: Dictionary = residents.get(actor_id, {})
+	if object.is_empty() or actor.is_empty() or not bool(actor.get("active", false)):
+		return false
+	if not bool(object.get("movable", false)):
+		return false
+	if str(object.get("current_holder_id", "")) != "":
+		return false
+	var room_id: String = str(object.get("current_room_id", ""))
+	if room_id == "" or room_id != str(actor.get("room_id", "")):
+		return false
+	var room: Dictionary = room_by_id(room_id)
+	if room.is_empty() or not is_accessible(room, actor_id):
+		return false
+	_object_event(object, "PICKED_UP", actor_id, room_id, actor_id)
+	object["current_holder_id"] = actor_id
+	object["current_room_id"] = ""
+	object["state"] = "HELD"
+	return true
+
+func place_physical_object(object_id: String, actor_id: String,
+		target_room_id: String, state: String = "PLACED") -> bool:
+	var object: Dictionary = physical_object(object_id)
+	var actor: Dictionary = residents.get(actor_id, {})
+	var target: Dictionary = room_by_id(target_room_id)
+	if object.is_empty() or actor.is_empty() or target.is_empty():
+		return false
+	if str(object.get("current_holder_id", "")) != actor_id:
+		return false
+	if not is_accessible(target, actor_id):
+		return false
+	_object_event(object, state, actor_id, actor_id, target_room_id)
+	object["current_holder_id"] = ""
+	object["current_room_id"] = target_room_id
+	object["state"] = state
+	return true
+
+func recover_physical_object_to_lost_found(object_id: String,
+		lost_found_room_id: String) -> bool:
+	var object: Dictionary = physical_object(object_id)
+	var target: Dictionary = room_by_id(lost_found_room_id)
+	if object.is_empty() or target.is_empty():
+		return false
+	if not bool(object.get("recoverable", false)):
+		return false
+	if str(target.get("privacy", "public")) != "public":
+		return false
+	var from_value: String = str(object.get("current_holder_id", ""))
+	if from_value == "":
+		from_value = str(object.get("current_room_id", ""))
+	_object_event(object, "RECOVERED_TO_LOST_FOUND", "HOUSE_SPIRIT",
+		from_value, lost_found_room_id)
+	object["current_holder_id"] = ""
+	object["current_room_id"] = lost_found_room_id
+	object["state"] = "LOST_FOUND"
+	return true
+
+func restore_physical_object_home(object_id: String) -> bool:
+	var object: Dictionary = physical_object(object_id)
+	if object.is_empty():
+		return false
+	var home_room_id: String = str(object.get("home_room_id", ""))
+	if room_by_id(home_room_id).is_empty():
+		return false
+	var from_value: String = str(object.get("current_holder_id", ""))
+	if from_value == "":
+		from_value = str(object.get("current_room_id", ""))
+	_object_event(object, "RESTORED_HOME", "", from_value, home_room_id)
+	object["current_holder_id"] = ""
+	object["current_room_id"] = home_room_id
+	object["state"] = "PLACED"
+	return true
+
 func merge_reference_book_metadata(items: Array) -> int:
 	# The documented cloud catalog is NOT a shelf inventory. No copy may be borrowed.
 	var existing: Dictionary = {}
@@ -300,6 +424,7 @@ func seed_world() -> void:
 		"traits": {"reading": 0.0, "music": 0.0}, "habits": {}, "last_location": "",
 		"route": [], "path_index": 0}
 	media = {"books": [], "films": [], "tracks": []}
+	objects = {}
 
 func _read_snapshot(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
@@ -334,6 +459,7 @@ func load_or_seed() -> void:
 	residents = parsed["residents"]
 	sync_resident_profiles()
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})
+	objects = parsed.get("objects", {})
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
 
@@ -341,7 +467,7 @@ func save_world() -> bool:
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
 	var data: Dictionary = {"schema": 1,"rooms": rooms,"residents": residents,
-		"media": media,"next_room_id": next_room_id,"sim_clock": sim_clock}
+		"media": media,"objects": objects,"next_room_id": next_room_id,"sim_clock": sim_clock}
 	var file := FileAccess.open(scratch,FileAccess.WRITE)
 	if file == null:
 		return false
