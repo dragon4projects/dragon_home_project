@@ -402,6 +402,19 @@ func register_creature(creature_id: String, display_name: String,
 		{"display_name":display_name,"owner_id":owner_id,"guest":guest})
 	return true
 
+func creature_display_label(creature_id: String) -> String:
+	var creature: Dictionary = creatures.get(creature_id,{})
+	if creature.is_empty():
+		return ""
+	var label := str(creature.get("name",creature_id))
+	var owner_id := str(creature.get("owner_id",""))
+	if owner_id == "" or not residents.has(owner_id):
+		return label
+	var owner_name := str(residents[owner_id].get("name",""))
+	if owner_name == "":
+		return label
+	return "%s · хозяйка %s" % [label,owner_name]
+
 func register_guest_actor(actor_id: String, display_name: String,
 		room_id: String, species: String = "", bank_id: String = "") -> bool:
 	if actor_id == "" or display_name == "" or residents.has(actor_id) or creatures.has(actor_id):
