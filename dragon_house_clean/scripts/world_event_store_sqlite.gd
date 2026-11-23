@@ -229,8 +229,38 @@ func has_event(event_id: String) -> bool:
 			return true
 	return false
 
-func _insert_event(event: Dictionary) -> bool:
+func _insert_event(event: Dictionary, preserve_seq: bool = false) -> bool:
 	var payload_json := JSON.stringify(event.get("payload",{}))
+	if preserve_seq:
+		var source_seq: int = int(event.get("seq",0))
+		if source_seq <= 0:
+			last_error = "Imported canonical event is missing seq"
+			return false
+		return _query("""INSERT INTO events(
+			seq,event_id,created_at,source_type,source_id,authority,truth_class,visibility,
+			event_type,subject_id,object_id,room_id,from_value,to_value,expires_at,
+			reversibility,provenance,notes,payload_json
+		) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);""",[
+			source_seq,
+			str(event.get("event_id","")),
+			float(event.get("created_at",0.0)),
+			str(event.get("source_type","")),
+			str(event.get("source_id","")),
+			str(event.get("authority","")),
+			str(event.get("truth_class","")),
+			str(event.get("visibility","")),
+			str(event.get("event_type","")),
+			str(event.get("subject_id","")),
+			str(event.get("object_id","")),
+			str(event.get("room_id","")),
+			str(event.get("from","")),
+			str(event.get("to","")),
+			event.get("expires_at"),
+			str(event.get("reversibility","")),
+			str(event.get("provenance","")),
+			str(event.get("notes","")),
+			payload_json
+		])
 	return _query("""INSERT INTO events(
 		event_id,created_at,source_type,source_id,authority,truth_class,visibility,
 		event_type,subject_id,object_id,room_id,from_value,to_value,expires_at,
@@ -293,6 +323,65 @@ func _backup() -> bool:
 	if not ok:
 		return _db_error("SQLite backup failed")
 	return true
+
+func import_canonical_events(input_events: Array, projection: Dictionary) -> Array:
+	# One-time non-destructive migration from the accepted v0.20 JSON stream.
+	# Canonical event identity includes event_id AND seq, so both are preserved.
+	if db == null or not events.is_empty():
+		last_error = "SQLite canonical import requires an empty open store"
+		return []
+	if input_events.is_empty():
+		return []
+	var previous_seq := 0
+	var seen: Dictionary = {}
+	for raw_event in input_events:
+		if typeof(raw_event) != TYPE_DICTIONARY:
+			last_error = "Canonical import contains non-object event"
+			return []
+		var event: Dictionary = raw_event
+		var event_id := str(event.get("event_id",""))
+		var source_seq := int(event.get("seq",0))
+		if event_id == "" or seen.has(event_id) or source_seq <= previous_seq:
+			last_error = "Canonical import identity/order is invalid"
+			return []
+		seen[event_id] = true
+		previous_seq = source_seq
+	if not _query("BEGIN IMMEDIATE;"):
+		status = "WRITE_FAILED"
+		return []
+	for raw_event in input_events:
+		if not _insert_event(raw_event,true):
+			_query("ROLLBACK;")
+			status = "WRITE_FAILED"
+			return []
+	if not _sync_projection(projection):
+		_query("ROLLBACK;")
+		status = "WRITE_FAILED"
+		return []
+	if not _query("COMMIT;"):
+		_query("ROLLBACK;")
+		status = "WRITE_FAILED"
+		return []
+	if not _load_events():
+		status = "WRITE_FAILED"
+		return []
+	if events.size() != input_events.size():
+		last_error = "SQLite canonical import count mismatch"
+		status = "WRITE_FAILED"
+		return []
+	for i in range(input_events.size()):
+		var source: Dictionary = input_events[i]
+		var imported: Dictionary = events[i]
+		if str(source.get("event_id","")) != str(imported.get("event_id","")) or 				int(source.get("seq",0)) != int(imported.get("seq",0)):
+			last_error = "SQLite canonical import changed event identity/order"
+			status = "WRITE_FAILED"
+			return []
+	if not _backup():
+		status = "WRITE_FAILED"
+		return []
+	status = "READY"
+	last_error = ""
+	return snapshot_events()
 
 func append_with_projection(event: Dictionary, projection: Dictionary) -> Dictionary:
 	var rows: Array = append_many_with_projection([event],projection)
