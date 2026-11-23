@@ -85,6 +85,7 @@ func setup(p_world) -> void:
 	clock = world.sim_clock
 	stations.reconcile(world)
 	stations.migrate_legacy_positions(world)
+	reconcile_concrete_media()
 	var now: int = int(Time.get_unix_time_from_system())
 	media_runtime.cleanup_abandoned(now)
 	last_cleanup_wall_time = now
@@ -266,6 +267,62 @@ func _set_concrete_media(actor: Dictionary, category: String,
 	actor["activity_media_category"]=category
 	actor["activity_media_id"]=item_id
 	actor["activity_media_title"]=str(item.get("title",""))
+
+func _concrete_media_is_valid(actor: Dictionary) -> bool:
+	var category:String=str(actor.get("activity_media_category",""))
+	var item_id:String=str(actor.get("activity_media_id",""))
+	if category=="" or item_id=="":
+		return false
+	var item:Dictionary=media_runtime._lookup(category,item_id)
+	if item.is_empty():
+		return false
+	if category=="books":
+		return bool(item.get("physical",true)) and (
+			str(item.get("holder_id",""))==str(actor.get("id","")))
+	var destination_id:String=str(actor.get("station_room_id",""))
+	if category=="films":
+		return media_runtime.can_watch(str(actor.get("id","")),item_id,destination_id)
+	if category=="tracks":
+		return media_runtime.can_listen(str(actor.get("id","")),item_id,destination_id)
+	return false
+
+func reconcile_concrete_media() -> int:
+	# Saves from before v0.14 may contain a real borrowed book but no concrete
+	# media metadata. That identity is recoverable from holder_id and is safe
+	# to restore. Film/music identity is not recoverable and is never guessed.
+	var fixed:=0
+	for id in world.residents:
+		var actor:Dictionary=world.residents[id]
+		if not bool(actor.get("active",false)):
+			continue
+		var active_id:String=str(actor.get("activity_media_id",""))
+		var held_book:String=str(actor.get("held_book",""))
+		if active_id=="" and held_book!="":
+			var book:Dictionary=media_runtime._lookup("books",held_book)
+			if not book.is_empty() and str(book.get("holder_id",""))==str(id):
+				_set_concrete_media(actor,"books",book)
+				fixed+=1
+				continue
+		if active_id!="" and _concrete_media_is_valid(actor):
+			continue
+		var intent:String=str(actor.get("intent",""))
+		var needs_concrete:bool=intent in ["READ_BOOK","WATCH_FILM","LISTEN_MUSIC"]
+		if active_id=="" and not needs_concrete:
+			continue
+		end_concrete_media(actor)
+		if held_book!="" and intent=="READ_BOOK":
+			# Do not pretend an inconsistent book is still in the actor's hand.
+			var book:Dictionary=media_runtime._lookup("books",held_book)
+			if book.is_empty() or str(book.get("holder_id",""))!=str(id):
+				actor.erase("held_book")
+		if needs_concrete and str(actor.get("phase","idle")) in ["travel","perform"]:
+			stations.release(actor)
+			actor["phase"]="idle"
+			actor["waypoints"]=[]
+			actor["waypoint_index"]=0
+			actor["until"]=clock
+		fixed+=1
+	return fixed
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
 	# Previous reservation ends before a new activity; actor state owns the
