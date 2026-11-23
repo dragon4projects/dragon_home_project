@@ -190,6 +190,30 @@ func _load_events() -> bool:
 		events.append(event)
 	return true
 
+func _open_initialize_load() -> bool:
+	if not _open_current():
+		return false
+	if not _initialize_schema():
+		_close()
+		return false
+	if not _load_events():
+		_close()
+		return false
+	return true
+
+func _quarantine_primary() -> void:
+	if not FileAccess.file_exists(path):
+		return
+	var corrupt := path + ".corrupt"
+	var corrupt_abs := ProjectSettings.globalize_path(corrupt)
+	if FileAccess.file_exists(corrupt):
+		DirAccess.remove_absolute(corrupt_abs)
+	DirAccess.rename_absolute(ProjectSettings.globalize_path(path),corrupt_abs)
+	for suffix in ["-wal","-shm"]:
+		var sidecar := path+suffix
+		if FileAccess.file_exists(sidecar):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(sidecar))
+
 func setup(base_save_path: String) -> bool:
 	path = base_save_path + ".world_events_v1.sqlite"
 	events.clear()
@@ -198,28 +222,38 @@ func setup(base_save_path: String) -> bool:
 	last_error = ""
 	var primary_exists := FileAccess.file_exists(path)
 	var backup := path + ".bak"
-	if not _open_current():
-		_close()
-		if primary_exists and FileAccess.file_exists(backup):
-			var corrupt := path + ".corrupt"
-			if FileAccess.file_exists(corrupt):
-				DirAccess.remove_absolute(ProjectSettings.globalize_path(corrupt))
-			DirAccess.rename_absolute(
-				ProjectSettings.globalize_path(path),
-				ProjectSettings.globalize_path(corrupt))
-			if not _copy_file(backup,path) or not _open_current():
-				status = "CORRUPT_NO_RECOVERY"
-				return false
-			status = "RECOVERED_FROM_BACKUP"
-		else:
-			return false
-	if not _initialize_schema() or not _load_events():
-		status = "CORRUPT_NO_RECOVERY"
-		_close()
-		return false
-	if status != "RECOVERED_FROM_BACKUP":
+
+	if _open_initialize_load():
 		status = "READY" if not events.is_empty() else "EMPTY"
-	return true
+		return true
+
+	var primary_error := last_error
+	_close()
+	if primary_exists and FileAccess.file_exists(backup):
+		_quarantine_primary()
+		if not _copy_file(backup,path):
+			status = "CORRUPT_NO_RECOVERY"
+			last_error = "Cannot restore SQLite event-store backup after: "+primary_error
+			return false
+		events.clear()
+		sequence = 0
+		last_error = ""
+		if _open_initialize_load():
+			status = "RECOVERED_FROM_BACKUP"
+			return true
+		var backup_error := last_error
+		_close()
+		status = "CORRUPT_NO_RECOVERY"
+		last_error = "Primary unreadable (%s); backup unreadable (%s)" % [
+			primary_error,backup_error]
+		return false
+
+	status = "CORRUPT_NO_RECOVERY"
+	if primary_exists:
+		last_error = primary_error if primary_error != "" else "Unreadable SQLite event store"
+	else:
+		last_error = last_error if last_error != "" else "Cannot initialize SQLite event store"
+	return false
 
 func has_event(event_id: String) -> bool:
 	if event_id == "":
