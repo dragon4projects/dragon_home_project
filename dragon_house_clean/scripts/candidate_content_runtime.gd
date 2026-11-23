@@ -152,6 +152,12 @@ func apply_guest_candidate(world) -> Dictionary:
 				_restore_snapshot(world,snapshot)
 				return _fail("Failed to configure guest candidate room: "+proposed_id)
 		room["guest_access_state"] = str(spec.get("access_state","open"))
+		var guest: Dictionary = world.residents.get(actor_id,{})
+		guest["appearance_profile"] = actor_id
+		guest["bank_id"] = actor_id
+		guest["visual_status"] = "CANDIDATE"
+		guest["candidate_source"] = "TEEA_INT_20261123_007"
+		guest["autonomy_enabled"] = false
 	world.runtime_state[GUEST_MAP_KEY] = mapping
 	world.runtime_state[GUEST_SOURCE_KEY] = {
 		"batch_id":"TEEA_INT_20261123_007",
