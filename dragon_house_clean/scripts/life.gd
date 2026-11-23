@@ -339,8 +339,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		_record("%s — %s" % [actor.get("name",actor["id"]),status(actor)])
 	steps += 1
 
-const PASS_TRIGGER_X := 1.65
-const PASS_LANE_OFFSET := 0.26
+const PASS_TRIGGER_X := 1.85
+const PASS_LANE_OFFSET := 0.34
 const FOLLOW_GAP := 0.58
 const PASSING_WAYPOINT_KINDS := [
 	"leave_station","room_center","approach_public_frontage","door_out","door_in"
