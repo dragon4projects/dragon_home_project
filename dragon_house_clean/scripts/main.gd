@@ -836,6 +836,9 @@ func desired_actor_animation(actor: Dictionary) -> String:
 					requested = "SLEEP"
 			"TALK_PAIR": requested = "TALK"
 			"GET_COFFEE": requested = "DRINK"
+			"WATCH_FILM", "LISTEN_MUSIC":
+				requested = str(actor.get("station_pose_hint","VIEW")) if (
+					str(actor.get("station_kind",""))=="seat") else "VIEW"
 			"WATCH_FIRE", "VIEW_ART", "BROWSE_BOOK_CATALOG", "BROWSE_FILMS", "BROWSE_AUDIO":
 				requested = "VIEW"
 	return requested
