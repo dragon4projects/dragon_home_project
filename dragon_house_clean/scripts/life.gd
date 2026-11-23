@@ -35,10 +35,36 @@ const TRAVEL_STATUS := {
 	"PURPOSEFUL_EXPLORE": "гуляет по Дому"
 }
 
+func _quoted_media_title(actor: Dictionary, category_key: String,
+		id_key: String) -> String:
+	var category:String=str(actor.get(category_key,""))
+	var item_id:String=str(actor.get(id_key,""))
+	if category=="" or item_id=="":
+		return ""
+	var item:Dictionary=media_runtime._lookup(category,item_id)
+	var title:String=str(item.get("title","")) if not item.is_empty() else ""
+	if title=="":
+		title=str(actor.get("activity_media_title",""))
+	return ("«"+title+"»") if title!="" else ""
+
 func status(actor: Dictionary) -> String:
 	var intent: String = str(actor.get("intent","REST"))
 	if actor.get("phase","idle") == "travel":
 		return str(TRAVEL_STATUS.get(intent, "идёт по делу"))
+	var active_title:=_quoted_media_title(
+		actor,"activity_media_category","activity_media_id")
+	if active_title!="":
+		match intent:
+			"READ_BOOK": return "читает "+active_title
+			"WATCH_FILM": return "смотрит "+active_title
+			"LISTEN_MUSIC": return "слушает "+active_title
+	var browse_title:=_quoted_media_title(
+		actor,"browsing_category","browsing_item_id")
+	if browse_title!="":
+		match intent:
+			"BROWSE_BOOK_CATALOG": return "смотрит в каталоге "+browse_title
+			"BROWSE_FILMS": return "выбирает фильм "+browse_title
+			"BROWSE_AUDIO": return "выбирает музыку "+browse_title
 	return str(HUMAN_STATUS.get(intent,"отдыхает"))
 
 const INTENTS := {
@@ -225,11 +251,28 @@ func end_catalog_browse(actor: Dictionary) -> void:
 	actor.erase("browsing_item_id")
 	actor.erase("browsing_category")
 
+func end_concrete_media(actor: Dictionary) -> void:
+	# Concrete media state is evidence for the resident activity, not a global
+	# playback command. UI playback remains explicit user action.
+	actor.erase("activity_media_category")
+	actor.erase("activity_media_id")
+	actor.erase("activity_media_title")
+
+func _set_concrete_media(actor: Dictionary, category: String,
+		item: Dictionary) -> void:
+	var item_id:String=str(item.get("id",""))
+	if item_id=="":
+		return
+	actor["activity_media_category"]=category
+	actor["activity_media_id"]=item_id
+	actor["activity_media_title"]=str(item.get("title",""))
+
 func _assign(actor: Dictionary, task: Dictionary) -> void:
 	# Previous reservation ends before a new activity; actor state owns the
 	# claim, making occupancy recoverable from JSON snapshots.
 	stations.release(actor)
 	end_catalog_browse(actor)
+	end_concrete_media(actor)
 	if task.is_empty():
 		actor["until"] = clock + 15.0
 		return
@@ -294,17 +337,47 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		if browse_id == "":
 			actor["until"] = clock + 12.0
 			return
+
+	var concrete_category:=""
+	var concrete_item:Dictionary={}
+	# Watching/listening is allowed only after choosing one concrete playable
+	# entry. A room visit alone is not evidence that a film or track was used.
+	if intent=="WATCH_FILM":
+		var playable_films:Array=media_runtime.playable("films")
+		if playable_films.is_empty():
+			actor["until"]=clock+12.0
+			return
+		concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]
+		if not media_runtime.can_watch(str(actor["id"]),
+				str(concrete_item.get("id","")),str(room["id"])):
+			actor["until"]=clock+12.0
+			return
+		concrete_category="films"
+	elif intent=="LISTEN_MUSIC":
+		var playable_tracks:Array=media_runtime.playable("tracks")
+		if playable_tracks.is_empty():
+			actor["until"]=clock+12.0
+			return
+		concrete_item=playable_tracks[rng.randi_range(0,playable_tracks.size()-1)]
+		if not media_runtime.can_listen(str(actor["id"]),
+				str(concrete_item.get("id","")),str(room["id"])):
+			actor["until"]=clock+12.0
+			return
+		concrete_category="tracks"
+
 	# Acquiring an object comes only after a destination and station are valid.
 	if intent == "READ_BOOK":
 		var books: Array = media_runtime.available_books()
 		if books.is_empty():
 			actor["until"] = clock + 12.0
 			return
-		var book_id: String = str(books[rng.randi_range(0,books.size()-1)]["id"])
+		concrete_item=books[rng.randi_range(0,books.size()-1)]
+		var book_id: String = str(concrete_item.get("id",""))
 		if not media_runtime.borrow(actor["id"],book_id,int(Time.get_unix_time_from_system())):
 			actor["until"] = clock + 12.0
 			return
 		actor["held_book"] = book_id
+		concrete_category="books"
 
 	if intent == "TALK_PAIR":
 		stations.release(partner)
@@ -324,6 +397,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	if browse_category != "":
 		actor["browsing_category"] = browse_category
 		actor["browsing_item_id"] = browse_id
+	if concrete_category!="" and not concrete_item.is_empty():
+		_set_concrete_media(actor,concrete_category,concrete_item)
 	actor["intent"] = intent
 	actor["waypoints"] = actor_waypoints
 	actor["waypoint_index"] = 0
