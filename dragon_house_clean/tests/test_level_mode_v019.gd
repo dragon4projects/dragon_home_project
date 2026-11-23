@@ -74,7 +74,7 @@ func run() -> void:
 	assert(scene.semantic_view.level==1,"FOLLOW must switch semantic level with actor")
 	assert(scene.semantic_view.active_room==str(upper_corridor["id"]))
 
-	var calls_before := scene.life.planner_calls
+	var calls_before: int = int(scene.life.planner_calls)
 	scene.select_level(0)
 	scene.select_level(1)
 	assert(scene.life.planner_calls==calls_before,
