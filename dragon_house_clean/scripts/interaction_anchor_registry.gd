@@ -10,12 +10,14 @@ const MAX_ANCHORS := 10
 
 var profiles: Dictionary = {}
 var cell_overrides: Dictionary = {}
+var variant_cell_overrides: Dictionary = {}
 var source_path := ""
 var last_error := ""
 
 func initialize(path: String = DEFAULT_PATH) -> bool:
 	profiles.clear()
 	cell_overrides.clear()
+	variant_cell_overrides.clear()
 	source_path = ""
 	last_error = ""
 	var input: FileAccess = FileAccess.open(path,FileAccess.READ)
@@ -33,6 +35,7 @@ func initialize(path: String = DEFAULT_PATH) -> bool:
 		return false
 	var proposed_profiles: Dictionary = doc.get("room_profiles",{})
 	var proposed_overrides: Dictionary = doc.get("cell_overrides",{})
+	var proposed_variant_overrides: Dictionary = doc.get("variant_cell_overrides",{})
 	for kind in proposed_profiles:
 		if not TYPES.has(str(kind)) or not _valid_spots(proposed_profiles[kind]):
 			last_error = "Invalid room profile: "+str(kind)
@@ -43,10 +46,20 @@ func initialize(path: String = DEFAULT_PATH) -> bool:
 			not _valid_spots(proposed_overrides[key])):
 			last_error = "Invalid cell override: "+str(key)
 			return false
+	for key in proposed_variant_overrides:
+		var parts: PackedStringArray = str(key).split(":")
+		var width_ok: bool = parts.size()==3 and parts[1] in ["R1","R2","R3"]
+		var module_ok: bool = width_ok and parts[2].is_valid_int() and (
+			int(parts[2])>=0 and int(parts[2])<int(parts[1].substr(1)))
+		if not width_ok or not module_ok or not TYPES.has(parts[0]) or (
+			not _valid_spots(proposed_variant_overrides[key])):
+			last_error = "Invalid variant cell override: "+str(key)
+			return false
 	# No partial acceptance: one bad profile prevents ALL new interaction data
 	# from being mistaken for a trusted authoring decision.
 	profiles = proposed_profiles.duplicate(true)
 	cell_overrides = proposed_overrides.duplicate(true)
+	variant_cell_overrides = proposed_variant_overrides.duplicate(true)
 	source_path = path
 	return true
 
@@ -96,6 +109,23 @@ func for_room(room: Dictionary) -> Array:
 	var special:String=kind+":"+str(int(room.get("x",0)))
 	var data: Array=cell_overrides.get(special,profiles.get(kind,[]))
 	return data.duplicate(true)
+
+func for_room_variant(room: Dictionary, width: int, module_index: int) -> Array:
+	# Width-specific art contracts win only when that exact merged variant is
+	# actually present. This prevents an accepted R2/R3 chair from leaking into
+	# an R1 cell merely because it happens to share the same world X coordinate.
+	if room.is_empty() or str(room.get("privacy","public"))!="public":
+		return []
+	var kind:String=str(room.get("type",""))
+	if not TYPES.has(kind) or kind=="lift":
+		return []
+	var safe_width:int=clampi(width,1,3)
+	if module_index<0 or module_index>=safe_width:
+		return for_room(room)
+	var key:String="%s:R%d:%d" % [kind,safe_width,module_index]
+	if variant_cell_overrides.has(key):
+		return (variant_cell_overrides[key] as Array).duplicate(true)
+	return for_room(room)
 
 func check_candidate_patch(path: String) -> Dictionary:
 	# Review-only read, NEVER dynamically installs new, unapproved geometry.
