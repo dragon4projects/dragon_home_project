@@ -51,6 +51,39 @@ func _valid_location_invariant(holder: String, location: String, state: String) 
 		return holder == "" and location != ""
 	return false
 
+func _validate_source_authority(event: Dictionary) -> bool:
+	var source_type: String = str(event.get("source_type",""))
+	var authority: String = str(event.get("authority",""))
+	var truth: String = str(event.get("truth_class",""))
+	match source_type:
+		"renderer":
+			if authority != "PRESENTATION" or truth != "PRESENTATION_ONLY":
+				return reject("renderer cannot elevate truth/authority")
+		"ambient_simulation":
+			if authority != "AMBIENT" or truth != "AMBIENT_SIMULATION":
+				return reject("ambient source cannot elevate truth/authority")
+		"migration_import":
+			if authority != "HISTORICAL_IMPORT" or truth != "EXPLICIT_WORLD_FACT":
+				return reject("migration source must remain historical import")
+		"system":
+			if authority != "SYSTEM_RULE" or truth == "PRESENTATION_ONLY":
+				return reject("system source requires SYSTEM_RULE durable authority")
+		"dragon":
+			if authority != "DRAGON_DECLARED" or truth != "EXPLICIT_WORLD_FACT":
+				return reject("dragon source requires explicit Dragon authority")
+		"resident_owner":
+			if authority != "OWNER_DECLARED" or truth != "EXPLICIT_WORLD_FACT":
+				return reject("resident owner source requires owner authority")
+		"cloud_session":
+			if authority != "AUTHORIZED_SESSION" or truth != "EXPLICIT_WORLD_FACT":
+				return reject("cloud session requires authorized explicit authority")
+		"admin_manual":
+			if authority not in ["SYSTEM_RULE","DRAGON_DECLARED"] or truth != "EXPLICIT_WORLD_FACT":
+				return reject("admin manual source has invalid authority")
+		_:
+			return reject("unhandled source_type")
+	return true
+
 func _validate_envelope(event: Dictionary) -> bool:
 	for key in [
 		"event_id","created_at","source_type","source_id","authority","truth_class",
@@ -78,6 +111,8 @@ func _validate_envelope(event: Dictionary) -> bool:
 		return reject("provenance must not be empty")
 	if typeof(event.get("payload")) != TYPE_DICTIONARY:
 		return reject("payload must be an object")
+	if not _validate_source_authority(event):
+		return false
 	if not OBJECT_EVENTS.has(str(event.get("event_type",""))):
 		return reject("unsupported object event_type")
 	if str(event.get("truth_class","")) == "PRESENTATION_ONLY":
