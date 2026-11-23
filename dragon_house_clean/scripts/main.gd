@@ -545,17 +545,20 @@ func _populate_furniture(group_node: Node3D) -> void:
 	if decoration_layer == null or detailed_room_groups.has(group_node.name):
 		return
 	var center_cell: float = (float(group["x_start"])+float(group["x_end"]))*0.5
-	for cell in group["cells"]:
+	for cell_index in range(group["cells"].size()):
+		var cell:Dictionary=group["cells"][cell_index]
 		var module := Node3D.new()
 		module.name = str(cell["id"])+"_furniture"
 		module.position.x = (float(cell["x"])-center_cell)*W
 		decoration_layer.add_child(module)
 		if bool(group.get("replaces_furniture",false)):
 			# Teea's approved furniture art replaces interim geometry.
-			# Keep named invisible anchors for existing room interaction
-			# contracts but do NOT draw a second 3D sofa on top of the art.
+			# Keep named invisible anchors for the exact accepted R1/R2/R3
+			# contract, but do NOT draw a second 3D object on top of the art.
 			var seen: Dictionary={}
-			for station in life.stations.furniture.for_room(cell):
+			var anchors:Array=life.stations.furniture.for_room_variant(
+				cell,int(group.get("width",1)),cell_index)
+			for station in anchors:
 				var name: String=str(station.get("furniture_id",""))
 				if name!="" and not seen.has(name):
 					furniture_object(module,name)
