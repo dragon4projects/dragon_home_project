@@ -218,7 +218,8 @@ func _object_event(object: Dictionary, event_name: String, actor_id: String,
 
 func register_physical_object(object_id: String, display_name: String,
 		canonical_owner_id: String, home_room_id: String,
-		movable: bool = true, recoverable: bool = true) -> bool:
+		movable: bool = true, recoverable: bool = true,
+		ambient_pickup_allowed: bool = false) -> bool:
 	if object_id == "" or display_name == "" or objects.has(object_id):
 		return false
 	var home: Dictionary = room_by_id(home_room_id)
@@ -234,6 +235,7 @@ func register_physical_object(object_id: String, display_name: String,
 		"state": "PLACED",
 		"movable": movable,
 		"recoverable": recoverable,
+		"ambient_pickup_allowed": ambient_pickup_allowed,
 		"history": [{
 			"event": "REGISTERED",
 			"actor_id": "",
