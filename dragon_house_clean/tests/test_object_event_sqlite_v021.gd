@@ -87,6 +87,8 @@ func run() -> void:
 	# Simulate a renderer crash before the JSON compatibility checkpoint.
 	assert(not FileAccess.file_exists(path))
 	world.object_events.store.close()
+	# Canonical backend choice survives without the QA env override.
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 
 	var restarted := World.new()
 	restarted.save_path = path
@@ -105,5 +107,5 @@ func run() -> void:
 	restarted.object_events.store.close()
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
-	print("OBJECT_EVENT_SQLITE_V021_PASS backend=sqlite wal=yes sync=FULL transaction=event_plus_projection restart=replay duplicate=idempotent json_default=untouched")
+	print("OBJECT_EVENT_SQLITE_V021_PASS backend=sqlite wal=yes sync=FULL transaction=event_plus_projection restart=sticky_sqlite duplicate=idempotent json_default=untouched")
 	quit(0)
