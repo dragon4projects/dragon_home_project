@@ -418,13 +418,14 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 		for z in [-1.19,0.18,1.10]:
 			box(module,Vector3(0,-0.004,float(z)),
 				Vector3(3.82,0.014,0.018),Color("#3f3637"))
-		# Front floor reveal with continuous floor lip and two small stone
-		# returns that stop below knee level.
-		box(module,Vector3(0,-0.17,1.40),
-			Vector3(4.42,0.09,0.16),palette["rock_light"])
+		# Keep the near cutaway edge readable without turning it into a thick
+		# shelf in front of the room. Accepted art supplies the visual weight;
+		# geometry only carries enough depth for parallax and occlusion.
+		box(module,Vector3(0,-0.09,1.31),
+			Vector3(4.26,0.055,0.11),palette["rock_light"])
 		for side in [-1.0,1.0]:
-			box(module,Vector3(side*2.02,0.18,1.37),
-				Vector3(0.13,0.34,0.20),palette["rock_light"])
+			box(module,Vector3(side*2.02,0.14,1.28),
+				Vector3(0.10,0.26,0.14),palette["rock_light"])
 		# Lower panel in a shadowed rear alcove, physically behind furniture.
 		box(module,Vector3(0,1.47,-1.87),
 			Vector3(3.45,2.24,0.09),Color("#393234"))
@@ -608,7 +609,11 @@ func make_room(group: Dictionary) -> void:
 	artwork.name = "Layer_ApprovedArt"
 	n.add_child(artwork)
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
-	box(structure,Vector3(0,-0.09,-0.23),Vector3(span*1.01,0.18,3.58),palette["floor"])
+	# Structural slabs are deliberately thin: they frame the cutaway instead of
+	# competing with the room artwork at close zoom.
+	var floor_slab:=box(structure,Vector3(0,-0.055,-0.33),
+		Vector3(span*1.01,0.10,3.34),palette["floor"])
+	floor_slab.name="CutawayFloorSlab"
 	if t != "private":
 		var cutaway_depth:=Node3D.new()
 		cutaway_depth.name="Stage_CutawayDepth"
@@ -620,27 +625,36 @@ func make_room(group: Dictionary) -> void:
 		rear_stage.name = "Stage_Backwall"
 		background.add_child(rear_stage)
 		add_backwall_stage(rear_stage,group)
-	box(structure,Vector3(0,3.10,-0.47),Vector3(span*1.01,0.14,3.12),palette["border"])
-	box(overlay,Vector3(0,-0.12,1.46),Vector3(span*1.01,0.14,0.12),palette["border"])
+	var ceiling_slab:=box(structure,Vector3(0,3.055,-0.62),
+		Vector3(span*1.01,0.09,2.72),palette["border"])
+	ceiling_slab.name="CutawayCeilingSlab"
+	var front_lip:=box(overlay,Vector3(0,-0.095,1.39),
+		Vector3(span*1.01,0.07,0.09),palette["border"])
+	front_lip.name="CutawayFrontLip"
 	# Expensive full-resolution artwork is loaded on demand by
 	# update_render_lod(), not permanently allocated for all 49+ rooms.
 	for side in [-1,1]:
 		var neighbour: Dictionary = side_left if side == -1 else side_right
 		var edge: float = float(side)*(span*0.5-0.10)
 		if neighbour.is_empty():
-			box(structure,Vector3(edge,1.39,-0.27),Vector3(0.29,2.82,3.50),palette["rock_light"])
-			# Partial foreground pier emphasizes depth without hiding the entire actor.
-			box(overlay,Vector3(edge,0.26,1.42),Vector3(0.30,0.48,0.18),palette["rock_light"])
+			box(structure,Vector3(edge,1.42,-0.42),
+				Vector3(0.22,2.75,3.08),palette["rock_light"])
+			# Partial foreground pier emphasizes depth without hiding the actor.
+			box(overlay,Vector3(edge,0.18,1.31),
+				Vector3(0.22,0.34,0.14),palette["rock_light"])
 		else:
-			# Doorway frame: two pillars BEHIND the public front walking aisle.
-			box(structure,Vector3(edge,2.72,-0.44),Vector3(0.22,0.58,2.92),palette["rock_light"])
-			box(structure,Vector3(edge,0.54,-1.82),Vector3(0.22,1.12,0.20),palette["rock_light"])
+			# Doorway frame stays behind the public aisle and no longer reads as
+			# a full-depth concrete divider.
+			box(structure,Vector3(edge,2.84,-0.61),
+				Vector3(0.16,0.34,2.52),palette["rock_light"])
+			box(structure,Vector3(edge,0.48,-1.82),
+				Vector3(0.18,0.96,0.16),palette["rock_light"])
 	# Merged runs: narrow arch ribs only, no full partitions or duplicate room names.
 	if int(group["width"]) > 1:
 		for i in range(int(group["width"])-1):
 			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
-			box(structure,Vector3(seam_x,2.96,-0.56),
-				Vector3(0.10,0.27,2.76),palette["rock_light"])
+			box(structure,Vector3(seam_x,2.99,-0.66),
+				Vector3(0.07,0.18,2.30),palette["rock_light"])
 	if t != "private":
 		var overview := Node3D.new()
 		overview.name = "Layer_OverviewCues"
@@ -1069,8 +1083,10 @@ func set_mode(mode: String) -> void:
 				if not r.is_empty():
 					var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
 					var cx: float = (float(group["x_start"])+float(group["x_end"]))*0.5*W
-					desired_focus = Vector3(cx,float(r["level"])*H+1.1,0.0)
-					zoom = 10.5 + maxf(0.0,float(group["width"]-1))*3.4
+					# Aim at the vertical centre of the cutaway rather than the
+					# lower floor band; this reduces empty foreground at ROOM zoom.
+					desired_focus = Vector3(cx,float(r["level"])*H+1.45,0.0)
+					zoom = 10.8 + maxf(0.0,float(group["width"]-1))*3.1
 		"FOLLOW":
 			zoom = 16.0
 	update_selection_outline()
@@ -1258,7 +1274,7 @@ func effective_camera_yaw() -> float:
 	# A gentle Shelter-like oblique cutaway shows the rear and side depth
 	# of the 3D room at close zoom, then fades back to a readable flat
 	# overview. Q/E remains an additive *manual* adjustment.
-	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.14
+	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.075
 	return clampf(yaw+close_bias,-0.38,0.38)
 
 func apply_camera(delta: float) -> void:
@@ -1290,7 +1306,7 @@ func apply_camera(delta: float) -> void:
 	var view_yaw: float=effective_camera_yaw()
 	var x_shift := sin(view_yaw) * zoom_current
 	var z_shift := cos(view_yaw) * zoom_current
-	var height_ratio:float=lerpf(0.085,0.17,
+	var height_ratio:float=lerpf(0.055,0.16,
 		clampf((zoom_current-12.0)/36.0,0.0,1.0))
 	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*height_ratio,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
