@@ -16,7 +16,7 @@ func run() -> void:
 	scene.world.save_path="user://test_lazy_art_v10.json"
 	root.add_child(scene)
 	current_scene=scene
-	var merged: Dictionary=scene.world.merged_group(-1,0)
+	var merged: Dictionary=scene.world.merged_group(-2,0)
 	var room_node: Node3D=scene.room_root.get_node(merged["primary_id"])
 	var art_node:Node3D=room_node.get_node("Layer_ApprovedArt")
 	var furniture:Node3D=room_node.get_node("LocalFurniture")
@@ -39,12 +39,12 @@ func run() -> void:
 	assert(scene.art_layer_count==1)
 	assert(art_node.get_child_count()==1)
 	assert(scene.art_loaded_groups.has(room_node.name))
-	var module:Node3D=furniture.get_node_or_null(str(scene.world.get_room(-1,0)["id"])+"_furniture")
+	var module:Node3D=furniture.get_node_or_null(str(scene.world.get_room(-2,0)["id"])+"_furniture")
 	assert(module!=null)
-	var anchor:Node3D=module.get_node_or_null("SOFA_COMMON_MIDDLE")
+	var anchor:Node3D=module.get_node_or_null("common_sofa_left")
 	assert(anchor!=null,"Physical sofa interaction anchor must remain")
 	assert(anchor.get_child_count()==0,"Do not draw a second mesh sofa over approved art")
-	assert(scene.life.stations.furniture.for_room(scene.world.get_room(-1,0)).size()==2)
+	assert(scene.life.stations.furniture.for_room(scene.world.get_room(-2,0)).size()==2)
 	# A room with approved art is not allowed to show unreviewed 3D proxy
 	# cues and a full-resolution image at the same time.
 	assert(not room_node.get_node("Layer_OverviewCues").visible)
