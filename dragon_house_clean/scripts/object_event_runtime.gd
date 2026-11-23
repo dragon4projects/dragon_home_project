@@ -34,6 +34,7 @@ func setup(p_world) -> bool:
 			_update_runtime_state()
 			return false
 		_publish_projection(projection)
+		_reconcile_journal_from_store()
 		status = "REPLAYED_FROM_BACKUP" if store.status == "RECOVERED_FROM_BACKUP" else "REPLAYED"
 	elif not world.objects.is_empty():
 		if not _migrate_snapshot_objects():
@@ -221,6 +222,54 @@ func _journal_accepted(event: Dictionary) -> void:
 		world._append_journal("OBJECT_OWNER_CHANGED",
 			str(event.get("subject_id","")),object_id,
 			str(event.get("from","")),str(event.get("to","")),details)
+
+func _journal_has_event_id(event_id: String) -> bool:
+	if event_id == "":
+		return false
+	for raw_entry in world.journal:
+		if typeof(raw_entry) != TYPE_DICTIONARY:
+			continue
+		var entry: Dictionary = raw_entry
+		var details: Dictionary = entry.get("details",{})
+		if str(details.get("event_id","")) == event_id:
+			return true
+	return false
+
+func _reconcile_journal_from_store() -> void:
+	# Replay is authoritative for object state. Journal is an explanation view:
+	# fill only missing accepted object events and never surface migration rows as
+	# if they were fresh household activity.
+	for raw_event in store.events:
+		var event: Dictionary = raw_event
+		if str(event.get("source_type","")) == "migration_import":
+			continue
+		var event_id: String = str(event.get("event_id",""))
+		if _journal_has_event_id(event_id):
+			continue
+		_journal_accepted(event)
+
+func events_for_object(object_id: String, limit: int = 64) -> Array:
+	return store.events_for_object(object_id,limit) if ready else []
+
+func explain_object(object_id: String) -> Dictionary:
+	if not ready or not world.objects.has(object_id):
+		return {}
+	var object: Dictionary = world.objects[object_id]
+	var history: Array = store.events_for_object(object_id,64)
+	var latest: Dictionary = history[history.size()-1] if not history.is_empty() else {}
+	return {
+		"object_id":object_id,
+		"display_name":str(object.get("display_name",object_id)),
+		"canonical_owner_id":str(object.get("canonical_owner_id","")),
+		"current_holder_id":str(object.get("current_holder_id","")),
+		"current_room_id":str(object.get("current_room_id","")),
+		"state":str(object.get("state","")),
+		"last_explicit_location":str(object.get("last_explicit_location","")),
+		"movement_reason":str(object.get("movement_reason","")),
+		"movement_authority":str(object.get("movement_authority","")),
+		"event_count":history.size(),
+		"latest_event":latest.duplicate(true)
+	}
 
 func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 	if not ready:
