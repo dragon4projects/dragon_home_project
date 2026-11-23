@@ -17,12 +17,79 @@ var status: String = "UNINITIALIZED"
 var last_error: String = ""
 var event_nonce: int = 0
 
+func _sqlite_primary_path() -> String:
+	return str(world.save_path)+".world_events_v1.sqlite"
+
+func _sqlite_backup_path() -> String:
+	return _sqlite_primary_path()+".bak"
+
+func _sqlite_marker_path() -> String:
+	return _sqlite_primary_path()+".canonical.json"
+
+func _sqlite_storage_exists() -> bool:
+	return FileAccess.file_exists(_sqlite_primary_path()) or 		FileAccess.file_exists(_sqlite_backup_path())
+
+func _saved_backend_is_sqlite() -> bool:
+	return str(world.runtime_state.get("object_event_backend","")).begins_with("sqlite_")
+
+func _sqlite_marker_exists() -> bool:
+	return FileAccess.file_exists(_sqlite_marker_path())
+
+func _sqlite_marker_sequence() -> int:
+	if not _sqlite_marker_exists():
+		return -1
+	var file := FileAccess.open(_sqlite_marker_path(),FileAccess.READ)
+	if file == null:
+		return -1
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return -1
+	return int((parsed as Dictionary).get("sequence",-1))
+
+func _write_sqlite_marker() -> bool:
+	if backend_requested != "sqlite":
+		return true
+	var marker := {
+		"schema":1,
+		"backend":"sqlite_v021",
+		"sequence":store.last_sequence(),
+		"store_path":_sqlite_primary_path(),
+		"updated_at":Time.get_unix_time_from_system()
+	}
+	var path := _sqlite_marker_path()
+	var scratch := path+".tmp"
+	var file := FileAccess.open(scratch,FileAccess.WRITE)
+	if file == null:
+		last_error = "Cannot open SQLite canonical marker temp file"
+		return false
+	file.store_string(JSON.stringify(marker,"\t")+"\n")
+	file.flush()
+	var err: Error = file.get_error()
+	file.close()
+	if err != OK:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+		last_error = "Cannot flush SQLite canonical marker"
+		return false
+	var verify = JSON.parse_string(FileAccess.get_file_as_string(scratch))
+	if typeof(verify) != TYPE_DICTIONARY or int(
+			(verify as Dictionary).get("sequence",-1)) != store.last_sequence():
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+		last_error = "Cannot verify SQLite canonical marker"
+		return false
+	var abs_path := ProjectSettings.globalize_path(path)
+	var abs_scratch := ProjectSettings.globalize_path(scratch)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(abs_path)
+	if DirAccess.rename_absolute(abs_scratch,abs_path) != OK:
+		last_error = "Cannot commit SQLite canonical marker"
+		return false
+	return true
+
 func _select_store() -> void:
 	var requested: String = OS.get_environment(
 		"DRAGON_OBJECT_EVENT_BACKEND").strip_edges().to_lower()
-	var sqlite_path := str(world.save_path)+".world_events_v1.sqlite"
-	var saved_backend := str(world.runtime_state.get("object_event_backend",""))
-	var sticky_sqlite := FileAccess.file_exists(sqlite_path) or 		saved_backend.begins_with("sqlite_")
+	var sticky_sqlite: bool = _sqlite_storage_exists() or 		_sqlite_marker_exists() or _saved_backend_is_sqlite()
 	# Once SQLite canonical state exists, it always wins. An environment
 	# variable may opt a clean store into SQLite, but may never downgrade an
 	# existing SQLite world back to a stale JSON history.
@@ -82,6 +149,12 @@ func setup(p_world) -> bool:
 	ready = false
 	status = "INITIALIZING"
 	last_error = ""
+	var sqlite_was_canonical: bool = _sqlite_marker_exists() or _saved_backend_is_sqlite()
+	if backend_requested == "sqlite" and sqlite_was_canonical and 			not _sqlite_storage_exists():
+		status = "SQLITE_CANONICAL_MISSING"
+		last_error = "SQLite was canonical, but primary and backup are both missing; stale JSON is not eligible for rollback"
+		_update_runtime_state()
+		return false
 	if not store.setup(str(world.save_path)):
 		status = store.status
 		last_error = store.last_error
@@ -122,6 +195,18 @@ func setup(p_world) -> bool:
 		status = "MIGRATED_JSON_SNAPSHOT"
 	else:
 		status = "READY_EMPTY"
+	if backend_requested == "sqlite":
+		var marker_sequence: int = _sqlite_marker_sequence()
+		if marker_sequence > store.last_sequence():
+			status = "SQLITE_ROLLBACK_DETECTED"
+			last_error = "SQLite canonical marker sequence %d is ahead of readable store sequence %d" % [
+				marker_sequence,store.last_sequence()]
+			_update_runtime_state()
+			return false
+		if not _write_sqlite_marker():
+			status = "SQLITE_MARKER_WRITE_FAILED"
+			_update_runtime_state()
+			return false
 	ready = true
 	_update_runtime_state()
 	return true
@@ -389,6 +474,10 @@ func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 	_publish_projection(candidate)
 	status = "READY"
 	last_error = ""
+	if backend_requested == "sqlite" and not _write_sqlite_marker():
+		world.runtime_state["object_event_marker_warning"] = last_error
+	else:
+		world.runtime_state.erase("object_event_marker_warning")
 	_update_runtime_state()
 	if write_journal:
 		_journal_accepted(committed)
@@ -550,4 +639,8 @@ func storage_paths() -> Array:
 	var base: String = store.storage_path()
 	if base == "":
 		base = str(world.save_path)+".world_events_v1.json" if world != null else ""
-	return [base,base+".bak",base+".tmp",base+".corrupt"]
+	var paths: Array = [base,base+".bak",base+".tmp",base+".corrupt"]
+	if backend_requested == "sqlite" and world != null:
+		paths.append(_sqlite_marker_path())
+		paths.append(_sqlite_marker_path()+".tmp")
+	return paths
