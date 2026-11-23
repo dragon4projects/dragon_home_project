@@ -11,6 +11,8 @@ on:
       - 'dragon_house_clean/tests/test_object_event_sqlite_v021.gd'
       - 'dragon_house_clean/tests/test_object_event_json_to_sqlite_v021.gd'
       - 'dragon_house_clean/tests/test_object_event_sqlite_recovery_v021.gd'
+      - 'dragon_house_clean/tests/test_object_event_snapshot_to_sqlite_v021.gd'
+      - 'dragon_house_clean/tests/test_object_event_projection_rebuild_v021.gd'
       - '.github/workflows/dragon-house-v021-sqlite-proof.yml'
 
 concurrency:
@@ -88,6 +90,8 @@ jobs:
             tests/test_object_event_sqlite_v021.gd
             tests/test_object_event_json_to_sqlite_v021.gd
             tests/test_object_event_sqlite_recovery_v021.gd
+            tests/test_object_event_snapshot_to_sqlite_v021.gd
+            tests/test_object_event_projection_rebuild_v021.gd
             tests/test_object_event_gate_v020.gd
             tests/test_object_event_replay_v020.gd
             tests/test_object_event_migration_v020.gd
