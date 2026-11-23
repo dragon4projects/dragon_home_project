@@ -849,11 +849,11 @@ func desired_actor_animation(actor: Dictionary) -> String:
 		match intent:
 			"READ_BOOK": requested = "READ"
 			"REST":
-				if str(actor.get("station_kind","")) == "seat":
+				if str(actor.get("station_kind","")) in ["seat","floor_rest"]:
 					requested = str(actor.get("station_pose_hint","RELAXED_SIT"))
 			"SLEEP":
-				if str(actor.get("station_kind","")) == "seat":
-					requested = "SLEEP"
+				if str(actor.get("station_kind","")) in ["seat","floor_rest"]:
+					requested = str(actor.get("station_pose_hint","SLEEP"))
 			"TALK_PAIR": requested = "TALK"
 			"GET_COFFEE": requested = "DRINK"
 			"WATCH_FILM", "LISTEN_MUSIC":
