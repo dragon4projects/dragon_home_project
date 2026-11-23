@@ -34,7 +34,7 @@ func run() -> void:
 			assert(str(spot["pose_hint"])!="")
 		if not spots.is_empty():
 			rooms_with_props+=1
-	assert(rooms_with_props>=9)
+	assert(rooms_with_props>=8) # accepted 002 removes the blocked Common chair / empty middle cell
 
 	var common=world.get_room(-2,0)
 	var sofa: Array=reg.for_room(common)
@@ -74,7 +74,7 @@ func run() -> void:
 			assert(module.get_node_or_null(expected)!=null,
 				"An advertised seat/workstation must be present as a visible scene object: "+expected)
 			checked+=1
-	assert(checked>=17)
+	assert(checked>=16) # 16 legal stations are present in the seeded visible rooms
 
 	# Candidate JSON is VALIDATION ONLY and must never mutate the live source.
 	var original: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(R.DEFAULT_PATH))
