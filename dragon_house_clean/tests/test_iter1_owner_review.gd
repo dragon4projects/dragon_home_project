@@ -33,6 +33,10 @@ func run() -> void:
 	assert(scene.interior_skin.validated_layers("workshop",1).size() == 3)
 	assert(scene.interior_skin.validated_layers("workshop",2).size() == 3)
 	assert(scene.interior_skin.validated_layers("workshop",3).size() == 3)
+	assert(scene.interior_skin.validated_layers("guest_vampire",1).size() == 3)
+	assert(scene.interior_skin.validated_layers("guest_miu",1).size() == 3)
+	assert(scene.interior_skin.validated_layers("guest_centaur",1).is_empty())
+	assert(FileAccess.file_exists("res://assets/props/dragon_mug_lod0_empty.glb"))
 
 	assert(scene.life.stations.furniture.source_path.ends_with(
 		"furniture_interactions_iter1_review.json"))
