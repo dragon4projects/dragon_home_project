@@ -108,7 +108,20 @@ jobs:
           $manifest = Join-Path $root "addons/godot-sqlite/SHA256SUMS.txt"
           $verifiedLfs = 0
           foreach ($line in Get-Content $manifest) {
-            if ($line -notmatch '^([0-9a-f]{64})  (.+)          if (-not (Test-Path "dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.windows.template_debug.x86_64.dll")) { throw "Windows debug SQLite DLL missing" }
+            if ($line -notmatch '^([0-9a-f]{64})  (.+)$') { throw "Invalid SHA256 manifest row: $line" }
+            $expected = $Matches[1]
+            $relative = $Matches[2]
+            $repoRelative = "dragon_house_clean/" + $relative.Replace("\\","/")
+            $attr = (git check-attr filter -- $repoRelative | Out-String)
+            if ($attr -notmatch ': filter: lfs') { continue }
+            $file = Join-Path $root $relative
+            if (-not (Test-Path $file)) { throw "Vendored LFS file missing: $file" }
+            $actual = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
+            if ($actual -ne $expected) { throw "Vendored LFS checksum mismatch: $file" }
+            $verifiedLfs += 1
+          }
+          if ($verifiedLfs -ne 6) { throw "Expected 6 vendored SQLite LFS binaries, verified $verifiedLfs" }
+          if (-not (Test-Path "dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.windows.template_debug.x86_64.dll")) { throw "Windows debug SQLite DLL missing" }
           if (-not (Test-Path "dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.windows.template_release.x86_64.dll")) { throw "Windows release SQLite DLL missing" }
 
       - name: Download official Godot 4.7.2
