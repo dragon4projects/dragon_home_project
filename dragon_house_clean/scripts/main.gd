@@ -1135,6 +1135,26 @@ func toggle_build() -> void:
 		build_marker.visible = false
 	update_hud()
 
+func room_activity_lines(group: Dictionary) -> Array:
+	# ROOM mode should expose what the visible residents are actually doing,
+	# without putting floating labels over faces/furniture.
+	var room_ids:Dictionary={}
+	for cell in group.get("cells",[]):
+		room_ids[str(cell.get("id",""))]=true
+	var entries:Array=[]
+	for id in world.residents:
+		var actor:Dictionary=world.residents[id]
+		if not bool(actor.get("active",false)) or str(actor.get("phase",""))!="perform":
+			continue
+		var activity_room:String=str(actor.get("station_room_id",
+			actor.get("room_id","")))
+		if not room_ids.has(activity_room):
+			continue
+		entries.append("%s — %s" % [
+			str(actor.get("name",id)),life.status(actor)])
+	entries.sort()
+	return entries
+
 func update_hud() -> void:
 	if hud_status == null:
 		return
@@ -1163,6 +1183,11 @@ func update_hud() -> void:
 					occupied += life.stations.used_slots(world,str(cell["id"])).size()
 					capacity += life.stations.capacity(cell)
 				hud_status.text += "\nМеста действий: %d / %d" % [occupied,capacity]
+				var activities:Array=room_activity_lines(group)
+				for i in range(mini(3,activities.size())):
+					hud_status.text += "\n" + str(activities[i])
+				if activities.size()>3:
+					hud_status.text += "\n…ещё %d" % (activities.size()-3)
 	media_label.text = "Книги: %d  •  Фильмы: %d  •  Музыка: %d" % [
 		world.media.get("books", []).size(), world.media.get("films", []).size(),
 		world.media.get("tracks", []).size()]
