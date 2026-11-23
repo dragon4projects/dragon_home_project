@@ -9,6 +9,7 @@ const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
+const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
 const W := 4.8
 const H := 4.6
 var world = WorldScript.new()
@@ -16,6 +17,7 @@ var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
 var door_registry = PrivateDoorRegistryScript.new()
+var semantic_view = SemanticViewScript.new()
 var art_layer_count := 0
 var detailed_room_groups: Dictionary = {}
 var art_loaded_groups: Dictionary = {}
@@ -99,6 +101,7 @@ var room_names := {
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	world.load_or_seed()
+	semantic_view.install(world,"HOUSE")
 	asset_banks.initialize()
 	# Metadata is not a physical book or a movie/audio file.
 	if not asset_banks.manifest.is_empty():
@@ -802,7 +805,9 @@ func update_creatures() -> void:
 		if creature.is_empty() or not bool(creature.get("active",false)):
 			anchor.visible = false
 			continue
-		anchor.visible = true
+		anchor.visible = semantic_view.actor_visible(creature)
+		if not anchor.visible:
+			continue
 		var y := float(creature.get("visual_y",
 			float(creature.get("level",0))*H))
 		anchor.position = Vector3(
@@ -866,7 +871,9 @@ func update_physical_objects() -> void:
 			if holder.is_empty():
 				anchor.visible = false
 				continue
-			anchor.visible = true
+			anchor.visible = semantic_view.actor_visible(holder)
+			if not anchor.visible:
+				continue
 			anchor.position = Vector3(
 				float(holder.get("x",0.0)),
 				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
@@ -882,7 +889,9 @@ func update_physical_objects() -> void:
 		if room.is_empty() or str(room.get("privacy","public")) != "public":
 			anchor.visible = false
 			continue
-		anchor.visible = true
+		anchor.visible = current_mode == "HOUSE" or int(room.get("level",0)) == semantic_view.level
+		if not anchor.visible:
+			continue
 		anchor.position = Vector3(
 			float(room["x"])*W,
 			float(room["level"])*H+0.22,
@@ -952,7 +961,10 @@ func update_residents(delta: float = 0.0) -> void:
 	for id in actor_sprites:
 		var actor: Dictionary = world.residents[id]
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
-		actor_sprites[id].position = Vector3(float(actor.get("x", 0.0)), y, float(actor.get("z", 0.3)))
+		actor_sprites[id].position = Vector3(float(actor.get("x",0.0)),y,float(actor.get("z",0.3)))
+		actor_sprites[id].visible = semantic_view.actor_visible(actor)
+		if not actor_sprites[id].visible:
+			continue
 		if actor.get("runtime_visual_bound",false):
 			if id == "MANJKA":
 				animate_manka(actor,delta)
@@ -1082,12 +1094,13 @@ func build_interface() -> void:
 	hud_main_body.add_child(media_label)
 	var controls := HBoxContainer.new()
 	hud_main_body.add_child(controls)
-	for item in ["Дом", "Комната", "Манька", "Строить"]:
+	for item in ["Дом", "Этаж", "Комната", "Манька", "Строить"]:
 		var button := Button.new()
 		button.text = item
 		controls.add_child(button)
 		match item:
 			"Дом": button.pressed.connect(func(): set_mode("HOUSE"))
+			"Этаж": button.pressed.connect(func(): set_mode("LEVEL"))
 			"Комната": button.pressed.connect(func(): set_mode("ROOM"))
 			"Манька": button.pressed.connect(func(): follow_actor("MANJKA"))
 			"Строить": button.pressed.connect(toggle_build)
@@ -1137,7 +1150,7 @@ func build_interface() -> void:
 	import_button.pressed.connect(func(): catalog_picker.popup_centered_ratio(0.65))
 	hud_main_body.add_child(import_button)
 	hud_help = Label.new()
-	hud_help.text = "Колесо: масштаб | ПКМ: перемещение\nЛКМ: выбрать | Q/E: поворот\nF: следить | B: строить | Esc: весь дом\nV: QA-спрайты | M: медиа | J: журнал"
+	hud_help.text = "Колесо: масштаб | ПКМ: перемещение\nЛКМ: выбрать | Q/E: поворот\nPgUp/PgDn: этаж | F: следить | B: строить\nEsc: Follow→Room→Level→House | 1/2/3: House/Level/Room\nV: QA-спрайты | M: медиа | J: журнал"
 	hud_main_body.add_child(hud_help)
 	hud_help.visible = false
 	var help_button := Button.new()
@@ -1425,7 +1438,56 @@ func update_selection_outline() -> void:
 			Vector3(0.050,3.12,0.055),tone,true)
 	selected_outline.visible = true
 
+func level_world_bounds(level: int) -> Rect2:
+	var lo_x := INF
+	var hi_x := -INF
+	var found := false
+	for room in world.rooms:
+		if int(room.get("level",0)) != level:
+			continue
+		var x := float(room["x"])*W
+		lo_x = minf(lo_x,x-W*0.5)
+		hi_x = maxf(hi_x,x+W*0.5)
+		found = true
+	if not found:
+		return Rect2()
+	var center_y := float(level)*H+1.45
+	return Rect2(Vector2(lo_x,center_y-1.75),Vector2(hi_x-lo_x,3.5))
+
+func fit_level_camera(level: int) -> bool:
+	var bounds := level_world_bounds(level)
+	if not bounds.has_area():
+		return false
+	var viewport := get_viewport().get_visible_rect().size
+	var aspect := maxf(1.0,viewport.x/maxf(1.0,viewport.y))
+	var angle := deg_to_rad(camera.fov*0.5)
+	var vertical_dist := (bounds.size.y+1.4)/maxf(0.1,2.0*tan(angle))
+	var horizontal_dist := (bounds.size.x+3.0)/maxf(0.1,2.0*aspect*tan(angle))
+	zoom = clampf(maxf(vertical_dist,horizontal_dist)*1.08,12.0,82.0)
+	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
+	return true
+
+func select_level(level: int) -> void:
+	follow_id = ""
+	build_mode = false
+	if build_marker:
+		build_marker.visible = false
+	var selected := semantic_view.select_level(world,level)
+	semantic_view.set_view(world,"LEVEL","",selected)
+	current_mode = "LEVEL"
+	Engine.max_fps = 60
+	fit_level_camera(selected)
+	update_selection_outline()
+	update_hud()
+	update_render_lod()
+
+func step_level(delta: int) -> void:
+	var next_level := semantic_view.step_level(world,delta)
+	select_level(next_level)
+
 func set_mode(mode: String) -> void:
+	if not mode in ["HOUSE","LEVEL","ROOM","FOLLOW"]:
+		return
 	Engine.max_fps = 30 if mode == "HOUSE" else 60
 	build_mode = false
 	if build_marker:
@@ -1433,36 +1495,53 @@ func set_mode(mode: String) -> void:
 	current_mode = mode
 	match mode:
 		"HOUSE":
+			follow_id = ""
+			semantic_view.set_view(world,"HOUSE")
 			fit_house_camera()
+		"LEVEL":
 			follow_id = ""
+			var requested_level := semantic_view.level
+			if selected_room != "":
+				var selected: Dictionary = world.room_by_id(selected_room)
+				if not selected.is_empty():
+					requested_level = int(selected.get("level",requested_level))
+			semantic_view.select_level(world,requested_level)
+			semantic_view.set_view(world,"LEVEL","",semantic_view.level)
+			fit_level_camera(semantic_view.level)
 		"ROOM":
-			zoom = 10.5
 			follow_id = ""
+			zoom = 10.5
 			if selected_room != "":
 				var r: Dictionary = world.room_by_id(selected_room)
 				if not r.is_empty():
+					semantic_view.set_view(world,"ROOM",selected_room,int(r["level"]))
 					var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
 					var cx: float = (float(group["x_start"])+float(group["x_end"]))*0.5*W
-					# Aim at the vertical centre of the cutaway rather than the
-					# lower floor band; this reduces empty foreground at ROOM zoom.
 					desired_focus = Vector3(cx,float(r["level"])*H+1.45,0.0)
-					zoom = 10.8 + maxf(0.0,float(group["width"]-1))*3.1
+					zoom = 10.8+maxf(0.0,float(group["width"]-1))*3.1
+			else:
+				semantic_view.set_view(world,"ROOM","",semantic_view.level)
 		"FOLLOW":
+			semantic_view.set_view(world,"FOLLOW",selected_room,semantic_view.level)
 			zoom = 16.0
 	update_selection_outline()
 	update_hud()
 	update_render_lod()
 
 func follow_actor(id: String) -> void:
-	if not actor_sprites.has(id):
+	if not actor_sprites.has(id) or not world.residents.has(id):
 		return
+	var actor: Dictionary = world.residents[id]
 	follow_id = id
+	selected_room = str(actor.get("room_id",selected_room))
 	current_mode = "FOLLOW"
+	semantic_view.set_view(world,"FOLLOW",selected_room,int(actor.get("level",0)))
 	Engine.max_fps = 60
 	build_mode = false
 	update_selection_outline()
-	zoom = minf(zoom, 20.0)
+	zoom = minf(zoom,20.0)
 	update_hud()
+	update_render_lod()
 
 func toggle_build() -> void:
 	build_mode = not build_mode
@@ -1513,11 +1592,11 @@ func update_hud() -> void:
 	if hud_status == null:
 		return
 	var tracked: Dictionary = world.residents.get(follow_id, {})
-	hud_status.text = "Режим: %s | комнат: %d | видимых: %d / 24" % [
-		current_mode, world.rooms.size(), actor_sprites.size()-1]
+	hud_status.text = "Режим: %s | уровень: %d | комнат: %d | видимых: %d / 24" % [
+		current_mode, semantic_view.level, world.rooms.size(), actor_sprites.size()-1]
 	if hud_brief != null:
-		hud_brief.text = "%s · %d комнат · %d/24" % [
-			current_mode,world.rooms.size(),maxi(0,actor_sprites.size()-1)]
+		hud_brief.text = "%s · L%d · %d комнат · %d/24" % [
+			current_mode,semantic_view.level,world.rooms.size(),maxi(0,actor_sprites.size()-1)]
 	hud_status.text += "\nУтверждено: %d / 24 | технически: %d" % [validated_visual_banks,preview_visual_banks]
 	if qa_visual_preview:
 		hud_status.text += "\nВИД: QA-ПРОСМОТР (не утверждено)"
@@ -1607,7 +1686,19 @@ func _input(event: InputEvent) -> void:
 			close_door_note()
 			return
 		match event.keycode:
-			KEY_ESCAPE: set_mode("HOUSE")
+			KEY_ESCAPE:
+				if current_mode == "FOLLOW":
+					var tracked: Dictionary = world.residents.get(follow_id,{})
+					if not tracked.is_empty():
+						selected_room = str(tracked.get("room_id",selected_room))
+					follow_id = ""
+					set_mode("ROOM")
+				elif current_mode == "ROOM":
+					set_mode("LEVEL")
+				elif current_mode == "LEVEL":
+					set_mode("HOUSE")
+				else:
+					set_mode("HOUSE")
 			KEY_F: follow_actor("MANJKA")
 			KEY_B: toggle_build()
 			KEY_Q: yaw = clampf(yaw - 0.10, -0.34, 0.34)
@@ -1617,8 +1708,11 @@ func _input(event: InputEvent) -> void:
 			KEY_V: toggle_qa_art_preview()
 			KEY_K: toggle_bank_gallery()
 			KEY_TAB: toggle_hud()
+			KEY_PAGEUP: step_level(1)
+			KEY_PAGEDOWN: step_level(-1)
 			KEY_1: set_mode("HOUSE")
-			KEY_2: set_mode("ROOM")
+			KEY_2: set_mode("LEVEL")
+			KEY_3: set_mode("ROOM")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -1684,6 +1778,12 @@ func effective_camera_yaw() -> float:
 func apply_camera(delta: float) -> void:
 	if follow_id != "" and world.residents.has(follow_id):
 		var actor: Dictionary = world.residents[follow_id]
+		var actor_level := int(actor.get("level",0))
+		var actor_room := str(actor.get("room_id",""))
+		if current_mode == "FOLLOW" and (semantic_view.level != actor_level or semantic_view.active_room != actor_room):
+			semantic_view.set_view(world,"FOLLOW",actor_room,actor_level)
+			selected_room = actor_room
+			update_render_lod()
 		var target_room: Dictionary = world.room_by_id(actor.get("room_id", ""))
 		if not target_room.is_empty() and world.allows_transit(target_room):
 			var target := Vector3(float(actor.get("x", 0)),
@@ -1723,9 +1823,16 @@ func update_render_lod() -> void:
 	# calls on geometry that is smaller than a few screen pixels.
 	# The camera never activates an owner-private interior.
 	for group_node in room_root.get_children():
+		var group: Dictionary = visual_room_groups.get(group_node.name,{})
+		var semantic_visible := not group.is_empty() and semantic_view.group_visible(group)
+		group_node.visible = semantic_visible
+		if not semantic_visible:
+			_release_room_art(group_node)
+			_release_furniture(group_node)
+			continue
 		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
 		var cues: Node3D = group_node.get_node_or_null("Layer_OverviewCues")
-		var near: bool = _is_near_detail(group_node) if furniture != null else false
+		var near: bool = (current_mode in ["ROOM","FOLLOW"] and _is_near_detail(group_node)) if furniture != null else false
 		if furniture != null:
 			if near:
 				_load_room_art(group_node)
