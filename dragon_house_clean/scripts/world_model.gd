@@ -289,11 +289,11 @@ func can_ambient_pickup_object(object_id: String) -> bool:
 	var object: Dictionary = physical_object(object_id)
 	if object.is_empty():
 		return false
-	return bool(object.get("movable",false)) \
-		and bool(object.get("ambient_pickup_allowed",false)) \
-		and not bool(object.get("ambient_protected",false)) \
-		and str(object.get("current_holder_id","")) == "" \
-		and str(object.get("current_room_id","")) != ""
+	return (bool(object.get("movable",false))
+		and bool(object.get("ambient_pickup_allowed",false))
+		and not bool(object.get("ambient_protected",false))
+		and str(object.get("current_holder_id","")) == ""
+		and str(object.get("current_room_id","")) != "")
 
 func set_object_ambient_protection(object_id: String, protected: bool) -> bool:
 	var object: Dictionary = physical_object(object_id)
