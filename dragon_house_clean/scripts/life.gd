@@ -339,8 +339,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		_record("%s — %s" % [actor.get("name",actor["id"]),status(actor)])
 	steps += 1
 
-const PASS_TRIGGER_X := 1.10
-const PASS_LANE_OFFSET := 0.16
+const PASS_TRIGGER_X := 1.65
+const PASS_LANE_OFFSET := 0.26
 const FOLLOW_GAP := 0.58
 const PASSING_WAYPOINT_KINDS := [
 	"leave_station","room_center","approach_public_frontage","door_out","door_in"
@@ -352,10 +352,10 @@ func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
 	# It changes only the transient movement target; authored waypoints and
 	# station coordinates remain untouched.
 	if not PASSING_WAYPOINT_KINDS.has(str(point.get("kind",""))):
-		return {"target":target,"wait":false}
+		return {"target":target,"wait":false,"passing":false}
 	var dx:float=target.x-at.x
 	if absf(dx)<0.05:
-		return {"target":target,"wait":false}
+		return {"target":target,"wait":false,"passing":false}
 	var direction:float=signf(dx)
 	var actor_id:String=str(actor.get("id",""))
 	var adjusted:=target
@@ -383,7 +383,7 @@ func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
 			# Same direction: the rear resident yields instead of walking
 			# through the resident immediately ahead.
 			if direction*relative_x>0.0 and absf(relative_x)<FOLLOW_GAP:
-				return {"target":adjusted,"wait":true}
+				return {"target":adjusted,"wait":true,"passing":false}
 			continue
 		if direction*other_direction<0.0 and direction*relative_x>0.0:
 			# Opposing traffic gets two shallow depth lanes. Stable ID order
@@ -399,7 +399,8 @@ func _move(actor: Dictionary, delta: float) -> void:
 		actor["phase"] = "perform"
 		return
 	var point: Dictionary = waypoints[idx]
-	var target: Vector3 = locomotion.get_target(actor)
+	var authored_target: Vector3 = locomotion.get_target(actor)
+	var target: Vector3 = authored_target
 	var at := Vector3(float(actor.get("x",0.0)),
 		float(actor.get("visual_y", float(actor.get("level",0)) * world.FLOOR_H)),
 		float(actor.get("z",0.0)))
@@ -416,7 +417,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 	actor["visual_y"] = next.y
 	actor["z"] = next.z
 	actor["moving_axis"] = "up" if point["kind"] == "lift" else ("right" if next.x > at.x else "left" if next.x < at.x else "depth")
-	if next.distance_to(target) <= 0.025:
+	if next.distance_to(authored_target) <= 0.025:
 		actor["room_id"] = point["room_id"]
 		var current_room: Dictionary = world.room_by_id(point["room_id"])
 		if not current_room.is_empty():
