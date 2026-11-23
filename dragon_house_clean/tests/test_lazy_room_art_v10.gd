@@ -44,7 +44,8 @@ func run() -> void:
 	var anchor:Node3D=module.get_node_or_null("common_sofa_left")
 	assert(anchor!=null,"Physical sofa interaction anchor must remain")
 	assert(anchor.get_child_count()==0,"Do not draw a second mesh sofa over approved art")
-	assert(scene.life.stations.furniture.for_room(scene.world.get_room(-2,0)).size()==2)
+	assert(scene.life.stations.furniture.for_room_variant(
+		scene.world.get_room(-2,0),3,0).size()==2)
 	# A room with approved art is not allowed to show unreviewed 3D proxy
 	# cues and a full-resolution image at the same time.
 	assert(not room_node.get_node("Layer_OverviewCues").visible)
