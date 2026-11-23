@@ -21,28 +21,38 @@ jobs:
         with:
           fetch-depth: 1
           lfs: false
+
       - name: Download Godot 4.7.2
         shell: bash
         run: |
-          curl -fLsS --retry 3 -o /tmp/godot.zip             https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          curl -fLsS --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
           unzip -q /tmp/godot.zip -d /tmp
           chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
           /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --version
+
       - name: Parse runtime scripts
         shell: bash
         run: |
           cd dragon_house_clean
-          timeout 180s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path .             --editor --quit > /tmp/import.log 2>&1 || true
+          timeout 180s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --editor --quit > /tmp/import.log 2>&1 || true
           if grep -Eq "SCRIPT ERROR|Parse Error" /tmp/import.log; then
             cat /tmp/import.log
             exit 1
           fi
+
       - name: Focused regression tests
         shell: bash
         run: |
           cd dragon_house_clean
           set -euo pipefail
-          for t in             tests/test_object_lifecycle_v017.gd             tests/test_ambient_creatures_v018.gd             tests/test_model.gd             tests/test_media.gd; do
+          tests=(
+            tests/test_object_lifecycle_v017.gd
+            tests/test_ambient_creatures_v018.gd
+            tests/test_content_viewer_v018.gd
+            tests/test_model.gd
+            tests/test_media.gd
+          )
+          for t in "${tests[@]}"; do
             echo "RUN $t"
             out="$(timeout 80s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --script "res://$t" 2>&1)" || { echo "$out"; exit 1; }
             echo "$out"
