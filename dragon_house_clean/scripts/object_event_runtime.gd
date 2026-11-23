@@ -102,6 +102,15 @@ func setup(p_world) -> bool:
 			last_error = reducer.last_error
 			_update_runtime_state()
 			return false
+		if store.has_method("derived_objects_snapshot"):
+			var persisted_projection: Dictionary = store.derived_objects_snapshot()
+			if persisted_projection != projection:
+				if not store.has_method("rebuild_projection") or 						not bool(store.rebuild_projection(projection)):
+					status = "PROJECTION_REBUILD_FAILED"
+					last_error = str(store.last_error)
+					_update_runtime_state()
+					return false
+				world.runtime_state["object_event_projection_rebuilt"] = true
 		_publish_projection(projection)
 		_reconcile_journal_from_store()
 		status = "REPLAYED_FROM_BACKUP" if store.status == "RECOVERED_FROM_BACKUP" else "REPLAYED"
