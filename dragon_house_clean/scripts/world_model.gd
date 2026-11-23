@@ -12,6 +12,10 @@ const SHARED_TYPES := ["arrival", "corridor", "common", "study", "rest", "librar
 
 var rooms: Array = []
 var residents: Dictionary = {}
+# Non-humanoid ambient actors are persisted separately from resident/guest life.
+var creatures: Dictionary = {}
+# Bounded causal House journal. This is world evidence, not UI presentation text.
+var journal: Array = []
 var media: Dictionary = {"books": [], "films": [], "tracks": []}
 # Persistent physical-object identities. Registration is explicit; seed_world does not
 # invent owner artifacts merely because the lifecycle exists.
@@ -202,6 +206,26 @@ func visual_groups() -> Array:
 		groups.append(group)
 	return groups
 
+func _append_journal(event_name: String, actor_id: String = "", subject_id: String = "",
+		from_value: String = "", to_value: String = "", details: Dictionary = {}) -> void:
+	journal.append({
+		"event": event_name,
+		"actor_id": actor_id,
+		"subject_id": subject_id,
+		"from": from_value,
+		"to": to_value,
+		"details": details.duplicate(true),
+		"sim_clock": sim_clock
+	})
+	while journal.size() > 256:
+		journal.pop_front()
+
+func journal_entries(limit: int = 64) -> Array:
+	if limit <= 0:
+		return []
+	var start: int = maxi(0, journal.size() - limit)
+	return journal.slice(start, journal.size())
+
 func _object_event(object: Dictionary, event_name: String, actor_id: String,
 		from_value: String, to_value: String) -> void:
 	var history: Array = object.get("history", [])
@@ -215,11 +239,14 @@ func _object_event(object: Dictionary, event_name: String, actor_id: String,
 	while history.size() > 64:
 		history.pop_front()
 	object["history"] = history
+	_append_journal("OBJECT_" + event_name, actor_id, str(object.get("id","")),
+		from_value, to_value, {"display_name":str(object.get("display_name",""))})
 
 func register_physical_object(object_id: String, display_name: String,
 		canonical_owner_id: String, home_room_id: String,
 		movable: bool = true, recoverable: bool = true,
-		ambient_pickup_allowed: bool = false) -> bool:
+		ambient_pickup_allowed: bool = false, ambient_hide_allowed: bool = false,
+		ambient_protected: bool = false) -> bool:
 	if object_id == "" or display_name == "" or objects.has(object_id):
 		return false
 	var home: Dictionary = room_by_id(home_room_id)
@@ -236,6 +263,8 @@ func register_physical_object(object_id: String, display_name: String,
 		"movable": movable,
 		"recoverable": recoverable,
 		"ambient_pickup_allowed": ambient_pickup_allowed,
+		"ambient_hide_allowed": ambient_hide_allowed,
+		"ambient_protected": ambient_protected,
 		"history": [{
 			"event": "REGISTERED",
 			"actor_id": "",
@@ -244,14 +273,40 @@ func register_physical_object(object_id: String, display_name: String,
 			"sim_clock": sim_clock
 		}]
 	}
+	_append_journal("OBJECT_REGISTERED", "", object_id, "", home_room_id,
+		{"display_name":display_name,"canonical_owner_id":canonical_owner_id})
 	return true
 
 func physical_object(object_id: String) -> Dictionary:
 	return objects.get(object_id, {})
 
+func _physical_actor(actor_id: String) -> Dictionary:
+	if residents.has(actor_id):
+		return residents[actor_id]
+	return creatures.get(actor_id, {})
+
+func can_ambient_pickup_object(object_id: String) -> bool:
+	var object: Dictionary = physical_object(object_id)
+	if object.is_empty():
+		return false
+	return bool(object.get("movable",false)) \
+		and bool(object.get("ambient_pickup_allowed",false)) \
+		and not bool(object.get("ambient_protected",false)) \
+		and str(object.get("current_holder_id","")) == "" \
+		and str(object.get("current_room_id","")) != ""
+
+func set_object_ambient_protection(object_id: String, protected: bool) -> bool:
+	var object: Dictionary = physical_object(object_id)
+	if object.is_empty():
+		return false
+	object["ambient_protected"] = protected
+	_append_journal("OBJECT_AMBIENT_PROTECTION_CHANGED", "", object_id,
+		"", "PROTECTED" if protected else "ELIGIBLE")
+	return true
+
 func pickup_physical_object(object_id: String, actor_id: String) -> bool:
 	var object: Dictionary = physical_object(object_id)
-	var actor: Dictionary = residents.get(actor_id, {})
+	var actor: Dictionary = _physical_actor(actor_id)
 	if object.is_empty() or actor.is_empty() or not bool(actor.get("active", false)):
 		return false
 	if not bool(object.get("movable", false)):
@@ -273,7 +328,7 @@ func pickup_physical_object(object_id: String, actor_id: String) -> bool:
 func place_physical_object(object_id: String, actor_id: String,
 		target_room_id: String, state: String = "PLACED") -> bool:
 	var object: Dictionary = physical_object(object_id)
-	var actor: Dictionary = residents.get(actor_id, {})
+	var actor: Dictionary = _physical_actor(actor_id)
 	var target: Dictionary = room_by_id(target_room_id)
 	if object.is_empty() or actor.is_empty() or target.is_empty():
 		return false
@@ -321,6 +376,48 @@ func restore_physical_object_home(object_id: String) -> bool:
 	object["current_holder_id"] = ""
 	object["current_room_id"] = home_room_id
 	object["state"] = "PLACED"
+	return true
+
+func register_creature(creature_id: String, display_name: String,
+		room_id: String, bank_id: String = "", owner_id: String = "",
+		can_pickup: bool = false, can_hide: bool = false, guest: bool = false) -> bool:
+	if creature_id == "" or display_name == "" or creatures.has(creature_id) or residents.has(creature_id):
+		return false
+	var room: Dictionary = room_by_id(room_id)
+	if room.is_empty() or str(room.get("privacy","public")) != "public":
+		return false
+	creatures[creature_id] = {
+		"id":creature_id, "name":display_name, "active":true,
+		"entity_type":"creature", "guest":guest, "owner_id":owner_id,
+		"bank_id":bank_id, "room_id":room_id,
+		"x":float(room["x"]) * MODULE_W, "level":int(room["level"]), "z":0.25,
+		"can_pickup_objects":can_pickup, "can_hide_objects":can_hide,
+		"carried_object_id":"", "next_decision_at":sim_clock
+	}
+	_append_journal("CREATURE_REGISTERED", creature_id, creature_id, "", room_id,
+		{"display_name":display_name,"owner_id":owner_id,"guest":guest})
+	return true
+
+func register_guest_actor(actor_id: String, display_name: String,
+		room_id: String, species: String = "", bank_id: String = "") -> bool:
+	if actor_id == "" or display_name == "" or residents.has(actor_id) or creatures.has(actor_id):
+		return false
+	var room: Dictionary = room_by_id(room_id)
+	if room.is_empty() or str(room.get("privacy","public")) != "public":
+		return false
+	residents[actor_id] = {
+		"id":actor_id, "name":display_name, "active":true,
+		"entity_type":"guest", "guest":true, "species":species, "bank_id":bank_id,
+		"room_id":room_id, "home_room_id":room_id,
+		"x":float(room["x"]) * MODULE_W, "level":int(room["level"]), "z":0.15,
+		"intent":"REST", "phase":"idle", "until":0.0,
+		"needs":{"rest":0.4,"social":0.35,"curiosity":0.55},
+		"traits":{"reading":0.35,"music":0.35},
+		"habits":{}, "last_location":"", "route":[], "path_index":0,
+		"production_visual_ready":false, "visual_status":"CANDIDATE"
+	}
+	_append_journal("GUEST_REGISTERED", actor_id, actor_id, "", room_id,
+		{"display_name":display_name,"species":species,"bank_id":bank_id})
 	return true
 
 func merge_reference_book_metadata(items: Array) -> int:
@@ -373,6 +470,8 @@ func sync_resident_profiles() -> void:
 func seed_world() -> void:
 	rooms.clear()
 	residents.clear()
+	creatures.clear()
+	journal.clear()
 	next_room_id = 1
 	sim_clock = 0.0
 	# CORE, a working lift shaft, two residential terraces, genuine cutaway depth.
@@ -425,6 +524,8 @@ func seed_world() -> void:
 		"route": [], "path_index": 0}
 	media = {"books": [], "films": [], "tracks": []}
 	objects = {}
+	creatures = {}
+	journal = []
 
 func _read_snapshot(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
@@ -460,6 +561,8 @@ func load_or_seed() -> void:
 	sync_resident_profiles()
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})
 	objects = parsed.get("objects", {})
+	creatures = parsed.get("creatures", {})
+	journal = parsed.get("journal", [])
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
 
@@ -467,7 +570,8 @@ func save_world() -> bool:
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
 	var data: Dictionary = {"schema": 1,"rooms": rooms,"residents": residents,
-		"media": media,"objects": objects,"next_room_id": next_room_id,"sim_clock": sim_clock}
+		"creatures":creatures,"journal":journal,"media": media,"objects": objects,
+		"next_room_id": next_room_id,"sim_clock": sim_clock}
 	var file := FileAccess.open(scratch,FileAccess.WRITE)
 	if file == null:
 		return false
