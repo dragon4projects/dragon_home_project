@@ -21,7 +21,7 @@ func run() -> void:
 	for group in world.visual_groups():
 		var level := int(group["level"])
 		var kind := str(group["type"])
-		var expected := level==0 or (kind=="lift" and abs(level)<=1)
+		var expected: bool = level==0 or (kind=="lift" and absi(level)<=1)
 		assert(view.group_visible(group)==expected)
 
 	assert(view.step_level(world,1)==1)
