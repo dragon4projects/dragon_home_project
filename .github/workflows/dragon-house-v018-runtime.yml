@@ -49,6 +49,7 @@ jobs:
             tests/test_object_lifecycle_v017.gd
             tests/test_ambient_creatures_v018.gd
             tests/test_content_viewer_v018.gd
+            tests/test_guest_room_access_v018.gd
             tests/test_model.gd
             tests/test_media.gd
           )
