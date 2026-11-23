@@ -80,3 +80,8 @@ The repository CI test list now includes:
 - `test_v011_depth_pass.gd`
 
 Private export artifact names are updated to v0.11.
+
+
+## 5. Production validation trigger
+
+The v0.11 development line was fast-forwarded to `dragon-house-fallout-fresh` on 2026-11-23 after the standalone Godot 4.7.2 depth regression passed. This commit exists to record the promotion and trigger the branch-scoped full LFS/Godot/export workflow. It does not change art approval state.
