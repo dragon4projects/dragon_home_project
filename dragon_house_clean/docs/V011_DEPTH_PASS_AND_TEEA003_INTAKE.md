@@ -110,3 +110,25 @@ Independent Godot 4.7.2 verification with the real accepted 002 PNG payload:
 ## 7. Full CI rerun trigger
 
 The width-safe Library correction and its real-002 targeted regression package are now on the fresh branch. This commit intentionally triggers the full LFS/Godot/Windows/macOS acceptance workflow from the corrected branch head.
+
+
+## 8. Overview LOD and repeatable visual QA
+
+The detailed rear alcove and cutaway-depth stages are now LOD-controlled. At HOUSE overview the renderer keeps the inexpensive room shell and overview cues but hides geometry that is too small to read. Near ROOM/FOLLOW views restore physical depth; accepted backdrops still suppress the procedural rear wall as before.
+
+Same-sandbox Compatibility / Mesa llvmpipe comparison, using the real accepted 002 room payload:
+
+| view | before | after |
+|---|---:|---:|
+| HOUSE draw calls peak | 402 | 232 |
+| HOUSE visible objects peak | 485 | 315 |
+| ROOM draw calls peak | 148 | 115 |
+| ROOM visible objects peak | 230 | 197 |
+
+This is a virtual-renderer regression baseline, **not** a Dell Latitude 5300 or M1 hardware benchmark.
+
+CI now also renders two deterministic private QA frames after the full Godot test suite:
+- `private_review/v011_house.png`
+- `private_review/v011_common_r3.png`
+
+They are review evidence only and contain no newly approved resident bank.
