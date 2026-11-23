@@ -148,9 +148,26 @@ jobs:
           )
           foreach ($test in $tests) {
             Write-Host "RUN $test"
-            $output = & "$env:GODOT_BIN" --headless --path dragon_house_clean --script $test 2>&1 | Out-String
+            $psi = [System.Diagnostics.ProcessStartInfo]::new()
+            $psi.FileName = "$env:GODOT_BIN"
+            $psi.UseShellExecute = $false
+            $psi.RedirectStandardOutput = $true
+            $psi.RedirectStandardError = $true
+            foreach ($arg in @("--headless","--path","dragon_house_clean","--script",$test)) {
+              [void]$psi.ArgumentList.Add($arg)
+            }
+            $proc = [System.Diagnostics.Process]::new()
+            $proc.StartInfo = $psi
+            [void]$proc.Start()
+            $stdoutTask = $proc.StandardOutput.ReadToEndAsync()
+            $stderrTask = $proc.StandardError.ReadToEndAsync()
+            if (-not $proc.WaitForExit(90000)) {
+              try { $proc.Kill($true) } catch {}
+              throw "$test timed out after 90 seconds"
+            }
+            $output = $stdoutTask.GetAwaiter().GetResult() + $stderrTask.GetAwaiter().GetResult()
             Write-Host $output
-            if ($LASTEXITCODE -ne 0) { throw "$test exit code $LASTEXITCODE" }
+            if ($proc.ExitCode -ne 0) { throw "$test exit code $($proc.ExitCode)" }
             if ($output -notmatch "_PASS") { throw "$test missing PASS marker" }
             if ($output -match "SCRIPT ERROR|Parse Error|Assertion failed") { throw "$test contains script failure" }
           }
@@ -208,10 +225,30 @@ jobs:
             tests/test_object_event_snapshot_to_sqlite_v021.gd \
             tests/test_object_event_projection_rebuild_v021.gd; do
             echo "RUN $t"
-            out="$("$GODOT_BIN" --headless --path . --script "res://$t" 2>&1)" || { echo "$out"; exit 1; }
+            out_file="$RUNNER_TEMP/v021-native-test.out"
+            if ! python3 - "$GODOT_BIN" "$t" "$PWD" >"$out_file" 2>&1 <<'PY'
+import subprocess, sys
+godot, test, cwd = sys.argv[1:4]
+try:
+    p = subprocess.run(
+        [godot, "--headless", "--path", cwd, "--script", "res://" + test],
+        cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        text=True, timeout=90)
+except subprocess.TimeoutExpired as e:
+    print(e.stdout or "")
+    print("NATIVE_TEST_TIMEOUT", test)
+    raise SystemExit(124)
+print(p.stdout or "")
+raise SystemExit(p.returncode)
+PY
+            then
+              cat "$out_file"
+              exit 1
+            fi
+            out="$(cat "$out_file")"
             echo "$out"
             echo "$out" | grep -q "_PASS"
-            ! echo "$out" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed"
+            ! echo "$out" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed|NATIVE_TEST_TIMEOUT"
           done
           echo "SQLITE_FINAL_MACOS_V021_PASS"
 
