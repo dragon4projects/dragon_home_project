@@ -12,7 +12,7 @@ var revision := 0
 func install(world, initial_mode: String = "HOUSE") -> void:
 	mode = initial_mode if initial_mode in MODES else "HOUSE"
 	var levels := available_levels(world)
-	level = int(levels[0]) if not levels.is_empty() else 0
+	level = 0 if levels.has(0) else (int(levels[0]) if not levels.is_empty() else 0)
 
 func available_levels(world) -> Array:
 	var seen: Dictionary = {}
