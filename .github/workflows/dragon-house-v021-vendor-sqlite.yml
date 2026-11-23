@@ -1,0 +1,131 @@
+name: Dragon House v0.21 vendor pinned godot-sqlite
+
+on:
+  push:
+    branches:
+      - vendor/dragon-house-v021-godot-sqlite
+    paths:
+      - '.github/workflows/dragon-house-v021-vendor-sqlite.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: false
+          persist-credentials: true
+
+      - name: Download pinned addon and select target-platform binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/sqlite.zip \
+            https://github.com/2shady4u/godot-sqlite/releases/download/v4.9/addons.zip
+          echo "95e91b72fe32984a84edaf6357a78753661f37a170cb362f5b948e0ede7c2cb0  /tmp/sqlite.zip" | sha256sum -c -
+          rm -rf /tmp/sqlite-addon
+          mkdir -p /tmp/sqlite-addon
+          unzip -q /tmp/sqlite.zip -d /tmp/sqlite-addon
+          DESCRIPTOR="$(find /tmp/sqlite-addon -name gdsqlite.gdextension -type f | head -1)"
+          test -n "$DESCRIPTOR"
+          SRC="$(dirname "$DESCRIPTOR")"
+          TARGET="dragon_house_clean/addons/godot-sqlite"
+          rm -rf "$TARGET"
+          mkdir -p "$TARGET/bin"
+
+          for file in \
+            libgdsqlite.linux.template_debug.x86_64.so \
+            libgdsqlite.linux.template_release.x86_64.so \
+            libgdsqlite.windows.template_debug.x86_64.dll \
+            libgdsqlite.windows.template_release.x86_64.dll; do
+            test -f "$SRC/bin/$file"
+            cp "$SRC/bin/$file" "$TARGET/bin/$file"
+          done
+          for fw in \
+            libgdsqlite.macos.template_debug.framework \
+            libgdsqlite.macos.template_release.framework; do
+            test -d "$SRC/bin/$fw"
+            cp -a "$SRC/bin/$fw" "$TARGET/bin/$fw"
+          done
+
+          cat > "$TARGET/gdsqlite.gdextension" <<'EOF'
+          [configuration]
+
+          entry_symbol = "sqlite_library_init"
+          compatibility_minimum = "4.7"
+
+          [libraries]
+
+          macos.debug = "res://addons/godot-sqlite/bin/libgdsqlite.macos.template_debug.framework"
+          macos.release = "res://addons/godot-sqlite/bin/libgdsqlite.macos.template_release.framework"
+          windows.debug.x86_64 = "res://addons/godot-sqlite/bin/libgdsqlite.windows.template_debug.x86_64.dll"
+          windows.release.x86_64 = "res://addons/godot-sqlite/bin/libgdsqlite.windows.template_release.x86_64.dll"
+          linux.debug.x86_64 = "res://addons/godot-sqlite/bin/libgdsqlite.linux.template_debug.x86_64.so"
+          linux.release.x86_64 = "res://addons/godot-sqlite/bin/libgdsqlite.linux.template_release.x86_64.so"
+          EOF
+          if [ -f "$SRC/gdsqlite.gdextension.uid" ]; then
+            cp "$SRC/gdsqlite.gdextension.uid" "$TARGET/"
+          fi
+
+          curl -fLsS --retry 3 -o "$TARGET/LICENSE-godot-sqlite-MIT.md" \
+            https://raw.githubusercontent.com/2shady4u/godot-sqlite/v4.9/LICENSE.md
+          curl -fLsS --retry 3 -o "$TARGET/LICENSE-SQLite-Public-Domain.md" \
+            https://raw.githubusercontent.com/2shady4u/godot-sqlite/v4.9/src/sqlite/LICENSE.md
+
+          cat > "$TARGET/SUPPLY_CHAIN.md" <<'EOF'
+          # Pinned godot-sqlite runtime
+
+          Source: `2shady4u/godot-sqlite` release `v4.9`
+          Release asset: `addons.zip`
+          Release asset SHA256: `95e91b72fe32984a84edaf6357a78753661f37a170cb362f5b948e0ede7c2cb0`
+          Upstream Godot target: 4.7.1, descriptor compatibility minimum 4.7.
+          Dragon House engine: Godot 4.7.2.
+          Included platforms only: Linux x86_64 (CI/editor), Windows x86_64, macOS universal.
+          Included configurations: debug + release.
+          Android, iOS and Web binaries are intentionally not vendored.
+          Upstream wrapper license: MIT. Bundled SQLite code: public domain.
+          EOF
+
+          (
+            cd dragon_house_clean
+            find addons/godot-sqlite -type f ! -name SHA256SUMS.txt -print0 \
+              | sort -z | xargs -0 sha256sum > addons/godot-sqlite/SHA256SUMS.txt
+          )
+          echo "--- selected files ---"
+          find "$TARGET" -type f -printf '%s %p\n' | sort -n
+
+      - name: Put native binaries in Git LFS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git lfs track "dragon_house_clean/addons/godot-sqlite/bin/*.so"
+          git lfs track "dragon_house_clean/addons/godot-sqlite/bin/*.dll"
+          git lfs track "dragon_house_clean/addons/godot-sqlite/bin/*.framework/libgdsqlite.*"
+          git add .gitattributes dragon_house_clean/addons/godot-sqlite
+          count="$(git lfs ls-files | grep 'dragon_house_clean/addons/godot-sqlite/bin/' | wc -l)"
+          test "$count" -eq 6
+          for file in \
+            dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.linux.template_debug.x86_64.so \
+            dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.linux.template_release.x86_64.so \
+            dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.windows.template_debug.x86_64.dll \
+            dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.windows.template_release.x86_64.dll \
+            dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.macos.template_debug.framework/libgdsqlite.macos.template_debug \
+            dragon_house_clean/addons/godot-sqlite/bin/libgdsqlite.macos.template_release.framework/libgdsqlite.macos.template_release; do
+            test "$(git check-attr filter -- "$file" | awk '{print $3}')" = "lfs"
+          done
+
+      - name: Commit and push vendored addon
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Dragon House Integrator"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "vendor: pin godot-sqlite v4.9 for Dragon House v0.21"
+          git push origin HEAD:vendor/dragon-house-v021-godot-sqlite
