@@ -5,7 +5,13 @@ func _initialize()->void:
 	call_deferred("run")
 
 func _cleanup(path:String)->void:
-	for suffix in ["",".bak",".tmp"]:
+	for suffix in [
+		"",".bak",".tmp",
+		".world_events_v1.json",
+		".world_events_v1.json.bak",
+		".world_events_v1.json.tmp",
+		".world_events_v1.json.corrupt"
+	]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path+suffix))
 
 func run()->void:
@@ -23,7 +29,7 @@ func run()->void:
 
 	assert(world.register_physical_object(
 		"QA_ARTIFACT_001","QA single persistent artifact","RES_01",home["id"],
-		true,true,true))
+		true,true,true,true))
 	assert(not world.register_physical_object(
 		"QA_ARTIFACT_001","duplicate","RES_02",home["id"]))
 
@@ -94,5 +100,5 @@ func run()->void:
 	assert(final_obj.get("history",[]).size()>=5)
 
 	_cleanup(path)
-	print("OBJECT_LIFECYCLE_V017_PASS identity=unique owner=stable holder/location=persistent stash=visible_state lost_found=recoverable restore=home")
+	print("OBJECT_LIFECYCLE_V017_PASS identity=unique owner=stable holder/location=persistent stash=explicit_opt_in lost_found=recoverable restore=home")
 	quit(0)

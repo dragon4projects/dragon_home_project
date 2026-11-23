@@ -1,6 +1,7 @@
 extends RefCounted
 ## One authoritative local simulation state. No chat/LLM interfaces.
 const SAVE_PATH := "user://dragon_house_world_v01.json"
+const ObjectEventRuntime = preload("res://scripts/object_event_runtime.gd")
 var save_path: String = SAVE_PATH
 var sim_clock: float = 0.0
 const MODULE_W := 4.8
@@ -22,7 +23,45 @@ var media: Dictionary = {"books": [], "films": [], "tracks": []}
 # Persistent physical-object identities. Registration is explicit; seed_world does not
 # invent owner artifacts merely because the lifecycle exists.
 var objects: Dictionary = {}
+var object_events = ObjectEventRuntime.new()
+var object_events_initialized := false
+var object_events_save_path := ""
 var next_room_id := 1
+
+func _ensure_object_events() -> bool:
+	if object_events_initialized and object_events_save_path == save_path:
+		return bool(object_events.ready)
+	object_events_initialized = true
+	object_events_save_path = save_path
+	return object_events.setup(self)
+
+func submit_object_event(event: Dictionary) -> Dictionary:
+	if not _ensure_object_events():
+		return {"ok":false,"error":str(object_events.last_error)}
+	return object_events.submit(event)
+
+func object_event_storage_paths() -> Array:
+	if not object_events_initialized or object_events_save_path != save_path:
+		object_events_save_path = save_path
+	return [
+		save_path+".world_events_v1.json",
+		save_path+".world_events_v1.json.bak",
+		save_path+".world_events_v1.json.tmp",
+		save_path+".world_events_v1.json.corrupt"
+	]
+
+func object_event_revision() -> int:
+	return int(runtime_state.get("object_event_revision",0))
+
+func object_event_history(object_id: String, limit: int = 64) -> Array:
+	if not _ensure_object_events():
+		return []
+	return object_events.events_for_object(object_id,limit)
+
+func explain_physical_object(object_id: String) -> Dictionary:
+	if not _ensure_object_events():
+		return {}
+	return object_events.explain_object(object_id)
 
 func cell_key(x: int, level: int) -> String:
 	return "%d:%d" % [x, level]
@@ -275,60 +314,16 @@ func journal_entries(limit: int = 64) -> Array:
 	var start: int = maxi(0, journal.size() - limit)
 	return journal.slice(start, journal.size())
 
-func _object_event(object: Dictionary, event_name: String, actor_id: String,
-		from_value: String, to_value: String) -> void:
-	var history: Array = object.get("history", [])
-	history.append({
-		"event": event_name,
-		"actor_id": actor_id,
-		"from": from_value,
-		"to": to_value,
-		"sim_clock": sim_clock
-	})
-	while history.size() > 64:
-		history.pop_front()
-	object["history"] = history
-	_append_journal("OBJECT_" + event_name, actor_id, str(object.get("id","")),
-		from_value, to_value, {"display_name":str(object.get("display_name",""))})
-
 func register_physical_object(object_id: String, display_name: String,
 		canonical_owner_id: String, home_room_id: String,
 		movable: bool = true, recoverable: bool = true,
 		ambient_pickup_allowed: bool = false, ambient_hide_allowed: bool = false,
 		ambient_protected: bool = false, metadata: Dictionary = {}) -> bool:
-	if object_id == "" or display_name == "" or objects.has(object_id):
+	if not _ensure_object_events():
 		return false
-	var home: Dictionary = room_by_id(home_room_id)
-	if home.is_empty():
-		return false
-	objects[object_id] = {
-		"id": object_id,
-		"display_name": display_name,
-		"canonical_owner_id": canonical_owner_id,
-		"home_room_id": home_room_id,
-		"current_holder_id": "",
-		"current_room_id": home_room_id,
-		"state": "PLACED",
-		"movable": movable,
-		"recoverable": recoverable,
-		"ambient_pickup_allowed": ambient_pickup_allowed,
-		"ambient_hide_allowed": ambient_hide_allowed,
-		"ambient_protected": ambient_protected,
-		"description": str(metadata.get("description","")),
-		"preview_path": str(metadata.get("preview_path","")),
-		"asset_id": str(metadata.get("asset_id","")),
-		"viewer_category": str(metadata.get("viewer_category","artifacts")),
-		"history": [{
-			"event": "REGISTERED",
-			"actor_id": "",
-			"from": "",
-			"to": home_room_id,
-			"sim_clock": sim_clock
-		}]
-	}
-	_append_journal("OBJECT_REGISTERED", "", object_id, "", home_room_id,
-		{"display_name":display_name,"canonical_owner_id":canonical_owner_id})
-	return true
+	return object_events.register_object(
+		object_id,display_name,canonical_owner_id,home_room_id,movable,recoverable,
+		ambient_pickup_allowed,ambient_hide_allowed,ambient_protected,metadata)
 
 func physical_object(object_id: String) -> Dictionary:
 	return objects.get(object_id, {})
@@ -349,87 +344,31 @@ func can_ambient_pickup_object(object_id: String) -> bool:
 		and str(object.get("current_room_id","")) != "")
 
 func set_object_ambient_protection(object_id: String, protected: bool) -> bool:
-	var object: Dictionary = physical_object(object_id)
-	if object.is_empty():
+	if not _ensure_object_events():
 		return false
-	object["ambient_protected"] = protected
-	_append_journal("OBJECT_AMBIENT_PROTECTION_CHANGED", "", object_id,
-		"", "PROTECTED" if protected else "ELIGIBLE")
-	return true
+	return object_events.set_ambient_protection(object_id,protected)
 
 func pickup_physical_object(object_id: String, actor_id: String) -> bool:
-	var object: Dictionary = physical_object(object_id)
-	var actor: Dictionary = _physical_actor(actor_id)
-	if object.is_empty() or actor.is_empty() or not bool(actor.get("active", false)):
+	if not _ensure_object_events():
 		return false
-	if not bool(object.get("movable", false)):
-		return false
-	if str(object.get("current_holder_id", "")) != "":
-		return false
-	var room_id: String = str(object.get("current_room_id", ""))
-	if room_id == "" or room_id != str(actor.get("room_id", "")):
-		return false
-	var room: Dictionary = room_by_id(room_id)
-	if room.is_empty() or not is_accessible(room, actor_id):
-		return false
-	_object_event(object, "PICKED_UP", actor_id, room_id, actor_id)
-	object["current_holder_id"] = actor_id
-	object["current_room_id"] = ""
-	object["state"] = "HELD"
-	return true
+	return object_events.pickup(object_id,actor_id)
 
 func place_physical_object(object_id: String, actor_id: String,
 		target_room_id: String, state: String = "PLACED") -> bool:
-	var object: Dictionary = physical_object(object_id)
-	var actor: Dictionary = _physical_actor(actor_id)
-	var target: Dictionary = room_by_id(target_room_id)
-	if object.is_empty() or actor.is_empty() or target.is_empty():
+	if not _ensure_object_events():
 		return false
-	if str(object.get("current_holder_id", "")) != actor_id:
-		return false
-	if not is_accessible(target, actor_id):
-		return false
-	_object_event(object, state, actor_id, actor_id, target_room_id)
-	object["current_holder_id"] = ""
-	object["current_room_id"] = target_room_id
-	object["state"] = state
-	return true
+	return object_events.place(object_id,actor_id,target_room_id,state)
 
 func recover_physical_object_to_lost_found(object_id: String,
 		lost_found_room_id: String) -> bool:
-	var object: Dictionary = physical_object(object_id)
-	var target: Dictionary = room_by_id(lost_found_room_id)
-	if object.is_empty() or target.is_empty():
+	if not _ensure_object_events():
 		return false
-	if not bool(object.get("recoverable", false)):
-		return false
-	if str(target.get("privacy", "public")) != "public":
-		return false
-	var from_value: String = str(object.get("current_holder_id", ""))
-	if from_value == "":
-		from_value = str(object.get("current_room_id", ""))
-	_object_event(object, "RECOVERED_TO_LOST_FOUND", "HOUSE_SPIRIT",
-		from_value, lost_found_room_id)
-	object["current_holder_id"] = ""
-	object["current_room_id"] = lost_found_room_id
-	object["state"] = "LOST_FOUND"
-	return true
+	return object_events.recover_to_lost_found(object_id,lost_found_room_id)
 
 func restore_physical_object_home(object_id: String) -> bool:
-	var object: Dictionary = physical_object(object_id)
-	if object.is_empty():
+	if not _ensure_object_events():
 		return false
-	var home_room_id: String = str(object.get("home_room_id", ""))
-	if room_by_id(home_room_id).is_empty():
-		return false
-	var from_value: String = str(object.get("current_holder_id", ""))
-	if from_value == "":
-		from_value = str(object.get("current_room_id", ""))
-	_object_event(object, "RESTORED_HOME", "", from_value, home_room_id)
-	object["current_holder_id"] = ""
-	object["current_room_id"] = home_room_id
-	object["state"] = "PLACED"
-	return true
+	return object_events.restore_home(object_id)
 
 func register_creature(creature_id: String, display_name: String,
 		room_id: String, bank_id: String = "", owner_id: String = "",
@@ -541,6 +480,8 @@ func seed_world() -> void:
 	creatures.clear()
 	journal.clear()
 	runtime_state.clear()
+	object_events_initialized = false
+	object_events_save_path = ""
 	next_room_id = 1
 	sim_clock = 0.0
 	# CORE, a working lift shaft, two residential terraces, genuine cutaway depth.
@@ -621,6 +562,7 @@ func load_or_seed() -> void:
 		parsed = _read_snapshot(save_path + ".bak")
 	if parsed.is_empty():
 		seed_world()
+		_ensure_object_events()
 		save_world()
 		return
 	rooms.assign(parsed["rooms"])
@@ -643,6 +585,9 @@ func load_or_seed() -> void:
 	runtime_state = parsed.get("runtime_state", {})
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
+	object_events_initialized = false
+	object_events_save_path = ""
+	_ensure_object_events()
 
 func save_world() -> bool:
 	var scratch: String = save_path + ".tmp"
