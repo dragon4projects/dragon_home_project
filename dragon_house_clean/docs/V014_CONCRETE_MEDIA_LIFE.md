@@ -86,3 +86,11 @@ Local Godot 4.7.2:
 - `CORRIDOR_PASSING_V013_PASS min_distance=0.501 lane_sep=0.512 following=yield_resume`
 
 The full LFS/Godot/Windows/macOS workflow remains final acceptance.
+
+
+## Fresh-branch acceptance trigger
+
+The v0.14 candidate was fast-forwarded to `dragon-house-fallout-fresh` after
+local Godot 4.7.2 regressions and deterministic QA capture passed. This commit
+exists to trigger the branch-scoped full LFS/Godot/Windows/macOS workflow; it
+does not change art approval state or media catalogue contents.
