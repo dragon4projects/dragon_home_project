@@ -5,18 +5,17 @@
   "approved": false,
   "owner_approved": false,
   "auto_activate_guests": false,
-  "auto_bind_media_content": false,
-  "source_payloads": {
-    "TEEA006_FINAL_SHA256": "7ca98ad9039ba36ca76f1e29f6e82489c1098c35d5243f639724d092546694bc",
-    "TEEA007_BASE_SHA256": "05f734b2af745a062a4942653834e38149b10301c9bb035b4682ae7004a78cbb",
-    "TEEA007_CLOSURE_SHA256": "abc63bc791fb5bd90e08dcc57bf9447df68385373675fec2ecd4a928f562292b",
-    "INTEGRATOR_CANDIDATE_SHA256": "0e220f3530614b30bf27c9ac6ee943138e3d8d87517b96b7b286a7547df610df"
+  "auto_bind_media": false,
+  "source_sha256": {
+    "teea006": "7ca98ad9039ba36ca76f1e29f6e82489c1098c35d5243f639724d092546694bc",
+    "teea007": "05f734b2af745a062a4942653834e38149b10301c9bb035b4682ae7004a78cbb",
+    "closure": "abc63bc791fb5bd90e08dcc57bf9447df68385373675fec2ecd4a928f562292b",
+    "candidate_bundle": "0e220f3530614b30bf27c9ac6ee943138e3d8d87517b96b7b286a7547df610df"
   },
   "guest_rooms": [
     {
       "room_key": "guest_centaur/R1",
-      "room_type": "guest",
-      "proposed_room_id": "guest_centaur_01",
+      "room_id": "guest_centaur_01",
       "cell": [
         6,
         0
@@ -24,23 +23,12 @@
       "actor_id": "NPC_CENTAUR",
       "display_name": "Кентавр",
       "access_state": "open",
-      "public_cutaway_when_open": true,
-      "public_cutaway_when_closed": false,
-      "layers": [
-        {
-          "role": "backdrop",
-          "path": "assets/rooms/guest_centaur/R1/backdrop.png"
-        },
-        {
-          "role": "back_decor",
-          "path": "assets/rooms/guest_centaur/R1/back_decor.png"
-        },
-        {
-          "role": "furniture_back",
-          "path": "assets/rooms/guest_centaur/R1/furniture_back.png"
-        }
-      ],
-      "runtime_stations": [
+      "layers": {
+        "backdrop": "assets/rooms/guest_centaur/R1/backdrop.png",
+        "back_decor": "assets/rooms/guest_centaur/R1/back_decor.png",
+        "furniture_back": "assets/rooms/guest_centaur/R1/furniture_back.png"
+      },
+      "stations": [
         {
           "id": "centaur_talk",
           "x": 0.1,
@@ -49,9 +37,7 @@
           "pose_hint": "TALK",
           "activity": "conversation",
           "furniture_id": "ROOM_FLOOR",
-          "approach_local_z": 0.95,
-          "occupancy_capacity": 1,
-          "provisional_due_to_unbound_sprite_scale": true
+          "occupancy_capacity": 1
         },
         {
           "id": "centaur_table_use",
@@ -61,747 +47,1022 @@
           "pose_hint": "USE",
           "activity": "object_use",
           "furniture_id": "centaur_table",
-       
-…[1 chars truncated — re-run with head/grep/tail for full output]…
- "media_holder_audio",
+          "occupancy_capacity": 1
+        },
+        {
+          "id": "centaur_rest",
+          "x": -1.15,
+          "z": -1.25,
+          "kind": "floor_rest",
+          "pose_hint": "SLEEP",
+          "activity": "rest",
+          "furniture_id": "centaur_rest_platform",
+          "occupancy_capacity": 1
+        }
+      ],
+      "conditional_hooks": [],
+      "identity_sha256": "2abcd9620fb249b37079235745516224bc39b46be6c4abec35fd69cd22fea47f",
+      "alpha_world_m": [
+        0.378516,
+        1.232031
+      ],
+      "door_clear_m": [
+        2.1,
+        2.45
+      ]
+    },
+    {
+      "room_key": "guest_vampire/R1",
+      "room_id": "guest_vampire_01",
+      "cell": [
+        6,
+        1
+      ],
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "display_name": "Вампирша",
+      "access_state": "open",
+      "layers": {
+        "backdrop": "assets/rooms/guest_vampire/R1/backdrop.png",
+        "back_decor": "assets/rooms/guest_vampire/R1/back_decor.png",
+        "furniture_back": "assets/rooms/guest_vampire/R1/furniture_back.png"
+      },
+      "stations": [
+        {
+          "id": "vampire_talk",
+          "x": 0.1,
+          "z": 0.55,
+          "kind": "standing",
+          "pose_hint": "TALK",
+          "activity": "conversation",
+          "furniture_id": "ROOM_FLOOR",
+          "occupancy_capacity": 1
+        },
+        {
+          "id": "vampire_daybed_rest",
+          "x": -1.28312,
+          "z": -1.25742,
+          "kind": "seat",
+          "pose_hint": "RELAXED_SIT",
+          "activity": "rest",
+          "furniture_id": "vampire_daybed",
+          "occupancy_capacity": 1
+        },
+        {
+          "id": "vampire_read",
+          "x": 1.25159,
+          "z": 0.11803,
+          "kind": "seat",
+          "pose_hint": "READ",
+          "activity": "reading",
+          "furniture_id": "vampire_chair",
+          "occupancy_capacity": 1
+        },
+        {
+          "id": "vampire_personal_item",
+          "x": 0.3,
+          "z": -0.87836,
+          "kind": "standing",
+          "pose_hint": "USE",
+          "activity": "personal_item",
+          "furniture_id": "vampire_nightstand",
+          "occupancy_capacity": 1
+        }
+      ],
+      "conditional_hooks": [],
+      "identity_sha256": "501284e9724441533d9cc34648c6956c564a1a097008f4e2b15bea6238f65fee",
+      "alpha_world_m": [
+        0.371094,
+        1.276563
+      ],
+      "door_clear_m": [
+        2.1,
+        2.45
+      ]
+    },
+    {
+      "room_key": "guest_miu/R1",
+      "room_id": "guest_miu_01",
+      "cell": [
+        6,
+        -1
+      ],
+      "actor_id": "NPC_GINGER_CAT_GUEST",
+      "display_name": "Миу",
+      "access_state": "open",
+      "layers": {
+        "backdrop": "assets/rooms/guest_miu/R1/backdrop.png",
+        "back_decor": "assets/rooms/guest_miu/R1/back_decor.png",
+        "furniture_back": "assets/rooms/guest_miu/R1/furniture_back.png"
+      },
+      "stations": [],
+      "conditional_hooks": [
+        {
+          "id": "miu_perch_hook",
+          "x": -1.35,
+          "z": -1.18,
+          "kind": "perch",
+          "activity": "perch_or_sit",
+          "source_furniture_id": "miu_perch",
+          "surface_height_m": 0.54826
+        },
+        {
+          "id": "miu_ottoman_hook",
+          "x": 0.55,
+          "z": -0.25,
+          "kind": "rest_surface",
+          "activity": "rest_or_sit",
+          "source_furniture_id": "miu_ottoman",
+          "surface_height_m": 0.41607
+        },
+        {
+          "id": "miu_bowl_hook",
+          "x": 1.55,
+          "z": -1.12,
+          "kind": "feed_drink",
+          "activity": "drink_or_feed",
+          "source_furniture_id": "miu_bowl"
+        },
+        {
+          "id": "miu_low_pad_hook",
+          "x": 0.15,
+          "z": -1.1,
+          "kind": "floor_rest",
+          "activity": "rest",
+          "source_furniture_id": "miu_low_pad"
+        }
+      ],
+      "identity_sha256": "5f3eb9dc8efef0c14a96de47887a099e9dec90d9cb0f14cb65162b5e66e05804",
+      "alpha_world_m": [
+        0.523242,
+        1.276563
+      ],
+      "door_clear_m": [
+        2.1,
+        2.45
+      ]
+    }
+  ],
+  "media_surfaces": [
+    {
+      "surface_id": "library.r1.book.left.01",
+      "room_id": "library",
+      "variant": "R1",
+      "kind": "book",
+      "category": "books",
+      "holder": "media_holder_book",
+      "position_m": [
+        -1.62,
+        1.25,
+        -1.49
+      ],
+      "label_m": [
+        -1.62,
+        0.88,
+        -1.5204
+      ],
+      "trigger_m": [
+        -1.62,
+        1.25,
+        -1.5242
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "library.r1.book.right.01",
+      "room_id": "library",
+      "variant": "R1",
+      "kind": "book",
+      "category": "books",
+      "holder": "media_holder_book",
+      "position_m": [
+        1.68,
+        1.25,
+        -1.51
+      ],
+      "label_m": [
+        1.68,
+        0.88,
+        -1.5404
+      ],
+      "trigger_m": [
+        1.68,
+        1.25,
+        -1.5442
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "library.r3.book.left.01",
+      "room_id": "library",
+      "variant": "R3",
+      "kind": "book",
+      "category": "books",
+      "holder": "media_holder_book",
+      "position_m": [
+        -6.05,
+        1.3,
+        -1.49
+      ],
+      "label_m": [
+        -6.05,
+        0.93,
+        -1.5204
+      ],
+      "trigger_m": [
+        -6.05,
+        1.3,
+        -1.5242
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "library.r3.book.mid.01",
+      "room_id": "library",
+      "variant": "R3",
+      "kind": "book",
+      "category": "books",
+      "holder": "media_holder_book",
+      "position_m": [
+        -1.65,
+        1.28,
+        -1.52
+      ],
+      "label_m": [
+        -1.65,
+        0.91,
+        -1.5504
+      ],
+      "trigger_m": [
+        -1.65,
+        1.28,
+        -1.5542
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "library.r3.book.right.01",
+      "room_id": "library",
+      "variant": "R3",
+      "kind": "book",
+      "category": "books",
+      "holder": "media_holder_book",
+      "position_m": [
+        4.95,
+        1.3,
+        -1.49
+      ],
+      "label_m": [
+        4.95,
+        0.93,
+        -1.5204
+      ],
+      "trigger_m": [
+        4.95,
+        1.3,
+        -1.5242
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r1.film.screen",
+      "room_id": "cinema",
+      "variant": "R1",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_screen",
+      "position_m": [
+        -0.15,
+        1.58,
+        -1.55
+      ],
+      "label_m": [
+        -0.15,
+        0.66,
+        -1.606
+      ],
+      "trigger_m": [
+        -0.15,
+        1.58,
+        -1.613
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r1.film.poster.01",
+      "room_id": "cinema",
+      "variant": "R1",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_poster",
+      "position_m": [
+        -2,
+        2.25,
+        -1.55
+      ],
+      "label_m": [
+        -2,
+        1.64,
+        -1.586
+      ],
+      "trigger_m": [
+        -2,
+        2.25,
+        -1.5905
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r1.film.poster.02",
+      "room_id": "cinema",
+      "variant": "R1",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_poster",
+      "position_m": [
+        1.92,
+        2.35,
+        -1.55
+      ],
+      "label_m": [
+        1.92,
+        1.74,
+        -1.586
+      ],
+      "trigger_m": [
+        1.92,
+        2.35,
+        -1.5905
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r2.film.screen",
+      "room_id": "cinema",
+      "variant": "R2",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_screen",
+      "position_m": [
+        -0.75,
+        1.58,
+        -1.55
+      ],
+      "label_m": [
+        -0.75,
+        0.66,
+        -1.606
+      ],
+      "trigger_m": [
+        -0.75,
+        1.58,
+        -1.613
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r2.film.poster.01",
+      "room_id": "cinema",
+      "variant": "R2",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_poster",
+      "position_m": [
+        -3.65,
+        1.72,
+        -1.55
+      ],
+      "label_m": [
+        -3.65,
+        1.11,
+        -1.586
+      ],
+      "trigger_m": [
+        -3.65,
+        1.72,
+        -1.5905
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r2.film.poster.02",
+      "room_id": "cinema",
+      "variant": "R2",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_poster",
+      "position_m": [
+        2,
+        2.25,
+        -1.55
+      ],
+      "label_m": [
+        2,
+        1.64,
+        -1.586
+      ],
+      "trigger_m": [
+        2,
+        2.25,
+        -1.5905
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r3.film.screen",
+      "room_id": "cinema",
+      "variant": "R3",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_screen",
+      "position_m": [
+        -1.35,
+        1.58,
+        -1.55
+      ],
+      "label_m": [
+        -1.35,
+        0.66,
+        -1.606
+      ],
+      "trigger_m": [
+        -1.35,
+        1.58,
+        -1.613
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r3.film.poster.01",
+      "room_id": "cinema",
+      "variant": "R3",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_poster",
+      "position_m": [
+        -6.12,
+        1.7,
+        -1.55
+      ],
+      "label_m": [
+        -6.12,
+        1.09,
+        -1.586
+      ],
+      "trigger_m": [
+        -6.12,
+        1.7,
+        -1.5905
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "cinema.r3.film.poster.02",
+      "room_id": "cinema",
+      "variant": "R3",
+      "kind": "film",
+      "category": "films",
+      "holder": "media_holder_film_poster",
+      "position_m": [
+        3.1,
+        2.25,
+        -1.55
+      ],
+      "label_m": [
+        3.1,
+        1.64,
+        -1.586
+      ],
+      "trigger_m": [
+        3.1,
+        2.25,
+        -1.5905
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "music.r1.audio.01",
+      "room_id": "music",
+      "variant": "R1",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
+      "position_m": [
+        -1.55,
+        1.28,
+        -1.55
+      ],
+      "label_m": [
+        -1.55,
+        0.9,
+        -1.5804
+      ],
+      "trigger_m": [
+        -1.55,
+        1.28,
+        -1.5842
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "music.r1.audio.02",
+      "room_id": "music",
+      "variant": "R1",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
+      "position_m": [
+        1.2,
+        1.28,
+        -1.55
+      ],
+      "label_m": [
+        1.2,
+        0.9,
+        -1.5804
+      ],
+      "trigger_m": [
+        1.2,
+        1.28,
+        -1.5842
+      ],
+      "station_id": null,
+      "placement_state": "READY_EXACT_TEEA006_FINAL",
+      "item_id": "RUNTIME_BIND_REQUIRED"
+    },
+    {
+      "surface_id": "music.r2.audio.01",
+      "room_id": "music",
+      "variant": "R2",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         -3.72,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          -3.72,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         -3.72,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         -3.72,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "music_r2_shelf_left",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "music.r2.audio.02",
       "room_id": "music",
       "variant": "R2",
-      "media_kind": "audio",
-      "runtime_category": "tracks",
-      "holder_asset_id": "media_holder_audio",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         0.7,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          0.7,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         0.7,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         0.7,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "music_r2_ukulele",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "music.r2.audio.03",
       "room_id": "music",
       "variant": "R2",
-      "media_kind": "audio",
-      "runtime_category": "tracks",
-      "holder_asset_id": "media_holder_audio",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         3.6,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          3.6,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         3.6,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         3.6,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "music_r2_audio_right",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "music.r3.audio.01",
       "room_id": "music",
       "variant": "R3",
-      "media_kind": "audio",
-      "runtime_category": "tracks",
-      "holder_asset_id": "media_holder_audio",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         -6.15,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          -6.15,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         -6.15,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         -6.15,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "music_r3_shelf_left",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "music.r3.audio.02",
       "room_id": "music",
       "variant": "R3",
-      "media_kind": "audio",
-      "runtime_category": "tracks",
-      "holder_asset_id": "media_holder_audio",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         -2.2,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          -2.2,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         -2.2,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         -2.2,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "TEEA006_music_rear_audio_zone",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "music.r3.audio.03",
       "room_id": "music",
       "variant": "R3",
-      "media_kind": "audio",
-      "runtime_category": "tracks",
-      "holder_asset_id": "media_holder_audio",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         1.1,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          1.1,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         1.1,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         1.1,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "music_r3_console",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "music.r3.audio.04",
       "room_id": "music",
       "variant": "R3",
-      "media_kind": "audio",
-      "runtime_category": "tracks",
-      "holder_asset_id": "media_holder_audio",
+      "kind": "audio",
+      "category": "tracks",
+      "holder": "media_holder_audio",
       "position_m": [
         5.72,
         1.28,
         -1.55
       ],
-      "hover_hit_area": {
-        "center": [
-          5.72,
-          1.28,
-          -1.56
-        ],
-        "size_m": [
-          0.45,
-          0.45,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         5.72,
         0.9,
         -1.5804
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         5.72,
         1.28,
         -1.5842
       ],
-      "source_visual_anchor": "music_r3_audio_right",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r1.label.01",
       "room_id": "artifact",
       "variant": "R1",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         -0.3,
         0.9,
         -0.27
       ],
-      "hover_hit_area": {
-        "center": [
-          -0.3,
-          0.9,
-          -0.28
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         -0.3,
         0.67,
         -0.2972
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         -0.3,
         0.9,
         -0.3006
       ],
-      "source_visual_anchor": "artifact_r1_pedestal",
       "station_id": "artifact_r1_pedestal_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r1.label.02",
       "room_id": "artifact",
       "variant": "R1",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         1.3,
         0.95,
         -1.105
       ],
-      "hover_hit_area": {
-        "center": [
-          1.3,
-          0.95,
-          -1.115
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         1.3,
         0.72,
         -1.1322
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         1.3,
         0.95,
         -1.1356
       ],
-      "source_visual_anchor": "artifact_r1_cabinet",
       "station_id": "artifact_r1_cabinet_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r2.label.01",
       "room_id": "artifact",
       "variant": "R2",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         -1.45,
         0.92,
         -0.405
       ],
-      "hover_hit_area": {
-        "center": [
-          -1.45,
-          0.92,
-          -0.415
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         -1.45,
         0.69,
         -0.4322
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         -1.45,
         0.92,
         -0.4356
       ],
-      "source_visual_anchor": "artifact_r2_pedestal_mid",
       "station_id": "artifact_r2_pedestal_mid_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r2.label.02",
       "room_id": "artifact",
       "variant": "R2",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         1.35,
         0.92,
         0.35
       ],
-      "hover_hit_area": {
-        "center": [
-          1.35,
-          0.92,
-          0.34
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         1.35,
         0.69,
         0.3228
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         1.35,
         0.92,
         0.3194
       ],
-      "source_visual_anchor": "artifact_r2_pedestal_front",
       "station_id": "artifact_r2_pedestal_front_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r2.label.03",
       "room_id": "artifact",
       "variant": "R2",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         3.25,
         0.95,
         -1.175
       ],
-      "hover_hit_area": {
-        "center": [
-          3.25,
-          0.95,
-          -1.185
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         3.25,
         0.72,
         -1.2022
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         3.25,
         0.95,
         -1.2056
       ],
-      "source_visual_anchor": "artifact_r2_cabinet",
       "station_id": "artifact_r2_cabinet_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r3.label.01",
       "room_id": "artifact",
       "variant": "R3",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         -2.85,
         0.94,
         -0.38
       ],
-      "hover_hit_area": {
-        "center": [
-          -2.85,
-          0.94,
-          -0.39
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         -2.85,
         0.71,
         -0.4072
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         -2.85,
         0.94,
         -0.4106
       ],
-      "source_visual_anchor": "artifact_r3_pedestal_mid",
       "station_id": "artifact_r3_pedestal_mid_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r3.label.02",
       "room_id": "artifact",
       "variant": "R3",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         0.35,
         0.95,
         -1.16
       ],
-      "hover_hit_area": {
-        "center": [
-          0.35,
-          0.95,
-          -1.17
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         0.35,
         0.72,
         -1.1872
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         0.35,
         0.95,
         -1.1906
       ],
-      "source_visual_anchor": "artifact_r3_cabinet_mid",
       "station_id": "artifact_r3_cabinet_mid_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r3.label.03",
       "room_id": "artifact",
       "variant": "R3",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         3.15,
         0.94,
         0.37
       ],
-      "hover_hit_area": {
-        "center": [
-          3.15,
-          0.94,
-          0.36
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         3.15,
         0.71,
         0.3428
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         3.15,
         0.94,
         0.3394
       ],
-      "source_visual_anchor": "artifact_r3_pedestal_front",
       "station_id": "artifact_r3_pedestal_front_view",
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     },
     {
       "surface_id": "artifact.r3.label.04",
       "room_id": "artifact",
       "variant": "R3",
-      "media_kind": "artifact",
-      "runtime_category": "artifacts",
-      "holder_asset_id": "media_holder_artifact",
+      "kind": "artifact",
+      "category": "artifacts",
+      "holder": "media_holder_artifact",
       "position_m": [
         5.25,
         0.58,
         0.3
       ],
-      "hover_hit_area": {
-        "center": [
-          5.25,
-          0.58,
-          0.29
-        ],
-        "size_m": [
-          0.32,
-          0.16,
-          0.05
-        ]
-      },
-      "label_anchor_m": [
+      "label_m": [
         5.25,
         0.35,
         0.2728
       ],
-      "fullscreen_anchor_m": [
+      "trigger_m": [
         5.25,
         0.58,
         0.2694
       ],
-      "source_visual_anchor": "artifact_r3_chest",
       "station_id": null,
       "placement_state": "READY_EXACT_TEEA006_FINAL",
-      "runtime_item_id": "RUNTIME_BIND_REQUIRED",
-      "runtime_display_name": "RUNTIME_BIND_REQUIRED"
+      "item_id": "RUNTIME_BIND_REQUIRED"
     }
   ],
-  "cinema_game_corner": {
-    "schema": 1,
-    "room_id": "cinema",
-    "separate_from_main_screen": true,
-    "assets": [
-      "Television_01",
-      "gaming_console",
-      "gamepad"
-    ],
-    "variants": {
-      "R1": {
-        "zone_center_m": [
-          1.55,
-          0.78,
-          -1.05
-        ],
-        "state": "TEEA006_INTEGRATION_REQUIRED"
-      },
-      "R2": {
-        "zone_center_m": [
-          3.65,
-          0.78,
-          -1.05
-        ],
-        "state": "TEEA006_INTEGRATION_REQUIRED"
-      },
-      "R3": {
-        "zone_center_m": [
-          5.9,
-          0.78,
-          -1.05
-        ],
-        "state": "TEEA006_INTEGRATION_REQUIRED"
-      }
-    },
-    "rule": "TV/console/gamepad is a distinct gameplay corner and must not replace the primary film screen."
-  },
   "common_r2": {
-    "mode": "NON_DESTRUCTIVE_CANDIDATE_REPLACEMENT",
-    "new_furniture": [
+    "stations": [
       {
-        "id": "common_r2_sofa_rest_007",
-        "asset": "Sofa_01",
-        "transform": {
-          "x": 2.0,
-          "z": -0.14610654,
-          "scale": 0.9
-        },
-        "collision_footprint": [
-          [
-            1.292839527130127,
-            -0.4422130584716797
-          ],
-          [
-            2.707160472869873,
-            -0.4422130584716797
-          ],
-          [
-            2.707160472869873,
-            0.14999999105930328
-          ],
-          [
-            1.292839527130127,
-            0.14999999105930328
-          ]
-        ],
-        "station": {
-          "id": "common_r2_sofa_rest_007_seat",
-          "x": 1.9942317303855353,
-          "z": -0.08794529444486561,
-          "seat_height_m": 0.3339755652316426,
-          "kind": "seat",
-          "pose_hint": "RELAXED_SIT",
-          "activity": "rest",
-          "approach_local_z": 0.95,
-          "occupancy_capacity": 1
-        }
+        "id": "common_r2_sofa_rest_007_seat",
+        "x": 1.9942317303855353,
+        "z": -0.08794529444486561,
+        "seat_height_m": 0.3339755652316426,
+        "kind": "seat",
+        "pose_hint": "RELAXED_SIT",
+        "activity": "rest",
+        "approach_local_z": 0.95,
+        "occupancy_capacity": 1
       },
       {
-        "id": "common_r2_fur_rest_007",
-        "asset": "dragon_fur_rest_mat",
-        "transform": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.32
-        },
-        "soft_floor": true,
-        "rigid_collision": false,
-        "station": {
-          "id": "common_r2_fur_rest_007_station",
-          "x": 0.0,
-          "z": 0.32,
-          "kind": "floor_rest",
-          "pose_hint": "SLEEP",
-          "activity": "rest",
-          "approach_local_z": 0.95,
-          "occupancy_capacity": 1
-        }
+        "id": "common_r2_fur_rest_007_station",
+        "x": 0,
+        "z": 0.32,
+        "kind": "floor_rest",
+        "pose_hint": "SLEEP",
+        "activity": "rest",
+        "approach_local_z": 0.95,
+        "occupancy_capacity": 1
       }
     ],
-    "object_slots": [
+    "mug_slots": [
       {
         "slot_id": "common_r2_mug_slot_a",
-        "asset_family": "DRAGON_MUG",
         "position_m": [
           -0.48,
           0.84,
@@ -812,12 +1073,10 @@
           "filled"
         ],
         "ambient_pickup_allowed": true,
-        "default_spawn_policy": "SPARSE_OPTIONAL",
-        "note": "Tabletop slot; do not require a mug in every scene."
+        "default_spawn_policy": "SPARSE_OPTIONAL"
       },
       {
         "slot_id": "common_r2_mug_slot_b",
-        "asset_family": "DRAGON_MUG",
         "position_m": [
           0.48,
           0.84,
@@ -828,23 +1087,15 @@
           "filled"
         ],
         "ambient_pickup_allowed": true,
-        "default_spawn_policy": "SPARSE_OPTIONAL",
-        "note": "Second optional table slot; drinks/glassware must not become wallpaper."
+        "default_spawn_policy": "SPARSE_OPTIONAL"
       }
-    ],
-    "qa": {
-      "geometry_pass": true,
-      "foreign_collision_overlaps": [],
-      "blocks_existing_station_approaches": [],
-      "sofa_approach_hits": [],
-      "minimum_station_pair_distance_m": 1.1792370414806346
-    }
+    ]
   },
   "rules": {
-    "guest_room_ids": "PROPOSED_UNTIL_INTEGRATOR_REGISTERS",
-    "media_content": "RUNTIME_ONLY",
-    "miu_form_binding": "SPECIES_CONDITIONAL_HOOKS_ONLY",
-    "mug_spawn": "SPARSE_OPTIONAL",
+    "guest_ids": "PROPOSED_UNTIL_INTEGRATOR_REGISTERS",
+    "media": "RUNTIME_ONLY",
+    "miu": "CONDITIONAL_HOOKS_ONLY",
+    "mugs": "SPARSE_OPTIONAL",
     "technical_access_is_not_consent": true
   }
 }
