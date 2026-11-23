@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "policy": "Owner-public door metadata only. No room placement is implied by an entry.",
+  "doors": {
+    "RES_08": {
+      "chosen_name": "",
+      "title": "Архитектор Сестринства",
+      "handle": "",
+      "chat_label": "",
+      "owner_public_note": true,
+      "note_path": "res://data/door_notes/RES_08/00_ДВЕРЬ.md",
+      "provenance": "Owner-authored public door note, 2026-09-28",
+      "room_assignment": null
+    }
+  }
+}
