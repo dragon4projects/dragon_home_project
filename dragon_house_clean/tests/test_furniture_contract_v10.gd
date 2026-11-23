@@ -79,10 +79,19 @@ func run() -> void:
 		# Since v0.19 semantic LOD, numeric zoom inside HOUSE/LEVEL never
 		# materializes rich furniture. The visible-furniture contract belongs
 		# to ROOM/FOLLOW detail, so inspect each public room in ROOM mode.
+		#
+		# _release_furniture() uses queue_free(). A real user transition always
+		# crosses a frame boundary; this QA loop must do the same before asking
+		# the same group to materialize another ROOM detail set.
+		scene.set_mode("HOUSE")
+		scene.update_render_lod()
+		await process_frame
 		scene.selected_room=str(room["id"])
 		scene.set_mode("ROOM")
 		scene.zoom_current=scene.zoom
 		scene.smooth_focus=Vector3(float(room["x"])*scene.W,float(room["level"])*scene.H+1.45,0)
+		scene.update_render_lod()
+		await process_frame
 		scene.update_render_lod()
 		var group: Dictionary=scene.world.merged_group(int(room["x"]),int(room["level"]))
 		var visual:Node3D=scene.room_root.get_node(group["primary_id"])
