@@ -20,7 +20,7 @@ func _cleanup(path: String) -> void:
 func run() -> void:
 	var path := "user://object_event_snapshot_to_sqlite_v021.json"
 	_cleanup(path)
-	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 
 	# Build a pre-event-strangler compatibility snapshot: object state exists,
 	# but there is no canonical v0.20 event file yet.
@@ -54,7 +54,7 @@ func run() -> void:
 	assert(not FileAccess.file_exists(path+".world_events_v1.json"))
 	var snapshot_sha := FileAccess.get_sha256(path)
 
-	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","sqlite")
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	var migrated := World.new()
 	migrated.save_path = path
 	migrated.load_or_seed()
