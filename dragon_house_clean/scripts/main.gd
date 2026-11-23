@@ -4,6 +4,7 @@ extends Node3D
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
+const ContentViewerScript = preload("res://scripts/content_viewer.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
@@ -28,6 +29,11 @@ var actor_animations: Dictionary = {}
 var camera: Camera3D
 var room_root: Node3D
 var actor_root: Node3D
+var creature_root: Node3D
+var creature_nodes: Dictionary = {}
+var creature_labels: Dictionary = {}
+var object_root: Node3D
+var object_nodes: Dictionary = {}
 var actor_sprites: Dictionary = {}
 var actor_labels: Dictionary = {}
 var door_note_anchors: Dictionary = {}
@@ -64,6 +70,9 @@ var notice: Label
 var menu: OptionButton
 var catalog_picker: FileDialog
 var media_panel: PanelContainer
+var content_viewer: PanelContainer
+var content_hover_label: Label
+var content_hotspots: Array = []
 var bank_gallery: PanelContainer
 var door_note_panel: PanelContainer
 var door_note_title: Label
@@ -83,7 +92,7 @@ var room_names := {
 	"common": "Гостиная", "study": "Кабинет",
 	"rest": "Комната отдыха", "library": "Библиотека",
 	"cinema": "Фильмотека", "music": "Аудиотека",
-	"workshop": "Мастерская", "private": "Личная дверь",
+	"workshop": "Мастерская", "private": "Личная дверь", "guest": "Гостевая",
 	"lift": "Подъёмник", "artifact": "Артефакты"
 }
 
@@ -133,9 +142,17 @@ func _ready() -> void:
 	actor_root = Node3D.new()
 	actor_root.name = "Residents"
 	add_child(actor_root)
+	creature_root = Node3D.new()
+	creature_root.name = "AmbientCreatures"
+	add_child(creature_root)
+	object_root = Node3D.new()
+	object_root.name = "PhysicalObjects"
+	add_child(object_root)
 	make_rooms()
 	make_residents()
 	build_interface()
+	make_creatures()
+	make_physical_objects()
 	fit_house_camera()
 	smooth_focus = desired_focus
 	zoom_current = zoom
@@ -544,9 +561,15 @@ func _release_room_art(group_node: Node3D) -> void:
 	if stage!=null:
 		stage.visible=true
 
+func _group_facade_only(group: Dictionary) -> bool:
+	var cells: Array = group.get("cells",[])
+	if cells.is_empty():
+		return false
+	return not world.public_cutaway_allowed(cells[0])
+
 func _populate_furniture(group_node: Node3D) -> void:
 	var group: Dictionary = visual_room_groups.get(group_node.name,{})
-	if group.is_empty() or str(group.get("type","")) == "private":
+	if group.is_empty() or _group_facade_only(group):
 		return
 	var decoration_layer: Node3D = group_node.get_node_or_null("LocalFurniture")
 	if decoration_layer == null or detailed_room_groups.has(group_node.name):
@@ -599,6 +622,7 @@ func make_room(group: Dictionary) -> void:
 	room_root.add_child(n)
 	visual_room_groups[n.name] = group
 	var t: String = group["type"]
+	var facade_only := _group_facade_only(group)
 	var accepted: Array=interior_skin.validated_layers(t,int(group["width"]))
 	visual_room_groups[n.name]["has_art"] = not accepted.is_empty()
 	visual_room_groups[n.name]["replaces_furniture"] = accepted.any(
@@ -624,13 +648,13 @@ func make_room(group: Dictionary) -> void:
 	var floor_slab:=box(structure,Vector3(0,-0.055,-0.33),
 		Vector3(span*1.01,0.10,3.34),palette["floor"])
 	floor_slab.name="CutawayFloorSlab"
-	if t != "private":
+	if not facade_only:
 		var cutaway_depth:=Node3D.new()
 		cutaway_depth.name="Stage_CutawayDepth"
 		structure.add_child(cutaway_depth)
 		add_cutaway_depth(cutaway_depth,group)
 	box(background,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
-	if t != "private":
+	if not facade_only:
 		var rear_stage := Node3D.new()
 		rear_stage.name = "Stage_Backwall"
 		background.add_child(rear_stage)
@@ -665,21 +689,22 @@ func make_room(group: Dictionary) -> void:
 			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
 			box(structure,Vector3(seam_x,2.99,-0.66),
 				Vector3(0.07,0.18,2.30),palette["rock_light"])
-	if t != "private":
+	if not facade_only:
 		var overview := Node3D.new()
 		overview.name = "Layer_OverviewCues"
 		n.add_child(overview)
 		add_room_overview_cues(overview,group)
-	if t == "private":
-		# Never materialize someone else's private interior: facade only.
+	if facade_only:
+		# Private/closed-guest interiors are facade-only; no hidden room is materialized.
 		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
 		box(n,Vector3(0.82,1.33,1.2),Vector3(0.12,0.12,0.07),palette["bronze"])
 		var private_room:Dictionary=group["cells"][0]
 		var owner_id:String=str(private_room.get("owner_id",""))
-		var sign:String=door_registry.sign_text(owner_id,world.read_resident_profiles())
+		var sign:String=str(private_room.get("display_name","Гостевая")) if t=="guest" else \
+			door_registry.sign_text(owner_id,world.read_resident_profiles())
 		var door_label := label3(n,sign,Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
 		door_label.name = "RoomRoofLabel"
-		if door_registry.has_public_note(owner_id):
+		if t=="private" and door_registry.has_public_note(owner_id):
 			# Public framed note is a clickable threshold object, never interior access.
 			box(n,Vector3(-0.58,1.67,1.19),Vector3(0.52,0.70,0.055),palette["bronze"])
 			box(n,Vector3(-0.58,1.67,1.225),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
@@ -733,6 +758,135 @@ func make_sprite_texture(is_manka: bool) -> Texture2D:
 					color = Color("#713a4e")
 				img.set_pixel(px, py, color)
 	return ImageTexture.create_from_image(img)
+
+func make_creatures() -> void:
+	if creature_root == null:
+		return
+	for child in creature_root.get_children():
+		child.queue_free()
+	creature_nodes.clear()
+	creature_labels.clear()
+	var placeholder := make_sprite_texture(true)
+	for creature_id in world.creatures:
+		var creature: Dictionary = world.creatures[creature_id]
+		if not bool(creature.get("active",false)):
+			continue
+		var anchor := Node3D.new()
+		anchor.name = str(creature_id)
+		creature_root.add_child(anchor)
+		var sprite := Sprite3D.new()
+		sprite.name = "Body"
+		sprite.texture = placeholder
+		sprite.pixel_size = 0.0055
+		sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+		sprite.position.y = 0.38
+		anchor.add_child(sprite)
+		var label := label3(anchor,world.creature_display_label(str(creature_id)),
+			Vector3(0,0.92,0.15),21,Color("#ead8bf"))
+		label.visible = false
+		creature_nodes[str(creature_id)] = anchor
+		creature_labels[str(creature_id)] = label
+	update_creatures()
+
+func update_creatures() -> void:
+	var active_count := 0
+	for creature_id in world.creatures:
+		if bool(world.creatures[creature_id].get("active",false)):
+			active_count += 1
+	if active_count != creature_nodes.size():
+		make_creatures()
+		return
+	for creature_id in creature_nodes:
+		var creature: Dictionary = world.creatures.get(creature_id,{})
+		var anchor: Node3D = creature_nodes[creature_id]
+		if creature.is_empty() or not bool(creature.get("active",false)):
+			anchor.visible = false
+			continue
+		anchor.visible = true
+		var y := float(creature.get("visual_y",
+			float(creature.get("level",0))*H))
+		anchor.position = Vector3(
+			float(creature.get("x",0.0)),y,float(creature.get("z",0.25)))
+		var label: Label3D = creature_labels.get(creature_id)
+		if label != null:
+			label.text = world.creature_display_label(creature_id)
+			var owner_id := str(creature.get("owner_id",""))
+			# Owner labels are evidence-driven and shown only close enough to read.
+			label.visible = owner_id != "" and zoom_current < 26.0
+
+func _object_offset(object_id: String) -> Vector3:
+	var code := 0
+	for i in range(object_id.length()):
+		code = (code * 33 + object_id.unicode_at(i)) & 0x7fffffff
+	var ox := (float(code % 7) - 3.0) * 0.16
+	var oz := (float(int(code / 7) % 5) - 2.0) * 0.12
+	return Vector3(ox,0.0,oz)
+
+func make_physical_objects() -> void:
+	if object_root == null:
+		return
+	for child in object_root.get_children():
+		child.queue_free()
+	object_nodes.clear()
+	clear_content_hotspots()
+	for object_id in world.objects:
+		var object: Dictionary = world.objects[object_id]
+		var anchor := Node3D.new()
+		anchor.name = "Object_" + str(object_id)
+		object_root.add_child(anchor)
+		var asset_id := str(object.get("asset_id",""))
+		var texture: Texture2D = asset_banks.prop_display_texture(asset_id) if asset_id != "" else null
+		if texture != null:
+			var sprite := Sprite3D.new()
+			sprite.name = "Visual"
+			sprite.texture = texture
+			sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+			sprite.pixel_size = 0.48 / maxf(1.0,float(texture.get_height()))
+			sprite.position.y = 0.28
+			anchor.add_child(sprite)
+		else:
+			var marker := box(anchor,Vector3(0,0.12,0),Vector3(0.22,0.22,0.22),palette["bronze"])
+			marker.name = "VisualFallback"
+		object_nodes[str(object_id)] = anchor
+		register_content_hotspot(anchor,
+			str(object.get("viewer_category","artifacts")),str(object_id),
+			str(object.get("display_name",object_id)))
+	update_physical_objects()
+
+func update_physical_objects() -> void:
+	for object_id in object_nodes:
+		var anchor: Node3D = object_nodes[object_id]
+		var object: Dictionary = world.physical_object(str(object_id))
+		if object.is_empty():
+			anchor.visible = false
+			continue
+		var holder_id := str(object.get("current_holder_id",""))
+		if holder_id != "":
+			var holder: Dictionary = world._physical_actor(holder_id)
+			if holder.is_empty():
+				anchor.visible = false
+				continue
+			anchor.visible = true
+			anchor.position = Vector3(
+				float(holder.get("x",0.0)),
+				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
+				float(holder.get("z",0.25))+0.18) + _object_offset(str(object_id))*0.25
+			continue
+		if str(object.get("state","")) == "STASHED":
+			# Hidden means hidden: the canonical location remains in world state,
+			# but the normal renderer and hover hit-test expose no visible copy.
+			anchor.visible = false
+			continue
+		var room_id := str(object.get("current_room_id",""))
+		var room: Dictionary = world.room_by_id(room_id)
+		if room.is_empty() or str(room.get("privacy","public")) != "public":
+			anchor.visible = false
+			continue
+		anchor.visible = true
+		anchor.position = Vector3(
+			float(room["x"])*W,
+			float(room["level"])*H+0.22,
+			0.72) + _object_offset(str(object_id))
 
 func make_residents() -> void:
 	var resident_tex := make_sprite_texture(false)
@@ -948,9 +1102,12 @@ func build_interface() -> void:
 	media_button.text = "Открыть библиотеку / медиа [M]"
 	media_button.pressed.connect(toggle_media_panel)
 	hud_main_body.add_child(media_button)
+	content_viewer = ContentViewerScript.new()
+	root.add_child(content_viewer)
+	content_viewer.bind(life.media_runtime)
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
-	media_panel.bind(world,life.media_runtime)
+	media_panel.bind(world,life.media_runtime,content_viewer)
 	bank_gallery = BankGalleryScript.new()
 	root.add_child(bank_gallery)
 	bank_gallery.bind(asset_banks,world.read_resident_profiles())
@@ -991,6 +1148,11 @@ func build_interface() -> void:
 	notice.position = Vector2(18, 690)
 	notice.add_theme_color_override("font_color", Color("#eac59d"))
 	root.add_child(notice)
+	content_hover_label = Label.new()
+	content_hover_label.visible = false
+	content_hover_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content_hover_label.add_theme_color_override("font_color",Color("#f4ddc4"))
+	root.add_child(content_hover_label)
 	catalog_picker = FileDialog.new()
 	catalog_picker.access = FileDialog.ACCESS_FILESYSTEM
 	catalog_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
@@ -1030,6 +1192,62 @@ func build_interface() -> void:
 	door_note_text.custom_minimum_size=Vector2(640,520)
 	door_col.add_child(door_note_text)
 	update_hud()
+
+func register_content_hotspot(anchor: Node3D, category: String,
+		item_id: String, display_name: String) -> void:
+	if anchor == null or category == "" or item_id == "":
+		return
+	content_hotspots.append({
+		"anchor":anchor, "category":category,
+		"item_id":item_id, "display_name":display_name
+	})
+
+func clear_content_hotspots() -> void:
+	content_hotspots.clear()
+	if content_hover_label != null:
+		content_hover_label.visible = false
+
+func content_hotspot_at_screen(point: Vector2) -> Dictionary:
+	if camera == null:
+		return {}
+	var best := 42.0
+	var found: Dictionary = {}
+	for entry in content_hotspots:
+		var anchor = entry.get("anchor")
+		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree():
+			continue
+		if camera.is_position_behind(anchor.global_position):
+			continue
+		var screen := camera.unproject_position(anchor.global_position)
+		var distance := screen.distance_to(point)
+		if distance < best:
+			best = distance
+			found = entry
+	return found
+
+func open_content_hotspot(entry: Dictionary) -> bool:
+	if entry.is_empty() or content_viewer == null:
+		return false
+	var category := str(entry.get("category",""))
+	var item_id := str(entry.get("item_id",""))
+	var record: Dictionary = {}
+	if category in ["books","films","tracks"]:
+		record = life.media_runtime._lookup(category,item_id)
+	elif category == "artifacts":
+		record = world.physical_object(item_id)
+	if record.is_empty():
+		return false
+	return content_viewer.open_record(category,record)
+
+func update_content_hover(point: Vector2) -> void:
+	if content_hover_label == null or content_viewer == null or content_viewer.visible:
+		return
+	var entry := content_hotspot_at_screen(point)
+	content_hover_label.visible = not entry.is_empty()
+	if entry.is_empty():
+		return
+	content_hover_label.text = str(entry.get("display_name",entry.get("item_id","")))
+	content_hover_label.position = point + Vector2(14,12)
 
 func close_door_note()->void:
 	if door_note_panel!=null:
@@ -1109,11 +1327,55 @@ func toggle_journal() -> void:
 	if journal_open:
 		update_journal()
 
+func _world_journal_line(entry: Dictionary) -> String:
+	var event_name: String = str(entry.get("event",""))
+	var actor_id: String = str(entry.get("actor_id",""))
+	var subject_id: String = str(entry.get("subject_id",""))
+	var actor_name: String = actor_id
+	if world.residents.has(actor_id):
+		actor_name = str(world.residents[actor_id].get("name",actor_id))
+	elif world.creatures.has(actor_id):
+		actor_name = str(world.creatures[actor_id].get("name",actor_id))
+	var subject_name: String = subject_id
+	var object: Dictionary = world.physical_object(subject_id)
+	if not object.is_empty():
+		subject_name = str(object.get("display_name",subject_id))
+	match event_name:
+		"CREATURE_ROAMED":
+			return "%s — перемещение: %s → %s" % [
+				actor_name,str(entry.get("from","")),str(entry.get("to",""))]
+		"CREATURE_ACCESS_REJECTED":
+			return "%s — доступ отклонён: %s" % [
+				actor_name,str(entry.get("to",""))]
+		"OBJECT_PICKED_UP":
+			return "%s — переносит: %s" % [actor_name,subject_name]
+		"OBJECT_STASHED":
+			return "%s — прячет: %s" % [actor_name,subject_name]
+		"OBJECT_LOST_FOUND":
+			return "Дом нашёл: %s" % subject_name
+		"OBJECT_RESTORED_HOME":
+			return "На место возвращено: %s" % subject_name
+		"GUEST_REGISTERED":
+			return "Гостья в Доме: %s" % actor_name
+		"CREATURE_REGISTERED":
+			return "В Доме появилась живность: %s" % actor_name
+		_:
+			if event_name.begins_with("OBJECT_"):
+				return "%s · %s" % [subject_name,event_name.trim_prefix("OBJECT_").to_lower()]
+			return "%s · %s" % [actor_name,event_name]
+
 func update_journal() -> void:
 	if journal_text == null:
 		return
-	var last: Array = life.log.slice(maxi(0, life.log.size() - 11))
-	journal_text.text = "ЖУРНАЛ ДОМА\n\n" + "\n".join(last)
+	var lines: Array[String] = []
+	for message in life.log.slice(maxi(0, life.log.size() - 6)):
+		lines.append(str(message))
+	for entry in world.journal_entries(8):
+		if typeof(entry) == TYPE_DICTIONARY:
+			lines.append(_world_journal_line(entry))
+	if lines.size() > 14:
+		lines = lines.slice(lines.size()-14,lines.size())
+	journal_text.text = "ЖУРНАЛ ДОМА\n\n" + "\n".join(lines)
 
 func camera_world_bounds() -> Rect2:
 	var lo := Vector2(99999,99999)
@@ -1268,7 +1530,7 @@ func update_hud() -> void:
 			hud_status.text += "\n%s  R%d  |  уровень %d" % [
 				room_names.get(r["type"],r["type"]),merged,int(r["level"])]
 			var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
-			if r.get("privacy","public") == "public":
+			if world.public_cutaway_allowed(r):
 				var occupied := 0
 				var capacity := 0
 				for cell in group.get("cells",[]):
@@ -1320,6 +1582,8 @@ func _input(event: InputEvent) -> void:
 			moving_view = e.pressed
 	if event is InputEventMouseMotion:
 		var e: InputEventMouseMotion = event
+		if not moving_view and not build_mode:
+			update_content_hover(e.position)
 		if moving_view and not build_mode:
 			follow_id = "" # moving away manually cancels Follow
 			current_mode = "FREE"
@@ -1336,6 +1600,9 @@ func _input(event: InputEvent) -> void:
 				var preview_mat: StandardMaterial3D = build_marker.material_override
 				preview_mat.albedo_color = Color(0.22,0.90,0.55,0.28) if permitted else Color(0.82,0.23,0.26,0.28)
 	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode==KEY_ESCAPE and content_viewer!=null and content_viewer.visible:
+			content_viewer.close_viewer()
+			return
 		if event.keycode==KEY_ESCAPE and door_note_panel!=null and door_note_panel.visible:
 			close_door_note()
 			return
@@ -1359,6 +1626,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if e.button_index != MOUSE_BUTTON_LEFT or not e.pressed:
 			return
 		if door_note_panel!=null and door_note_panel.visible:
+			return
+		if content_viewer!=null and content_viewer.visible:
+			return
+		var content_entry:Dictionary=content_hotspot_at_screen(e.position)
+		if not content_entry.is_empty() and open_content_hotspot(content_entry):
 			return
 		var note_room_id:String=door_note_at_screen(e.position)
 		if note_room_id!="":
@@ -1396,8 +1668,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			var room: Dictionary = world.get_room(roundi(hit.x / W), roundi(hit.y / H))
 			if not room.is_empty():
 				selected_room = room["id"]
-				if room["privacy"] == "door_only":
-					notice.text = "Личная территория: камера остаётся у двери"
+				if not world.public_cutaway_allowed(room):
+					notice.text = "Закрытая территория: камера остаётся у двери"
 				else:
 					notice.text = room_names.get(room["type"], room["type"])
 				set_mode("ROOM")
@@ -1487,6 +1759,8 @@ func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
 	life.tick(delta)
 	update_residents(delta)
+	update_creatures()
+	update_physical_objects()
 	apply_camera(delta)
 	save_timer += delta
 	if save_timer > 20.0:
