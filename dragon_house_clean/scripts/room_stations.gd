@@ -1,5 +1,7 @@
 extends RefCounted
 const InteractionAnchors = preload("res://scripts/interaction_anchor_registry.gd")
+const REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
+const REVIEW_FURNITURE := "res://data/integration_candidates/furniture_interactions_iter1_review.json"
 ## Explicit, deterministic local station reservations. No AI/external dependency.
 ## Reservations live on actor state so save/load can reconstruct occupancy.
 ## PRIVATE rooms are never public station pools.
@@ -14,8 +16,11 @@ const FRONT_Z := 0.51
 var furniture = InteractionAnchors.new()
 
 func _init() -> void:
-	if not furniture.initialize():
+	var selected := REVIEW_FURNITURE if FileAccess.file_exists(REVIEW_MARKER) else InteractionAnchors.DEFAULT_PATH
+	if not furniture.initialize(selected):
 		push_warning("Interaction anchor manifest unavailable: "+furniture.last_error)
+		if selected != InteractionAnchors.DEFAULT_PATH:
+			furniture.initialize(InteractionAnchors.DEFAULT_PATH)
 
 func capacity(room: Dictionary) -> int:
 	if room.is_empty():
