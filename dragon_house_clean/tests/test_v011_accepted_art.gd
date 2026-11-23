@@ -32,6 +32,13 @@ func run()->void:
 		"common_chair_left_seat_a"))
 	assert(_ids(scene.life.stations.furniture.for_room(scene.world.get_room(-3,0)))==[
 		"study_chair_work"])
+	# Library art accepted by owner is R2-only. The seeded house still has a
+	# single Library R1, so its live interaction contract must remain the
+	# procedural TABLE_LIBRARY pair until a real R2 merge exists.
+	var library_r1=scene.world.get_room(2,0)
+	assert(int(scene.world.merged_group(2,0)["width"])==1)
+	assert(_ids(scene.life.stations.furniture.for_room(library_r1))==[
+		"table_left","table_right"])
 	assert(_ids(scene.life.stations.furniture.for_room(scene.world.get_room(1,0)))==[
 		"rest_sofa_seat_a","rest_sofa_seat_b","rest_lounge_seat_a"])
 
