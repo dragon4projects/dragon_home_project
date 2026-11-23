@@ -18,8 +18,14 @@ var last_error: String = ""
 var event_nonce: int = 0
 
 func _select_store() -> void:
-	var requested := OS.get_environment("DRAGON_OBJECT_EVENT_BACKEND").strip_edges().to_lower()
-	if requested == "sqlite":
+	var requested: String = OS.get_environment(
+		"DRAGON_OBJECT_EVENT_BACKEND").strip_edges().to_lower()
+	var sqlite_path := str(world.save_path)+".world_events_v1.sqlite"
+	var saved_backend := str(world.runtime_state.get("object_event_backend",""))
+	var sticky_sqlite := FileAccess.file_exists(sqlite_path) or 		saved_backend.begins_with("sqlite_")
+	# Explicit env is a QA/operator override. Without it, an existing SQLite
+	# canonical store is sticky: never silently fall back to a stale JSON stream.
+	if requested == "sqlite" or (requested == "" and sticky_sqlite):
 		store = SQLiteEventStore.new()
 		backend_requested = "sqlite"
 	else:
