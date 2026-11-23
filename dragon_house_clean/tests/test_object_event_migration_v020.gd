@@ -31,6 +31,7 @@ func _has_event(entries: Array, event_name: String) -> bool:
 func run() -> void:
 	var path := "user://object_event_migration_v020.json"
 	_cleanup(path)
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 
 	# Create a true pre-v0.20 compatibility snapshot by writing objects directly.
 	var legacy := World.new()
@@ -114,6 +115,7 @@ func run() -> void:
 	assert(not fail_closed.set_object_ambient_protection("LEGACY_OBJECT",false))
 	assert(fail_closed.object_event_revision()==revision_before)
 
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
 	print("OBJECT_EVENT_MIGRATION_V020_PASS json=migrated history=preserved backup=replayed journal=canonical corrupt=quarantined double_corrupt=fail_closed")
 	quit(0)
