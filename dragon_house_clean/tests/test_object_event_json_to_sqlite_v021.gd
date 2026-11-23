@@ -27,7 +27,7 @@ func _event_identity(events: Array) -> Array:
 func run() -> void:
 	var path := "user://object_event_json_to_sqlite_v021.json"
 	_cleanup(path)
-	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 
 	# Build a genuine accepted v0.20 JSON canonical stream.
 	var legacy := World.new()
@@ -57,7 +57,7 @@ func run() -> void:
 
 	# Opt in to SQLite on the same persisted House. Migration must preserve the
 	# old stream byte-for-byte while importing canonical identity/order.
-	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","sqlite")
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	var migrated := World.new()
 	migrated.save_path = path
 	migrated.load_or_seed()
