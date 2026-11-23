@@ -19,11 +19,16 @@ func run()->void:
 	}
 	assert(scene.desired_actor_animation(work_wrong_kind)=="IDLE_S")
 
-	var talk={
+	var seated_talk={
 		"phase":"perform","intent":"TALK_PAIR",
 		"station_kind":"seat","station_pose_hint":"TALK"
 	}
-	assert(scene.desired_actor_animation(talk)=="TALK")
+	assert(scene.desired_actor_animation(seated_talk)=="RELAXED_SIT")
+	var standing_talk={
+		"phase":"perform","intent":"TALK_PAIR",
+		"station_kind":"standing","station_pose_hint":"TALK"
+	}
+	assert(scene.desired_actor_animation(standing_talk)=="TALK")
 
 	var floor_sleep={
 		"phase":"perform","intent":"REST",
@@ -31,5 +36,5 @@ func run()->void:
 	}
 	assert(scene.desired_actor_animation(floor_sleep)=="SLEEP")
 
-	print("AUTHORED_STATION_POSES_V016_PASS work=USE talk=TALK floor_rest=SLEEP unsafe_work=IDLE_S")
+	print("AUTHORED_STATION_POSES_V016_PASS work=USE seated_talk=RELAXED_SIT standing_talk=TALK floor_rest=SLEEP unsafe_work=IDLE_S")
 	quit(0)
