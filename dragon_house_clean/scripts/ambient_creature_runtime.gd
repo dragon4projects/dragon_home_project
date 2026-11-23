@@ -1,10 +1,12 @@
 extends RefCounted
+const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 ## Low-frequency ambient creature actions.
 ## This layer may move only explicit creature actors and explicit opt-in objects.
 ## It never opens private rooms, invents ownership, or duplicates an object identity.
 
 var world
 var rng := RandomNumberGenerator.new()
+var locomotion := RoomLocomotion.new()
 var max_actions_per_tick := 1
 const DECISION_MIN := 6.0
 const DECISION_MAX := 18.0
@@ -36,36 +38,115 @@ func public_neighbors(creature_id: String) -> Array:
 			out.append(candidate)
 	return out
 
-func roam_one_step(creature_id: String, target_room_id: String = "") -> bool:
+func _reject_target(creature_id: String, creature: Dictionary,
+		target_room_id: String) -> void:
+	var rejected: Dictionary = world.room_by_id(target_room_id)
+	if rejected.is_empty():
+		return
+	world._append_journal("CREATURE_ACCESS_REJECTED",creature_id,creature_id,
+		str(creature.get("room_id","")),target_room_id,
+		{"reason":"ROOM_NOT_ACCESSIBLE","privacy":str(rejected.get("privacy",""))})
+
+func begin_roam(creature_id: String, target_room_id: String = "") -> bool:
 	var creature: Dictionary = _creature(creature_id)
 	if creature.is_empty() or not bool(creature.get("active",false)):
 		return false
-	var candidates: Array = public_neighbors(creature_id)
-	if candidates.is_empty():
+	if str(creature.get("phase","idle")) == "travel":
 		return false
 	var target: Dictionary = {}
 	if target_room_id != "":
-		for candidate in candidates:
-			if str(candidate.get("id","")) == target_room_id:
+		target = world.room_by_id(target_room_id)
+		if target.is_empty() or str(target.get("privacy","public")) != "public":
+			_reject_target(creature_id,creature,target_room_id)
+			return false
+	else:
+		var candidates: Array = world.matching_rooms([
+			"arrival","corridor","common","study","rest","library",
+			"cinema","music","workshop","artifact","lift"
+		],"")
+		for room in candidates:
+			if str(room.get("id","")) != str(creature.get("room_id","")):
+				var route: Array = world.find_route(
+					str(creature.get("room_id","")),str(room.get("id","")),"")
+				if not route.is_empty():
+					candidates = candidates.filter(
+						func(candidate): return str(candidate.get("id","")) != str(creature.get("room_id","")))
+					break
+		if candidates.is_empty():
+			return false
+		# Try a bounded number of random public destinations until one has a route.
+		for _attempt in range(mini(8,candidates.size())):
+			var candidate: Dictionary = candidates[rng.randi_range(0,candidates.size()-1)]
+			var route: Array = world.find_route(
+				str(creature.get("room_id","")),str(candidate.get("id","")),"")
+			if not route.is_empty():
 				target = candidate
 				break
 		if target.is_empty():
-			var rejected: Dictionary = world.room_by_id(target_room_id)
-			if not rejected.is_empty():
-				world._append_journal("CREATURE_ACCESS_REJECTED",creature_id,creature_id,
-					str(creature.get("room_id","")),target_room_id,
-					{"reason":"ROOM_NOT_ACCESSIBLE","privacy":str(rejected.get("privacy",""))})
 			return false
-	else:
-		target = candidates[rng.randi_range(0,candidates.size()-1)]
-	var previous: String = str(creature.get("room_id",""))
-	creature["room_id"] = str(target["id"])
-	creature["x"] = float(target["x"]) * world.MODULE_W
-	creature["level"] = int(target["level"])
-	creature["z"] = 0.25
-	world._append_journal("CREATURE_ROAMED", creature_id, creature_id,
-		previous, str(target["id"]), {"carrying":str(creature.get("carried_object_id",""))})
+	var route: Array = world.find_route(
+		str(creature.get("room_id","")),str(target.get("id","")),"")
+	if route.is_empty():
+		if target_room_id != "":
+			_reject_target(creature_id,creature,target_room_id)
+		return false
+	var points: Array = locomotion.build_waypoints(
+		world,creature,route,"PURPOSEFUL_EXPLORE")
+	if points.is_empty():
+		return false
+	creature["waypoints"] = points
+	creature["waypoint_index"] = 0
+	creature["phase"] = "travel"
+	creature["route_target_room_id"] = str(target["id"])
+	creature["route_origin_room_id"] = str(creature.get("room_id",""))
 	return true
+
+func advance_travel(creature_id: String, delta: float) -> bool:
+	var creature: Dictionary = _creature(creature_id)
+	if creature.is_empty() or str(creature.get("phase","idle")) != "travel":
+		return false
+	var points: Array = creature.get("waypoints",[])
+	var index := int(creature.get("waypoint_index",0))
+	if index >= points.size():
+		creature["phase"] = "idle"
+		return false
+	var point: Dictionary = points[index]
+	var target: Vector3 = locomotion.get_target(creature)
+	var at := Vector3(
+		float(creature.get("x",0.0)),
+		float(creature.get("visual_y",float(creature.get("level",0))*world.FLOOR_H)),
+		float(creature.get("z",0.25)))
+	var speed := 2.65
+	if str(point.get("kind","")) == "lift":
+		speed = 1.55
+	var next := at.move_toward(target,speed*minf(delta,0.15))
+	creature["x"] = next.x
+	creature["visual_y"] = next.y
+	creature["z"] = next.z
+	creature["moving_axis"] = "right" if next.x > at.x else (
+		"left" if next.x < at.x else "depth")
+	if next.distance_to(target) <= 0.03:
+		creature["room_id"] = str(point.get("room_id",creature.get("room_id","")))
+		var current: Dictionary = world.room_by_id(str(creature["room_id"]))
+		if not current.is_empty():
+			creature["level"] = int(current["level"])
+		creature["waypoint_index"] = index + 1
+		if int(creature["waypoint_index"]) >= points.size():
+			var origin := str(creature.get("route_origin_room_id",""))
+			var destination := str(creature.get("route_target_room_id",creature.get("room_id","")))
+			creature["phase"] = "idle"
+			creature["waypoints"] = []
+			creature["waypoint_index"] = 0
+			creature.erase("route_origin_room_id")
+			creature.erase("route_target_room_id")
+			world._append_journal("CREATURE_ROAMED",creature_id,creature_id,
+				origin,destination,
+				{"carrying":str(creature.get("carried_object_id",""))})
+	return true
+
+func roam_one_step(creature_id: String, target_room_id: String = "") -> bool:
+	# Compatibility name retained for tests/callers: this now STARTS real travel.
+	return begin_roam(creature_id,target_room_id)
 
 func pickup_eligible_here(creature_id: String, object_id: String = "") -> bool:
 	var creature: Dictionary = _creature(creature_id)
@@ -118,15 +199,22 @@ func stash_carried(creature_id: String, target_room_id: String = "") -> bool:
 	creature["carried_object_id"] = ""
 	return true
 
-func tick(_delta: float) -> void:
+func tick(delta: float) -> void:
 	if world == null or world.creatures.is_empty():
 		return
+	# Movement is frame-driven; decisions stay low-frequency.
+	for id in world.creatures:
+		var moving: Dictionary = world.creatures[id]
+		if bool(moving.get("active",false)) and str(moving.get("phase","idle")) == "travel":
+			advance_travel(str(id),delta)
 	var actions := 0
 	for id in world.creatures:
 		if actions >= max_actions_per_tick:
 			break
 		var creature: Dictionary = world.creatures[id]
 		if not bool(creature.get("active",false)):
+			continue
+		if str(creature.get("phase","idle")) == "travel":
 			continue
 		if float(creature.get("next_decision_at",0.0)) > world.sim_clock:
 			continue
@@ -135,12 +223,12 @@ func tick(_delta: float) -> void:
 			if bool(creature.get("can_hide_objects",false)) and rng.randf() < 0.38:
 				acted = stash_carried(str(id))
 			if not acted:
-				acted = roam_one_step(str(id))
+				acted = begin_roam(str(id))
 		else:
 			if bool(creature.get("can_pickup_objects",false)) and rng.randf() < 0.24:
 				acted = pickup_eligible_here(str(id))
 			if not acted:
-				acted = roam_one_step(str(id))
+				acted = begin_roam(str(id))
 		creature["next_decision_at"] = world.sim_clock + rng.randf_range(DECISION_MIN,DECISION_MAX)
 		if acted:
 			actions += 1
