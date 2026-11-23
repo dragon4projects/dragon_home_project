@@ -31,10 +31,10 @@ func select_level(world, requested: int) -> int:
 		level = requested
 	else:
 		var best := int(levels[0])
-		var distance := abs(best-requested)
+		var distance: int = absi(best-requested)
 		for raw in levels:
 			var candidate := int(raw)
-			var d := abs(candidate-requested)
+			var d: int = absi(candidate-requested)
 			if d < distance:
 				distance = d
 				best = candidate
