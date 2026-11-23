@@ -12,6 +12,7 @@ var preview: TextureRect
 var video: VideoStreamPlayer
 var audio: AudioStreamPlayer
 var opened := false
+var content_viewer
 
 func _ready() -> void:
 	name = "MediaLibrary"
@@ -70,9 +71,10 @@ func _ready() -> void:
 	audio = AudioStreamPlayer.new()
 	add_child(audio)
 
-func bind(p_model, p_media_runtime) -> void:
+func bind(p_model, p_media_runtime, p_content_viewer = null) -> void:
 	model = p_model
 	media_runtime = p_media_runtime
+	content_viewer = p_content_viewer
 	refresh()
 
 func open_panel() -> void:
@@ -128,6 +130,8 @@ func _on_selected(index: int) -> void:
 		var image := Image.new()
 		if image.load(image_path) == OK:
 			preview.texture = ImageTexture.create_from_image(image)
+	if content_viewer != null:
+		content_viewer.open_record(category,item)
 
 func stop_playback() -> void:
 	if audio and audio.playing:
