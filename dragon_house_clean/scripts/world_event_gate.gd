@@ -54,7 +54,7 @@ func _valid_location_invariant(holder: String, location: String, state: String) 
 func _validate_envelope(event: Dictionary) -> bool:
 	for key in [
 		"event_id","created_at","source_type","source_id","authority","truth_class",
-		"visibility","event_type","reversibility","payload"
+		"visibility","event_type","reversibility","provenance","payload"
 	]:
 		if not event.has(key):
 			return reject("missing field: "+key)
@@ -74,6 +74,8 @@ func _validate_envelope(event: Dictionary) -> bool:
 		return reject("visibility must not be empty")
 	if not REVERSIBILITY.has(str(event.get("reversibility",""))):
 		return reject("invalid reversibility")
+	if str(event.get("provenance","")).strip_edges() == "":
+		return reject("provenance must not be empty")
 	if typeof(event.get("payload")) != TYPE_DICTIONARY:
 		return reject("payload must be an object")
 	if not OBJECT_EVENTS.has(str(event.get("event_type",""))):
