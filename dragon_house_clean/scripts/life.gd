@@ -103,7 +103,7 @@ func setup(p_world) -> void:
 	var active_ids: Array = []
 	for id in world.residents:
 		var actor: Dictionary = world.residents[id]
-		if not bool(actor.get("active",false)):
+		if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):
 			continue
 		active_ids.append(str(id))
 		if str(actor.get("phase","idle")) == "travel":
@@ -142,7 +142,9 @@ func _advance_needs(actor: Dictionary, elapsed: float) -> void:
 
 func _schedule_actor(actor: Dictionary, reason: String = "PERIODIC_LOW_CADENCE") -> void:
 	var id := str(actor.get("id",""))
-	if id == "" or not bool(actor.get("active",false)):
+	if id == "" or not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):
+		life_scheduler.cancel(id)
+		moving_ids.erase(id)
 		return
 	if str(actor.get("phase","idle")) == "travel":
 		moving_ids[id] = true
@@ -157,6 +159,9 @@ func _schedule_actor(actor: Dictionary, reason: String = "PERIODIC_LOW_CADENCE")
 
 func wake_actor(id: String, reason: String) -> void:
 	if world == null or not world.residents.has(id):
+		return
+	var actor: Dictionary = world.residents[id]
+	if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):
 		return
 	life_scheduler.wake(id,clock,reason)
 
@@ -297,7 +302,8 @@ func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 	var best_cost := 99999
 	for id in world.residents:
 		var other: Dictionary = world.residents[id]
-		if id == actor["id"] or id == "MANJKA" or not other.get("active", false):
+		if id == actor["id"] or id == "MANJKA" or not other.get("active", false) or \
+				not bool(other.get("autonomy_enabled",true)):
 			continue
 		if other.get("partner_id", "") != "" or other.get("phase", "idle") == "travel":
 			continue
@@ -651,7 +657,8 @@ func _move(actor: Dictionary, delta: float) -> void:
 
 func _process_due_actor(id: String, wake_reason: String) -> void:
 	var actor: Dictionary = world.residents.get(id,{})
-	if actor.is_empty() or not bool(actor.get("active",false)):
+	if actor.is_empty() or not bool(actor.get("active",false)) or \
+			not bool(actor.get("autonomy_enabled",true)):
 		life_scheduler.cancel(id)
 		moving_ids.erase(id)
 		return
@@ -696,7 +703,9 @@ func tick(delta: float) -> void:
 	for raw_id in moving_ids.keys().duplicate():
 		var id := str(raw_id)
 		var actor: Dictionary = world.residents.get(id,{})
-		if actor.is_empty() or not bool(actor.get("active",false)) or str(actor.get("phase","idle")) != "travel":
+		if actor.is_empty() or not bool(actor.get("active",false)) or \
+				not bool(actor.get("autonomy_enabled",true)) or \
+				str(actor.get("phase","idle")) != "travel":
 			moving_ids.erase(id)
 			continue
 		_move(actor,delta)
