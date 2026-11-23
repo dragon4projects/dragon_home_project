@@ -13,6 +13,10 @@ on:
       - 'dragon_house_clean/tests/test_object_event_sqlite_recovery_v021.gd'
       - '.github/workflows/dragon-house-v021-sqlite-proof.yml'
 
+concurrency:
+  group: dragon-house-v021-sqlite-backend-proof
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -59,6 +63,11 @@ jobs:
           fi
           test -f addons/godot-sqlite/gdsqlite.gdextension
           grep -q 'compatibility_minimum = "4.7"' addons/godot-sqlite/gdsqlite.gdextension
+
+      - name: Ignore unrelated LFS art for truth-path proof
+        shell: bash
+        run: |
+          touch dragon_house_clean/assets/.gdignore
 
       - name: Parse with SQLite GDExtension loaded
         shell: bash
