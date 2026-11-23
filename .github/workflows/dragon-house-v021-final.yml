@@ -5,8 +5,16 @@ on:
     branches:
       - dev/dragon-house-v021-sqlite-backend-proof
     paths:
+      - 'dragon_house_clean/scripts/world_event_store.gd'
+      - 'dragon_house_clean/scripts/world_event_store_sqlite.gd'
+      - 'dragon_house_clean/scripts/object_event_runtime.gd'
+      - 'dragon_house_clean/tests/test_object_event_*_v021.gd'
       - '.github/workflows/dragon-house-v021-final.yml'
   workflow_dispatch:
+
+concurrency:
+  group: dragon-house-v021-final
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -56,6 +64,7 @@ jobs:
             tests/test_object_event_sqlite_v021.gd
             tests/test_object_event_json_to_sqlite_v021.gd
             tests/test_object_event_sqlite_recovery_v021.gd
+            tests/test_object_event_sqlite_canonical_loss_v021.gd
             tests/test_object_event_snapshot_to_sqlite_v021.gd
             tests/test_object_event_projection_rebuild_v021.gd
             tests/test_object_event_gate_v020.gd
@@ -110,6 +119,7 @@ jobs:
             "res://tests/test_object_event_sqlite_v021.gd",
             "res://tests/test_object_event_json_to_sqlite_v021.gd",
             "res://tests/test_object_event_sqlite_recovery_v021.gd",
+            "res://tests/test_object_event_sqlite_canonical_loss_v021.gd",
             "res://tests/test_object_event_snapshot_to_sqlite_v021.gd",
             "res://tests/test_object_event_projection_rebuild_v021.gd"
           )
@@ -167,6 +177,7 @@ jobs:
             tests/test_object_event_sqlite_v021.gd \
             tests/test_object_event_json_to_sqlite_v021.gd \
             tests/test_object_event_sqlite_recovery_v021.gd \
+            tests/test_object_event_sqlite_canonical_loss_v021.gd \
             tests/test_object_event_snapshot_to_sqlite_v021.gd \
             tests/test_object_event_projection_rebuild_v021.gd; do
             echo "RUN $t"
@@ -229,6 +240,19 @@ jobs:
             tail -160 /tmp/v021-final-export-import.log
             exit 1
           fi
+          for t in \
+            tests/test_object_event_sqlite_v021.gd \
+            tests/test_object_event_json_to_sqlite_v021.gd \
+            tests/test_object_event_sqlite_recovery_v021.gd \
+            tests/test_object_event_sqlite_canonical_loss_v021.gd \
+            tests/test_object_event_snapshot_to_sqlite_v021.gd \
+            tests/test_object_event_projection_rebuild_v021.gd; do
+            echo "RUN $t"
+            out="$(timeout 90s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --script "res://$t" 2>&1)" || { echo "$out"; exit 1; }
+            echo "$out"
+            echo "$out" | grep -q "_PASS"
+            ! echo "$out" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed"
+          done
           mkdir -p ../releases
           /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . \
             --export-release "Windows Desktop" ../releases/DragonHouse_v021_SQLite.exe \
