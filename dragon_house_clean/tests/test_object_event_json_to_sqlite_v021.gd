@@ -78,8 +78,9 @@ func run() -> void:
 	assert(FileAccess.get_sha256(json_path)==original_sha)
 	assert(_event_identity(legacy.object_events.store.snapshot_events())==source_identity)
 	migrated.object_events.store.close()
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 
-	# Restart reads the SQLite canonical stream, not the stale JSON checkpoint.
+	# Restart auto-detects the SQLite canonical stream, not the stale JSON checkpoint.
 	var restarted := World.new()
 	restarted.save_path = path
 	restarted.load_or_seed()
@@ -93,5 +94,5 @@ func run() -> void:
 	restarted.object_events.store.close()
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
-	print("OBJECT_EVENT_JSON_TO_SQLITE_V021_PASS source=json_v020 non_destructive=yes identity=event_id_seq projection=equivalent cutover=sqlite_only restart=sqlite_canonical")
+	print("OBJECT_EVENT_JSON_TO_SQLITE_V021_PASS source=json_v020 non_destructive=yes identity=event_id_seq projection=equivalent cutover=sticky_sqlite restart=sqlite_canonical")
 	quit(0)
