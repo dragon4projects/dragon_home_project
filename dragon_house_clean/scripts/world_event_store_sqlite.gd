@@ -210,7 +210,7 @@ func _quarantine_primary() -> void:
 		DirAccess.remove_absolute(corrupt_abs)
 	DirAccess.rename_absolute(ProjectSettings.globalize_path(path),corrupt_abs)
 	for suffix in ["-wal","-shm"]:
-		var sidecar := path+suffix
+		var sidecar: String = path+str(suffix)
 		if FileAccess.file_exists(sidecar):
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(sidecar))
 
