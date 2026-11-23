@@ -236,9 +236,25 @@ func _journal_has_event_id(event_id: String) -> bool:
 	return false
 
 func _reconcile_journal_from_store() -> void:
-	# Replay is authoritative for object state. Journal is an explanation view:
-	# fill only missing accepted object events and never surface migration rows as
-	# if they were fresh household activity.
+	# Replay is authoritative for object state. Journal is an explanation view.
+	# First remove only v0.20 object rows whose event_id is no longer canonical
+	# (e.g. primary corruption forced replay from an older backup). Legacy rows
+	# without event_id are preserved because they predate this authority layer.
+	var canonical_ids: Dictionary = {}
+	for raw_event in store.events:
+		var event: Dictionary = raw_event
+		if str(event.get("source_type","")) != "migration_import":
+			canonical_ids[str(event.get("event_id",""))] = true
+	for index in range(world.journal.size()-1,-1,-1):
+		var entry: Dictionary = world.journal[index]
+		if not str(entry.get("event","")).begins_with("OBJECT_"):
+			continue
+		var details: Dictionary = entry.get("details",{})
+		var event_id: String = str(details.get("event_id",""))
+		if event_id != "" and not canonical_ids.has(event_id):
+			world.journal.remove_at(index)
+	# Then fill missing accepted object events; migration rows remain provenance,
+	# not fresh household activity.
 	for raw_event in store.events:
 		var event: Dictionary = raw_event
 		if str(event.get("source_type","")) == "migration_import":
