@@ -6,6 +6,8 @@ on:
       - fix/dragon-house-v019-furniture-contract-semantic-lod
     paths:
       - 'dragon_house_clean/tests/test_furniture_contract_v10.gd'
+      - 'dragon_house_clean/tests/test_lazy_room_art_v10.gd'
+      - 'dragon_house_clean/tests/test_width_anchors_v012.gd'
       - 'dragon_house_clean/scripts/main.gd'
       - '.github/workflows/dragon-house-v019-furniture-fix.yml'
 
@@ -40,6 +42,7 @@ jobs:
           set -euo pipefail
           tests=(
             tests/test_furniture_contract_v10.gd
+            tests/test_lazy_room_art_v10.gd
             tests/test_room_capacity_v06.gd
             tests/test_room_lod_v06.gd
             tests/test_level_mode_v019.gd
