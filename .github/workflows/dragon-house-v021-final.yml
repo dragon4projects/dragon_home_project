@@ -66,6 +66,7 @@ jobs:
             exit 1
           fi
           tests=(
+            tests/test_object_event_default_sqlite_v021.gd
             tests/test_object_event_sqlite_v021.gd
             tests/test_object_event_json_to_sqlite_v021.gd
             tests/test_object_event_sqlite_recovery_v021.gd
@@ -136,6 +137,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $tests = @(
+            "res://tests/test_object_event_default_sqlite_v021.gd",
             "res://tests/test_object_event_sqlite_v021.gd",
             "res://tests/test_object_event_json_to_sqlite_v021.gd",
             "res://tests/test_object_event_sqlite_recovery_v021.gd",
@@ -197,6 +199,8 @@ jobs:
           set -euo pipefail
           cd dragon_house_clean
           for t in \
+            tests/test_object_event_default_sqlite_v021.gd
+            tests/test_object_event_default_sqlite_v021.gd \
             tests/test_object_event_sqlite_v021.gd \
             tests/test_object_event_json_to_sqlite_v021.gd \
             tests/test_object_event_sqlite_recovery_v021.gd \
@@ -259,6 +263,8 @@ jobs:
             exit 1
           fi
           for t in \
+            tests/test_object_event_default_sqlite_v021.gd
+            tests/test_object_event_default_sqlite_v021.gd \
             tests/test_object_event_sqlite_v021.gd \
             tests/test_object_event_json_to_sqlite_v021.gd \
             tests/test_object_event_sqlite_recovery_v021.gd \
