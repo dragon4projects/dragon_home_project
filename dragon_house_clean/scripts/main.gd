@@ -92,7 +92,7 @@ var room_names := {
 	"common": "Гостиная", "study": "Кабинет",
 	"rest": "Комната отдыха", "library": "Библиотека",
 	"cinema": "Фильмотека", "music": "Аудиотека",
-	"workshop": "Мастерская", "private": "Личная дверь",
+	"workshop": "Мастерская", "private": "Личная дверь", "guest": "Гостевая",
 	"lift": "Подъёмник", "artifact": "Артефакты"
 }
 
@@ -561,9 +561,15 @@ func _release_room_art(group_node: Node3D) -> void:
 	if stage!=null:
 		stage.visible=true
 
+func _group_facade_only(group: Dictionary) -> bool:
+	var cells: Array = group.get("cells",[])
+	if cells.is_empty():
+		return false
+	return not world.public_cutaway_allowed(cells[0])
+
 func _populate_furniture(group_node: Node3D) -> void:
 	var group: Dictionary = visual_room_groups.get(group_node.name,{})
-	if group.is_empty() or str(group.get("type","")) == "private":
+	if group.is_empty() or _group_facade_only(group):
 		return
 	var decoration_layer: Node3D = group_node.get_node_or_null("LocalFurniture")
 	if decoration_layer == null or detailed_room_groups.has(group_node.name):
@@ -616,6 +622,7 @@ func make_room(group: Dictionary) -> void:
 	room_root.add_child(n)
 	visual_room_groups[n.name] = group
 	var t: String = group["type"]
+	var facade_only := _group_facade_only(group)
 	var accepted: Array=interior_skin.validated_layers(t,int(group["width"]))
 	visual_room_groups[n.name]["has_art"] = not accepted.is_empty()
 	visual_room_groups[n.name]["replaces_furniture"] = accepted.any(
@@ -641,13 +648,13 @@ func make_room(group: Dictionary) -> void:
 	var floor_slab:=box(structure,Vector3(0,-0.055,-0.33),
 		Vector3(span*1.01,0.10,3.34),palette["floor"])
 	floor_slab.name="CutawayFloorSlab"
-	if t != "private":
+	if not facade_only:
 		var cutaway_depth:=Node3D.new()
 		cutaway_depth.name="Stage_CutawayDepth"
 		structure.add_child(cutaway_depth)
 		add_cutaway_depth(cutaway_depth,group)
 	box(background,Vector3(0,1.45,-2.04),Vector3(span*1.01,3.25,0.35),palette["rock"])
-	if t != "private":
+	if not facade_only:
 		var rear_stage := Node3D.new()
 		rear_stage.name = "Stage_Backwall"
 		background.add_child(rear_stage)
@@ -682,21 +689,22 @@ func make_room(group: Dictionary) -> void:
 			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
 			box(structure,Vector3(seam_x,2.99,-0.66),
 				Vector3(0.07,0.18,2.30),palette["rock_light"])
-	if t != "private":
+	if not facade_only:
 		var overview := Node3D.new()
 		overview.name = "Layer_OverviewCues"
 		n.add_child(overview)
 		add_room_overview_cues(overview,group)
-	if t == "private":
-		# Never materialize someone else's private interior: facade only.
+	if facade_only:
+		# Private/closed-guest interiors are facade-only; no hidden room is materialized.
 		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
 		box(n,Vector3(0.82,1.33,1.2),Vector3(0.12,0.12,0.07),palette["bronze"])
 		var private_room:Dictionary=group["cells"][0]
 		var owner_id:String=str(private_room.get("owner_id",""))
-		var sign:String=door_registry.sign_text(owner_id,world.read_resident_profiles())
+		var sign:String=str(private_room.get("display_name","Гостевая")) if t=="guest" else \
+			door_registry.sign_text(owner_id,world.read_resident_profiles())
 		var door_label := label3(n,sign,Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
 		door_label.name = "RoomRoofLabel"
-		if door_registry.has_public_note(owner_id):
+		if t=="private" and door_registry.has_public_note(owner_id):
 			# Public framed note is a clickable threshold object, never interior access.
 			box(n,Vector3(-0.58,1.67,1.19),Vector3(0.52,0.70,0.055),palette["bronze"])
 			box(n,Vector3(-0.58,1.67,1.225),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
@@ -1522,7 +1530,7 @@ func update_hud() -> void:
 			hud_status.text += "\n%s  R%d  |  уровень %d" % [
 				room_names.get(r["type"],r["type"]),merged,int(r["level"])]
 			var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
-			if r.get("privacy","public") == "public":
+			if world.public_cutaway_allowed(r):
 				var occupied := 0
 				var capacity := 0
 				for cell in group.get("cells",[]):
@@ -1660,8 +1668,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			var room: Dictionary = world.get_room(roundi(hit.x / W), roundi(hit.y / H))
 			if not room.is_empty():
 				selected_room = room["id"]
-				if room["privacy"] == "door_only":
-					notice.text = "Личная территория: камера остаётся у двери"
+				if not world.public_cutaway_allowed(room):
+					notice.text = "Закрытая территория: камера остаётся у двери"
 				else:
 					notice.text = room_names.get(room["type"], room["type"])
 				set_mode("ROOM")
