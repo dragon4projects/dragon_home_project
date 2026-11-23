@@ -15,7 +15,7 @@ func run() -> void:
 	world.seed_world()
 	var life=L.new()
 	life.setup(world)
-	var lounge:Dictionary=world.get_room(-1,0)
+	var lounge:Dictionary=world.get_room(-2,0)
 	var body_a:Dictionary=world.residents["RES_01"]
 	var body_b:Dictionary=world.residents["RES_02"]
 	var body_c:Dictionary=world.residents["RES_03"]
@@ -29,17 +29,17 @@ func run() -> void:
 		"A third guest cannot be shown sitting on a two-seat sofa")
 	assert(absf(float(body_c["station_point"][0]))>1.45,
 		"Overcrowding fallback must stand beside the sofa, not block sitters")
-	assert(body_a["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
-	assert(body_b["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
+	assert(body_a["station_furniture_id"]=="common_sofa_left")
+	assert(body_b["station_furniture_id"]=="common_sofa_left")
 	assert(body_a["station_slot"] != body_b["station_slot"])
 	var loc_a: Array=body_a["station_point"]
 	var loc_b: Array=body_b["station_point"]
-	assert(absf(float(loc_a[0])-float(loc_b[0]))>1.0)
+	assert(absf(float(loc_a[0])-float(loc_b[0]))>=0.65)
 	assert(is_equal_approx(float(loc_a[1]),float(loc_b[1])))
 	for p in [loc_a,loc_b]:
-		# Actual sofa is centered (x=0,z=-1.06), width=2.6, depth=0.9.
+		# Accepted TEEA 002 left-module sofa anchors are measured from the actual art.
 		assert(absf(float(p[0]))<1.05)
-		assert(absf(float(p[1])-(-1.06))<0.52)
+		assert(absf(float(p[1])-(-0.729))<0.02)
 	for actor in [body_a,body_b,body_c]:
 		var final:Array=actor["waypoints"][-1]["position"]
 		var spot:Array=actor["station_point"]
@@ -56,8 +56,8 @@ func run() -> void:
 	root.add_child(stage)
 	current_scene=stage
 	stage.zoom_current=12.0
-	assert(stage.effective_camera_yaw()>0.10,
-		"Close view needs shallow physical obliqueness to reveal depth")
+	assert(stage.effective_camera_yaw()>0.05 and stage.effective_camera_yaw()<0.08,
+		"v0.11 close view keeps only subtle automatic parallax; Q/E supplies stronger yaw")
 	stage.zoom_current=86.0
 	assert(absf(stage.effective_camera_yaw())<0.001,
 		"House overview must remain almost elevation-like")
@@ -86,7 +86,7 @@ func run() -> void:
 	for id in ["RES_01","RES_02","RES_03"]:
 		var guest:Dictionary=legacy.residents[id]
 		guest["room_id"]=lounge["id"]
-		guest["x"]=-1.0*legacy.MODULE_W
+		guest["x"]=-2.0*legacy.MODULE_W
 		guest["z"]=-0.57
 		guest["intent"]="REST"
 		guest["phase"]="perform"
@@ -115,7 +115,7 @@ func run() -> void:
 	reloaded.load_or_seed()
 	var again=L.new()
 	again.setup(reloaded)
-	assert(reloaded.residents["RES_01"]["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
+	assert(reloaded.residents["RES_01"]["station_furniture_id"]=="common_sofa_left")
 	assert(reloaded.residents["RES_01"]["station_kind"]=="seat")
 	# v0.7 and v0.8 saved numeric slot IDs but generic coordinates.
 	# Reconcile must reanchor body positions, not merely rename the slot.
@@ -123,7 +123,7 @@ func run() -> void:
 	legacy7.save_path="user://test_v07_position_upgrade_v09.json"
 	legacy7.seed_world()
 	var old_resident:Dictionary=legacy7.residents["RES_01"]
-	var old_lounge:Dictionary=legacy7.get_room(-1,0)
+	var old_lounge:Dictionary=legacy7.get_room(-2,0)
 	old_resident["room_id"]=old_lounge["id"]
 	old_resident["intent"]="REST"
 	old_resident["phase"]="perform"
@@ -140,9 +140,9 @@ func run() -> void:
 	var upgrading=L.new()
 	upgrading.setup(imported7)
 	var repaired:Dictionary=imported7.residents["RES_01"]
-	var new_offset:Vector2=S.new().layout(imported7.get_room(-1,0))[0]["offset"]
+	var new_offset:Vector2=S.new().layout(imported7.get_room(-2,0))[0]["offset"]
 	assert(repaired["station_kind"]=="seat")
-	assert(repaired["station_furniture_id"]=="SOFA_COMMON_MIDDLE")
+	assert(repaired["station_furniture_id"]=="common_sofa_left")
 	assert(is_equal_approx(float(repaired["x"]),float(old_lounge["x"])*imported7.MODULE_W+new_offset.x))
 	assert(is_equal_approx(float(repaired["z"]),new_offset.y))
 	assert(not is_equal_approx(float(repaired["z"]),0.8))
