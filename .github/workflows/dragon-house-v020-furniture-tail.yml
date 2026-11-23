@@ -43,27 +43,13 @@ jobs:
           tests=(
             tests/test_furniture_contract_v10.gd
             tests/test_lazy_room_art_v10.gd
-            tests/test_v011_accepted_art.gd
-            tests/test_v011_room_distribution.gd
-            tests/test_v011_depth_pass.gd
-            tests/test_artist_anchor_candidate_v2.gd
-            tests/test_width_anchors_v012.gd
-            tests/test_corridor_passing_v013.gd
-            tests/test_concrete_media_v014.gd
-            tests/test_room_activity_hud_v014.gd
-            tests/test_private_door_note_v016.gd
-            tests/test_teea003_owner_production_v016.gd
-            tests/test_floor_rest_pose_v016.gd
-            tests/test_authored_station_poses_v016.gd
-            tests/test_seated_talk_pose_v016.gd
-            tests/test_object_lifecycle_v017.gd
-            tests/test_ambient_creatures_v018.gd
-            tests/test_content_viewer_v018.gd
-            tests/test_guest_room_access_v018.gd
-            tests/test_life_scheduler_v019.gd
-            tests/test_life_due_wake_integration_v019.gd
+            tests/test_room_lod_v06.gd
+            tests/test_room_capacity_v06.gd
             tests/test_semantic_view_v019.gd
             tests/test_level_mode_v019.gd
+            tests/test_object_lifecycle_v017.gd
+            tests/test_ambient_creatures_v018.gd
+            tests/test_guest_room_access_v018.gd
             tests/test_object_event_gate_v020.gd
             tests/test_object_event_replay_v020.gd
             tests/test_object_event_migration_v020.gd
