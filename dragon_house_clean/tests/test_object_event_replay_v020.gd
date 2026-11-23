@@ -24,6 +24,7 @@ func _journal_event(entries: Array, event_name: String) -> Dictionary:
 func run() -> void:
 	var path := "user://object_event_replay_v020.json"
 	_cleanup(path)
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 
 	# No JSON snapshot is saved after these object events. The event stream must
 	# be sufficient to reconstruct the object projection on restart.
@@ -90,6 +91,7 @@ func run() -> void:
 	assert(JSON.stringify(restarted_again.objects)==stable_snapshot)
 	assert(restarted_again.object_event_revision()==committed_revision)
 
+	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
 	print("OBJECT_EVENT_REPLAY_V020_PASS crash_gap=recovered event_stream=authoritative provenance=queryable journal=reconciled ambient_keeps_explicit_location=yes restart=equivalent")
 	quit(0)
