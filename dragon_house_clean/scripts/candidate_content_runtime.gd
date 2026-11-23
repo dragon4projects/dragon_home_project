@@ -200,6 +200,52 @@ func bound_media_specs(bindings: Dictionary) -> Array:
 		out.append(merged)
 	return out
 
+func _safe_node_name(value: String) -> String:
+	var out := value
+	for bad in ["/","\\",":","."," "]:
+		out = out.replace(bad,"_")
+	return out
+
+func materialize_media_hotspots(host, room_nodes: Dictionary,
+		bindings: Dictionary) -> Dictionary:
+	# Geometry and content are separate: without an explicit binding, no hotspot exists.
+	if host == null or not host.has_method("register_content_hotspot"):
+		return _fail("Media hotspot host does not expose register_content_hotspot")
+	var created := 0
+	var reused := 0
+	var missing_rooms: Array = []
+	var specs := bound_media_specs(bindings)
+	for spec in specs:
+		var key := "%s/%s" % [str(spec.get("room_id","")),str(spec.get("variant",""))]
+		var parent = room_nodes.get(key)
+		if not (parent is Node3D):
+			missing_rooms.append(key)
+			continue
+		var position = spec.get("position_m",[])
+		if typeof(position) != TYPE_ARRAY or position.size() != 3:
+			continue
+		var node_name := "CandidateMedia_" + _safe_node_name(str(spec["surface_id"]))
+		var anchor: Node3D = parent.get_node_or_null(node_name)
+		if anchor == null:
+			anchor = Node3D.new()
+			anchor.name = node_name
+			parent.add_child(anchor)
+			created += 1
+		else:
+			reused += 1
+		anchor.position = Vector3(float(position[0]),float(position[1]),float(position[2]))
+		anchor.set_meta("candidate_surface_id",str(spec["surface_id"]))
+		anchor.set_meta("candidate_batch","TEEA_INT_20261123_007")
+		host.call("register_content_hotspot",anchor,str(spec["category"]),
+			str(spec["item_id"]),str(spec["display_name"]))
+	return {
+		"ok":true,
+		"bound":specs.size(),
+		"created":created,
+		"reused":reused,
+		"missing_room_nodes":missing_rooms
+	}
+
 func unbound_media_surface_ids(bindings: Dictionary) -> Array:
 	var bound: Dictionary = {}
 	for item in bound_media_specs(bindings):
