@@ -53,6 +53,16 @@ func object_event_storage_paths() -> Array:
 func object_event_revision() -> int:
 	return int(runtime_state.get("object_event_revision",0))
 
+func object_event_history(object_id: String, limit: int = 64) -> Array:
+	if not _ensure_object_events():
+		return []
+	return object_events.events_for_object(object_id,limit)
+
+func explain_physical_object(object_id: String) -> Dictionary:
+	if not _ensure_object_events():
+		return {}
+	return object_events.explain_object(object_id)
+
 func cell_key(x: int, level: int) -> String:
 	return "%d:%d" % [x, level]
 
