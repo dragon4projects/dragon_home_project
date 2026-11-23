@@ -3,10 +3,11 @@ extends SceneTree
 func _initialize() -> void:
 	call_deferred("capture")
 
-func _save_view(path:String) -> void:
+func _save_view(path:String) -> Vector2i:
 	var image:Image=root.get_texture().get_image()
 	assert(image!=null and image.get_width()>0 and image.get_height()>0)
 	assert(image.save_png(path)==OK)
+	return Vector2i(image.get_width(),image.get_height())
 
 func capture() -> void:
 	DirAccess.make_dir_recursive_absolute(
@@ -19,7 +20,7 @@ func capture() -> void:
 	scene.set_mode("HOUSE")
 	for i in range(45):
 		await process_frame
-	_save_view(ProjectSettings.globalize_path(
+	var house_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v011_house.png"))
 
 	var common:Dictionary=scene.world.get_room(-2,0)
@@ -32,11 +33,12 @@ func capture() -> void:
 	scene.update_render_lod()
 	for i in range(70):
 		await process_frame
-	_save_view(ProjectSettings.globalize_path(
+	var room_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v011_common_r3.png"))
 
 	for suffix in ["",".bak",".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(
 			scene.world.save_path+suffix))
-	print("V011_RENDER_REVIEW_PASS house=1280x720 common_R3=1280x720")
+	print("V011_RENDER_REVIEW_PASS house=%dx%d common_R3=%dx%d" % [
+		house_size.x,house_size.y,room_size.x,room_size.y])
 	quit(0)
