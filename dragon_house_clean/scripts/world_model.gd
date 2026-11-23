@@ -246,7 +246,7 @@ func register_physical_object(object_id: String, display_name: String,
 		canonical_owner_id: String, home_room_id: String,
 		movable: bool = true, recoverable: bool = true,
 		ambient_pickup_allowed: bool = false, ambient_hide_allowed: bool = false,
-		ambient_protected: bool = false) -> bool:
+		ambient_protected: bool = false, metadata: Dictionary = {}) -> bool:
 	if object_id == "" or display_name == "" or objects.has(object_id):
 		return false
 	var home: Dictionary = room_by_id(home_room_id)
@@ -265,6 +265,10 @@ func register_physical_object(object_id: String, display_name: String,
 		"ambient_pickup_allowed": ambient_pickup_allowed,
 		"ambient_hide_allowed": ambient_hide_allowed,
 		"ambient_protected": ambient_protected,
+		"description": str(metadata.get("description","")),
+		"preview_path": str(metadata.get("preview_path","")),
+		"asset_id": str(metadata.get("asset_id","")),
+		"viewer_category": str(metadata.get("viewer_category","artifacts")),
 		"history": [{
 			"event": "REGISTERED",
 			"actor_id": "",
