@@ -22,7 +22,8 @@ func run()->void:
 	assert(not lost_found.is_empty())
 
 	assert(world.register_physical_object(
-		"QA_ARTIFACT_001","QA single persistent artifact","RES_01",home["id"]))
+		"QA_ARTIFACT_001","QA single persistent artifact","RES_01",home["id"],
+		true,true,true))
 	assert(not world.register_physical_object(
 		"QA_ARTIFACT_001","duplicate","RES_02",home["id"]))
 
@@ -31,6 +32,7 @@ func run()->void:
 	assert(str(object["current_room_id"])==str(home["id"]))
 	assert(str(object["current_holder_id"])=="")
 	assert(str(object["state"])=="PLACED")
+	assert(bool(object["ambient_pickup_allowed"]))
 
 	# Manka cannot teleport-pick an object from another room.
 	assert(not world.pickup_physical_object("QA_ARTIFACT_001","MANJKA"))
