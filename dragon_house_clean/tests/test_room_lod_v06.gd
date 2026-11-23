@@ -30,6 +30,8 @@ func run() -> void:
 				assert(stage!=null,"Public room requires a modeled rear alcove")
 				assert(stage.get_child_count()==int(scene.visual_room_groups[node.name]["width"]),
 					"R1/R2/R3 must use exactly one rear bay per cell")
+				assert(not stage.visible,
+					"HOUSE overview must hide unreadable rear-stage geometry")
 			assert(cue!=null and cue.visible and rich!=null)
 			assert(rich.get_child_count()==0,"Rich furniture must not be spawned on HOUSE overview")
 			cue_count+=1
@@ -43,6 +45,10 @@ func run() -> void:
 	var library_group: Dictionary=scene.world.merged_group(2,0)
 	var library_node: Node3D=scene.room_root.get_node(library_group["primary_id"])
 	assert(scene.detailed_room_groups.has(library_node.name))
+	assert(library_node.get_node("Layer_Structure/Stage_CutawayDepth").visible,
+		"ROOM view must restore physical cutaway depth")
+	assert(library_node.get_node("Layer_Background/Stage_Backwall").visible,
+		"Procedural Library R1 must restore its rear alcove near the camera")
 	var detailed: Node3D=library_node.get_node("LocalFurniture")
 	assert(detailed.get_child_count()>0)
 	assert(not library_node.get_node("Layer_OverviewCues").visible,
