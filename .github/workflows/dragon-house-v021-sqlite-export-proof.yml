@@ -13,6 +13,10 @@ on:
       - '.github/workflows/dragon-house-v021-sqlite-export-proof.yml'
   workflow_dispatch:
 
+concurrency:
+  group: dragon-house-v021-sqlite-export-proof
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
