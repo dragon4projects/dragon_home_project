@@ -304,7 +304,9 @@ Run #9 proves:
 - guest-room access;
 - base model.
 
-Later focused run(s) are used to prove the additional journal pruning rule for backup rollback before merge.
+Final focused run #11 / `45199673131` — SUCCESS.
+
+It additionally proves that backup rollback prunes v0.20 object-journal rows whose event IDs are no longer present in the recovered canonical stream, while preserving legacy rows without canonical event IDs.
 
 ## 10. Remaining architecture boundary
 
