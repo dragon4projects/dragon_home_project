@@ -4,6 +4,7 @@ extends Node3D
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
+const ContentViewerScript = preload("res://scripts/content_viewer.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
@@ -64,6 +65,9 @@ var notice: Label
 var menu: OptionButton
 var catalog_picker: FileDialog
 var media_panel: PanelContainer
+var content_viewer: PanelContainer
+var content_hover_label: Label
+var content_hotspots: Array = []
 var bank_gallery: PanelContainer
 var door_note_panel: PanelContainer
 var door_note_title: Label
@@ -948,9 +952,12 @@ func build_interface() -> void:
 	media_button.text = "Открыть библиотеку / медиа [M]"
 	media_button.pressed.connect(toggle_media_panel)
 	hud_main_body.add_child(media_button)
+	content_viewer = ContentViewerScript.new()
+	root.add_child(content_viewer)
+	content_viewer.bind(life.media_runtime)
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
-	media_panel.bind(world,life.media_runtime)
+	media_panel.bind(world,life.media_runtime,content_viewer)
 	bank_gallery = BankGalleryScript.new()
 	root.add_child(bank_gallery)
 	bank_gallery.bind(asset_banks,world.read_resident_profiles())
@@ -991,6 +998,11 @@ func build_interface() -> void:
 	notice.position = Vector2(18, 690)
 	notice.add_theme_color_override("font_color", Color("#eac59d"))
 	root.add_child(notice)
+	content_hover_label = Label.new()
+	content_hover_label.visible = false
+	content_hover_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content_hover_label.add_theme_color_override("font_color",Color("#f4ddc4"))
+	root.add_child(content_hover_label)
 	catalog_picker = FileDialog.new()
 	catalog_picker.access = FileDialog.ACCESS_FILESYSTEM
 	catalog_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
@@ -1030,6 +1042,62 @@ func build_interface() -> void:
 	door_note_text.custom_minimum_size=Vector2(640,520)
 	door_col.add_child(door_note_text)
 	update_hud()
+
+func register_content_hotspot(anchor: Node3D, category: String,
+		item_id: String, display_name: String) -> void:
+	if anchor == null or category == "" or item_id == "":
+		return
+	content_hotspots.append({
+		"anchor":anchor, "category":category,
+		"item_id":item_id, "display_name":display_name
+	})
+
+func clear_content_hotspots() -> void:
+	content_hotspots.clear()
+	if content_hover_label != null:
+		content_hover_label.visible = false
+
+func content_hotspot_at_screen(point: Vector2) -> Dictionary:
+	if camera == null:
+		return {}
+	var best := 42.0
+	var found: Dictionary = {}
+	for entry in content_hotspots:
+		var anchor = entry.get("anchor")
+		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree():
+			continue
+		if camera.is_position_behind(anchor.global_position):
+			continue
+		var screen := camera.unproject_position(anchor.global_position)
+		var distance := screen.distance_to(point)
+		if distance < best:
+			best = distance
+			found = entry
+	return found
+
+func open_content_hotspot(entry: Dictionary) -> bool:
+	if entry.is_empty() or content_viewer == null:
+		return false
+	var category := str(entry.get("category",""))
+	var item_id := str(entry.get("item_id",""))
+	var record: Dictionary = {}
+	if category in ["books","films","tracks"]:
+		record = life.media_runtime._lookup(category,item_id)
+	elif category == "artifacts":
+		record = world.physical_object(item_id)
+	if record.is_empty():
+		return false
+	return content_viewer.open_record(category,record)
+
+func update_content_hover(point: Vector2) -> void:
+	if content_hover_label == null or content_viewer == null or content_viewer.visible:
+		return
+	var entry := content_hotspot_at_screen(point)
+	content_hover_label.visible = not entry.is_empty()
+	if entry.is_empty():
+		return
+	content_hover_label.text = str(entry.get("display_name",entry.get("item_id","")))
+	content_hover_label.position = point + Vector2(14,12)
 
 func close_door_note()->void:
 	if door_note_panel!=null:
@@ -1361,6 +1429,8 @@ func _input(event: InputEvent) -> void:
 			moving_view = e.pressed
 	if event is InputEventMouseMotion:
 		var e: InputEventMouseMotion = event
+		if not moving_view and not build_mode:
+			update_content_hover(e.position)
 		if moving_view and not build_mode:
 			follow_id = "" # moving away manually cancels Follow
 			current_mode = "FREE"
@@ -1377,6 +1447,9 @@ func _input(event: InputEvent) -> void:
 				var preview_mat: StandardMaterial3D = build_marker.material_override
 				preview_mat.albedo_color = Color(0.22,0.90,0.55,0.28) if permitted else Color(0.82,0.23,0.26,0.28)
 	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode==KEY_ESCAPE and content_viewer!=null and content_viewer.visible:
+			content_viewer.close_viewer()
+			return
 		if event.keycode==KEY_ESCAPE and door_note_panel!=null and door_note_panel.visible:
 			close_door_note()
 			return
@@ -1400,6 +1473,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if e.button_index != MOUSE_BUTTON_LEFT or not e.pressed:
 			return
 		if door_note_panel!=null and door_note_panel.visible:
+			return
+		if content_viewer!=null and content_viewer.visible:
+			return
+		var content_entry:Dictionary=content_hotspot_at_screen(e.position)
+		if not content_entry.is_empty() and open_content_hotspot(content_entry):
 			return
 		var note_room_id:String=door_note_at_screen(e.position)
 		if note_room_id!="":
