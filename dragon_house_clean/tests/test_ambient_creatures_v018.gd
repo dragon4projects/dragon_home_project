@@ -30,6 +30,11 @@ func run() -> void:
 	assert(world.register_creature(
 		"npc_rat_hero","Крыса",common_a["id"],"npc_rat_hero","",
 		true,true,false))
+	assert(world.creature_display_label("npc_rat_hero")=="Крыса")
+	assert(world.register_creature(
+		"PET_CAT_QA","Кот",common_a["id"],"npc_cat_tabby","RES_01",
+		false,false,false))
+	assert(world.creature_display_label("PET_CAT_QA").contains(world.residents["RES_01"]["name"]))
 	assert(not world.register_creature(
 		"BAD_PRIVATE","Не должна войти",private_room["id"],"npc_rat_white"))
 	assert(world.register_guest_actor(
@@ -58,6 +63,7 @@ func run() -> void:
 	# Closed/private rooms are not destinations even though their public frontage
 	# may participate in resident transit.
 	assert(not ambient.roam_one_step("npc_rat_hero",private_room["id"]))
+	assert(_has_event(world.journal_entries(64),"CREATURE_ACCESS_REJECTED"))
 	assert(ambient.roam_one_step("npc_rat_hero",common_b["id"]))
 	assert(str(world.creatures["npc_rat_hero"]["room_id"])==str(common_b["id"]))
 	assert(ambient.stash_carried("npc_rat_hero"))
@@ -83,5 +89,5 @@ func run() -> void:
 	assert(_has_event(loaded.journal_entries(64),"OBJECT_STASHED"))
 
 	_cleanup(path)
-	print("AMBIENT_CREATURES_V018_PASS public_roam=yes private_bypass=no opt_in_pickup=yes protected=no stash=persistent journal=causal guest=registered")
+	print("AMBIENT_CREATURES_V018_PASS public_roam=yes private_bypass=no rejected_logged=yes owner_label=evidence_only opt_in_pickup=yes protected=no stash=persistent journal=causal guest=registered")
 	quit(0)
