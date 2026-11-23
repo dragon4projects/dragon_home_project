@@ -227,6 +227,11 @@ func _update_runtime_state() -> void:
 		world.runtime_state["object_event_last_error"] = last_error
 	else:
 		world.runtime_state.erase("object_event_last_error")
+	var store_warning: String = str(store.last_warning)
+	if store_warning != "":
+		world.runtime_state["object_event_backup_warning"] = store_warning
+	else:
+		world.runtime_state.erase("object_event_backup_warning")
 
 func _publish_projection(projection: Dictionary) -> void:
 	# Preserve existing Dictionary identity so callers holding object references
@@ -477,7 +482,7 @@ func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 		_update_runtime_state()
 		return {"ok":false,"error":last_error}
 	_publish_projection(candidate)
-	status = "READY"
+	status = "READY_BACKUP_STALE" if str(store.status) == "READY_BACKUP_STALE" else "READY"
 	last_error = ""
 	if backend_requested == "sqlite" and not _write_sqlite_marker():
 		world.runtime_state["object_event_marker_warning"] = last_error
