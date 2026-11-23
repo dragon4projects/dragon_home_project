@@ -13,6 +13,10 @@ on:
       - '.github/workflows/dragon-house-v021-sqlite-native-os.yml'
   workflow_dispatch:
 
+concurrency:
+  group: dragon-house-v021-sqlite-native-os
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -51,6 +55,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          New-Item -ItemType File -Path "dragon_house_clean\\assets\\.gdignore" -Force | Out-Null
           $tests = @(
             "res://tests/test_object_event_sqlite_v021.gd",
             "res://tests/test_object_event_json_to_sqlite_v021.gd",
@@ -108,6 +113,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          touch dragon_house_clean/assets/.gdignore
           cd dragon_house_clean
           for t in \
             tests/test_object_event_sqlite_v021.gd \
