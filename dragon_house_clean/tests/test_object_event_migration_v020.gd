@@ -21,6 +21,13 @@ func _write_text(path: String, text: String) -> void:
 	file.flush()
 	file.close()
 
+func _has_event(entries: Array, event_name: String) -> bool:
+	for raw_entry in entries:
+		var entry: Dictionary = raw_entry
+		if str(entry.get("event","")) == event_name:
+			return true
+	return false
+
 func run() -> void:
 	var path := "user://object_event_migration_v020.json"
 	_cleanup(path)
@@ -88,6 +95,9 @@ func run() -> void:
 		"REPLAYED_FROM_BACKUP")
 	assert(FileAccess.file_exists(path+".world_events_v1.json.corrupt"))
 	assert(recovered.object_event_revision()==1)
+	assert(not _has_event(recovered.journal_entries(64),
+		"OBJECT_AMBIENT_PROTECTION_CHANGED"),
+		"journal must not retain an event lost with corrupt primary")
 
 	# Corrupt both canonical copies. Snapshot remains readable for inspection,
 	# but future object mutations must fail closed.
@@ -105,5 +115,5 @@ func run() -> void:
 	assert(fail_closed.object_event_revision()==revision_before)
 
 	_cleanup(path)
-	print("OBJECT_EVENT_MIGRATION_V020_PASS json=migrated history=preserved backup=replayed corrupt=quarantined double_corrupt=fail_closed")
+	print("OBJECT_EVENT_MIGRATION_V020_PASS json=migrated history=preserved backup=replayed journal=canonical corrupt=quarantined double_corrupt=fail_closed")
 	quit(0)
