@@ -65,7 +65,14 @@ func run() -> void:
 	assert(not ambient.roam_one_step("npc_rat_hero",private_room["id"]))
 	assert(_has_event(world.journal_entries(64),"CREATURE_ACCESS_REJECTED"))
 	assert(ambient.roam_one_step("npc_rat_hero",common_b["id"]))
+	assert(str(world.creatures["npc_rat_hero"]["phase"])=="travel")
+	var travel_steps := 0
+	while str(world.creatures["npc_rat_hero"].get("phase",""))=="travel" and travel_steps<500:
+		ambient.advance_travel("npc_rat_hero",0.05)
+		travel_steps += 1
+	assert(travel_steps<500)
 	assert(str(world.creatures["npc_rat_hero"]["room_id"])==str(common_b["id"]))
+	assert(_has_event(world.journal_entries(64),"CREATURE_ROAMED"))
 	assert(ambient.stash_carried("npc_rat_hero"))
 	assert(str(mug["state"])=="STASHED")
 	assert(str(mug["current_room_id"])==str(common_b["id"]))
@@ -89,5 +96,5 @@ func run() -> void:
 	assert(_has_event(loaded.journal_entries(64),"OBJECT_STASHED"))
 
 	_cleanup(path)
-	print("AMBIENT_CREATURES_V018_PASS public_roam=yes private_bypass=no rejected_logged=yes owner_label=evidence_only opt_in_pickup=yes protected=no stash=persistent journal=causal guest=registered")
+	print("AMBIENT_CREATURES_V018_PASS public_roam=yes private_bypass=no rejected_logged=yes waypoint_travel=yes owner_label=evidence_only opt_in_pickup=yes protected=no stash=persistent journal=causal guest=registered")
 	quit(0)
