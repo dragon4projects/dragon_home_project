@@ -749,7 +749,7 @@ func _object_offset(object_id: String) -> Vector3:
 	for i in range(object_id.length()):
 		code = (code * 33 + object_id.unicode_at(i)) & 0x7fffffff
 	var ox := (float(code % 7) - 3.0) * 0.16
-	var oz := (float((code / 7) % 5) - 2.0) * 0.12
+	var oz := (float((code / 7) as int % 5) - 2.0) * 0.12
 	return Vector3(ox,0.0,oz)
 
 func make_physical_objects() -> void:
