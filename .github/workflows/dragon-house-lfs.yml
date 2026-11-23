@@ -118,6 +118,34 @@ jobs:
           done
           python3 tests/test_import_nov_assets.py | tee -a godot_tests.log
 
+      - name: Render v0.11 cutaway QA views
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq xvfb
+          fi
+          cd dragon_house_clean
+          mkdir -p private_review
+          xvfb-run -a /tmp/Godot_v4.7.2-stable_linux.x86_64 --path . \
+            --rendering-method gl_compatibility \
+            --script res://tests/capture_v011_review.gd | tee v011_render_review.log
+          grep -q "V011_RENDER_REVIEW_PASS" v011_render_review.log
+          test -s private_review/v011_house.png
+          test -s private_review/v011_common_r3.png
+
+      - name: Store v0.11 cutaway QA views
+        uses: actions/upload-artifact@v4
+        with:
+          name: dragon-house-v011-cutaway-review
+          path: |
+            dragon_house_clean/private_review/v011_house.png
+            dragon_house_clean/private_review/v011_common_r3.png
+            dragon_house_clean/v011_render_review.log
+          retention-days: 3
+          if-no-files-found: error
+
       - name: Download original Godot 4.7.2 export templates
         shell: bash
         run: |
