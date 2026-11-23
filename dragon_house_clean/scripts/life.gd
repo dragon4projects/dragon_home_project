@@ -2,11 +2,13 @@ extends RefCounted
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
 const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 const RoomStations = preload("res://scripts/room_stations.gd")
+const AmbientCreatureRuntime = preload("res://scripts/ambient_creature_runtime.gd")
 ## Autonomous utility/need scheduler. No external events or AI dependency.
 var world
 var media_runtime = MediaRuntime.new()
 var locomotion = RoomLocomotion.new()
 var stations = RoomStations.new()
+var creature_runtime = AmbientCreatureRuntime.new()
 var rng := RandomNumberGenerator.new()
 var clock := 0.0
 var max_jobs_per_tick := 2
@@ -81,6 +83,7 @@ const INTENTS := {
 func setup(p_world) -> void:
 	world = p_world
 	media_runtime.setup(world)
+	creature_runtime.setup(world)
 	rng.seed = 814223
 	clock = world.sim_clock
 	stations.reconcile(world)
@@ -572,6 +575,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 func tick(delta: float) -> void:
 	clock += delta
 	world.sim_clock = clock
+	creature_runtime.tick(delta)
 	var now: int = int(Time.get_unix_time_from_system())
 	if now - last_cleanup_wall_time >= 60:
 		var recovered: int = media_runtime.cleanup_abandoned(now)
