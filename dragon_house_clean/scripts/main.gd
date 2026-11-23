@@ -29,6 +29,9 @@ var actor_animations: Dictionary = {}
 var camera: Camera3D
 var room_root: Node3D
 var actor_root: Node3D
+var creature_root: Node3D
+var creature_nodes: Dictionary = {}
+var creature_labels: Dictionary = {}
 var object_root: Node3D
 var object_nodes: Dictionary = {}
 var actor_sprites: Dictionary = {}
@@ -139,12 +142,16 @@ func _ready() -> void:
 	actor_root = Node3D.new()
 	actor_root.name = "Residents"
 	add_child(actor_root)
+	creature_root = Node3D.new()
+	creature_root.name = "AmbientCreatures"
+	add_child(creature_root)
 	object_root = Node3D.new()
 	object_root.name = "PhysicalObjects"
 	add_child(object_root)
 	make_rooms()
 	make_residents()
 	build_interface()
+	make_creatures()
 	make_physical_objects()
 	fit_house_camera()
 	smooth_focus = desired_focus
@@ -743,6 +750,61 @@ func make_sprite_texture(is_manka: bool) -> Texture2D:
 					color = Color("#713a4e")
 				img.set_pixel(px, py, color)
 	return ImageTexture.create_from_image(img)
+
+func make_creatures() -> void:
+	if creature_root == null:
+		return
+	for child in creature_root.get_children():
+		child.queue_free()
+	creature_nodes.clear()
+	creature_labels.clear()
+	var placeholder := make_sprite_texture(true)
+	for creature_id in world.creatures:
+		var creature: Dictionary = world.creatures[creature_id]
+		if not bool(creature.get("active",false)):
+			continue
+		var anchor := Node3D.new()
+		anchor.name = str(creature_id)
+		creature_root.add_child(anchor)
+		var sprite := Sprite3D.new()
+		sprite.name = "Body"
+		sprite.texture = placeholder
+		sprite.pixel_size = 0.0055
+		sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+		sprite.position.y = 0.38
+		anchor.add_child(sprite)
+		var label := label3(anchor,world.creature_display_label(str(creature_id)),
+			Vector3(0,0.92,0.15),21,Color("#ead8bf"))
+		label.visible = false
+		creature_nodes[str(creature_id)] = anchor
+		creature_labels[str(creature_id)] = label
+	update_creatures()
+
+func update_creatures() -> void:
+	var active_count := 0
+	for creature_id in world.creatures:
+		if bool(world.creatures[creature_id].get("active",false)):
+			active_count += 1
+	if active_count != creature_nodes.size():
+		make_creatures()
+		return
+	for creature_id in creature_nodes:
+		var creature: Dictionary = world.creatures.get(creature_id,{})
+		var anchor: Node3D = creature_nodes[creature_id]
+		if creature.is_empty() or not bool(creature.get("active",false)):
+			anchor.visible = false
+			continue
+		anchor.visible = true
+		var y := float(creature.get("visual_y",
+			float(creature.get("level",0))*H))
+		anchor.position = Vector3(
+			float(creature.get("x",0.0)),y,float(creature.get("z",0.25)))
+		var label: Label3D = creature_labels.get(creature_id)
+		if label != null:
+			label.text = world.creature_display_label(creature_id)
+			var owner_id := str(creature.get("owner_id",""))
+			# Owner labels are evidence-driven and shown only close enough to read.
+			label.visible = owner_id != "" and zoom_current < 26.0
 
 func _object_offset(object_id: String) -> Vector3:
 	var code := 0
@@ -1681,6 +1743,7 @@ func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
 	life.tick(delta)
 	update_residents(delta)
+	update_creatures()
 	update_physical_objects()
 	apply_camera(delta)
 	save_timer += delta
