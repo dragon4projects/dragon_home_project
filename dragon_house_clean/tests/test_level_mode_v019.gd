@@ -11,13 +11,9 @@ func run() -> void:
 	var path := "user://level_mode_v019.json"
 	_cleanup(path)
 	var scene = load("res://scenes/main.tscn").instantiate()
+	scene.world.save_path = path
 	root.add_child(scene)
 	current_scene = scene
-	scene.world.save_path = path
-	scene.world.seed_world()
-	scene.semantic_view.install(scene.world,"HOUSE")
-	scene.make_rooms()
-	scene.make_residents()
 	await process_frame
 	await process_frame
 
