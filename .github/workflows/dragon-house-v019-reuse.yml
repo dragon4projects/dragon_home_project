@@ -45,6 +45,8 @@ jobs:
           tests=(
             tests/test_life_scheduler_v019.gd
             tests/test_life_due_wake_integration_v019.gd
+            tests/test_semantic_view_v019.gd
+            tests/test_level_mode_v019.gd
             tests/test_model.gd
             tests/test_social.gd
             tests/test_object_lifecycle_v017.gd
