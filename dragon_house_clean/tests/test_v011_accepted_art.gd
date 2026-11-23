@@ -9,6 +9,18 @@ func _ids(items:Array)->Array:
 		out.append(str(item.get("id","")))
 	return out
 
+func _active_anchor_ids(scene,room:Dictionary)->Array:
+	if room.is_empty():
+		return []
+	var group:Dictionary=scene.world.merged_group(int(room["x"]),int(room["level"]))
+	var module_index:=-1
+	for i in range(group["cells"].size()):
+		if str(group["cells"][i]["id"])==str(room["id"]):
+			module_index=i
+			break
+	return _ids(scene.life.stations.furniture.for_room_variant(
+		room,int(group.get("width",1)),module_index))
+
 func run()->void:
 	var scene=load("res://scenes/main.tscn").instantiate()
 	root.add_child(scene)
@@ -23,23 +35,23 @@ func run()->void:
 	var common_left=scene.world.get_room(-2,0)
 	var common_mid=scene.world.get_room(-1,0)
 	var common_right=scene.world.get_room(0,0)
-	assert(_ids(scene.life.stations.furniture.for_room(common_left))==[
+	assert(_active_anchor_ids(scene,common_left)==[
 		"common_sofa_left_seat_a","common_sofa_left_seat_b"])
-	assert(scene.life.stations.furniture.for_room(common_mid).is_empty())
-	assert(_ids(scene.life.stations.furniture.for_room(common_right))==[
+	assert(_active_anchor_ids(scene,common_mid).is_empty())
+	assert(_active_anchor_ids(scene,common_right)==[
 		"common_bench_right_seat_a","common_chair_right_seat_a"])
 	assert(not _ids(scene.life.stations.furniture.for_room(common_left)).has(
 		"common_chair_left_seat_a"))
-	assert(_ids(scene.life.stations.furniture.for_room(scene.world.get_room(-3,0)))==[
+	assert(_active_anchor_ids(scene,scene.world.get_room(-3,0))==[
 		"study_chair_work"])
 	# Library art accepted by owner is R2-only. The seeded house still has a
 	# single Library R1, so its live interaction contract must remain the
 	# procedural TABLE_LIBRARY pair until a real R2 merge exists.
 	var library_r1=scene.world.get_room(2,0)
 	assert(int(scene.world.merged_group(2,0)["width"])==1)
-	assert(_ids(scene.life.stations.furniture.for_room(library_r1))==[
+	assert(_active_anchor_ids(scene,library_r1)==[
 		"table_left","table_right"])
-	assert(_ids(scene.life.stations.furniture.for_room(scene.world.get_room(1,0)))==[
+	assert(_active_anchor_ids(scene,scene.world.get_room(1,0))==[
 		"rest_sofa_seat_a","rest_sofa_seat_b","rest_lounge_seat_a"])
 
 	scene.selected_room=common_left["id"]
