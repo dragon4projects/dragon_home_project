@@ -76,12 +76,22 @@ func run() -> void:
 		var anchors: Array=_active_anchors(reg,scene.world,room)
 		if anchors.is_empty():
 			continue
-		scene.zoom_current=10.0
-		scene.smooth_focus=Vector3(float(room["x"])*scene.W,float(room["level"])*scene.H,0)
+		# Since v0.19 semantic LOD, numeric zoom inside HOUSE/LEVEL never
+		# materializes rich furniture. The visible-furniture contract belongs
+		# to ROOM/FOLLOW detail, so inspect each public room in ROOM mode.
+		scene.selected_room=str(room["id"])
+		scene.set_mode("ROOM")
+		scene.zoom_current=scene.zoom
+		scene.smooth_focus=Vector3(float(room["x"])*scene.W,float(room["level"])*scene.H+1.45,0)
 		scene.update_render_lod()
 		var group: Dictionary=scene.world.merged_group(int(room["x"]),int(room["level"]))
 		var visual:Node3D=scene.room_root.get_node(group["primary_id"])
-		var module:Node3D=visual.get_node("LocalFurniture").get_node(str(room["id"])+"_furniture")
+		var local_furniture:Node3D=visual.get_node_or_null("LocalFurniture")
+		assert(local_furniture!=null,
+			"Public ROOM detail must expose LocalFurniture for advertised anchors")
+		var module:Node3D=local_furniture.get_node_or_null(str(room["id"])+"_furniture")
+		assert(module!=null,
+			"Advertised station room must materialize its furniture module in ROOM")
 		for a in anchors:
 			var expected: String=str(a["furniture_id"])
 			assert(module.get_node_or_null(expected)!=null,
