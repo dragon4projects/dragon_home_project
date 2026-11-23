@@ -25,12 +25,12 @@ func capacity(room: Dictionary) -> int:
 func _spot(x: float, z: float, kind: String = "standing", object_id: String = "") -> Dictionary:
 	return {"offset":Vector2(x,z),"kind":kind,"furniture_id":object_id}
 
-func layout(room: Dictionary) -> Array:
+func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 	# The physical furniture anchors are data, never inferred from a painted
 	# backdrop. Art-agent proposals do not automatically change simulation.
 	var count: int=capacity(room)
 	var positions: Array=[]
-	for item in furniture.for_room(room):
+	for item in anchors:
 		positions.append({
 			"id":str(item["id"]),
 			"offset":Vector2(float(item["x"]),float(item["z"])),
@@ -75,6 +75,26 @@ func layout(room: Dictionary) -> Array:
 	for place in positions:
 		assert(absf(float(place["offset"].x))<FLOOR_X_LIMIT)
 	return positions
+
+func layout(room: Dictionary) -> Array:
+	# Context-free fallback used by legacy migration/tests. Width-specific art
+	# requires layout_for_world(), because a room dictionary alone cannot know
+	# whether its logical cell is currently part of R1, R2 or R3.
+	return _layout_from_anchors(room,furniture.for_room(room))
+
+func layout_for_world(world, room: Dictionary) -> Array:
+	if room.is_empty():
+		return []
+	var group:Dictionary=world.merged_group(int(room.get("x",0)),int(room.get("level",0)))
+	if group.is_empty():
+		return layout(room)
+	var module_index:=-1
+	for i in range(group.get("cells",[]).size()):
+		if str(group["cells"][i].get("id",""))==str(room.get("id","")):
+			module_index=i
+			break
+	var anchors:Array=furniture.for_room_variant(room,int(group.get("width",1)),module_index)
+	return _layout_from_anchors(room,anchors)
 
 func _intent_prefers_station(intent: String, kind: String) -> bool:
 	match intent:
@@ -123,7 +143,7 @@ func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> 
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,id) or capacity(room)==0:
 		return {}
 	var used: Dictionary = used_slots(world,str(room["id"]),[id])
-	var points: Array = layout(room)
+	var points: Array = layout_for_world(world,room)
 	# If the actor is continuing a reservation, keep its exact location.
 	var prior := int(actor.get("station_slot",-1))
 	if str(actor.get("station_room_id","")) == room["id"] and prior >= 0 and prior < points.size() and not used.has(prior):
@@ -178,7 +198,7 @@ func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Di
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,str(actor.get("id",""))) or not world.is_accessible(room,str(partner.get("id",""))):
 		return {}
 	var used: Dictionary=used_slots(world,str(room["id"]),[str(actor["id"]),str(partner["id"])])
-	var points: Array=layout(room)
+	var points: Array=layout_for_world(world,room)
 	var indexes: Array=_paired_spots(points,used,true)
 	if indexes.is_empty():
 		indexes=_paired_spots(points,used,false)
@@ -192,7 +212,7 @@ func can_reserve(world, room: Dictionary, pair_needed: bool = false) -> bool:
 		return false
 	if not pair_needed:
 		return true
-	return not _paired_spots(layout(room),used_slots(world,str(room["id"]))).is_empty()
+	return not _paired_spots(layout_for_world(world,room),used_slots(world,str(room["id"]))).is_empty()
 
 func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 	if claim.is_empty():
@@ -232,7 +252,7 @@ func reconcile(world) -> int:
 		if room_id == "" and slot == -1:
 			continue
 		var room: Dictionary = world.room_by_id(room_id)
-		var authored: Array = layout(room) if not room.is_empty() else []
+		var authored: Array = layout_for_world(world,room) if not room.is_empty() else []
 		var stable_id: String=str(actor.get("station_anchor_id",""))
 		if stable_id!="":
 			slot = -1
