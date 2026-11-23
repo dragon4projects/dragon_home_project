@@ -89,11 +89,28 @@ func _write_sqlite_marker() -> bool:
 func _select_store() -> void:
 	var requested: String = OS.get_environment(
 		"DRAGON_OBJECT_EVENT_BACKEND").strip_edges().to_lower()
-	var sticky_sqlite: bool = _sqlite_storage_exists() or 		_sqlite_marker_exists() or _saved_backend_is_sqlite()
-	# Once SQLite canonical state exists, it always wins. An environment
-	# variable may opt a clean store into SQLite, but may never downgrade an
-	# existing SQLite world back to a stale JSON history.
-	if sticky_sqlite or requested == "sqlite":
+	var sticky_sqlite: bool = _sqlite_storage_exists() or \
+		_sqlite_marker_exists() or _saved_backend_is_sqlite()
+	var sqlite_available: bool = ClassDB.class_exists("SQLite")
+	# A canonical SQLite world can never downgrade, even if the extension later
+	# disappears; setup then fails closed and preserves evidence.
+	if sticky_sqlite:
+		store = SQLiteEventStore.new()
+		backend_requested = "sqlite"
+		return
+	# Explicit JSON remains a dev/compatibility override only before cutover.
+	if requested == "json":
+		store = JsonEventStore.new()
+		backend_requested = "json"
+		return
+	if requested == "sqlite":
+		store = SQLiteEventStore.new()
+		backend_requested = "sqlite"
+		return
+	# Production/default behavior: when the vendored extension is present, new
+	# worlds and v0.20 JSON worlds enter the SQLite path automatically. A source
+	# checkout missing native LFS bytes can still use JSON until SQLite exists.
+	if sqlite_available:
 		store = SQLiteEventStore.new()
 		backend_requested = "sqlite"
 	else:
