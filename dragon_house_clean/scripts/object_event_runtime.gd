@@ -214,7 +214,12 @@ func setup(p_world) -> bool:
 func _update_runtime_state() -> void:
 	if world == null:
 		return
-	world.runtime_state["object_event_revision"] = store.last_sequence()
+	var reported_revision: int = store.last_sequence()
+	if backend_requested == "sqlite":
+		var marker_sequence: int = _sqlite_marker_sequence()
+		if marker_sequence > reported_revision:
+			reported_revision = marker_sequence
+	world.runtime_state["object_event_revision"] = reported_revision
 	world.runtime_state["object_event_status"] = status
 	world.runtime_state["object_event_backend"] = str(store.backend_name()) if store.has_method("backend_name") else backend_requested
 	world.runtime_state["object_event_store_path"] = store.storage_path()
