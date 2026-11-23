@@ -5,7 +5,7 @@ var save_path: String = SAVE_PATH
 var sim_clock: float = 0.0
 const MODULE_W := 4.8
 const FLOOR_H := 4.6
-const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "lift", "artifact"]
+const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "guest", "lift", "artifact"]
 const MERGEABLE_TYPES := ["common", "study", "rest", "library", "cinema", "music", "workshop", "artifact"]
 const MAX_MERGE := 3
 const SHARED_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "lift", "artifact"]
@@ -48,7 +48,9 @@ func make_room(x: int, level: int, room_type: String) -> Dictionary:
 		"type": room_type,
 		"privacy": "door_only" if room_type == "private" else "public",
 		"owner_id": "",
-		"public_frontage": room_type == "private",
+		"public_frontage": room_type in ["private","guest"],
+		"guest_access_state": "open" if room_type == "guest" else "",
+		"display_name": "Гостевая" if room_type == "guest" else "",
 	}
 	next_room_id += 1
 	rooms.append(room)
@@ -94,9 +96,54 @@ func build(x: int, level: int, room_type: String) -> bool:
 func is_accessible(room: Dictionary, actor_id: String = "") -> bool:
 	if room.is_empty():
 		return false
+	if str(room.get("type","")) == "guest" and str(room.get("guest_access_state","open")) == "closed":
+		return actor_id != "" and str(room.get("owner_id","")) == actor_id
 	if room.get("privacy", "public") != "public":
 		return actor_id != "" and room.get("owner_id", "") == actor_id
 	return true
+
+func public_cutaway_allowed(room: Dictionary) -> bool:
+	if room.is_empty() or str(room.get("privacy","public")) != "public":
+		return false
+	if str(room.get("type","")) == "guest" and str(room.get("guest_access_state","open")) == "closed":
+		return false
+	return true
+
+func configure_guest_room(room_id: String, guest_id: String,
+		display_name: String = "") -> bool:
+	var room: Dictionary = room_by_id(room_id)
+	var guest: Dictionary = residents.get(guest_id,{})
+	if room.is_empty() or str(room.get("type","")) != "guest":
+		return false
+	if guest.is_empty() or str(guest.get("entity_type","")) != "guest":
+		return false
+	room["owner_id"] = guest_id
+	room["guest_access_state"] = "open"
+	room["display_name"] = display_name if display_name != "" else (
+		"Гостевая · " + str(guest.get("name",guest_id)))
+	guest["home_room_id"] = room_id
+	_append_journal("GUEST_ROOM_ASSIGNED",guest_id,room_id,"",room_id,
+		{"display_name":str(room["display_name"])})
+	return true
+
+func set_guest_room_open(room_id: String, open: bool) -> bool:
+	var room: Dictionary = room_by_id(room_id)
+	if room.is_empty() or str(room.get("type","")) != "guest" or str(room.get("owner_id","")) == "":
+		return false
+	var previous := str(room.get("guest_access_state","open"))
+	var next := "open" if open else "closed"
+	if previous == next:
+		return true
+	room["guest_access_state"] = next
+	_append_journal("GUEST_ROOM_ACCESS_CHANGED",str(room.get("owner_id","")),room_id,
+		previous,next,{"public_cutaway":open})
+	return true
+
+func guest_room_for(guest_id: String) -> Dictionary:
+	for room in rooms:
+		if str(room.get("type","")) == "guest" and str(room.get("owner_id","")) == guest_id:
+			return room
+	return {}
 
 func allows_transit(room: Dictionary) -> bool:
 	# The publicly visible walking aisle is IN FRONT of a private door.
@@ -435,6 +482,8 @@ func register_guest_actor(actor_id: String, display_name: String,
 	}
 	_append_journal("GUEST_REGISTERED", actor_id, actor_id, "", room_id,
 		{"display_name":display_name,"species":species,"bank_id":bank_id})
+	if str(room.get("type","")) == "guest":
+		configure_guest_room(room_id,actor_id)
 	return true
 
 func merge_reference_book_metadata(items: Array) -> int:
@@ -574,6 +623,13 @@ func load_or_seed() -> void:
 	for saved_room in rooms:
 		if saved_room.get("type", "") == "private" and not saved_room.has("public_frontage"):
 			saved_room["public_frontage"] = true
+		if saved_room.get("type","") == "guest":
+			if not saved_room.has("public_frontage"):
+				saved_room["public_frontage"] = true
+			if not saved_room.has("guest_access_state"):
+				saved_room["guest_access_state"] = "open"
+			if not saved_room.has("display_name"):
+				saved_room["display_name"] = "Гостевая"
 	residents = parsed["residents"]
 	sync_resident_profiles()
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})
