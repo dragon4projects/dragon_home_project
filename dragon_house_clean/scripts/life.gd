@@ -342,6 +342,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 const PASS_TRIGGER_X := 1.85
 const PASS_LANE_OFFSET := 0.34
 const FOLLOW_GAP := 0.58
+const OPPOSING_YIELD_X := 0.54
 const PASSING_WAYPOINT_KINDS := [
 	"leave_station","room_center","approach_public_frontage","door_out","door_in"
 ]
@@ -390,6 +391,15 @@ func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
 			# makes the choice deterministic across saves and machines.
 			var lane_sign:float=-1.0 if actor_id<str(other_id) else 1.0
 			adjusted.z=clampf(target.z+lane_sign*PASS_LANE_OFFSET,-1.45,1.64)
+			# Close to the actual crossing one walker has deterministic
+			# right-of-way. The other holds briefly instead of intersecting
+			# the same screen-space body.
+			if absf(relative_x)<OPPOSING_YIELD_X and actor_id>str(other_id):
+				return {"target":adjusted,"wait":true}
+			# A short transient X target makes the side-step happen before the
+			# walkers meet. authored_target remains unchanged in _move().
+			adjusted.x=at.x+direction*minf(0.38,absf(dx))
+			return {"target":adjusted,"wait":false}
 	return {"target":adjusted,"wait":false}
 
 func _move(actor: Dictionary, delta: float) -> void:
