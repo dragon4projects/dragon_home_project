@@ -1313,13 +1313,16 @@ func apply_camera(delta: float) -> void:
 	register_loaded_foregrounds()
 
 func update_render_lod() -> void:
-	# Keep cutaway shell/cues visible, materialize nearby details on demand.
+	# Keep the inexpensive shell/cues visible at HOUSE scale. Detailed 3D depth,
+	# rear alcoves, rich furniture and accepted full-resolution art are useful
+	# only near the camera; rendering them across the whole house wastes draw
+	# calls on geometry that is smaller than a few screen pixels.
 	# The camera never activates an owner-private interior.
 	for group_node in room_root.get_children():
 		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
 		var cues: Node3D = group_node.get_node_or_null("Layer_OverviewCues")
+		var near: bool = _is_near_detail(group_node) if furniture != null else false
 		if furniture != null:
-			var near: bool = _is_near_detail(group_node)
 			if near:
 				_load_room_art(group_node)
 				_populate_furniture(group_node)
@@ -1329,6 +1332,17 @@ func update_render_lod() -> void:
 			furniture.visible = near
 			if cues != null:
 				cues.visible = not near
+		var cutaway_depth: Node3D = group_node.get_node_or_null(
+			"Layer_Structure/Stage_CutawayDepth")
+		if cutaway_depth != null:
+			cutaway_depth.visible = near
+		var rear_stage: Node3D = group_node.get_node_or_null(
+			"Layer_Background/Stage_Backwall")
+		if rear_stage != null:
+			var art_layer: Node3D = group_node.get_node_or_null("Layer_ApprovedArt")
+			var backdrop_loaded: bool = art_layer != null and (
+				art_layer.get_node_or_null("Art_backdrop") != null)
+			rear_stage.visible = near and not backdrop_loaded
 		var roof_label: Label3D = group_node.get_node_or_null("RoomRoofLabel")
 		if roof_label != null:
 			roof_label.visible = zoom_current >= 35.0 and current_mode != "FOLLOW"
