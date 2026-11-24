@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "note": "Physical Sprite3D crops from accepted transparent room layers. Crop rectangles are alpha-component bounds; physical X/Y/Z come from calibrated TEEA anchors or the original wall projection. No topology mutation.",
+  "note": "Physical Sprite3D crops from accepted transparent room layers. Crop rectangles are alpha-component bounds; physical X/Y/Z come from calibrated TEEA anchors or the original wall projection. No topology mutation. Components carry explicit anchor_mode and use the same 0.62→1.00 Z depth-scale law as actors.",
   "pixel_size": 0.003125,
   "variants": {
     "common/R3": {
@@ -23,7 +23,8 @@
               "x": -5.25,
               "y": 0.384375,
               "z": -0.88,
-              "source_anchor": "common_sofa_left"
+              "source_anchor": "common_sofa_left",
+              "anchor_mode": "floor"
             },
             {
               "id": "side_table",
@@ -36,7 +37,8 @@
               "x": -3.55,
               "y": 0.264062,
               "z": -0.1,
-              "source_anchor": "common_side_table"
+              "source_anchor": "common_side_table",
+              "anchor_mode": "floor"
             },
             {
               "id": "chair_left",
@@ -49,7 +51,8 @@
               "x": -2.55,
               "y": 0.5,
               "z": -0.72,
-              "source_anchor": "common_chair_left"
+              "source_anchor": "common_chair_left",
+              "anchor_mode": "floor"
             },
             {
               "id": "bench_right",
@@ -62,7 +65,8 @@
               "x": 3.253125,
               "y": 0.475,
               "z": -0.82,
-              "source_anchor": "common_bench_right"
+              "source_anchor": "common_bench_right",
+              "anchor_mode": "floor"
             },
             {
               "id": "round_table",
@@ -75,7 +79,8 @@
               "x": 4.251563,
               "y": 0.475,
               "z": 0.18,
-              "source_anchor": "common_round_table"
+              "source_anchor": "common_round_table",
+              "anchor_mode": "floor"
             },
             {
               "id": "chair_right",
@@ -88,7 +93,8 @@
               "x": 5.35,
               "y": 0.485937,
               "z": -0.78,
-              "source_anchor": "common_chair_right"
+              "source_anchor": "common_chair_right",
+              "anchor_mode": "floor"
             }
           ]
         },
@@ -107,7 +113,8 @@
               "x": -6.75,
               "y": 2.225,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             },
             {
               "id": "bookshelf_left",
@@ -120,7 +127,8 @@
               "x": -6.1,
               "y": 0.9859375,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "floor"
             },
             {
               "id": "wall_light_mid",
@@ -133,7 +141,8 @@
               "x": -0.45,
               "y": 2.234375,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             },
             {
               "id": "bookshelf_mid",
@@ -146,7 +155,8 @@
               "x": 0.95,
               "y": 0.965625,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "floor"
             },
             {
               "id": "wall_light_right_mid",
@@ -159,7 +169,8 @@
               "x": 3.15,
               "y": 2.184375,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             },
             {
               "id": "wall_light_far_right",
@@ -172,7 +183,8 @@
               "x": 6.55,
               "y": 2.2046875,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             }
           ]
         }
@@ -198,7 +210,8 @@
               "x": -2.15,
               "y": 0.509375,
               "z": -0.68,
-              "source_anchor": "library_chair_left"
+              "source_anchor": "library_chair_left",
+              "anchor_mode": "floor"
             },
             {
               "id": "table",
@@ -211,7 +224,8 @@
               "x": 0,
               "y": 0.342187,
               "z": 0.18,
-              "source_anchor": "library_table"
+              "source_anchor": "library_table",
+              "anchor_mode": "floor"
             },
             {
               "id": "chair_right",
@@ -224,7 +238,8 @@
               "x": 2.15,
               "y": 0.429688,
               "z": -0.68,
-              "source_anchor": "library_chair_right"
+              "source_anchor": "library_chair_right",
+              "anchor_mode": "floor"
             }
           ]
         },
@@ -243,7 +258,8 @@
               "x": -4.35,
               "y": 2.184375,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             },
             {
               "id": "bookshelf_left",
@@ -256,7 +272,8 @@
               "x": -3.45,
               "y": 0.9796875,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "floor"
             },
             {
               "id": "bookshelf_mid",
@@ -269,7 +286,8 @@
               "x": 0.15,
               "y": 0.9171875,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "floor"
             },
             {
               "id": "wall_light_mid",
@@ -282,7 +300,8 @@
               "x": 0,
               "y": 2.234375,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             },
             {
               "id": "bookshelf_right",
@@ -295,7 +314,8 @@
               "x": 3.35,
               "y": 0.9578125,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "floor"
             },
             {
               "id": "wall_light_right",
@@ -308,7 +328,8 @@
               "x": 4.25,
               "y": 2.184375,
               "z": -1.7,
-              "source_anchor": "projected_back_wall"
+              "source_anchor": "projected_back_wall",
+              "anchor_mode": "wall"
             }
           ]
         }

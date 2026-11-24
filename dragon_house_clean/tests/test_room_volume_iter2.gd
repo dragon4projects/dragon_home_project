@@ -116,6 +116,19 @@ func run() -> void:
 	assert(absf(chair_right.position.z+0.78)<0.01)
 	assert(round_table.position.z > sofa.position.z+0.9,
 		"Front table must occupy a visibly nearer Z plane than the rear sofa")
+	assert(shelf_left.scale.x < sofa.scale.x)
+	assert(sofa.scale.x < side_table.scale.x)
+	assert(side_table.scale.x < round_table.scale.x,
+		"Physical art components must grow continuously toward the front")
+	assert(absf(shelf_left.scale.x-scene.world.room_space.perspective_scale(shelf_left.position.z))<0.001)
+	assert(absf(sofa.scale.x-scene.world.room_space.perspective_scale(sofa.position.z))<0.001)
+	assert(absf(round_table.scale.x-scene.world.room_space.perspective_scale(round_table.position.z))<0.001)
+	var sofa_floor:float=sofa.position.y-float(sofa.texture.get_height())*sofa.pixel_size*sofa.scale.y*0.5
+	var table_floor:float=side_table.position.y-float(side_table.texture.get_height())*side_table.pixel_size*side_table.scale.y*0.5
+	assert(absf(sofa_floor-float(sofa.get_meta("floor_y",999.0)))<0.001)
+	assert(absf(table_floor-float(side_table.get_meta("floor_y",999.0)))<0.001)
+	assert(absf(sofa_floor-0.025)<0.03 and absf(table_floor-0.025)<0.03,
+		"Depth scaling must preserve the physical floor contact point")
 	assert(not rear.visible,
 		"Procedural Stage_Backwall must be hidden while a real backdrop is loaded")
 	for child in art.get_children():
@@ -152,6 +165,9 @@ func run() -> void:
 	assert(absf(lib_right.position.x-2.15)<0.01 and absf(lib_right.position.z+0.68)<0.01)
 	assert(absf(lib_table.position.x)<0.01 and absf(lib_table.position.z-0.18)<0.01)
 	assert(lib_table.position.z > lib_left.position.z+0.8)
+	assert(lib_shelf_left.scale.x < lib_left.scale.x and lib_left.scale.x < lib_table.scale.x,
+		"Library R2 must show rear-to-front perspective scaling")
+	assert(absf(lib_table.scale.x-scene.world.room_space.perspective_scale(lib_table.position.z))<0.001)
 
-	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true component_depth=true rear_decor_sort=true")
+	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true component_depth=true rear_decor_sort=true depth_scale=true")
 	quit(0)

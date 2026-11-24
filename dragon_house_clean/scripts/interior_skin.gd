@@ -16,6 +16,13 @@ const Z_FOR_ROLE := {
 	"front_trim": 1.56,
 	"light_overlay": 1.60
 }
+const DEPTH_BACK_Z := -1.95
+const DEPTH_FRONT_Z := 1.65
+const DEPTH_BACK_SCALE := 0.62
+
+func _visual_depth_scale(z: float) -> float:
+	var t:float=clampf((z-DEPTH_BACK_Z)/(DEPTH_FRONT_Z-DEPTH_BACK_Z),0.0,1.0)
+	return lerpf(DEPTH_BACK_SCALE,1.0,t)
 var config: Dictionary = {}
 var textures: Dictionary = {}
 var max_cache := 6
@@ -165,14 +172,26 @@ func _add_component_role(parent: Node3D, room_type: String, width: int,
 		sprite.billboard=BaseMaterial3D.BILLBOARD_DISABLED
 		sprite.pixel_size=float(item.get("pixel_size",
 			component_config.get("pixel_size",0.003125)))
-		sprite.position=Vector3(float(item.get("x",0.0)),
-			float(item.get("y",0.0)),float(item.get("z",Z_FOR_ROLE.get(role,-0.8))))
+		var component_z:float=float(item.get("z",Z_FOR_ROLE.get(role,-0.8)))
+		var component_y:float=float(item.get("y",0.0))
+		var depth_scale:float=_visual_depth_scale(component_z)
+		var anchor_mode:String=str(item.get("anchor_mode",
+			"floor" if role=="furniture_back" else "wall"))
+		if anchor_mode=="floor":
+			var half_height:float=float(tex.get_height())*sprite.pixel_size*0.5
+			var floor_y:float=component_y-half_height
+			component_y=floor_y+half_height*depth_scale
+			sprite.set_meta("floor_y",floor_y)
+		sprite.position=Vector3(float(item.get("x",0.0)),component_y,component_z)
+		sprite.scale=Vector3.ONE*depth_scale
 		sprite.no_depth_test=false
 		sprite.shaded=false
 		sprite.render_priority=0
 		sprite.set_meta("physical_component",true)
 		sprite.set_meta("component_role",role)
 		sprite.set_meta("source_anchor",str(item.get("source_anchor","")))
+		sprite.set_meta("anchor_mode",anchor_mode)
+		sprite.set_meta("depth_scale",depth_scale)
 		if candidate_review:
 			sprite.set_meta("candidate_review",true)
 		parent.add_child(sprite)
