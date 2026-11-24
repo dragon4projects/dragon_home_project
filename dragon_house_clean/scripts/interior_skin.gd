@@ -140,7 +140,11 @@ func _load_component_config() -> void:
 	if typeof(review_variants)!=TYPE_DICTIONARY:
 		return
 	for key in review_variants:
-		merged_variants[key]=review_variants[key]
+		# Never let an unapproved review component package replace component
+		# decomposition for an owner-approved visual variant. Review components
+		# are fallback for variants that have no accepted art.
+		if not _base_variant_has_approved_layers(str(key)) or not merged_variants.has(key):
+			merged_variants[key]=review_variants[key]
 	if component_config.is_empty():
 		component_config={"schema":1}
 	component_config["variants"]=merged_variants
@@ -153,6 +157,27 @@ func _component_variant(room_type: String, width: int) -> Dictionary:
 	var key:="%s/R%d" % [room_type,width]
 	var raw=component_config.get("variants",{}).get(key,{})
 	return raw if typeof(raw)==TYPE_DICTIONARY else {}
+
+func _base_variant_entry(room_type: String, width: int) -> Dictionary:
+	var variant:="R%d" % width
+	var raw=config.get("room_types",{}).get(room_type,{}).get(variant,{})
+	return raw if typeof(raw)==TYPE_DICTIONARY else {}
+
+func _entry_has_approved_layers(entry: Dictionary) -> bool:
+	var layers=entry.get("layers",[])
+	if typeof(layers)!=TYPE_ARRAY:
+		return false
+	for raw in layers:
+		if typeof(raw)==TYPE_DICTIONARY and bool(raw.get("approved",false)):
+			return true
+	return false
+
+func _base_variant_has_approved_layers(key: String) -> bool:
+	var parts:=key.split("/",false,1)
+	if parts.size()!=2 or not str(parts[1]).begins_with("R"):
+		return false
+	return _entry_has_approved_layers(
+		_base_variant_entry(str(parts[0]),int(str(parts[1]).trim_prefix("R"))))
 
 func _component_texture(source_path: String, component: Dictionary) -> Texture2D:
 	var rect_raw=component.get("rect",[])
@@ -290,9 +315,10 @@ func validated_layers(room_type: String, width: int) -> Array:
 	if config.is_empty() or room_type == "private" or width < 1 or width > 3:
 		return result
 	var variant := "R%d" % width
-	var entry: Dictionary = config.get("room_types",{}).get(room_type,{}).get(variant,{})
+	var entry: Dictionary = _base_variant_entry(room_type,width)
 	var candidate_review := false
-	if candidate_review_enabled:
+	var base_has_approved:bool=_entry_has_approved_layers(entry)
+	if candidate_review_enabled and not base_has_approved:
 		var raw_candidate = candidate_config.get("room_types",{}).get(room_type,{}).get(variant,{})
 		if typeof(raw_candidate) == TYPE_DICTIONARY:
 			var candidate_entry: Dictionary = raw_candidate
