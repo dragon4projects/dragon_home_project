@@ -61,6 +61,7 @@ var journal_open := false
 var follow_deadzone_ratio := 0.12
 var build_mode := false
 var build_type := "corridor"
+var build_size := 1
 var build_marker: MeshInstance3D
 var build_cell := Vector2i(99, 99)
 var moving_view := false
@@ -1291,6 +1292,17 @@ func build_interface() -> void:
 	menu.select(1)
 	menu.item_selected.connect(func(i): build_type = str(menu.get_item_metadata(i)))
 	hud_main_body.add_child(menu)
+	var size_menu := OptionButton.new()
+	for size_id in [1,2,3]:
+		size_menu.add_item("R%d · %d мод." % [size_id,size_id])
+		size_menu.set_item_metadata(size_menu.item_count-1,size_id)
+	size_menu.select(0)
+	size_menu.item_selected.connect(func(i):
+		build_size=int(size_menu.get_item_metadata(i))
+		if build_marker!=null:
+			var cube:BoxMesh=build_marker.mesh
+			cube.size.x=W*float(build_size)*0.94)
+	hud_main_body.add_child(size_menu)
 	var media_button := Button.new()
 	media_button.text = "Открыть библиотеку / медиа [M]"
 	media_button.pressed.connect(toggle_media_panel)
@@ -1746,7 +1758,7 @@ func toggle_build() -> void:
 		if build_marker == null:
 			build_marker = MeshInstance3D.new()
 			var cube := BoxMesh.new()
-			cube.size = Vector3(W * 0.9, 2.9, 3.9)
+			cube.size = Vector3(W * float(build_size) * 0.94, 2.9, 3.9)
 			build_marker.mesh = cube
 			var material := StandardMaterial3D.new()
 			material.albedo_color = Color(0.22, 0.9, 0.55, 0.27)
@@ -1865,8 +1877,12 @@ func _input(event: InputEvent) -> void:
 			var hit = ray_to_front_plane(e.position)
 			if hit != null:
 				build_cell = Vector2i(roundi(hit.x / W), roundi(hit.y / H))
-				build_marker.position = world.world_pos(build_cell.x, build_cell.y) + Vector3(0, 1.4, 0)
-				var permitted := world.can_build(build_cell.x, build_cell.y, build_type)
+				var center_x:float=(float(build_cell.x)+(float(build_size)-1.0)*0.5)*W
+				build_marker.position = Vector3(center_x,float(build_cell.y)*H+1.4,0.0)
+				var cube:BoxMesh=build_marker.mesh
+				cube.size.x=W*float(build_size)*0.94
+				var permitted := world.can_build_room(
+					build_cell.x, build_cell.y, build_type, build_size)
 				var preview_mat: StandardMaterial3D = build_marker.material_override
 				preview_mat.albedo_color = Color(0.22,0.90,0.55,0.28) if permitted else Color(0.82,0.23,0.26,0.28)
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -1924,11 +1940,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		if build_mode:
 			if build_cell == Vector2i(99,99):
 				return
-			if world.build(build_cell.x, build_cell.y, build_type):
+			if world.build_room(build_cell.x, build_cell.y, build_type, build_size):
 				make_rooms()
 				update_render_lod()
-				notice.text = "Построено: %s (%d, %d)" % [
-					room_names.get(build_type, build_type), build_cell.x, build_cell.y]
+				notice.text = "Построено: %s R%d (%d, %d)" % [
+					room_names.get(build_type, build_type), build_size,
+					build_cell.x, build_cell.y]
 			else:
 				notice.text = "Нет связного свободного участка"
 			update_hud()
