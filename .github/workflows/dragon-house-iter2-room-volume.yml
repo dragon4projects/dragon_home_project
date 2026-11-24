@@ -26,6 +26,10 @@ jobs:
           git lfs install --local
           git lfs pull
           bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
+          # Blender source files are not runtime resources; their exported GLBs
+          # stay in this disposable checkout. Prevent headless Blender setup
+          # from interrupting the resource import queue.
+          find dragon_house_clean/assets/props -maxdepth 1 -type f -name '*.blend' -delete
 
       - name: Build deterministic review component overlay
         shell: bash
@@ -48,7 +52,17 @@ jobs:
         run: |
           set -euo pipefail
           cd dragon_house_clean
-          timeout 600s /tmp/Godot_v4.7.2-stable_linux.x86_64             --headless --path . --editor --quit > godot_import_room_volume.log 2>&1
+          timeout 600s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --import > godot_import_room_volume.log 2>&1
+          test "$(find assets/decor_bank -name 'model.gltf.import' | wc -l)" -eq 8
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          for p in sorted(Path("assets/decor_bank").rglob("model.gltf.import")):
+              match = re.search(r'^path="res://([^"]+)"', p.read_text(), re.M)
+              if not match or not Path(match.group(1)).is_file():
+                  raise SystemExit(f"Missing imported PackedScene: {p}")
+              print("OWNER_DECOR_IMPORTED", p)
+          PY
           if grep -Eq "SCRIPT ERROR|Parse Error" godot_import_room_volume.log; then
             tail -200 godot_import_room_volume.log
             exit 1
