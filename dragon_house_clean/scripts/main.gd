@@ -650,6 +650,14 @@ func _load_room_art(group_node: Node3D) -> void:
 		if stage!=null and layer.get_node_or_null("Art_backdrop")!=null:
 			stage.visible=false
 
+func _clear_children_now(parent: Node) -> void:
+	# Room/art rebuilds can unload and reload within one rendered frame.
+	# queue_free() leaves old names alive until frame end, which caused new
+	# Art_backdrop / room nodes to be auto-renamed and broke visibility logic.
+	for child in parent.get_children():
+		parent.remove_child(child)
+		child.free()
+
 func _release_room_art(group_node: Node3D) -> void:
 	if not art_loaded_groups.has(group_node.name):
 		return
@@ -658,8 +666,7 @@ func _release_room_art(group_node: Node3D) -> void:
 	art_layer_count=maxi(0,art_layer_count-count)
 	var layer: Node3D=group_node.get_node_or_null("Layer_ApprovedArt")
 	if layer:
-		for child in layer.get_children():
-			child.queue_free()
+		_clear_children_now(layer)
 	var stage:Node3D=group_node.get_node_or_null("Layer_Background/Stage_Backwall")
 	if stage!=null:
 		stage.visible=true
@@ -800,8 +807,7 @@ func _release_furniture(group_node: Node3D) -> void:
 		return
 	var decoration_layer: Node3D = group_node.get_node_or_null("LocalFurniture")
 	if decoration_layer:
-		for child in decoration_layer.get_children():
-			child.queue_free()
+		_clear_children_now(decoration_layer)
 	detailed_room_groups.erase(group_node.name)
 	detail_eviction_count += 1
 
@@ -926,8 +932,7 @@ func make_rooms() -> void:
 	art_loaded_groups.clear()
 	visual_room_groups.clear()
 	door_note_anchors.clear()
-	for child in room_root.get_children():
-		child.queue_free()
+	_clear_children_now(room_root)
 	for group in world.visual_groups():
 		make_room(group)
 
