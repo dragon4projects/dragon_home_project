@@ -7,6 +7,7 @@ const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const ContentViewerScript = preload("res://scripts/content_viewer.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
+const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
@@ -18,6 +19,7 @@ var world = WorldScript.new()
 var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
+var room_visual_layout = RoomVisualLayoutScript.new()
 var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
 var candidate_content = CandidateContentRuntimeScript.new()
@@ -127,6 +129,8 @@ func _ready() -> void:
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
 	life.setup(world)
 	interior_skin.initialize()
+	if not room_visual_layout.initialize():
+		push_warning("Physical room visual layout unavailable: "+room_visual_layout.error)
 	door_registry.initialize()
 	validated_visual_banks = asset_banks.accepted_count(world.read_resident_profiles())
 	preview_visual_banks = asset_banks.preview_count(world.read_resident_profiles())
@@ -481,108 +485,110 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 				box(parent, Vector3(0, 0.5, -1.70), Vector3(1.0, 1.05, 0.16), palette["wood"])
 
 func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
-	# Cutaway has actual depth: the rear alcove is inset and all details remain
-	# behind the mid-depth actor walkway. Shared R2/R3 rooms have continuous
-	# floors plus repeated architectural bays, never full mid-room partitions.
-	# No private room interiors are ever instantiated.
-	var kind: String = str(group["type"])
-	if kind == "private" or kind == "lift":
-		return
-	var base_color := Color("#4a4143")
-	match kind:
-		"common": base_color = Color("#514046")
-		"library", "artifact": base_color = Color("#433739")
-		"cinema": base_color = Color("#26242b")
-		"study", "workshop": base_color = Color("#554843")
-		"music": base_color = Color("#403842")
-		"rest": base_color = Color("#51473f")
-	var center: float = (float(group["x_start"])+float(group["x_end"]))*0.5
-	for cell in group["cells"]:
-		var module := Node3D.new()
-		module.name = "RearBay_"+str(cell.get("module_id",cell["id"]))
-		module.position.x = (float(cell["x"])-center)*W
-		parent.add_child(module)
-		# Dark matte recess, crown moulding, vertical stone returns and wainscot.
-		box(module,Vector3(0,1.49,-1.78),Vector3(3.84,2.67,0.08),base_color)
-		box(module,Vector3(-1.89,1.47,-1.59),Vector3(0.12,2.76,0.24),palette["rock_light"])
-		box(module,Vector3(1.89,1.47,-1.59),Vector3(0.12,2.76,0.24),palette["rock_light"])
-		box(module,Vector3(0,2.83,-1.58),Vector3(3.87,0.15,0.25),palette["border"])
-		box(module,Vector3(0,0.19,-1.55),Vector3(3.72,0.31,0.27),palette["border"])
-		# Minimal practical wall sconces: emissive material instead of eight real
-		# omni lights per room (target Dell 5300 Compatibility renderer).
-		if ["common","rest","study","library","arrival"].has(kind):
-			for side in [-1.0,1.0]:
-				box(module,Vector3(side*1.43,2.22,-1.41),
-					Vector3(0.09,0.34,0.10),palette["bronze"])
-				box(module,Vector3(side*1.43,2.43,-1.33),
-					Vector3(0.15,0.14,0.09),Color("#b17c55"),true)
-
-func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
-	# Shallow 3D, not a newly baked fake perspective image. These thin
-	# structural features preserve the exact contracted Z positions of the
-	# forthcoming photorealistic room sprites from Teea.
-	# Recesses, floor depth marks, and a *low* front edge produce an observable
-	# interior volume rather than a single wall/furniture cardboard plane.
-	var kind: String = str(group["type"])
+	# One continuous rear wall per physical room. R2/R3 are not three
+	# architectural bays stitched together; only outer returns frame the volume.
+	var kind:String=str(group["type"])
 	if kind in ["private","lift"]:
 		return
-	var middle: float=(float(group["x_start"])+float(group["x_end"]))*0.5
-	for cell in group["cells"]:
-		var module:=Node3D.new()
-		module.name="Depth_"+str(cell.get("module_id",cell["id"]))
-		module.position.x=(float(cell["x"])-middle)*W
-		parent.add_child(module)
-		# Underlit walk path is recessed relative to both front and back.
-		# Low thin lines suggest real floor plane perspective without painting
-		# stripes across the actors' feet.
-		for z in [-1.19,0.18,1.10]:
-			box(module,Vector3(0,-0.004,float(z)),
-				Vector3(3.82,0.014,0.018),Color("#3f3637"))
-		# Keep the near cutaway edge readable without turning it into a thick
-		# shelf in front of the room. Accepted art supplies the visual weight;
-		# geometry only carries enough depth for parallax and occlusion.
-		box(module,Vector3(0,-0.09,1.31),
-			Vector3(4.26,0.055,0.11),palette["rock_light"])
-		for side in [-1.0,1.0]:
-			box(module,Vector3(side*2.02,0.14,1.28),
-				Vector3(0.10,0.26,0.14),palette["rock_light"])
-		# Lower panel in a shadowed rear alcove, physically behind furniture.
-		box(module,Vector3(0,1.47,-1.87),
-			Vector3(3.45,2.24,0.09),Color("#393234"))
-		box(module,Vector3(0,0.34,-1.74),
-			Vector3(3.49,0.18,0.18),palette["wood"])
+	var span:float=float(group["width"])*W
+	var base_color:=Color("#4a4143")
+	match kind:
+		"common": base_color=Color("#514046")
+		"library","artifact": base_color=Color("#433739")
+		"cinema": base_color=Color("#26242b")
+		"study","workshop": base_color=Color("#554843")
+		"music": base_color=Color("#403842")
+		"rest": base_color=Color("#51473f")
+	var rear:=Node3D.new()
+	rear.name="PhysicalRearWall"
+	parent.add_child(rear)
+	box(rear,Vector3(0,1.49,-1.78),Vector3(span-0.42,2.67,0.08),base_color)
+	box(rear,Vector3(-span*0.5+0.16,1.47,-1.59),
+		Vector3(0.18,2.76,0.24),palette["rock_light"])
+	box(rear,Vector3(span*0.5-0.16,1.47,-1.59),
+		Vector3(0.18,2.76,0.24),palette["rock_light"])
+	box(rear,Vector3(0,2.83,-1.58),Vector3(span-0.36,0.15,0.25),palette["border"])
+	box(rear,Vector3(0,0.19,-1.55),Vector3(span-0.48,0.31,0.27),palette["border"])
+	if ["common","rest","study","library","arrival"].has(kind):
+		var lamp_count:int=1 if int(group["width"])==1 else int(group["width"])
+		for i in range(lamp_count):
+			var px:float=0.0 if lamp_count==1 else lerpf(
+				-span*0.5+1.45,span*0.5-1.45,float(i)/float(lamp_count-1))
+			box(rear,Vector3(px,2.22,-1.41),
+				Vector3(0.09,0.34,0.10),palette["bronze"])
+			box(rear,Vector3(px,2.43,-1.33),
+				Vector3(0.15,0.14,0.09),Color("#b17c55"),true)
+
+func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
+	# One continuous X/Z floor volume. Depth markers span the entire physical
+	# room and therefore cannot read as per-module separators.
+	var kind:String=str(group["type"])
+	if kind in ["private","lift"]:
+		return
+	var span:float=float(group["width"])*W
+	var volume:=Node3D.new()
+	volume.name="PhysicalDepthVolume"
+	parent.add_child(volume)
+	for z in [-1.19,0.18,1.10]:
+		box(volume,Vector3(0,-0.004,float(z)),
+			Vector3(maxf(0.5,span-0.52),0.014,0.018),Color("#3f3637"))
+	box(volume,Vector3(0,-0.09,1.31),
+		Vector3(maxf(0.5,span-0.34),0.055,0.11),palette["rock_light"])
+	for side in [-1.0,1.0]:
+		box(volume,Vector3(side*(span*0.5-0.18),0.14,1.28),
+			Vector3(0.10,0.26,0.14),palette["rock_light"])
+	box(volume,Vector3(0,1.47,-1.87),
+		Vector3(maxf(0.5,span-0.86),2.24,0.09),Color("#393234"))
+	box(volume,Vector3(0,0.34,-1.74),
+		Vector3(maxf(0.5,span-0.82),0.18,0.18),palette["wood"])
 
 func add_room_overview_cues(parent: Node3D, group: Dictionary) -> void:
-	# Cheap silhouettes carry room identity when rich furniture is not instantiated.
-	# Never show the contents of private rooms; those only have a public facade.
-	var kind: String = str(group["type"])
-	if kind == "private":
+	# Cheap room identity at distant zoom, but still one physical composition.
+	var kind:String=str(group["type"])
+	if kind=="private":
 		return
-	var start_x: int = int(group["x_start"])
-	var end_x: int = int(group["x_end"])
-	var center_x: float = (float(start_x)+float(end_x))*0.5
-	for cell in group["cells"]:
-		var x: float = (float(cell["x"])-center_x)*W
-		match kind:
-			"common", "rest":
-				box(parent, Vector3(x,0.39,-1.24), Vector3(1.9,0.70,0.48),palette["rug"])
-			"library", "artifact":
-				box(parent, Vector3(x,1.16,-1.70), Vector3(2.8,1.80,0.22),palette["wood"])
-				box(parent, Vector3(x,1.74,-1.54), Vector3(2.48,0.055,0.20),palette["rock_light"])
-			"cinema":
-				box(parent, Vector3(x,1.65,-1.74), Vector3(2.5,1.42,0.15),palette["black"])
-				box(parent, Vector3(x,1.65,-1.63), Vector3(2.16,1.10,0.07),palette["screen"],true)
-			"music":
-				for side in [-1.0,1.0]:
-					box(parent, Vector3(x+side*1.0,1.09,-1.67), Vector3(0.54,1.40,0.24),palette["black"])
-			"study", "workshop":
-				box(parent, Vector3(x,0.66,-1.26), Vector3(2.72,0.18,0.66),palette["wood"])
-			"arrival":
-				box(parent, Vector3(x,1.20,-1.67), Vector3(0.10,2.15,0.12),palette["bronze"])
-			"lift":
-				box(parent, Vector3(x,0.06,-0.35), Vector3(3.5,0.08,3.1),palette["copper"])
-			_:
-				pass
+	var span:float=float(group["width"])*W
+	var width:int=int(group["width"])
+	var root:=Node3D.new()
+	root.name="OverviewPhysicalRoom"
+	parent.add_child(root)
+	match kind:
+		"common","rest":
+			box(root,Vector3(0,0.10,-0.35),
+				Vector3(maxf(1.8,span*0.62),0.035,2.18),palette["rug"])
+			box(root,Vector3(-span*0.18,0.48,-0.86),
+				Vector3(maxf(1.4,span*0.34),0.58,0.64),palette["couch"])
+		"library","artifact":
+			box(root,Vector3(0,1.16,-1.70),
+				Vector3(maxf(2.8,span*0.72),1.80,0.22),palette["wood"])
+			box(root,Vector3(0,0.48,0.28),
+				Vector3(maxf(1.0,span*0.28),0.35,0.72),palette["wood"])
+		"cinema":
+			box(root,Vector3(0,1.65,-1.74),
+				Vector3(maxf(2.5,span*0.62),1.42,0.15),palette["black"])
+			box(root,Vector3(0,1.65,-1.63),
+				Vector3(maxf(2.16,span*0.56),1.10,0.07),palette["screen"],true)
+			box(root,Vector3(0,0.45,0.78),
+				Vector3(maxf(2.4,span*0.50),0.58,0.66),palette["couch"])
+		"music":
+			for side in [-1.0,1.0]:
+				box(root,Vector3(side*span*0.25,1.09,-1.67),
+					Vector3(0.62,1.40,0.24),palette["black"])
+			box(root,Vector3(0,0.68,-1.05),
+				Vector3(maxf(1.25,span*0.24),0.17,0.75),palette["wood"])
+		"study","workshop":
+			box(root,Vector3(0,0.66,-1.26),
+				Vector3(maxf(2.72,span*0.62),0.18,0.66),palette["wood"])
+		"arrival":
+			box(root,Vector3(-span*0.22,1.20,-1.67),
+				Vector3(0.10,2.15,0.12),palette["bronze"])
+			box(root,Vector3(span*0.18,0.25,-1.50),
+				Vector3(maxf(1.2,span*0.30),0.50,0.40),palette["wood"])
+		"lift":
+			box(root,Vector3(0,0.06,-0.35),
+				Vector3(maxf(3.5,span-0.6),0.08,3.1),palette["copper"])
+		_:
+			pass
 
 func _is_near_detail(group_node: Node3D) -> bool:
 	# Detail follows the camera position but never drives simulation.
@@ -697,39 +703,95 @@ func _ensure_fallback_anchor_furniture(module: Node3D, anchors: Array) -> void:
 				box(object,Vector3(x,0.66,z-0.48),Vector3(0.62,1.20,0.34),palette["wood"])
 		created[object_id]=true
 
+func _proxy_authored_object(parent: Node3D, item: Dictionary) -> void:
+	var id:String=str(item.get("id","visual_object"))
+	var node:=furniture_object(parent,id)
+	var x:float=float(item.get("x",0.0))
+	var z:float=float(item.get("z",-1.0))
+	var scale_value:float=maxf(0.25,float(item.get("scale",0.7)))
+	var asset:String=str(item.get("asset",item.get("type",""))).to_lower()
+	if asset.contains("chair") or asset.contains("lounge"):
+		box(node,Vector3(x,0.27,z),Vector3(0.62*scale_value,0.42,0.58),palette["wood"])
+		box(node,Vector3(x,0.70,z-0.24),Vector3(0.62*scale_value,0.70,0.12),palette["wood"])
+	elif asset.contains("shelf") or asset.contains("bookshelf"):
+		add_shelf(node,Vector3(x,0.12,z),maxf(0.9,1.9*scale_value))
+	elif asset.contains("day_bed") or asset.contains("sofa"):
+		add_sofa(node,Vector3(x,0.0,z),maxf(1.2,2.8*scale_value),palette["couch"])
+	elif asset.contains("lamp"):
+		box(node,Vector3(x,0.58,z),Vector3(0.08,1.10,0.08),palette["bronze"])
+		box(node,Vector3(x,1.15,z),Vector3(0.32,0.18,0.28),Color("#b17c55"),true)
+	else:
+		box(node,Vector3(x,0.42,z),
+			Vector3(maxf(0.48,1.05*scale_value),0.78,maxf(0.30,0.62*scale_value)),
+			palette["wood"])
+
+func _proxy_authored_procedural(parent: Node3D, item: Dictionary) -> void:
+	var id:String=str(item.get("id","visual_procedural"))
+	var node:=furniture_object(parent,id)
+	var width:float=maxf(0.35,float(item.get("width",1.0)))
+	var depth:float=maxf(0.25,float(item.get("depth",0.6)))
+	var height:float=maxf(0.06,float(item.get("height",0.72)))
+	var x:float=float(item.get("x",0.0))
+	var z:float=float(item.get("z",-1.0))
+	var kind:String=str(item.get("type",""))
+	if kind.contains("rest_pad"):
+		box(node,Vector3(x,height*0.5,z),Vector3(width,height,depth),palette["rug"])
+	else:
+		box(node,Vector3(x,height*0.5,z),Vector3(width,height,depth),palette["wood"])
+
+func _populate_physical_fallback(parent: Node3D, group: Dictionary) -> bool:
+	var kind:String=str(group["type"])
+	var width:int=int(group["width"])
+	if not room_visual_layout.has_variant(kind,width):
+		return false
+	for raw in room_visual_layout.objects(kind,width):
+		if typeof(raw)!=TYPE_DICTIONARY:
+			continue
+		var item:Dictionary=raw
+		# Back-decor without collision belongs to the rear visual plane; the
+		# fallback geometry is reserved for tangible mid/front-depth objects.
+		if bool(item.get("collision",false)):
+			_proxy_authored_object(parent,item)
+	for raw in room_visual_layout.procedural(kind,width):
+		if typeof(raw)==TYPE_DICTIONARY:
+			_proxy_authored_procedural(parent,raw)
+	return true
+
 func _populate_furniture(group_node: Node3D) -> void:
-	var group: Dictionary = visual_room_groups.get(group_node.name,{})
+	var group:Dictionary=visual_room_groups.get(group_node.name,{})
 	if group.is_empty() or _group_facade_only(group):
 		return
-	var decoration_layer: Node3D = group_node.get_node_or_null("LocalFurniture")
-	if decoration_layer == null or detailed_room_groups.has(group_node.name):
+	var decoration_layer:Node3D=group_node.get_node_or_null("LocalFurniture")
+	if decoration_layer==null or detailed_room_groups.has(group_node.name):
 		return
-	var center_cell: float = (float(group["x_start"])+float(group["x_end"]))*0.5
-	for cell_index in range(group["cells"].size()):
-		var cell:Dictionary=group["cells"][cell_index]
-		var module := Node3D.new()
-		module.name = str(cell.get("module_id",cell["id"]))+"_furniture"
-		module.position.x = (float(cell["x"])-center_cell)*W
-		decoration_layer.add_child(module)
-		if bool(group.get("replaces_furniture",false)):
-			# Teea's approved furniture art replaces interim geometry.
-			# Keep named invisible anchors for the exact accepted R1/R2/R3
-			# contract, but do NOT draw a second 3D object on top of the art.
-			var seen: Dictionary={}
-			var anchors:Array=life.stations.furniture.for_room_variant(
-				cell,int(group.get("width",1)),cell_index)
-			for station in anchors:
-				var name: String=str(station.get("furniture_id",""))
-				if name!="" and not seen.has(name):
-					furniture_object(module,name)
-					seen[name]=true
-		else:
-			furnish(module,str(group["type"]),int(cell["x"]),int(group["level"]))
-			var anchors:Array=life.stations.furniture.for_room_variant(
-				cell,int(group.get("width",1)),cell_index)
-			_ensure_fallback_anchor_furniture(module,anchors)
-	detailed_room_groups[group_node.name] = true
-	detail_materialization_count += 1
+	var physical_room:Dictionary=world.room_by_id(str(group.get("primary_id","")))
+	if physical_room.is_empty():
+		return
+	var root:=Node3D.new()
+	root.name="PhysicalFurniture"
+	decoration_layer.add_child(root)
+	if bool(group.get("replaces_furniture",false)):
+		# The visual furniture lives in the authored image layer. Keep only
+		# stable, invisible data anchors in one physical room root.
+		var seen:Dictionary={}
+		for spot in life.stations.layout_for_world(world,physical_room):
+			var name:String=str(spot.get("furniture_id",""))
+			if name=="" or seen.has(name):
+				continue
+			var anchor:=furniture_object(root,name)
+			var offset:Vector2=spot.get("offset",Vector2.ZERO)
+			anchor.position=Vector3(offset.x,0.0,offset.y)
+			seen[name]=true
+	else:
+		var used_authored:bool=_populate_physical_fallback(root,group)
+		if not used_authored:
+			# R1 legacy rooms without a pinned wide layout remain one coherent
+			# furniture composition, never one composition per virtual module.
+			furnish(root,str(group["type"]),int(group["x_start"]),int(group["level"]))
+			_ensure_fallback_anchor_furniture(
+				root,life.stations.layout_for_world(world,physical_room))
+	detailed_room_groups[group_node.name]=true
+	detail_materialization_count+=1
 
 func _release_furniture(group_node: Node3D) -> void:
 	if not detailed_room_groups.has(group_node.name):
@@ -780,8 +842,8 @@ func make_room(group: Dictionary) -> void:
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
 	# Structural slabs are deliberately thin: they frame the cutaway instead of
 	# competing with the room artwork at close zoom.
-	var floor_slab:=box(structure,Vector3(0,-0.055,-0.33),
-		Vector3(span*1.01,0.10,3.34),palette["floor"])
+	var floor_slab:=box(structure,Vector3(0,-0.055,-0.15),
+		Vector3(span*1.01,0.10,3.60),palette["floor"])
 	floor_slab.name="CutawayFloorSlab"
 	if not facade_only:
 		var cutaway_depth:=Node3D.new()
@@ -802,28 +864,24 @@ func make_room(group: Dictionary) -> void:
 	front_lip.name="CutawayFrontLip"
 	# Expensive full-resolution artwork is loaded on demand by
 	# update_render_lod(), not permanently allocated for all 49+ rooms.
+	var physical_room:Dictionary=world.room_by_id(str(group.get("primary_id","")))
 	for side in [-1,1]:
-		var neighbour: Dictionary = side_left if side == -1 else side_right
-		var edge: float = float(side)*(span*0.5-0.10)
-		if neighbour.is_empty():
+		var neighbour:Dictionary=side_left if side==-1 else side_right
+		var edge:float=float(side)*(span*0.5-0.10)
+		var connected:bool=not physical_room.is_empty() and not neighbour.is_empty() and (
+			not world.connection_between(physical_room,neighbour).is_empty())
+		if not connected:
 			box(structure,Vector3(edge,1.42,-0.42),
 				Vector3(0.22,2.75,3.08),palette["rock_light"])
-			# Partial foreground pier emphasizes depth without hiding the actor.
 			box(overlay,Vector3(edge,0.18,1.31),
 				Vector3(0.22,0.34,0.14),palette["rock_light"])
 		else:
-			# Doorway frame stays behind the public aisle and no longer reads as
-			# a full-depth concrete divider.
+			# Only an explicit connector opens the wall.
 			box(structure,Vector3(edge,2.84,-0.61),
 				Vector3(0.16,0.34,2.52),palette["rock_light"])
 			box(structure,Vector3(edge,0.48,-1.82),
 				Vector3(0.18,0.96,0.16),palette["rock_light"])
-	# Merged runs: narrow arch ribs only, no full partitions or duplicate room names.
-	if int(group["width"]) > 1:
-		for i in range(int(group["width"])-1):
-			var seam_x: float = (float(x_start)+float(i)+0.5-center_cell)*W
-			box(structure,Vector3(seam_x,2.99,-0.66),
-				Vector3(0.07,0.18,2.30),palette["rock_light"])
+	# Physical R2/R3 rooms deliberately have no internal module ribs.
 	if not facade_only:
 		var overview := Node3D.new()
 		overview.name = "Layer_OverviewCues"
