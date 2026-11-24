@@ -24,3 +24,10 @@ Review rules:
 - unknown pet ownership remains unknown.
 
 The original TEEA007 runtime contract is retained rather than rewritten. Its embedded TEEA006 payload digest reflects the later TEEA006 packaging lineage; this integration explicitly pins live review geometry to the owner/current-project canonical TEEA006 commit and immutable ZIP above. The seam is recorded, not silently normalized.
+
+## TEEA006 station-source seam
+
+The Git-tracked TEEA006 furniture-anchor candidate at the pinned commit is not valid JSON: the blob itself contains a literal truncation marker inside `non_station_furniture`. The same historical corruption is present in related 004/005 anchor exports. The integrator must not infer or reconstruct missing station coordinates from prose.
+
+Owner-review hydration therefore searches the immutable TEEA006 ZIP for a valid machine source that is simultaneously `schema=3`, `approved=false`, `owner_approved=false`, and contains exactly 31 measured stations. If such a source is present, its 31 stations are applied. If no such source exists, the build keeps the existing production station registry unchanged and records `station_source_gap=true` / `stations_applied=0`. The build may still be used for visual owner review, but station integration is not considered closed in that fallback case.
+
