@@ -498,7 +498,7 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	var center: float = (float(group["x_start"])+float(group["x_end"]))*0.5
 	for cell in group["cells"]:
 		var module := Node3D.new()
-		module.name = "RearBay_"+str(cell["id"])
+		module.name = "RearBay_"+str(cell.get("module_id",cell["id"]))
 		module.position.x = (float(cell["x"])-center)*W
 		parent.add_child(module)
 		# Dark matte recess, crown moulding, vertical stone returns and wainscot.
@@ -528,7 +528,7 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 	var middle: float=(float(group["x_start"])+float(group["x_end"]))*0.5
 	for cell in group["cells"]:
 		var module:=Node3D.new()
-		module.name="Depth_"+str(cell["id"])
+		module.name="Depth_"+str(cell.get("module_id",cell["id"]))
 		module.position.x=(float(cell["x"])-middle)*W
 		parent.add_child(module)
 		# Underlit walk path is recessed relative to both front and back.
@@ -707,7 +707,7 @@ func _populate_furniture(group_node: Node3D) -> void:
 	for cell_index in range(group["cells"].size()):
 		var cell:Dictionary=group["cells"][cell_index]
 		var module := Node3D.new()
-		module.name = str(cell["id"])+"_furniture"
+		module.name = str(cell.get("module_id",cell["id"]))+"_furniture"
 		module.position.x = (float(cell["x"])-center_cell)*W
 		decoration_layer.add_child(module)
 		if bool(group.get("replaces_furniture",false)):
@@ -893,6 +893,9 @@ func make_sprite_texture(is_manka: bool) -> Texture2D:
 				img.set_pixel(px, py, color)
 	return ImageTexture.create_from_image(img)
 
+func depth_visual_scale(z: float) -> float:
+	return world.room_space.perspective_scale(z)
+
 func make_creatures() -> void:
 	if creature_root == null:
 		return
@@ -952,8 +955,10 @@ func update_creatures(delta: float = 0.0) -> void:
 			continue
 		var y := float(creature.get("visual_y",
 			float(creature.get("level",0))*H))
-		anchor.position = Vector3(
-			float(creature.get("x",0.0)),y,float(creature.get("z",0.25)))
+		var creature_z:=float(creature.get("z",0.25))
+		anchor.position = Vector3(float(creature.get("x",0.0)),y,creature_z)
+		var creature_scale:=depth_visual_scale(creature_z)
+		anchor.scale=Vector3.ONE*creature_scale
 		var body: Sprite3D = anchor.get_node_or_null("Body")
 		var bank_id := str(creature.get("bank_id",""))
 		if body != null and bank_id != "" and body.has_meta("candidate_bank"):
@@ -1042,6 +1047,8 @@ func update_physical_objects() -> void:
 				float(holder.get("x",0.0)),
 				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
 				float(holder.get("z",0.25))+0.18) + _object_offset(str(object_id))*0.25
+			var held_scale:=depth_visual_scale(float(holder.get("z",0.25)))
+			anchor.scale=Vector3.ONE*held_scale
 			continue
 		if str(object.get("state","")) == "STASHED":
 			# Hidden means hidden: the canonical location remains in world state,
@@ -1056,10 +1063,12 @@ func update_physical_objects() -> void:
 		anchor.visible = current_mode == "HOUSE" or int(room.get("level",0)) == semantic_view.level
 		if not anchor.visible:
 			continue
+		var room_center:Vector3=world.room_center_pos(room)
 		anchor.position = Vector3(
-			float(room["x"])*W,
-			float(room["level"])*H+0.22,
+			room_center.x,
+			room_center.y+0.22,
 			0.72) + _object_offset(str(object_id))
+		anchor.scale=Vector3.ONE*depth_visual_scale(anchor.position.z)
 
 func make_residents() -> void:
 	var resident_tex := make_sprite_texture(false)
@@ -1129,7 +1138,10 @@ func update_residents(delta: float = 0.0) -> void:
 	for id in actor_sprites:
 		var actor: Dictionary = world.residents[id]
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
-		actor_sprites[id].position = Vector3(float(actor.get("x",0.0)),y,float(actor.get("z",0.3)))
+		var actor_z:=float(actor.get("z",0.3))
+		actor_sprites[id].position = Vector3(float(actor.get("x",0.0)),y,actor_z)
+		var actor_scale:=depth_visual_scale(actor_z)
+		actor_sprites[id].scale=Vector3.ONE*actor_scale
 		actor_sprites[id].visible = semantic_view.actor_visible(actor)
 		if not actor_sprites[id].visible:
 			continue
@@ -1568,10 +1580,14 @@ func camera_world_bounds() -> Rect2:
 	var lo := Vector2(99999,99999)
 	var hi := Vector2(-99999,-99999)
 	for room in world.rooms:
-		var pos := Vector2(float(room["x"]) * W, float(room["level"]) * H)
-		lo.x = minf(lo.x,pos.x - W * 0.5)
+		var start_x:=float(room["x"])*W
+		var end_x:=float(world.room_space.x_end(room))*W
+		var center_x:=(start_x+end_x)*0.5
+		var span:=float(world.room_size_modules(room))*W
+		var pos := Vector2(center_x, float(room["level"]) * H)
+		lo.x = minf(lo.x,pos.x - span * 0.5)
 		lo.y = minf(lo.y,pos.y - H * 0.5)
-		hi.x = maxf(hi.x,pos.x + W * 0.5)
+		hi.x = maxf(hi.x,pos.x + span * 0.5)
 		hi.y = maxf(hi.y,pos.y + H * 0.5)
 	return Rect2(lo,hi-lo)
 
@@ -1619,9 +1635,10 @@ func level_world_bounds(level: int) -> Rect2:
 	for room in world.rooms:
 		if int(room.get("level",0)) != level:
 			continue
-		var x := float(room["x"])*W
-		lo_x = minf(lo_x,x-W*0.5)
-		hi_x = maxf(hi_x,x+W*0.5)
+		var start_x:=float(room["x"])*W
+		var end_x:=float(world.room_space.x_end(room))*W
+		lo_x = minf(lo_x,start_x-W*0.5)
+		hi_x = maxf(hi_x,end_x+W*0.5)
 		found = true
 	if not found:
 		return Rect2()
