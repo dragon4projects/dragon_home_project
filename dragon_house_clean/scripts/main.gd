@@ -858,8 +858,8 @@ func make_room(group: Dictionary) -> void:
 		cutaway_depth.name="Stage_CutawayDepth"
 		structure.add_child(cutaway_depth)
 		add_cutaway_depth(cutaway_depth,group)
-	var rear_backup:=box(background,Vector3(0,1.45,-2.10),
-		Vector3(span*1.01,3.25,0.20),palette["rock"])
+	var rear_backup:=box(background,Vector3(0,1.45,-2.14),
+		Vector3(span*1.01,3.25,0.16),palette["rock"])
 	rear_backup.name="StructuralRearBackup"
 	if not facade_only:
 		var rear_stage := Node3D.new()
