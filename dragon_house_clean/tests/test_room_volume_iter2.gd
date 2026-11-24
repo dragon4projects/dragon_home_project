@@ -73,6 +73,11 @@ func run() -> void:
 		"R3 rear wall must be one continuous physical wall")
 	assert(_names(depth)==["PhysicalDepthVolume"],
 		"R3 depth floor must be one continuous physical volume")
+	var physical_depth:Node3D=depth.get_node("PhysicalDepthVolume")
+	for child in physical_depth.get_children():
+		if child is Node3D:
+			assert((child as Node3D).position.z > scene.world.room_space.BACK_Z+0.20,
+				"Depth helpers must stay out of the rear art/backdrop zone")
 	for name in _names(rear):
 		assert(not str(name).begins_with("RearBay_"))
 	for name in _names(depth):
