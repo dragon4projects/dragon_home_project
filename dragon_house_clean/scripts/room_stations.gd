@@ -5,14 +5,10 @@ const REVIEW_FURNITURE := "res://data/integration_candidates/furniture_interacti
 ## Explicit, deterministic local station reservations. No AI/external dependency.
 ## Reservations live on actor state so save/load can reconstruct occupancy.
 ## PRIVATE rooms are never public station pools.
-const CAPACITY_BY_TYPE := {
-	"common": 10, "library": 4, "rest": 5, "study": 4,
-	"workshop": 4, "cinema": 8, "music": 6, "artifact": 6,
-	"arrival": 4, "corridor": 2, "private": 1, "lift": 0
-}
-const FLOOR_X_LIMIT := 2.05
-const BACK_Z := -0.70
-const FRONT_Z := 0.51
+const CAPACITY_BY_SIZE := {1:4,2:8,3:16}
+const MODULE_W := 4.8
+const BACK_Z := -1.95
+const FRONT_Z := 1.65
 var furniture = InteractionAnchors.new()
 
 func _init() -> void:
@@ -23,87 +19,96 @@ func _init() -> void:
 			furniture.initialize(InteractionAnchors.DEFAULT_PATH)
 
 func capacity(room: Dictionary) -> int:
-	if room.is_empty():
+	if room.is_empty() or str(room.get("privacy","public"))!="public" or (
+			str(room.get("type",""))=="lift"):
 		return 0
-	return int(CAPACITY_BY_TYPE.get(str(room.get("type","")),2))
+	var modules:=clampi(int(room.get("size_modules",1)),1,3)
+	return int(CAPACITY_BY_SIZE[modules])
 
 func _spot(x: float, z: float, kind: String = "standing", object_id: String = "") -> Dictionary:
 	return {"offset":Vector2(x,z),"kind":kind,"furniture_id":object_id}
 
+func _physical_anchor_data(room: Dictionary) -> Array:
+	var width:=clampi(int(room.get("size_modules",1)),1,3)
+	var result:Array=[]
+	var center_index:float=(float(width)-1.0)*0.5
+	for module_index in range(width):
+		var module_room:Dictionary=room.duplicate(true)
+		module_room["x"]=int(room.get("x",0))+module_index
+		var module_offset_x:float=(float(module_index)-center_index)*MODULE_W
+		var anchors:Array=furniture.for_room_variant(module_room,width,module_index)
+		for raw in anchors:
+			var item:Dictionary=raw.duplicate(true)
+			item["id"]="m%d_%s" % [module_index,str(item.get("id","station"))]
+			item["x"]=module_offset_x+float(item.get("x",0.0))
+			result.append(item)
+	return result
+
 func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
-	# The physical furniture anchors are data, never inferred from a painted
-	# backdrop. Art-agent proposals do not automatically change simulation.
-	var count: int=capacity(room)
-	var positions: Array=[]
+	var count:int=capacity(room)
+	if count<=0:
+		return []
+	var width:=clampi(int(room.get("size_modules",1)),1,3)
+	var half_width:=float(width)*MODULE_W*0.5
+	var positions:Array=[]
 	for item in anchors:
+		if positions.size()>=count:
+			break
+		var offset:=Vector2(float(item.get("x",0.0)),float(item.get("z",0.0)))
+		if offset.x<=-half_width+0.10 or offset.x>=half_width-0.10 or (
+				offset.y<BACK_Z or offset.y>FRONT_Z):
+			continue
 		positions.append({
-			"id":str(item["id"]),
-			"offset":Vector2(float(item["x"]),float(item["z"])),
-			"kind":str(item["kind"]),
+			"id":str(item.get("id","station")),
+			"offset":offset,
+			"kind":str(item.get("kind","standing")),
 			"furniture_id":str(item.get("furniture_id","")),
 			"pose_hint":str(item.get("pose_hint","IDLE_S")),
-			"approach_z":float(item.get("approach_z",0.95))
+			"approach_z":clampf(float(item.get("approach_z",1.25)),BACK_Z,FRONT_Z)
 		})
-	if positions.size()>count:
-		push_error("Furniture spots exceed room capacity, ignoring duplicates")
-		positions.resize(count)
-	# The remainder is physically present for standing and social gatherings.
-	# These aren't furniture seats and cannot trigger a seated sprite.
-	var candidates: Array=[]
+	var candidates:Array=[]
 	var idx:=0
-	for z in [1.24,0.27,-1.30]:
-		var shift := 0.0 if z == 1.24 else 0.30 if z == 0.27 else -0.18
-		for x in [-1.75,-0.87,0.0,0.87,1.75]:
-			var xx: float=clampf(float(x)+shift,-1.87,1.87)
-			candidates.append({
-				"id":"stand_%02d" % idx,
-				"offset":Vector2(xx,float(z)),
-				"kind":"standing",
-				"furniture_id":"",
-				"pose_hint":"IDLE_S",
-				"approach_z":0.95
-			})
-			idx+=1
+	var center_index:float=(float(width)-1.0)*0.5
+	for z in [1.34,0.42,-0.66,-1.52]:
+		for module_index in range(width):
+			var module_center:float=(float(module_index)-center_index)*MODULE_W
+			for local_x in [-1.55,-0.52,0.52,1.55]:
+				var xx:=module_center+float(local_x)
+				if xx<=-half_width+0.18 or xx>=half_width-0.18:
+					continue
+				candidates.append({
+					"id":"stand_%02d" % idx,
+					"offset":Vector2(xx,float(z)),
+					"kind":"standing","furniture_id":"",
+					"pose_hint":"IDLE_S",
+					"approach_z":clampf(float(z)+0.35,BACK_Z,FRONT_Z)
+				})
+				idx+=1
 	for place in candidates:
 		if positions.size()>=count:
 			break
-		var pos: Vector2=place["offset"]
+		var pos:Vector2=place["offset"]
 		var conflict:=false
 		for existing in positions:
-			var old: Vector2=existing["offset"]
-			if pos.distance_to(old)<0.73:
+			if pos.distance_to(existing["offset"])<0.73:
 				conflict=true
 				break
 		if not conflict:
 			positions.append(place)
-	assert(positions.size()==count,"A room must have distinct physical stations")
+	assert(positions.size()==count,"A physical room must expose distinct X/Z stations")
 	for place in positions:
-		assert(absf(float(place["offset"].x))<FLOOR_X_LIMIT)
+		var p:Vector2=place["offset"]
+		assert(p.x>-half_width and p.x<half_width)
+		assert(p.y>=BACK_Z and p.y<=FRONT_Z)
 	return positions
 
 func layout(room: Dictionary) -> Array:
-	# Private/door-only rooms have no public interaction layout at all.
-	# Do not let the generic fallback generator manufacture a standing slot.
 	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
-	# Context-free fallback used by legacy migration/tests. Width-specific art
-	# requires layout_for_world(), because a room dictionary alone cannot know
-	# whether its logical cell is currently part of R1, R2 or R3.
-	return _layout_from_anchors(room,furniture.for_room(room))
+	return _layout_from_anchors(room,_physical_anchor_data(room))
 
-func layout_for_world(world, room: Dictionary) -> Array:
-	if room.is_empty() or str(room.get("privacy","public"))!="public":
-		return []
-	var group:Dictionary=world.merged_group(int(room.get("x",0)),int(room.get("level",0)))
-	if group.is_empty():
-		return layout(room)
-	var module_index:=-1
-	for i in range(group.get("cells",[]).size()):
-		if str(group["cells"][i].get("id",""))==str(room.get("id","")):
-			module_index=i
-			break
-	var anchors:Array=furniture.for_room_variant(room,int(group.get("width",1)),module_index)
-	return _layout_from_anchors(room,anchors)
+func layout_for_world(_world, room: Dictionary) -> Array:
+	return layout(room)
 
 func _intent_prefers_station(intent: String, kind: String) -> bool:
 	match intent:
@@ -302,8 +307,9 @@ func reconcile(world) -> int:
 			actor["station_approach_z"] = float(spot.get("approach_z",0.95))
 			var offset: Vector2 = spot["offset"]
 			actor["station_point"] = [offset.x,offset.y]
-			var new_x:float=float(room["x"])*world.MODULE_W+offset.x
-			var new_y:float=float(room["level"])*world.FLOOR_H
+			var room_center:Vector3=world.room_center_pos(room)
+			var new_x:float=room_center.x+offset.x
+			var new_y:float=room_center.y
 			if str(actor.get("phase",""))=="perform":
 				actor["x"]=new_x
 				actor["visual_y"]=new_y
@@ -359,13 +365,14 @@ func migrate_legacy_positions(world) -> int:
 		if phase=="travel":
 			var points: Array=actor["waypoints"]
 			var last: Dictionary=points[-1]
-			last["position"]=[float(room["x"])*world.MODULE_W+offset.x,
-				float(room["level"])*world.FLOOR_H,offset.y]
+			var center:Vector3=world.room_center_pos(room)
+			last["position"]=[center.x+offset.x,center.y,offset.y]
 			points[points.size()-1]=last
 			actor["waypoints"]=points
 		else:
-			actor["x"]=float(room["x"])*world.MODULE_W+offset.x
+			var center:Vector3=world.room_center_pos(room)
+			actor["x"]=center.x+offset.x
 			actor["z"]=offset.y
-			actor["visual_y"]=float(room["level"])*world.FLOOR_H
+			actor["visual_y"]=center.y
 		changed+=1
 	return changed
