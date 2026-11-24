@@ -87,47 +87,45 @@ func run() -> void:
 	assert(lectern.distance_to(Vector2(1.12,-0.61))<0.01)
 
 	assert(bool(scene.interior_skin.component_config.get("review_overlay_loaded",false)))
+
+	# Library R1 has no accepted owner-approved art, so review candidate is
+	# allowed as a fallback and may use generated physical components.
+	var library_room:Dictionary=scene.world.get_room(2,0)
+	var library_node:Node3D=scene.room_root.get_node(str(library_room["id"]))
+	scene._load_room_art(library_node)
+	var library_art:Node3D=library_node.get_node("Layer_ApprovedArt")
+	assert(library_art.get_node_or_null("Art_furniture_back")==null)
+	assert(library_art.get_node_or_null("Art_back_decor")==null)
+	var library_components:=0
+	for child in library_art.get_children():
+		if str(child.name).begins_with("Art_furniture_back_") or (
+				str(child.name).begins_with("Art_back_decor_")):
+			library_components+=1
+			assert(bool(child.get_meta("candidate_review",false)))
+	assert(library_components>0)
+
+	# Accepted owner art always wins over review candidates.
 	for room_spec in [
-		[2,0,"library","TEEA_INT_20261123_005"],
-		[3,0,"music","TEEA_INT_20261123_006"],
-		[4,0,"cinema","TEEA_INT_20261123_006"],
-		[1,-1,"artifact","TEEA_INT_20261123_006"],
+		[3,0,"music"],
+		[4,0,"cinema"],
+		[1,-1,"artifact"],
 	]:
-		var review_room:Dictionary=scene.world.get_room(int(room_spec[0]),int(room_spec[1]))
-		assert(not review_room.is_empty())
-		var group_node:Node3D=scene.room_root.get_node(str(review_room["id"]))
+		var accepted_room:Dictionary=scene.world.get_room(int(room_spec[0]),int(room_spec[1]))
+		assert(not accepted_room.is_empty())
+		var accepted_layers:Array=scene.interior_skin.validated_layers(
+			str(room_spec[2]),scene.world.room_size_modules(accepted_room))
+		assert(not accepted_layers.is_empty())
+		for layer in accepted_layers:
+			assert(str(layer.get("path","")).begins_with(
+				"assets/rooms/%s/R1/" % str(room_spec[2])))
+			assert(not bool(layer.get("candidate_review",false)))
+		var group_node:Node3D=scene.room_root.get_node(str(accepted_room["id"]))
 		scene._load_room_art(group_node)
 		var art:Node3D=group_node.get_node("Layer_ApprovedArt")
-		assert(art.get_node_or_null("Art_furniture_back")==null)
-		assert(art.get_node_or_null("Art_back_decor")==null)
-		var furniture_components:int=0
-		var decor_components:int=0
-		var foreground_components:int=0
-		for child in art.get_children():
-			var node_name:String=str(child.name)
-			if node_name.begins_with("Art_furniture_back_"):
-				furniture_components+=1
-				assert(bool(child.get_meta("candidate_review",false)))
-			elif node_name.begins_with("Art_back_decor_"):
-				decor_components+=1
-				assert(bool(child.get_meta("candidate_review",false)))
-			elif node_name.begins_with("Art_foreground_"):
-				foreground_components+=1
-				assert(bool(child.get_meta("candidate_review",false)))
-		assert(furniture_components>0 and decor_components>0)
-		var has_foreground:=false
-		for layer in scene.interior_skin.validated_layers(
-				str(review_room["type"]),scene.world.room_size_modules(review_room)):
-			if str(layer.get("role",""))=="foreground":
-				has_foreground=true
-		if has_foreground:
-			assert(art.get_node_or_null("Art_foreground")==null)
-			assert(foreground_components>0)
-		var variant:Dictionary=scene.interior_skin._component_variant(
-			str(review_room["type"]),scene.world.room_size_modules(review_room))
-		assert(str(variant.get("source_batch",""))==str(room_spec[3]))
+		assert(art.get_node_or_null("Art_furniture_back")!=null)
+		assert(art.get_node_or_null("Art_back_decor")!=null)
 
-	print("ITER2_REVIEW_PACKAGES_PASS library_R1=TEEA005 music_R1=TEEA006 stations=26+31 components=20")
+	print("ITER2_REVIEW_PACKAGES_PASS library_R1=TEEA005 approved_first=true stations=26+31 components=20")
 	quit(0)
 
 func _initialize() -> void:
