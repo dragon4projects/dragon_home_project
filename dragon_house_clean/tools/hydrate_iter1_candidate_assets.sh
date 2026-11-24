@@ -5,6 +5,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/dragon-house-iter1-assets.XXXXXX")"
 trap 'rm -rf "$TMP"' EXIT
 
+T5_URL="https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/dcec30e5-df76-4440-a49a-446b500940e4.zip"
+T5_SHA="5cc946bcba991d0d357b02310a16109dda866e79b8e961d76766f4aa24641fbd"
 T6_URL="https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/b50aa9af-cd2c-4101-b16a-553e561c9c55.zip"
 T6_SHA="5ae489046eefb6dc3718f2334945bb6fc7786dc59fc0758060e7f7e1d010e275"
 T7_URL="https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/13095c35-c1b0-4b5d-b0cf-9a0a7dbba489.zip"
@@ -18,20 +20,33 @@ download_verify() {
   printf '%s  %s\n' "$sha" "$out" | sha256sum -c -
 }
 
+download_verify "$T5_URL" "$T5_SHA" "$TMP/teea005.zip"
 download_verify "$T6_URL" "$T6_SHA" "$TMP/teea006.zip"
 download_verify "$T7_URL" "$T7_SHA" "$TMP/teea007.zip"
 download_verify "$T7_CLOSURE_URL" "$T7_CLOSURE_SHA" "$TMP/teea007_closure.zip"
 
-mkdir -p "$TMP/t6" "$TMP/t7"
+mkdir -p "$TMP/t5" "$TMP/t6" "$TMP/t7"
+unzip -q "$TMP/teea005.zip" -d "$TMP/t5"
 unzip -q "$TMP/teea006.zip" -d "$TMP/t6"
 unzip -q "$TMP/teea007.zip" -d "$TMP/t7"
 
+T5_MARKER="$(find "$TMP/t5" -type f -path '*/assets/rooms/common/R1/backdrop.png' -print -quit)"
 T6_MARKER="$(find "$TMP/t6" -type f -path '*/assets/rooms/music/R1/backdrop.png' -print -quit)"
 T7_MARKER="$(find "$TMP/t7" -type f -path '*/assets/props/dragon_mug_lod0_empty.glb' -print -quit)"
+test -n "$T5_MARKER"
 test -n "$T6_MARKER"
 test -n "$T7_MARKER"
+T5_ROOT="${T5_MARKER%/assets/rooms/common/R1/backdrop.png}"
 T6_ROOT="${T6_MARKER%/assets/rooms/music/R1/backdrop.png}"
 T7_ROOT="${T7_MARKER%/assets/props/dragon_mug_lod0_empty.glb}"
+
+T5_INTERIORS_SRC="$T5_ROOT/data/asset_proposals/TEEA_INT_20261123_005_interiors.json"
+T5_STATIONS_SRC="$T5_ROOT/data/asset_proposals/TEEA_INT_20261123_005_furniture_anchors_candidate.json"
+test -f "$T5_INTERIORS_SRC"
+test -f "$T5_STATIONS_SRC"
+mkdir -p "$ROOT/data/integration_candidates"
+cp -f "$T5_INTERIORS_SRC" "$ROOT/data/integration_candidates/TEEA005_interiors_source.json"
+cp -f "$T5_STATIONS_SRC" "$ROOT/data/integration_candidates/TEEA005_station_source.json"
 
 STATION_DST="$ROOT/data/integration_candidates/TEEA006_station_source.json"
 rm -f "$STATION_DST"
@@ -73,10 +88,18 @@ else:
     print("TEEA006_STATION_SOURCE_GAP: immutable ZIP contains no valid exact-31 room_variants manifest")
 PY
 
+T5_DST="$ROOT/assets/room_candidates/TEEA_INT_20261123_005"
 T6_DST="$ROOT/assets/room_candidates/TEEA_INT_20261123_006"
 T7_DST="$ROOT/assets/room_candidates/TEEA_INT_20261123_007"
-rm -rf "$T6_DST" "$T7_DST"
-mkdir -p "$T6_DST" "$T7_DST"
+rm -rf "$T5_DST" "$T6_DST" "$T7_DST"
+mkdir -p "$T5_DST" "$T6_DST" "$T7_DST"
+
+for room in common study rest library; do
+  if [ -d "$T5_ROOT/assets/rooms/$room" ]; then
+    mkdir -p "$T5_DST/$room"
+    cp -R "$T5_ROOT/assets/rooms/$room/." "$T5_DST/$room/"
+  fi
+done
 
 for room in music cinema artifact workshop; do
   test -d "$T6_ROOT/assets/rooms/$room"
@@ -106,4 +129,4 @@ for pattern in dragon_mug_* media_holder_* dragon_fur_rest_mat.*; do
 done
 
 python3 "$ROOT/tools/build_iter1_review_overlay.py"
-echo "ITER1_HYDRATE_PASS t6_sha=$T6_SHA t7_sha=$T7_SHA closure_sha=$T7_CLOSURE_SHA"
+echo "ITER1_HYDRATE_PASS t5_sha=$T5_SHA t6_sha=$T6_SHA t7_sha=$T7_SHA closure_sha=$T7_CLOSURE_SHA"
