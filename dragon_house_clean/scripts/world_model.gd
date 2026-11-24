@@ -624,6 +624,7 @@ func _migrate_legacy_topology() -> bool:
 		visited[legacy_id]=true
 		if MERGEABLE_TYPES.has(str(legacy.get("type",""))):
 			var next_x:=int(legacy.get("x",0))+1
+			var legacy_is_seed:=_initial_seed_cell(legacy)
 			while run.size()<3:
 				var found:Dictionary={}
 				for candidate in source:
@@ -631,7 +632,8 @@ func _migrate_legacy_topology() -> bool:
 						continue
 					if int(candidate.get("level",0))==int(legacy.get("level",0)) and (
 							int(candidate.get("x",0))==next_x) and (
-							str(candidate.get("type",""))==str(legacy.get("type",""))):
+							str(candidate.get("type",""))==str(legacy.get("type",""))) and (
+							_initial_seed_cell(candidate)==legacy_is_seed):
 						found=candidate
 						break
 				if found.is_empty():
