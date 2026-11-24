@@ -502,7 +502,7 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	var rear:=Node3D.new()
 	rear.name="PhysicalRearWall"
 	parent.add_child(rear)
-	box(rear,Vector3(0,1.49,-1.78),Vector3(span-0.42,2.67,0.08),base_color)
+	box(rear,Vector3(0,1.49,-2.03),Vector3(span-0.42,2.67,0.08),base_color)
 	box(rear,Vector3(-span*0.5+0.16,1.47,-1.59),
 		Vector3(0.18,2.76,0.24),palette["rock_light"])
 	box(rear,Vector3(span*0.5-0.16,1.47,-1.59),
