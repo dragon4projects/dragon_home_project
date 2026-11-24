@@ -39,6 +39,18 @@ func _initialize() -> void:
 	var waypoints:Array=locomotion.build_waypoints(
 		w,actor,local_route,"VIEW_ART",wall_station,-1.35)
 	assert(not waypoints.is_empty())
+	var kinds:Array=[]
+	for point in waypoints:
+		kinds.append(str(point.get("kind","")))
+		assert(str(point.get("room_id",""))==str(common["id"]))
+	assert(kinds.has("local_aisle_entry"))
+	assert(kinds.has("local_aisle"))
+	assert(kinds.has("station_approach"))
+	var aisle_index:int=kinds.find("local_aisle")
+	var approach_index:int=kinds.find("station_approach")
+	var station_index:int=kinds.find("station")
+	assert(aisle_index>=0 and approach_index>aisle_index and station_index>approach_index,
+		"Rear-wall interaction must route front aisle -> authored approach -> station")
 	var final:Array=waypoints[-1]["position"]
 	assert(absf(float(final[0])-(w.room_center_pos(common).x+wall_station.x))<0.01)
 	assert(absf(float(final[2])-wall_station.y)<0.01,

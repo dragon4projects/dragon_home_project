@@ -36,12 +36,15 @@ func run() -> void:
 	assert(not waypoints.is_empty())
 	var has_horizontal: bool = false
 	var has_lift: bool = false
+	var has_local_aisle: bool = false
 	for point in waypoints:
 		if str(point.get("kind","")) in ["connector_out","connector_in"]:
 			has_horizontal=true
 		if str(point.get("kind",""))=="lift":
 			has_lift=true
-	assert(has_horizontal and has_lift)
-	print("ITER2_RUNTIME_SCENE_PASS common=R3 back_scale=%.2f front_scale=%.2f connectors=true lift=true" % [
+		if str(point.get("kind","")) in ["local_aisle_entry","local_aisle"]:
+			has_local_aisle=true
+	assert(has_horizontal and has_lift and has_local_aisle)
+	print("ITER2_RUNTIME_SCENE_PASS common=R3 back_scale=%.2f front_scale=%.2f connectors=true lift=true aisle_route=true" % [
 		back_scale,front_scale])
 	quit(0)

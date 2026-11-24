@@ -557,7 +557,8 @@ const PASS_LANE_OFFSET := 0.34
 const FOLLOW_GAP := 0.58
 const OPPOSING_YIELD_X := 0.54
 const PASSING_WAYPOINT_KINDS := [
-	"leave_station","connector_out","connector_in","station_approach"
+	"leave_station","local_aisle_entry","local_aisle",
+	"connector_out","connector_in","lift_align","station_approach"
 ]
 
 func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
