@@ -54,6 +54,29 @@ func _append_if_distinct(travel: Array, point: Dictionary) -> void:
 	if a.distance_to(b)>0.01 or str(travel[-1].get("room_id",""))!=str(point.get("room_id","")):
 		travel.append(point)
 
+func _last_position(travel: Array) -> Vector3:
+	if travel.is_empty():
+		return Vector3.ZERO
+	var p:Array=travel[-1].get("position",[0.0,0.0,0.0])
+	return Vector3(float(p[0]),float(p[1]),float(p[2]))
+
+func _route_manhattan(travel: Array, room_id: String, target: Vector3,
+		z_first: bool, first_kind: String, second_kind: String) -> void:
+	if travel.is_empty():
+		_append_if_distinct(travel,waypoint(target.x,target.y,target.z,room_id,second_kind))
+		return
+	var current:Vector3=_last_position(travel)
+	if z_first:
+		_append_if_distinct(travel,waypoint(
+			current.x,target.y,target.z,room_id,first_kind))
+		_append_if_distinct(travel,waypoint(
+			target.x,target.y,target.z,room_id,second_kind))
+	else:
+		_append_if_distinct(travel,waypoint(
+			target.x,target.y,current.z,room_id,first_kind))
+		_append_if_distinct(travel,waypoint(
+			target.x,target.y,target.z,room_id,second_kind))
+
 func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 		override_station: Variant = null, override_approach_z: float = AISLE_Z) -> Array:
 	if room_path.is_empty():
@@ -77,9 +100,16 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 		var from_point:Vector3=connection["from"]
 		var to_point:Vector3=connection["to"]
 		var kind: String = str(connection.get("kind","horizontal"))
-		_append_if_distinct(travel,waypoint(
-			from_point.x,from_point.y,from_point.z,str(previous["id"]),
-			"lift_core" if kind=="lift" else "connector_out"))
+		if kind=="lift":
+			# Inside the lift: align X to the core first, then move in Z.
+			# This keeps the shaft route inside the lift X/Z volume.
+			_route_manhattan(travel,str(previous["id"]),from_point,
+				false,"lift_align","lift_core")
+		else:
+			# In a room: move out to the front connector aisle first, then
+			# traverse X. This prevents diagonal cuts through furniture.
+			_route_manhattan(travel,str(previous["id"]),from_point,
+				true,"local_aisle_entry","connector_out")
 		_append_if_distinct(travel,waypoint(
 			to_point.x,to_point.y,to_point.z,str(room["id"]),
 			"lift" if kind=="lift" else "connector_in"))
@@ -90,9 +120,19 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 	if override_station is Vector2:
 		anchor=override_station
 	var station_world:Vector3=world.room_local_to_world(previous,anchor)
+	var front_aisle_z:float=minf(
+		float(world.room_space.SIDE_CONNECTOR_Z),
+		float(world.room_space.FRONT_Z)-0.12)
+	var aisle_world:Vector3=world.room_local_to_world(
+		previous,Vector2(anchor.x,front_aisle_z))
+	# Whether we arrived from another room or started inside this room,
+	# normalize travel through the clear front aisle before diving to a
+	# station's authored approach lane.
+	_route_manhattan(travel,str(previous["id"]),aisle_world,
+		true,"local_aisle_entry","local_aisle")
 	if override_station is Vector2:
 		var safe_approach_z: float = clampf(override_approach_z,
-			world.room_space.BACK_Z,world.room_space.FRONT_Z)
+			float(world.room_space.BACK_Z),float(world.room_space.FRONT_Z))
 		if absf(anchor.y-safe_approach_z)>0.20:
 			var approach_world:Vector3=world.room_local_to_world(
 				previous,Vector2(anchor.x,safe_approach_z))
