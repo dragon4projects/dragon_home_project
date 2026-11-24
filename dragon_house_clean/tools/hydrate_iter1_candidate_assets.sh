@@ -33,6 +33,44 @@ test -n "$T7_MARKER"
 T6_ROOT="${T6_MARKER%/assets/rooms/music/R1/backdrop.png}"
 T7_ROOT="${T7_MARKER%/assets/props/dragon_mug_lod0_empty.glb}"
 
+STATION_DST="$ROOT/data/integration_candidates/TEEA006_station_source.json"
+rm -f "$STATION_DST"
+python3 - "$T6_ROOT" "$STATION_DST" <<'PY'
+import json, pathlib, shutil, sys
+root = pathlib.Path(sys.argv[1])
+out = pathlib.Path(sys.argv[2])
+matches = []
+for p in root.rglob("*.json"):
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        continue
+    variants = data.get("room_variants")
+    if not isinstance(variants, dict):
+        continue
+    count = sum(len(v.get("stations", [])) for v in variants.values()
+                if isinstance(v, dict) and isinstance(v.get("stations", []), list))
+    if count == 31:
+        matches.append(p)
+if len(matches) == 1:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(matches[0], out)
+    print("TEEA006_STATION_SOURCE_FOUND", matches[0])
+elif len(matches) > 1:
+    normalized = []
+    for p in matches:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        normalized.append((json.dumps(data, sort_keys=True, separators=(",", ":")), p))
+    if all(x[0] == normalized[0][0] for x in normalized):
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(normalized[0][1], out)
+        print("TEEA006_STATION_SOURCE_FOUND_EQUIVALENT", normalized[0][1])
+    else:
+        raise SystemExit("multiple non-equivalent exact-31 TEEA006 station sources in immutable ZIP")
+else:
+    print("TEEA006_STATION_SOURCE_GAP: immutable ZIP contains no valid exact-31 room_variants manifest")
+PY
+
 T6_DST="$ROOT/assets/room_candidates/TEEA_INT_20261123_006"
 T7_DST="$ROOT/assets/room_candidates/TEEA_INT_20261123_007"
 rm -rf "$T6_DST" "$T7_DST"
