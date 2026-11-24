@@ -18,6 +18,37 @@ func _span_x(node: Node3D) -> float:
 			hi=maxf(hi,(child as Node3D).position.x)
 	return 0.0 if is_inf(lo) or is_inf(hi) else hi-lo
 
+func _alpha_stats(tex: Texture2D) -> Dictionary:
+	var img:Image=tex.get_image()
+	if img==null or img.is_empty():
+		return {"ok":false}
+	var step_x:int=maxi(1,img.get_width()/96)
+	var step_y:int=maxi(1,img.get_height()/64)
+	var total:int=0
+	var visible:int=0
+	var solid:int=0
+	var alpha_sum:float=0.0
+	for y in range(0,img.get_height(),step_y):
+		for x in range(0,img.get_width(),step_x):
+			var a:float=img.get_pixel(x,y).a
+			total+=1
+			alpha_sum+=a
+			if a>0.05:
+				visible+=1
+			if a>0.95:
+				solid+=1
+	var used:Rect2i=img.get_used_rect()
+	var used_frac:float=float(used.size.x*used.size.y)/maxf(1.0,float(img.get_width()*img.get_height()))
+	return {
+		"ok":true,
+		"visible_ratio":float(visible)/maxf(1.0,float(total)),
+		"solid_ratio":float(solid)/maxf(1.0,float(total)),
+		"mean_alpha":alpha_sum/maxf(1.0,float(total)),
+		"used_frac":used_frac,
+		"used":[used.position.x,used.position.y,used.size.x,used.size.y],
+		"size":[img.get_width(),img.get_height()]
+	}
+
 func run() -> void:
 	var scene=load("res://scenes/main.tscn").instantiate()
 	root.add_child(scene)
@@ -82,6 +113,10 @@ func run() -> void:
 		"Backdrop must render in front of the structural rear wall")
 	assert(absf(backdrop.position.z+1.90)<0.01)
 	assert(absf(furniture_back.position.z+0.82)<0.01)
+	for role in ["backdrop","back_decor","furniture_back","foreground"]:
+		var sprite:Sprite3D=art.get_node_or_null("Art_"+role)
+		if sprite!=null and sprite.texture!=null:
+			print("ITER2_ALPHA role=%s stats=%s" % [role,str(_alpha_stats(sprite.texture))])
 
 	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true art_depth=true")
 	quit(0)
