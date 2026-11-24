@@ -22,9 +22,6 @@ func run() -> void:
 	var scene=load("res://scenes/main.tscn").instantiate()
 	root.add_child(scene)
 	current_scene=scene
-	scene.world.save_path="user://test_room_volume_iter2.json"
-	scene.world.seed_world()
-	scene.make_rooms()
 	await process_frame
 
 	var common:Dictionary=scene.world.get_room(-2,0)
@@ -52,7 +49,8 @@ func run() -> void:
 
 	# Synthetic wide room without accepted art: use one pinned authoring layout.
 	var study:Dictionary=scene.world.make_room(10,2,"study",3,false)
-	scene.make_rooms()
+	var study_group:Dictionary=scene.world.merged_group(10,2)
+	scene.make_room(study_group)
 	var study_node:Node3D=scene.room_root.get_node(str(study["id"]))
 	assert(study_node!=null)
 	assert(scene.room_visual_layout.has_variant("study",3))
@@ -76,7 +74,5 @@ func run() -> void:
 	assert(absf(backdrop.position.z+1.90)<0.01)
 	assert(absf(furniture_back.position.z+0.82)<0.01)
 
-	for suffix in ["",".bak",".tmp"]:
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(scene.world.save_path+suffix))
 	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true art_depth=true")
 	quit(0)
