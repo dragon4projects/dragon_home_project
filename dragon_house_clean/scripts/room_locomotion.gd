@@ -38,55 +38,70 @@ func waypoint(x: float, y: float, z: float, room_id: String, kind: String) -> Di
 	return {"position": [x, y, z], "room_id": room_id, "kind": kind}
 
 func corridor_depth(room: Dictionary) -> float:
-	# Passing a private door is permitted only in the public hallway in front of it.
 	return PUBLIC_FRONTAGE_Z if bool(room.get("public_frontage", false)) else AISLE_Z
+
+func _append_if_distinct(travel: Array, point: Dictionary) -> void:
+	if travel.is_empty():
+		travel.append(point)
+		return
+	var previous:Array=travel[-1].get("position",[])
+	var current:Array=point.get("position",[])
+	if previous.size()!=3 or current.size()!=3:
+		travel.append(point)
+		return
+	var a:=Vector3(float(previous[0]),float(previous[1]),float(previous[2]))
+	var b:=Vector3(float(current[0]),float(current[1]),float(current[2]))
+	if a.distance_to(b)>0.01 or str(travel[-1].get("room_id",""))!=str(point.get("room_id","")):
+		travel.append(point)
 
 func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 		override_station: Variant = null, override_approach_z: float = AISLE_Z) -> Array:
 	if room_path.is_empty():
 		return []
-	var travel: Array = []
-	var first: Dictionary = world.room_by_id(room_path[0])
+	var travel:Array=[]
+	var first:Dictionary=world.room_by_id(str(room_path[0]))
 	if first.is_empty():
 		return []
-	var previous: Dictionary = first
-	var x: float = float(first["x"]) * world.MODULE_W
-	var y: float = float(first["level"]) * world.FLOOR_H
-	travel.append(waypoint(float(actor.get("x",x)), y, corridor_depth(first), first["id"], "leave_station"))
-	travel.append(waypoint(x, y, corridor_depth(first), first["id"], "room_center"))
+	var y:=float(first.get("level",0))*world.FLOOR_H
+	var actor_x:=float(actor.get("x",world.room_center_pos(first).x))
+	var actor_z:=float(actor.get("z",0.0))
+	_append_if_distinct(travel,waypoint(actor_x,y,actor_z,str(first["id"]),"leave_station"))
+	var previous:Dictionary=first
 	for i in range(1,room_path.size()):
-		var room: Dictionary = world.room_by_id(room_path[i])
+		var room:Dictionary=world.room_by_id(str(room_path[i]))
 		if room.is_empty() or not world.allows_transit(room):
 			return []
-		var nx: float = float(room["x"]) * world.MODULE_W
-		var ny: float = float(room["level"]) * world.FLOOR_H
-		if room["level"] != previous["level"]:
-			if room["type"] != "lift" or previous["type"] != "lift" or room["x"] != previous["x"]:
-				return [] # never jump floors outside actual lift shaft
-			travel.append(waypoint(nx, ny, AISLE_Z, room["id"], "lift"))
-		else:
-			var direction: float = signf(nx-x)
-			var depth: float = maxf(corridor_depth(previous),corridor_depth(room))
-			if depth > corridor_depth(previous):
-				travel.append(waypoint(x,y,depth,previous["id"],"approach_public_frontage"))
-			travel.append(waypoint(x+direction*world.MODULE_W*0.49,y,depth,previous["id"],"door_out"))
-			travel.append(waypoint(nx-direction*world.MODULE_W*0.49,ny,depth,room["id"],"door_in"))
-			travel.append(waypoint(nx,ny,corridor_depth(room),room["id"],"room_center"))
-		x=nx
-		y=ny
+		var connection:Dictionary=world.connection_between(previous,room)
+		if connection.is_empty():
+			return []
+		var from_point:Vector3=connection["from"]
+		var to_point:Vector3=connection["to"]
+		var kind:=str(connection.get("kind","horizontal"))
+		_append_if_distinct(travel,waypoint(
+			from_point.x,from_point.y,from_point.z,str(previous["id"]),
+			"lift_core" if kind=="lift" else "connector_out"))
+		_append_if_distinct(travel,waypoint(
+			to_point.x,to_point.y,to_point.z,str(room["id"]),
+			"lift" if kind=="lift" else "connector_in"))
 		previous=room
-	# Only public destinations can become activity stations.
 	if not world.is_accessible(previous,str(actor.get("id",""))):
 		return []
-	var anchor: Vector2 = station(intent,str(actor.get("id","")))
+	var anchor:Vector2=station(intent,str(actor.get("id","")))
 	if override_station is Vector2:
-		anchor = override_station
-		# Walk along the public aisle to the correct sofa/work position first,
-		# instead of taking a diagonal shortcut through other furniture.
-		var aisle: float=clampf(override_approach_z,-1.50,1.65)
-		if anchor.y < aisle - 0.45:
-			travel.append(waypoint(x+anchor.x,y,aisle,previous["id"],"station_approach"))
-	travel.append(waypoint(x+anchor.x,y,anchor.y,previous["id"],"station"))
+		anchor=override_station
+	var station_world:Vector3=world.room_local_to_world(previous,anchor)
+	if override_station is Vector2:
+		var safe_approach_z:=clampf(override_approach_z,
+			world.room_space.BACK_Z,world.room_space.FRONT_Z)
+		if absf(anchor.y-safe_approach_z)>0.20:
+			var approach_world:Vector3=world.room_local_to_world(
+				previous,Vector2(anchor.x,safe_approach_z))
+			_append_if_distinct(travel,waypoint(
+				approach_world.x,approach_world.y,approach_world.z,
+				str(previous["id"]),"station_approach"))
+	_append_if_distinct(travel,waypoint(
+		station_world.x,station_world.y,station_world.z,
+		str(previous["id"]),"station"))
 	return travel
 
 func get_target(actor: Dictionary) -> Vector3:
