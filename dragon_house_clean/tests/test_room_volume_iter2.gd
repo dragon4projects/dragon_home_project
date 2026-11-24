@@ -257,7 +257,20 @@ func run() -> void:
 	scene._populate_furniture(artifact_node)
 	var artifact_dressing:Node3D=artifact_node.get_node("LocalFurniture/PhysicalDressing")
 	assert(artifact_dressing.get_node_or_null("Dressing_ArtifactPedestal")==null,
-		"Accepted Artifact furniture art must not be duplicated by a greybox pedestal")
+		"Artifact furniture must not be duplicated by a greybox pedestal")
+	var artifact_bank:Node3D=artifact_node.get_node("LocalFurniture/PhysicalFurniture/OwnerDecorBank")
+	assert(artifact_bank!=null and artifact_bank.get_child_count()>=2)
+	var shelf_count:int=0
+	for child in artifact_bank.get_children():
+		assert(str(child.get_meta("source_asset_id","")) in ["wooden_display_shelves_01","chinese_commode"])
+		if str(child.get_meta("source_asset_id",""))=="wooden_display_shelves_01":
+			shelf_count+=1
+	assert(shelf_count>=1)
+	scene._load_room_art(artifact_node)
+	var artifact_art:Node3D=artifact_node.get_node("Layer_ApprovedArt")
+	for child in artifact_art.get_children():
+		assert(not str(child.name).begins_with("Art_furniture_back") and not str(child.name).begins_with("Art_foreground"),
+			"Model furniture must not retain baked furniture duplicates")
 
 	var workshop_room:Dictionary=scene.world.make_room(14,2,"workshop",1,false)
 	var workshop_group:Dictionary=scene.world.merged_group(14,2)
@@ -267,7 +280,15 @@ func run() -> void:
 	var workshop_dressing:Node3D=workshop_node.get_node("LocalFurniture/PhysicalDressing")
 	assert(workshop_dressing.get_node_or_null("Dressing_Forge")==null)
 	assert(workshop_dressing.get_node_or_null("Dressing_Workbench")==null,
-		"Accepted Workshop furniture art must own the visible workstation")
+		"Workshop must not create a procedural workstation")
+	var workshop_bank:Node3D=workshop_node.get_node("LocalFurniture/PhysicalFurniture/OwnerDecorBank")
+	assert(workshop_bank!=null and workshop_bank.get_child_count()>=2)
+	var table_count:int=0
+	for child in workshop_bank.get_children():
+		assert(str(child.get_meta("source_asset_id","")) in ["wooden_table_02","metal_stool_02","worn_metal_rack"])
+		if str(child.get_meta("source_asset_id",""))=="wooden_table_02":
+			table_count+=1
+	assert(table_count>=1)
 
 	var actor:Dictionary=scene.world.residents["RES_01"]
 	actor["room_id"]=str(common["id"])
