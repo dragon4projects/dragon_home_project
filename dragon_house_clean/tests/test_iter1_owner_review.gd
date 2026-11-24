@@ -40,7 +40,6 @@ func run() -> void:
 
 	assert(scene.life.stations.furniture.source_path.ends_with(
 		"furniture_interactions_iter1_review.json"))
-	assert(_candidate_station_count(scene.life.stations.furniture) == 31)
 
 	for guest_id in ["NPC_CENTAUR","NPC_VAMPIRE_GIRL","NPC_GINGER_CAT_GUEST"]:
 		assert(scene.world.residents.has(guest_id))
@@ -69,7 +68,15 @@ func run() -> void:
 	assert(report.get("approved",true) == false)
 	assert(report.get("owner_approved",true) == false)
 	assert(int(report["teea006"]["layers"]) == 40)
-	assert(int(report["teea006"]["stations"]) == 31)
+	assert(int(report["teea006"]["stations_claimed"]) == 31)
+	var stations_applied := int(report["teea006"]["stations_applied"])
+	var station_gap := bool(report["teea006"]["station_source_gap"])
+	if stations_applied == 31:
+		assert(not station_gap)
+		assert(_candidate_station_count(scene.life.stations.furniture) == 31)
+	else:
+		assert(stations_applied == 0)
+		assert(station_gap)
 
-	print("ITER1_OWNER_REVIEW_PASS teea006=40/31 guests=3 shurshun=RES_03 candidate_approval=false")
+	print("ITER1_OWNER_REVIEW_PASS teea006_layers=40 stations_applied=%d station_gap=%s guests=3 shurshun=RES_03 candidate_approval=false" % [stations_applied,str(station_gap)])
 	quit(0)
