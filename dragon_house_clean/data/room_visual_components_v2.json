@@ -1,142 +1,318 @@
 {
   "schema": 1,
-  "note": "Physical Sprite3D crops from accepted furniture_back layers. Crop rectangles come from alpha components; X/Z come from TEEA002 calibrated furniture anchors/collision footprints. No topology mutation.",
+  "note": "Physical Sprite3D crops from accepted transparent room layers. Crop rectangles are alpha-component bounds; physical X/Y/Z come from calibrated TEEA anchors or the original wall projection. No topology mutation.",
   "pixel_size": 0.003125,
   "variants": {
     "common/R3": {
-      "source_path": "assets/rooms/common/R3/furniture_back.png",
-      "source_sha256": "7809f05cabd1813d9dee93e57562e8aecf63bbff44152b02532641f5b06604a7",
       "suppress_roles": [
         "foreground"
       ],
-      "components": [
-        {
-          "id": "sofa_left",
-          "rect": [
-            333,
-            754,
-            582,
-            230
-          ],
-          "x": -5.25,
-          "y": 0.384375,
-          "z": -0.88,
-          "source_anchor": "common_sofa_left"
+      "role_components": {
+        "furniture_back": {
+          "source_path": "assets/rooms/common/R3/furniture_back.png",
+          "source_sha256": "7809f05cabd1813d9dee93e57562e8aecf63bbff44152b02532641f5b06604a7",
+          "components": [
+            {
+              "id": "sofa_left",
+              "rect": [
+                333,
+                754,
+                582,
+                230
+              ],
+              "x": -5.25,
+              "y": 0.384375,
+              "z": -0.88,
+              "source_anchor": "common_sofa_left"
+            },
+            {
+              "id": "side_table",
+              "rect": [
+                1091,
+                831,
+                154,
+                153
+              ],
+              "x": -3.55,
+              "y": 0.264062,
+              "z": -0.1,
+              "source_anchor": "common_side_table"
+            },
+            {
+              "id": "chair_left",
+              "rect": [
+                1365,
+                680,
+                246,
+                304
+              ],
+              "x": -2.55,
+              "y": 0.5,
+              "z": -0.72,
+              "source_anchor": "common_chair_left"
+            },
+            {
+              "id": "bench_right",
+              "rect": [
+                3188,
+                696,
+                314,
+                288
+              ],
+              "x": 3.253125,
+              "y": 0.475,
+              "z": -0.82,
+              "source_anchor": "common_bench_right"
+            },
+            {
+              "id": "round_table",
+              "rect": [
+                3502,
+                696,
+                325,
+                288
+              ],
+              "x": 4.251563,
+              "y": 0.475,
+              "z": 0.18,
+              "source_anchor": "common_round_table"
+            },
+            {
+              "id": "chair_right",
+              "rect": [
+                3889,
+                689,
+                254,
+                295
+              ],
+              "x": 5.35,
+              "y": 0.485937,
+              "z": -0.78,
+              "source_anchor": "common_chair_right"
+            }
+          ]
         },
-        {
-          "id": "side_table",
-          "rect": [
-            1091,
-            831,
-            154,
-            153
-          ],
-          "x": -3.55,
-          "y": 0.264062,
-          "z": -0.1,
-          "source_anchor": "common_side_table"
-        },
-        {
-          "id": "chair_left",
-          "rect": [
-            1365,
-            680,
-            246,
-            304
-          ],
-          "x": -2.55,
-          "y": 0.5,
-          "z": -0.72,
-          "source_anchor": "common_chair_left"
-        },
-        {
-          "id": "bench_right",
-          "rect": [
-            3188,
-            696,
-            314,
-            288
-          ],
-          "x": 3.253125,
-          "y": 0.475,
-          "z": -0.82,
-          "source_anchor": "common_bench_right"
-        },
-        {
-          "id": "round_table",
-          "rect": [
-            3502,
-            696,
-            325,
-            288
-          ],
-          "x": 4.251563,
-          "y": 0.475,
-          "z": 0.18,
-          "source_anchor": "common_round_table"
-        },
-        {
-          "id": "chair_right",
-          "rect": [
-            3889,
-            689,
-            254,
-            295
-          ],
-          "x": 5.35,
-          "y": 0.485937,
-          "z": -0.78,
-          "source_anchor": "common_chair_right"
+        "back_decor": {
+          "source_path": "assets/rooms/common/R3/back_decor.png",
+          "source_sha256": "ed6f3c703641c0d8d4695ed2c5ae18b10519ca7363f3eb536e1823a9f8a2ca8b",
+          "components": [
+            {
+              "id": "wall_light_far_left",
+              "rect": [
+                104,
+                247,
+                80,
+                66
+              ],
+              "x": -6.75,
+              "y": 2.225,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "bookshelf_left",
+              "rect": [
+                203,
+                369,
+                298,
+                615
+              ],
+              "x": -6.1,
+              "y": 0.9859375,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "wall_light_mid",
+              "rect": [
+                2120,
+                243,
+                80,
+                68
+              ],
+              "x": -0.45,
+              "y": 2.234375,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "bookshelf_mid",
+              "rect": [
+                2462,
+                382,
+                292,
+                602
+              ],
+              "x": 0.95,
+              "y": 0.965625,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "wall_light_right_mid",
+              "rect": [
+                3272,
+                259,
+                80,
+                68
+              ],
+              "x": 3.15,
+              "y": 2.184375,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "wall_light_far_right",
+              "rect": [
+                4360,
+                253,
+                80,
+                67
+              ],
+              "x": 6.55,
+              "y": 2.2046875,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            }
+          ]
         }
-      ]
+      }
     },
     "library/R2": {
-      "source_path": "assets/rooms/library/R2/furniture_back.png",
-      "source_sha256": "99c733d6604dd68810c2af9a7227f46a84ddb92d839e2e47603ff695c7c64621",
       "suppress_roles": [
         "foreground"
       ],
-      "components": [
-        {
-          "id": "chair_left",
-          "rect": [
-            714,
-            674,
-            268,
-            310
-          ],
-          "x": -2.15,
-          "y": 0.509375,
-          "z": -0.68,
-          "source_anchor": "library_chair_left"
+      "role_components": {
+        "furniture_back": {
+          "source_path": "assets/rooms/library/R2/furniture_back.png",
+          "source_sha256": "99c733d6604dd68810c2af9a7227f46a84ddb92d839e2e47603ff695c7c64621",
+          "components": [
+            {
+              "id": "chair_left",
+              "rect": [
+                714,
+                674,
+                268,
+                310
+              ],
+              "x": -2.15,
+              "y": 0.509375,
+              "z": -0.68,
+              "source_anchor": "library_chair_left"
+            },
+            {
+              "id": "table",
+              "rect": [
+                1396,
+                781,
+                280,
+                203
+              ],
+              "x": 0,
+              "y": 0.342187,
+              "z": 0.18,
+              "source_anchor": "library_table"
+            },
+            {
+              "id": "chair_right",
+              "rect": [
+                2120,
+                725,
+                208,
+                259
+              ],
+              "x": 2.15,
+              "y": 0.429688,
+              "z": -0.68,
+              "source_anchor": "library_chair_right"
+            }
+          ]
         },
-        {
-          "id": "table",
-          "rect": [
-            1396,
-            781,
-            280,
-            203
-          ],
-          "x": 0,
-          "y": 0.342187,
-          "z": 0.18,
-          "source_anchor": "library_table"
-        },
-        {
-          "id": "chair_right",
-          "rect": [
-            2120,
-            725,
-            208,
-            259
-          ],
-          "x": 2.15,
-          "y": 0.429688,
-          "z": -0.68,
-          "source_anchor": "library_chair_right"
+        "back_decor": {
+          "source_path": "assets/rooms/library/R2/back_decor.png",
+          "source_sha256": "29da9f7541c3e00e0d7ee7053ad4917f3becd6325c6a4d5e5c67857d89c45a90",
+          "components": [
+            {
+              "id": "wall_light_left",
+              "rect": [
+                104,
+                259,
+                80,
+                68
+              ],
+              "x": -4.35,
+              "y": 2.184375,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "bookshelf_left",
+              "rect": [
+                229,
+                373,
+                406,
+                611
+              ],
+              "x": -3.45,
+              "y": 0.9796875,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "bookshelf_mid",
+              "rect": [
+                1394,
+                413,
+                380,
+                571
+              ],
+              "x": 0.15,
+              "y": 0.9171875,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "wall_light_mid",
+              "rect": [
+                1496,
+                243,
+                80,
+                68
+              ],
+              "x": 0,
+              "y": 2.234375,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "bookshelf_right",
+              "rect": [
+                2409,
+                387,
+                398,
+                597
+              ],
+              "x": 3.35,
+              "y": 0.9578125,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            },
+            {
+              "id": "wall_light_right",
+              "rect": [
+                2856,
+                259,
+                80,
+                68
+              ],
+              "x": 4.25,
+              "y": 2.184375,
+              "z": -1.7,
+              "source_anchor": "projected_back_wall"
+            }
+          ]
         }
-      ]
+      }
     }
   }
 }

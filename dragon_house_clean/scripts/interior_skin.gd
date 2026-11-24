@@ -129,12 +129,26 @@ func _component_texture(source_path: String, component: Dictionary) -> Texture2D
 	component_textures[key]=tex
 	return tex
 
-func _add_component_furniture(parent: Node3D, room_type: String, width: int,
-		source_path: String, candidate_review: bool) -> int:
+func _component_role_config(room_type: String, width: int, role: String) -> Dictionary:
 	var variant:Dictionary=_component_variant(room_type,width)
-	if variant.is_empty() or str(variant.get("source_path",""))!=source_path:
+	if variant.is_empty():
+		return {}
+	var roles=variant.get("role_components",{})
+	if typeof(roles)==TYPE_DICTIONARY:
+		var raw=roles.get(role,{})
+		if typeof(raw)==TYPE_DICTIONARY:
+			return raw
+	# Backward compatibility for the first furniture-only component manifest.
+	if role=="furniture_back" and variant.has("source_path"):
+		return variant
+	return {}
+
+func _add_component_role(parent: Node3D, room_type: String, width: int,
+		role: String, source_path: String, candidate_review: bool) -> int:
+	var role_config:Dictionary=_component_role_config(room_type,width,role)
+	if role_config.is_empty() or str(role_config.get("source_path",""))!=source_path:
 		return 0
-	var entries=variant.get("components",[])
+	var entries=role_config.get("components",[])
 	if typeof(entries)!=TYPE_ARRAY:
 		return 0
 	var count:=0
@@ -146,17 +160,18 @@ func _add_component_furniture(parent: Node3D, room_type: String, width: int,
 		if tex==null:
 			continue
 		var sprite:=Sprite3D.new()
-		sprite.name="Art_furniture_back_"+str(item.get("id","component"))
+		sprite.name="Art_%s_%s" % [role,str(item.get("id","component"))]
 		sprite.texture=tex
 		sprite.billboard=BaseMaterial3D.BILLBOARD_DISABLED
 		sprite.pixel_size=float(item.get("pixel_size",
 			component_config.get("pixel_size",0.003125)))
 		sprite.position=Vector3(float(item.get("x",0.0)),
-			float(item.get("y",0.0)),float(item.get("z",-0.8)))
+			float(item.get("y",0.0)),float(item.get("z",Z_FOR_ROLE.get(role,-0.8))))
 		sprite.no_depth_test=false
 		sprite.shaded=false
 		sprite.render_priority=0
 		sprite.set_meta("physical_component",true)
+		sprite.set_meta("component_role",role)
 		sprite.set_meta("source_anchor",str(item.get("source_anchor","")))
 		if candidate_review:
 			sprite.set_meta("candidate_review",true)
@@ -276,9 +291,10 @@ func add_layers(parent: Node3D, room_type: String, width: int, physical_width: f
 		if suppressed.has(role):
 			continue
 		var source_path:String=str(item["path"])
-		if role=="furniture_back" and not component_variant.is_empty():
-			var component_count:int=_add_component_furniture(parent,room_type,width,
-				source_path,bool(item.get("candidate_review",false)))
+		var role_config:Dictionary=_component_role_config(room_type,width,role)
+		if not role_config.is_empty():
+			var component_count:int=_add_component_role(parent,room_type,width,
+				role,source_path,bool(item.get("candidate_review",false)))
 			if component_count>0:
 				count+=component_count
 				continue
