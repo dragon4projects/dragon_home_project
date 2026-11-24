@@ -122,8 +122,16 @@ func run() -> void:
 		var group_node:Node3D=scene.room_root.get_node(str(accepted_room["id"]))
 		scene._load_room_art(group_node)
 		var art:Node3D=group_node.get_node("Layer_ApprovedArt")
-		assert(art.get_node_or_null("Art_furniture_back")!=null)
-		assert(art.get_node_or_null("Art_back_decor")!=null)
+		if str(room_spec[2])=="artifact":
+			# Accepted source art remains immutable; the owner authorized a
+			# different furniture presentation using the selected real assets.
+			assert(art.get_node_or_null("Art_furniture_back")==null)
+			assert(art.get_node_or_null("Art_back_decor")==null)
+			scene._populate_furniture(group_node)
+			assert(group_node.get_node_or_null("LocalFurniture/PhysicalFurniture/OwnerDecorBank")!=null)
+		else:
+			assert(art.get_node_or_null("Art_furniture_back")!=null)
+			assert(art.get_node_or_null("Art_back_decor")!=null)
 
 	print("ITER2_REVIEW_PACKAGES_PASS library_R1=TEEA005 approved_first=true stations=26+31 components=20")
 	quit(0)
