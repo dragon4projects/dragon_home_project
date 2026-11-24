@@ -154,14 +154,14 @@ func _ready() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#111018")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#c5b9aa")
-	env.ambient_light_energy = 0.90
+	env.ambient_light_color = Color("#d2c6b8")
+	env.ambient_light_energy = 1.02
 	ambient.environment = env
 	add_child(ambient)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-30, -23, 0)
-	sun.light_color = Color("#ead7c0")
-	sun.light_energy = 0.68
+	sun.light_color = Color("#ecd7bc")
+	sun.light_energy = 0.74
 	sun.shadow_enabled = false
 	add_child(sun)
 	make_mountain()
@@ -262,13 +262,15 @@ func surface_texture(color: Color) -> Texture2D:
 	# Reuse across modules. Geometry remains original and separately authored.
 	var preference := ""
 	if color == palette["rock"]:
-		preference = "res://assets/materials/texture_albedo/dark_rock_diff_2k.jpg"
+		# Warmer masonry reads closer to the Dragon House concept than the
+		# previous near-black marble-like cave material.
+		preference = "res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg"
 	elif color == palette["rock_light"]:
 		preference = "res://assets/materials/texture_albedo/tiger_rock_diff_2k.jpg"
 	elif color == palette["floor"]:
-		preference = "res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg"
-	elif color == palette["wood"]:
 		preference = "res://assets/materials/texture_albedo/weathered_brown_planks_diff_1k.jpg"
+	elif color == palette["wood"]:
+		preference = "res://assets/materials/texture_albedo/natural_walnut_veneer_diff_1k.jpg"
 	elif color == palette["couch"]:
 		preference = "res://assets/materials/texture_albedo/brown_leather_albedo_1k.jpg"
 	elif color == palette["rug"]:
@@ -303,13 +305,14 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 		elif color == palette["rock_light"]:
 			m.albedo_color = Color("#f2e7dc")
 		elif color == palette["floor"]:
-			m.albedo_color = Color("#ded7d0")
+			m.albedo_color = Color("#c9a98a")
 		elif color == palette["wood"]:
-			m.albedo_color = Color("#ead9c5")
+			m.albedo_color = Color("#d5aa7e")
 		elif color == palette["couch"]:
-			m.albedo_color = Color("#e1d0c7")
+			m.albedo_color = Color("#d8b8a6")
 		elif color == palette["rug"]:
-			m.albedo_color = Color("#dfd0c9")
+			# Keep the linen weave, but restore the deep burgundy room identity.
+			m.albedo_color = Color("#7b4652")
 		elif color == palette["bronze"] or color == palette["copper"]:
 			m.albedo_color = Color("#e2c7ac")
 		m.uv1_scale = Vector3(2.3, 1.35, 1.0)
