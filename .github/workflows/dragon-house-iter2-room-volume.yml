@@ -120,6 +120,8 @@ jobs:
             dragon_house_clean/assets/rooms/library/R2/back_decor.png
             dragon_house_clean/assets/rooms/library/R2/furniture_back.png
             dragon_house_clean/assets/rooms/library/R2/foreground.png
+            dragon_house_clean/assets/room_candidates/TEEA_INT_20261123_005/**/*.png
+            dragon_house_clean/assets/room_candidates/TEEA_INT_20261123_006/**/*.png
           if-no-files-found: ignore
           retention-days: 7
 
