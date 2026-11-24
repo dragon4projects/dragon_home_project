@@ -40,6 +40,12 @@ func run() -> void:
 		"Structural rear wall must stay behind the playable room boundary")
 	assert(_names(rear)==["PhysicalRearWall"],
 		"R3 rear wall must be one continuous physical wall")
+	var structural_panel:MeshInstance3D=rear.get_node("PhysicalRearWall/StructuralRearPanel")
+	var structural_box:BoxMesh=structural_panel.mesh as BoxMesh
+	assert(structural_box!=null)
+	var structural_front:float=structural_panel.position.z+structural_box.size.z*0.5
+	assert(structural_front < scene.world.room_space.BACK_Z,
+		"Fallback rear panel must stay behind authored backdrop/playable back plane")
 	assert(_names(depth)==["PhysicalDepthVolume"],
 		"R3 depth floor must be one continuous physical volume")
 	var physical_depth:Node3D=depth.get_node("PhysicalDepthVolume")
@@ -115,8 +121,8 @@ func run() -> void:
 	for child in art.get_children():
 		assert(str(child.name).begins_with("Art_") and not str(child.name).begins_with("@"),
 			"Art reload must preserve stable layer node names")
-	assert(backdrop.position.z > rear_front,
-		"Backdrop must render in front of the structural rear wall")
+	assert(backdrop.position.z > rear_front and backdrop.position.z > structural_front,
+		"Backdrop must render in front of every structural rear surface")
 	assert(backdrop.position.z < scene.world.room_space.BACK_Z,
 		"Backdrop must stay behind the deepest playable actor position")
 	assert(absf(backdrop.position.z+2.02)<0.01)
