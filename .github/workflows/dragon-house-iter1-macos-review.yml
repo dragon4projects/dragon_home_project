@@ -1,0 +1,186 @@
+name: Dragon House Iteration 1 macOS owner review
+
+on:
+  push:
+    branches: [integration/dragon-house-iter1-owner-review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout actual LFS content
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+
+      - name: Fetch all required LFS objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git lfs pull
+          echo "LFS files: $(git lfs ls-files | wc -l)"
+          test "$(git lfs ls-files | wc -l)" -ge 2443
+
+      - name: Hydrate immutable TEEA006/007 review assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
+
+      - name: Verify deterministic Iteration 1 intake
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 dragon_house_clean/tools/build_iter1_review_overlay.py
+          python3 - <<'PY'
+          import json, pathlib
+          p=pathlib.Path("dragon_house_clean/data/integration_candidates/ITER1_INTAKE_REPORT.json")
+          d=json.loads(p.read_text())
+          assert d["approved"] is False and d["owner_approved"] is False
+          assert d["teea006"]["layers"] == 40
+          assert d["teea006"]["stations"] == 31
+          assert d["teea007"]["guest_art_layer_count"]["guest_vampire"] == 3
+          assert d["teea007"]["guest_art_layer_count"]["guest_miu"] == 3
+          assert d["teea007"]["guest_art_layer_count"]["guest_centaur"] == 0
+          assert d["teea007"]["centaur_room_art_gap"] is True
+          print("ITER1_INTAKE_REPORT_PASS", d["teea007"]["guest_art_layer_count"])
+          PY
+
+      - name: Download official Godot 4.7.2 Linux
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/Godot_4.7.2.zip             https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/Godot_4.7.2.zip -d /tmp
+          chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
+          /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --version
+
+      - name: Import project and candidate images
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean
+          timeout 900s /tmp/Godot_v4.7.2-stable_linux.x86_64             --headless --path . --editor --quit > godot_import_iter1.log 2>&1
+          if grep -Eq "SCRIPT ERROR|Parse Error" godot_import_iter1.log; then
+            tail -120 godot_import_iter1.log
+            exit 1
+          fi
+
+      - name: Run production-mode regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean
+          : > godot_tests_iter1.log
+          marker="data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
+          mv "$marker" /tmp/ITER1_OWNER_REVIEW.enabled
+          restore_marker() {
+            if [ -f /tmp/ITER1_OWNER_REVIEW.enabled ]; then
+              mv /tmp/ITER1_OWNER_REVIEW.enabled "$marker"
+            fi
+          }
+          trap restore_marker EXIT
+          for t in             tests/test_model.gd             tests/test_camera_construction.gd             tests/test_room_stations_v07.gd             tests/test_v011_accepted_art.gd             tests/test_private_door_note_v016.gd             tests/test_object_lifecycle_v017.gd             tests/test_ambient_creatures_v018.gd             tests/test_content_viewer_v018.gd             tests/test_guest_room_access_v018.gd             tests/test_life_scheduler_v019.gd             tests/test_life_due_wake_integration_v019.gd             tests/test_semantic_view_v019.gd             tests/test_object_event_default_sqlite_v021.gd             tests/test_object_event_sqlite_v021.gd             tests/test_object_event_sqlite_recovery_v021.gd
+          do
+            echo "RUN BASE $t" | tee -a godot_tests_iter1.log
+            result="$(timeout 100s /tmp/Godot_v4.7.2-stable_linux.x86_64               --headless --path . --script "res://$t" 2>&1)" || {
+                echo "$result" | tee -a godot_tests_iter1.log
+                exit 1
+              }
+            echo "$result" | tee -a godot_tests_iter1.log
+            echo "$result" | grep -q "_PASS"
+            ! echo "$result" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed"
+          done
+          restore_marker
+          trap - EXIT
+
+      - name: Run Iteration 1 owner-review regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean
+          result="$(timeout 120s /tmp/Godot_v4.7.2-stable_linux.x86_64             --headless --path . --script res://tests/test_iter1_owner_review.gd 2>&1)" || {
+              echo "$result" | tee -a godot_tests_iter1.log
+              exit 1
+            }
+          echo "$result" | tee -a godot_tests_iter1.log
+          echo "$result" | grep -q "ITER1_OWNER_REVIEW_PASS"
+          ! echo "$result" | grep -qE "SCRIPT ERROR|Parse Error|Assertion failed"
+
+      - name: Render owner-review cutaway evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq xvfb
+          fi
+          cd dragon_house_clean
+          mkdir -p private_review
+          xvfb-run -a /tmp/Godot_v4.7.2-stable_linux.x86_64 --path .             --rendering-method gl_compatibility             --script res://tests/capture_v014_review.gd | tee iter1_render_review.log
+          grep -q "V014_RENDER_REVIEW_PASS" iter1_render_review.log
+
+      - name: Download official Godot 4.7.2 export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/godot_export.tpz             https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          dest="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "$dest"
+          unzip -jo /tmp/godot_export.tpz templates/version.txt templates/macos.zip -d "$dest"
+
+      - name: Export macOS Universal owner-review build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases
+          cd dragon_house_clean
+          /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path .             --export-release "macOS" ../releases/DragonHouse_Iter1_macOS_Universal.zip             > ../releases/mac_export_iter1.log 2>&1
+          cd ../releases
+          unzip -t DragonHouse_Iter1_macOS_Universal.zip | tail -1
+          unzip -l DragonHouse_Iter1_macOS_Universal.zip | grep -qi 'gdsqlite.*macos.*template_release'
+          cp DragonHouse_Iter1_macOS_Universal.zip DragonHouse_Iter1_macOS15_M1.zip
+          cat > ITER1_OWNER_REVIEW_NOTE.txt <<'NOTE'
+          Dragon House - Iteration 1 owner-review candidate.
+          Candidate TEEA006/007 art remains approved=false / owner_approved=false.
+          Candidate review uses a separate save file and does not overwrite accepted room art.
+          Centaur guest room uses procedural fallback because the immutable TEEA007 base payload has no guest_centaur runtime room art.
+          Guest/media/fauna intake is under review; media hotspots remain unbound unless explicitly assigned.
+          macOS build is Universal and unsigned; Gatekeeper may require right-click -> Open.
+          NOTE
+          zip -q DragonHouse_Iter1_macOS15_M1.zip ITER1_OWNER_REVIEW_NOTE.txt
+          unzip -t DragonHouse_Iter1_macOS15_M1.zip | tail -1
+
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-Iter1-macOS15-M1
+          path: |
+            releases/DragonHouse_Iter1_macOS15_M1.zip
+            releases/mac_export_iter1.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload Iteration 1 QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-Iter1-QA
+          path: |
+            dragon_house_clean/data/integration_candidates/ITER1_INTAKE_REPORT.json
+            dragon_house_clean/godot_import_iter1.log
+            dragon_house_clean/godot_tests_iter1.log
+            dragon_house_clean/iter1_render_review.log
+            dragon_house_clean/private_review/v014_house.png
+            dragon_house_clean/private_review/v014_common_r3.png
+            dragon_house_clean/private_review/v014_library_r2.png
+            dragon_house_clean/private_review/v014_cinema_activity.png
+          if-no-files-found: ignore
+          retention-days: 7
