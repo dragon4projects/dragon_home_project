@@ -1083,7 +1083,7 @@ func make_residents() -> void:
 				actor_animations[id] = {"state":"IDLE_RIGHT","frame":0,"elapsed":0.0}
 		if id != "MANJKA":
 			var profile_id: String = str(actor.get("appearance_profile",""))
-			var candidate_guest := str(actor.get("entity_type","")) == "guest" and \
+			var candidate_guest: bool = str(actor.get("entity_type","")) == "guest" and \
 				str(actor.get("visual_status","")) == "CANDIDATE" and \
 				str(actor.get("bank_id","")) == id
 			var chosen_wardrobe: String = asset_banks.preferred_wardrobe(
