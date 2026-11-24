@@ -537,10 +537,8 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 	for side in [-1.0,1.0]:
 		box(volume,Vector3(side*(span*0.5-0.18),0.14,1.28),
 			Vector3(0.10,0.26,0.14),palette["rock_light"])
-	box(volume,Vector3(0,1.47,-1.87),
-		Vector3(maxf(0.5,span-0.86),2.24,0.09),Color("#393234"))
-	box(volume,Vector3(0,0.34,-1.74),
-		Vector3(maxf(0.5,span-0.82),0.18,0.18),palette["wood"])
+	# No rear panel here: accepted backdrop or Stage_Backwall owns the rear
+	# architecture. Depth geometry must never occlude room art.
 
 func add_room_overview_cues(parent: Node3D, group: Dictionary) -> void:
 	# Cheap room identity at distant zoom, but still one physical composition.
