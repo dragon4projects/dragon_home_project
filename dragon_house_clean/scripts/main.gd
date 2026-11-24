@@ -262,9 +262,9 @@ func surface_texture(color: Color) -> Texture2D:
 	# Reuse across modules. Geometry remains original and separately authored.
 	var preference := ""
 	if color == palette["rock"]:
-		# Warm rough rock-face for the main cave wall; unlike stone_pathway it
-		# has no long directional paving bands when used vertically.
-		preference = "res://assets/materials/texture_albedo/tiger_rock_diff_2k.jpg"
+		# Dark Rock has the correct fractured wall structure. A bright neutral
+		# material tint below lifts it into the warm interior range.
+		preference = "res://assets/materials/texture_albedo/dark_rock_diff_2k.jpg"
 	elif color == palette["rock_light"]:
 		# Lighter irregular stone is reserved for jambs, returns and trim.
 		preference = "res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg"
@@ -302,7 +302,9 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 		# The imported albedos are already naturally graded. Multiplying them by
 		# the old near-black palette destroyed material readability.
 		if color == palette["rock"]:
-			m.albedo_color = Color("#eee8e3")
+			# HDR multiplier: preserve dark-rock cracks without turning the room
+			# into a black cave.
+			m.albedo_color = Color(1.28,1.20,1.12,1.0)
 		elif color == palette["rock_light"]:
 			m.albedo_color = Color("#f2e7dc")
 		elif color == palette["floor"]:
@@ -798,9 +800,11 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	rear_panel.name="StructuralRearPanel"
 	if kind in ["common","library"]:
 		# The sparse pilot backdrop is suppressed for these two rooms, so the
-		# physical rear wall must carry the real stone material instead of a
-		# flat type-color.
-		rear_panel.material_override=mat(palette["rock"])
+		# physical rear wall carries real stone. Rear-wall UVs are denser than
+		# generic side-wall UVs to avoid giant cliff forms across an R3 span.
+		var rear_material:StandardMaterial3D=mat(palette["rock"]).duplicate() as StandardMaterial3D
+		rear_material.uv1_scale=Vector3(4.8,3.1,1.0)
+		rear_panel.material_override=rear_material
 	box(rear,Vector3(-span*0.5+0.16,1.47,-1.59),
 		Vector3(0.18,2.76,0.24),palette["rock_light"])
 	box(rear,Vector3(span*0.5-0.16,1.47,-1.59),
