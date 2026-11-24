@@ -168,7 +168,13 @@ func run() -> void:
 		"Depth scaling must preserve the physical floor contact point")
 	assert(rear.visible,
 		"Physical Stage_Backwall must remain visible when sparse backdrop is suppressed")
-	var rear_arch:Node3D=rear.get_node_or_null("PhysicalRearWall/RearArchitecture")
+	var physical_rear:Node3D=rear.get_node("PhysicalRearWall")
+	var rear_panel:MeshInstance3D=physical_rear.get_node("StructuralRearPanel")
+	assert(rear_panel!=null)
+	var rear_material:StandardMaterial3D=rear_panel.material_override as StandardMaterial3D
+	assert(rear_material!=null and rear_material.albedo_texture!=null,
+		"Common/Library physical rear wall must use the real stone albedo")
+	var rear_arch:Node3D=physical_rear.get_node_or_null("RearArchitecture")
 	assert(rear_arch!=null)
 	assert(rear_arch.get_node_or_null("RearLightwell")!=null)
 	assert(rear_arch.get_node_or_null("RearTimberHeader")!=null)

@@ -790,6 +790,11 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	var rear_panel:=box(rear,Vector3(0,1.49,-2.12),
 		Vector3(span-0.42,2.67,0.08),base_color)
 	rear_panel.name="StructuralRearPanel"
+	if kind in ["common","library"]:
+		# The sparse pilot backdrop is suppressed for these two rooms, so the
+		# physical rear wall must carry the real stone material instead of a
+		# flat type-color.
+		rear_panel.material_override=mat(palette["rock"])
 	box(rear,Vector3(-span*0.5+0.16,1.47,-1.59),
 		Vector3(0.18,2.76,0.24),palette["rock_light"])
 	box(rear,Vector3(span*0.5-0.16,1.47,-1.59),
