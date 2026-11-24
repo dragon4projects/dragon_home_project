@@ -718,6 +718,10 @@ func tick(delta: float) -> void:
 	var home_restored:int=world.tick_object_home_reset()
 	if home_restored>0:
 		_record("Дом вернул вещи на назначенные места: %d" % home_restored)
+	var books_restored:int=media_runtime.tick_book_home_reset()
+	if books_restored>0:
+		reconcile_concrete_media()
+		_record("Дом вернул книги на назначенные места: %d" % books_restored)
 	creature_runtime.tick(delta)
 	# Movement stays frame-driven, but only actors actually travelling are touched.
 	for raw_id in moving_ids.keys().duplicate():
@@ -729,12 +733,6 @@ func tick(delta: float) -> void:
 			moving_ids.erase(id)
 			continue
 		_move(actor,delta)
-	var wall_now := int(Time.get_unix_time_from_system())
-	if wall_now-last_cleanup_wall_time >= 60:
-		var recovered := media_runtime.cleanup_abandoned(wall_now)
-		if recovered > 0:
-			_record("Дом вернул забытые книги на полку: %d" % recovered)
-		last_cleanup_wall_time = wall_now
 	for due in life_scheduler.pop_due(clock,max_jobs_per_tick):
 		_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()

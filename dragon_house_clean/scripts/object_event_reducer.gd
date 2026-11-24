@@ -54,8 +54,13 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		var history: Array = legacy_history.duplicate(true)
 		if history.is_empty():
 			history.append(_history_entry(event,"REGISTERED",""))
+		var display_anchor:Array=metadata.get("display_anchor",metadata.get("home_anchor",[]))
 		var home_anchor:Array=payload.get("home_anchor",_legacy_anchor(object_id))
+		if str(metadata.get("display_mode",""))=="wall" and display_anchor.size()==3:
+			home_anchor=[float(display_anchor[0]),float(display_anchor[2])]
 		var current_anchor:Array=payload.get("current_anchor",[] if str(payload.get("current_holder",""))!="" else home_anchor)
+		if str(metadata.get("display_mode",""))=="wall" and display_anchor.size()==3:
+			current_anchor=home_anchor.duplicate(true)
 		next[object_id] = {
 			"id":object_id,
 			"display_name":str(payload.get("display_name",object_id)),
@@ -78,7 +83,7 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			"asset_id":str(payload.get("asset_id",metadata.get("asset_id",""))),
 			"viewer_category":str(metadata.get("viewer_category","artifacts")),
 			"display_mode":str(metadata.get("display_mode","")),
-			"display_anchor":metadata.get("display_anchor",metadata.get("home_anchor",[])),
+			"display_anchor":display_anchor.duplicate(true),
 			"interaction_station_id":str(metadata.get("interaction_station_id","")),
 			"interaction_point":metadata.get("interaction_point",[]),
 			"interaction_approach_z":float(metadata.get("interaction_approach_z",0.95)),
@@ -123,6 +128,13 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			object["current_anchor"]=new_anchor.duplicate(true)
 			object["state"]="PLACED"
 			object["last_explicit_location"]=new_home
+			object["visibility"]=str(event.get("visibility","house_public"))
+			if str(object.get("display_mode",""))=="wall":
+				var old_display:Array=object.get("display_anchor",[])
+				if old_display.size()==3:
+					object["display_anchor"]=[new_anchor[0],old_display[1],new_anchor[1]]
+					object["interaction_point"]=[new_anchor[0],float(new_anchor[1])+0.30]
+					object["interaction_station_id"]="WALL_DISPLAY_"+object_id
 		_append_history(object,_history_entry(event,"HOME_ASSIGNED",
 			str(event.get("subject_id",""))))
 		object["previous_home_room_id"]=old_home

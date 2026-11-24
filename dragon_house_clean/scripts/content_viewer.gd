@@ -91,6 +91,10 @@ func _safe_text(path: String) -> String:
 func _load_preview(path: String) -> Texture2D:
 	if path == "" or not (path.begins_with("res://") or path.begins_with("user://")):
 		return null
+	if path.begins_with("res://") and ResourceLoader.exists(path,"Texture2D"):
+		var imported:=ResourceLoader.load(path,"Texture2D") as Texture2D
+		if imported!=null:
+			return imported
 	if not FileAccess.file_exists(path):
 		return null
 	var image := Image.new()
@@ -98,7 +102,7 @@ func _load_preview(path: String) -> Texture2D:
 		return null
 	return ImageTexture.create_from_image(image)
 
-func open_record(p_category: String, record: Dictionary) -> bool:
+func open_record(p_category: String, record: Dictionary, texture_override: Texture2D = null) -> bool:
 	if record.is_empty():
 		return false
 	stop_playback()
@@ -124,7 +128,7 @@ func open_record(p_category: String, record: Dictionary) -> bool:
 	text_view.visible = false
 	video.visible = false
 	var preview_path := str(item.get("preview",item.get("preview_path","")))
-	preview.texture = _load_preview(preview_path)
+	preview.texture = texture_override if texture_override!=null else _load_preview(preview_path)
 	var text_path := str(item.get("content_path",item.get("text_path","")))
 	var body := _safe_text(text_path)
 	if p_category == "books" and body != "":
@@ -139,7 +143,7 @@ func open_record(p_category: String, record: Dictionary) -> bool:
 			meta_label.text += ("\n" if meta_label.text != "" else "") + 				"Локальный файл отсутствует или формат не поддерживается."
 	if p_category == "books" and body == "" and preview.texture == null:
 		meta_label.text += ("\n" if meta_label.text != "" else "") + 			"Для этой записи пока нет локального полнотекстового содержимого или превью."
-	if p_category == "artifacts" and preview.texture == null:
+	if p_category in ["artifacts","paintings","posters","cups","creatures"] and preview.texture == null:
 		meta_label.text += ("\n" if meta_label.text != "" else "") + 			"Для этого объекта пока нет локального превью."
 	visible = true
 	return true

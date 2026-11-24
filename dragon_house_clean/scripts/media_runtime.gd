@@ -23,6 +23,9 @@ func _normalize_catalogue() -> void:
 			book["progress_by_actor"] = {}
 		if not book.has("owner_id"):
 			book["owner_id"] = ""
+		if bool(book.get("physical",true)) and not book.has("home_room_id"):
+			var rooms:Array=world.matching_rooms(["library"])
+			book["home_room_id"]=str(rooms[0]["id"]) if not rooms.is_empty() else ""
 
 func _lookup(kind: String, id: String) -> Dictionary:
 	for entry in world.media.get(kind, []):
@@ -99,6 +102,38 @@ func cleanup_abandoned(now: int) -> int:
 		book["location_room_id"] = rooms[0]["id"]
 		book["idle_since"] = 0
 		count += 1
+	return count
+
+func tick_book_home_reset() -> int:
+	var day:int=world.game_day_index()
+	var last:int=int(world.runtime_state.get("book_home_reset_day",day))
+	if not world.runtime_state.has("book_home_reset_day"):
+		world.runtime_state["book_home_reset_day"]=day
+		return 0
+	if day<=last:
+		return 0
+	var count:int=0
+	for book in world.media.get("books",[]):
+		if not bool(book.get("physical",true)):
+			continue
+		var home:String=str(book.get("home_room_id",""))
+		if not world.public_cutaway_allowed(world.room_by_id(home)):
+			continue
+		var holder:String=str(book.get("holder_id",""))
+		var previous:String=str(book.get("location_room_id",""))
+		if holder=="" and previous==home:
+			continue
+		book["holder_id"]=""
+		book["location_room_id"]=home
+		book["idle_since"]=0
+		book.erase("borrowed_at")
+		if holder!="" and world.residents.has(holder):
+			var actor:Dictionary=world.residents[holder]
+			if str(actor.get("held_book",""))==str(book["id"]):
+				actor.erase("held_book")
+		world._append_journal("BOOK_RESTORED_HOME","HOUSE_SPIRIT",str(book["id"]),holder if holder!="" else previous,home,{"game_day":day})
+		count+=1
+	world.runtime_state["book_home_reset_day"]=day
 	return count
 
 func playable(kind: String) -> Array:

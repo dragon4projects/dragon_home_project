@@ -1516,7 +1516,7 @@ func update_creatures(delta: float = 0.0) -> void:
 		if creature.is_empty() or not bool(creature.get("active",false)):
 			anchor.visible = false
 			continue
-		anchor.visible = semantic_view.actor_visible(creature)
+		anchor.visible = semantic_view.actor_visible(creature) and world.public_cutaway_allowed(world.room_by_id(str(creature.get("room_id",""))))
 		if not anchor.visible:
 			continue
 		var y := float(creature.get("visual_y",
@@ -1637,7 +1637,7 @@ func update_physical_objects() -> void:
 			if holder.is_empty():
 				anchor.visible = false
 				continue
-			anchor.visible = semantic_view.actor_visible(holder)
+			anchor.visible = semantic_view.actor_visible(holder) and world.public_cutaway_allowed(world.room_by_id(str(holder.get("room_id",""))))
 			if not anchor.visible:
 				continue
 			var holder_z:float=float(holder.get("z",0.25))
@@ -1657,7 +1657,7 @@ func update_physical_objects() -> void:
 			continue
 		var room_id := str(object.get("current_room_id",""))
 		var room: Dictionary = world.room_by_id(room_id)
-		if room.is_empty() or str(room.get("privacy","public")) != "public":
+		if not world.public_cutaway_allowed(room):
 			anchor.visible = false
 			continue
 		anchor.visible = current_mode == "HOUSE" or int(room.get("level",0)) == semantic_view.level
@@ -2059,6 +2059,20 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 		if distance < best:
 			best = distance
 			found = entry
+	for creature_id in creature_nodes:
+		var creature:Dictionary=world.creatures.get(creature_id,{})
+		var node:Node3D=creature_nodes[creature_id]
+		if str(creature.get("owner_id",""))=="" or not bool(creature.get("active",false)) or not node.is_visible_in_tree():
+			continue
+		if not world.public_cutaway_allowed(world.room_by_id(str(creature.get("room_id","")))):
+			continue
+		var body:Sprite3D=node.get_node_or_null("Body")
+		if body==null or camera.is_position_behind(body.global_position):
+			continue
+		var distance:float=camera.unproject_position(body.global_position).distance_to(point)
+		if distance<best:
+			best=distance
+			found={"anchor":node,"category":"creatures","item_id":str(creature_id),"display_name":world.creature_display_label(str(creature_id))}
 	return found
 
 func open_content_hotspot(entry: Dictionary) -> bool:
@@ -2069,8 +2083,25 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	var record: Dictionary = {}
 	if category in ["books","films","tracks"]:
 		record = life.media_runtime._lookup(category,item_id)
-	elif category == "artifacts":
+	elif category == "creatures":
+		var creature:Dictionary=world.creatures.get(item_id,{})
+		if str(creature.get("owner_id",""))=="" or not bool(creature.get("active",false)) or not world.public_cutaway_allowed(world.room_by_id(str(creature.get("room_id","")))):
+			return false
+		var node:Node3D=creature_nodes.get(item_id)
+		if node==null or not node.is_visible_in_tree():
+			return false
+		var body:Sprite3D=node.get_node_or_null("Body")
+		var picture:Texture2D=body.texture if body!=null and body.has_meta("candidate_bank") else null
+		record={"id":item_id,"display_name":world.creature_display_label(item_id),"description":"Именное животное Дома"}
+		return content_viewer.open_record(category,record,picture)
+	elif category in ["artifacts","paintings","posters","cups"]:
 		record = world.physical_object(item_id)
+		var location:String=str(record.get("current_room_id",""))
+		var holder:String=str(record.get("current_holder_id",""))
+		if holder!="":
+			location=str(world._physical_actor(holder).get("room_id",""))
+		if str(record.get("state",""))=="STASHED" or not world.public_cutaway_allowed(world.room_by_id(location)):
+			return false
 	if record.is_empty():
 		return false
 	return content_viewer.open_record(category,record)
@@ -2083,7 +2114,8 @@ func update_content_hover(point: Vector2) -> void:
 	if entry.is_empty():
 		return
 	content_hover_label.text = str(entry.get("display_name",entry.get("item_id","")))
-	if bool(world.physical_object(str(entry.get("item_id",""))).get("movable",false)):
+	var hovered_object:Dictionary=world.physical_object(str(entry.get("item_id","")))
+	if bool(hovered_object.get("movable",false)) or str(hovered_object.get("display_mode",""))=="wall":
 		content_hover_label.text += "  ·  Shift+ЛКМ: переставить/дом"
 	content_hover_label.position = point + Vector2(14,12)
 
@@ -2491,7 +2523,7 @@ func _input(event: InputEvent) -> void:
 			var entry:Dictionary=content_hotspot_at_screen(e.position)
 			var object_id:String=str(entry.get("item_id",""))
 			var object:Dictionary=world.physical_object(object_id)
-			if not object.is_empty() and bool(object.get("movable",false)) and str(object.get("display_mode",""))!="wall" and str(object.get("current_holder_id",""))=="" and (
+			if not object.is_empty() and (bool(object.get("movable",false)) or str(object.get("display_mode",""))=="wall") and str(object.get("current_holder_id",""))=="" and (
 					str(object.get("state",""))!="STASHED"):
 				var room_id:String=str(object.get("current_room_id",""))
 				var room:Dictionary=world.room_by_id(room_id)
@@ -2531,11 +2563,21 @@ func _input(event: InputEvent) -> void:
 			var room:Dictionary=world.room_by_id(object_home_drag_room_id)
 			if not room.is_empty():
 				var drag_scale:float=zoom_current*0.0019
+				var dragged:Dictionary=world.physical_object(object_home_drag_id)
+				var wall:bool=str(dragged.get("display_mode",""))=="wall"
 				object_home_drag_anchor.x+=e.relative.x*drag_scale
-				object_home_drag_anchor.y+=e.relative.y*drag_scale
+				if not wall:
+					object_home_drag_anchor.y+=e.relative.y*drag_scale
+				var absolute_x:float=world.room_center_pos(room).x+object_home_drag_anchor.x
+				var candidate:Dictionary=world.get_room(roundi(absolute_x/W),int(room.get("level",0)))
+				if world.public_cutaway_allowed(candidate) and str(candidate["id"])!=object_home_drag_room_id:
+					room=candidate
+					object_home_drag_room_id=str(room["id"])
+					object_home_drag_anchor.x=absolute_x-world.room_center_pos(room).x
 				var half_width:float=world.room_space.half_width(room)
+				var edge:float=0.60 if wall else 0.16
 				object_home_drag_anchor.x=clampf(
-					object_home_drag_anchor.x,-half_width+0.16,half_width-0.16)
+					object_home_drag_anchor.x,-half_width+edge,half_width-edge)
 				object_home_drag_anchor.y=clampf(
 					object_home_drag_anchor.y,
 					float(world.room_space.BACK_Z)+0.12,
@@ -2543,7 +2585,12 @@ func _input(event: InputEvent) -> void:
 				var node:Node3D=object_nodes.get(object_home_drag_id)
 				if node!=null:
 					var pos:Vector3=world.room_local_to_world(room,object_home_drag_anchor)
-					node.position=Vector3(depth_visual_x(object_home_drag_room_id,pos.x,pos.z),pos.y+0.22,pos.z)
+					var height:float=0.22
+					if wall:
+						var mounted:Array=dragged.get("display_anchor",[])
+						if mounted.size()==3:
+							height=float(mounted[1])
+					node.position=Vector3(depth_visual_x(object_home_drag_room_id,pos.x,pos.z),pos.y+height,pos.z)
 					node.scale=Vector3.ONE*depth_visual_scale(object_home_drag_anchor.y)
 				notice.text="Новый дом X %.2f · Z %.2f" % [
 					object_home_drag_anchor.x,object_home_drag_anchor.y]
@@ -2616,7 +2663,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if content_viewer!=null and content_viewer.visible:
 			return
 		var content_entry:Dictionary=content_hotspot_at_screen(e.position)
-		if not content_entry.is_empty() and open_content_hotspot(content_entry):
+		if not build_mode and not content_entry.is_empty() and open_content_hotspot(content_entry):
 			return
 		var note_room_id:String=door_note_at_screen(e.position)
 		if note_room_id!="":

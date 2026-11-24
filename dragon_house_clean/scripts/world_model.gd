@@ -851,15 +851,36 @@ func import_catalog(path: String) -> bool:
 				return false
 			unique[id] = true
 		imported[category] = items
-	var previous_books: Dictionary = {}
-	for book in media.get("books",[]):
-		previous_books[str(book["id"])] = book
-	for item in imported["books"]:
-		var old: Dictionary = previous_books.get(str(item["id"]),{})
-		if not old.is_empty():
-			for field in ["holder_id","location_room_id","idle_since","progress_by_actor",
-				"owner_id","borrowed_at"]:
-				if old.has(field):
-					item[field] = old[field]
-	media = imported
-	return save_world()
+	# Import is additive. An unrelated category or omitted item must not erase a
+	# physical volume, its holder, reading progress, or the existing catalogue.
+	var merged:Dictionary=media.duplicate(true)
+	for category in ["books","films","tracks"]:
+		var records:Array=merged.get(category,[])
+		var indices:Dictionary={}
+		for idx in range(records.size()):
+			indices[str(records[idx].get("id",""))]=idx
+		for incoming in imported[category]:
+			var id:String=str(incoming["id"])
+			if not indices.has(id):
+				records.append(incoming.duplicate(true))
+				indices[id]=records.size()-1
+				continue
+			var index:int=int(indices[id])
+			var old:Dictionary=records[index]
+			var updated:Dictionary=old.duplicate(true)
+			updated.merge(incoming,true)
+			if category=="books":
+				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id"]:
+					if old.has(field):
+						updated[field]=old[field]
+				if bool(old.get("physical",true)):
+					updated["physical"]=true
+					updated["catalog_only"]=false
+			records[index]=updated
+		merged[category]=records
+	var previous:Dictionary=media
+	media=merged
+	if save_world():
+		return true
+	media=previous
+	return false

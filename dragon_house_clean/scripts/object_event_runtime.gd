@@ -337,6 +337,9 @@ func _migration_registration(object: Dictionary) -> Dictionary:
 		"HELD" if current_holder != "" else "PLACED"))
 	var visible_room: String = current_location if current_location != "" else home_room_id
 	var home_anchor:Array=_anchor_or_default(object.get("home_anchor",[]),object_id)
+	var wall_anchor=object.get("display_anchor",object.get("home_anchor",[]))
+	if str(object.get("display_mode",""))=="wall" and typeof(wall_anchor)==TYPE_ARRAY and wall_anchor.size()==3:
+		home_anchor=[float(wall_anchor[0]),float(wall_anchor[2])]
 	var current_anchor:Array=_anchor_or_default(object.get("current_anchor",home_anchor),object_id)
 	var metadata := {
 		"description":str(object.get("description","")),
@@ -555,6 +558,9 @@ func register_object(object_id: String, display_name: String,
 		ambient_hide_allowed: bool, ambient_protected: bool,
 		metadata: Dictionary) -> bool:
 	var home_anchor:Array=_anchor_or_default(metadata.get("home_anchor",[]),object_id)
+	var wall_anchor=metadata.get("display_anchor",metadata.get("home_anchor",[]))
+	if str(metadata.get("display_mode",""))=="wall" and typeof(wall_anchor)==TYPE_ARRAY and wall_anchor.size()==3:
+		home_anchor=[float(wall_anchor[0]),float(wall_anchor[2])]
 	var payload := {
 		"object_id":object_id,
 		"object_type":"physical_object",

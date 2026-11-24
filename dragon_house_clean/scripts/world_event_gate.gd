@@ -191,18 +191,26 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 	if event_type == "OBJECT_HOME_ASSIGNED":
 		if truth != "EXPLICIT_WORLD_FACT" or str(event.get("authority",""))!="DRAGON_DECLARED":
 			return reject("only explicit Dragon authority can assign object home")
-		if not bool(object.get("movable",false)) or str(object.get("display_mode",""))=="wall":
-			return reject("fixed display cannot be re-homed")
+		var wall:bool=str(object.get("display_mode",""))=="wall"
+		if not bool(object.get("movable",false)) and not wall:
+			return reject("fixed non-display object cannot be re-homed")
 		var previous_home:String=str(payload.get("previous_home_room_id",""))
 		if previous_home!=str(object.get("home_room_id","")):
 			return reject("object home changed before assignment commit")
 		var target_home:String=str(payload.get("home_room_id",""))
 		if world.room_by_id(target_home).is_empty():
 			return reject("assigned home room does not exist")
-		if str(world.room_by_id(target_home).get("privacy","public"))!="public":
+		if not world.public_cutaway_allowed(world.room_by_id(target_home)):
 			return reject("assigned home must be publicly accessible")
 		if not _valid_anchor(world,target_home,payload.get("home_anchor",[])):
 			return reject("assigned home anchor is outside room")
+		if wall:
+			var mounted:Array=object.get("display_anchor",[])
+			var next_anchor:Array=payload["home_anchor"]
+			if mounted.size()!=3 or not bool(payload.get("move_now",true)) or absf(float(mounted[2])-float(next_anchor[1]))>0.001:
+				return reject("wall display must remain mounted at calibrated rear wall depth")
+			if absf(float(next_anchor[0]))>world.room_space.half_width(world.room_by_id(target_home))-0.60:
+				return reject("wall display must clear the room edges")
 		if typeof(payload.get("move_now",true))!=TYPE_BOOL:
 			return reject("home assignment move_now must be boolean")
 		if bool(payload.get("move_now",true)) and str(object.get("current_holder_id",""))!="":
