@@ -262,11 +262,12 @@ func surface_texture(color: Color) -> Texture2D:
 	# Reuse across modules. Geometry remains original and separately authored.
 	var preference := ""
 	if color == palette["rock"]:
-		# Warmer masonry reads closer to the Dragon House concept than the
-		# previous near-black marble-like cave material.
-		preference = "res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg"
-	elif color == palette["rock_light"]:
+		# Warm rough rock-face for the main cave wall; unlike stone_pathway it
+		# has no long directional paving bands when used vertically.
 		preference = "res://assets/materials/texture_albedo/tiger_rock_diff_2k.jpg"
+	elif color == palette["rock_light"]:
+		# Lighter irregular stone is reserved for jambs, returns and trim.
+		preference = "res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg"
 	elif color == palette["floor"]:
 		preference = "res://assets/materials/texture_albedo/weathered_brown_planks_diff_1k.jpg"
 	elif color == palette["wood"]:
