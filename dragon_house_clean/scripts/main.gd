@@ -1091,6 +1091,14 @@ func make_sprite_texture(is_manka: bool) -> Texture2D:
 func depth_visual_scale(z: float) -> float:
 	return world.room_space.perspective_scale(z)
 
+func depth_visual_x(room_id: String, physical_x: float, z: float) -> float:
+	var room:Dictionary=world.room_by_id(room_id)
+	if room.is_empty():
+		return physical_x
+	var center_x:float=world.room_center_pos(room).x
+	var scale_value:float=depth_visual_scale(z)
+	return center_x+(physical_x-center_x)*scale_value
+
 func make_creatures() -> void:
 	if creature_root == null:
 		return
@@ -1151,7 +1159,9 @@ func update_creatures(delta: float = 0.0) -> void:
 		var y := float(creature.get("visual_y",
 			float(creature.get("level",0))*H))
 		var creature_z: float = float(creature.get("z",0.25))
-		anchor.position = Vector3(float(creature.get("x",0.0)),y,creature_z)
+		var creature_x:float=depth_visual_x(
+			str(creature.get("room_id","")),float(creature.get("x",0.0)),creature_z)
+		anchor.position = Vector3(creature_x,y,creature_z)
 		var creature_scale:=depth_visual_scale(creature_z)
 		anchor.scale=Vector3.ONE*creature_scale
 		var body: Sprite3D = anchor.get_node_or_null("Body")
@@ -1238,11 +1248,14 @@ func update_physical_objects() -> void:
 			anchor.visible = semantic_view.actor_visible(holder)
 			if not anchor.visible:
 				continue
+			var holder_z:float=float(holder.get("z",0.25))
+			var holder_x:float=depth_visual_x(
+				str(holder.get("room_id","")),float(holder.get("x",0.0)),holder_z)
 			anchor.position = Vector3(
-				float(holder.get("x",0.0)),
+				holder_x,
 				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
-				float(holder.get("z",0.25))+0.18) + _object_offset(str(object_id))*0.25
-			var held_scale: float = depth_visual_scale(float(holder.get("z",0.25)))
+				holder_z+0.18) + _object_offset(str(object_id))*0.25
+			var held_scale: float = depth_visual_scale(holder_z)
 			anchor.scale=Vector3.ONE*held_scale
 			continue
 		if str(object.get("state","")) == "STASHED":
@@ -1334,7 +1347,9 @@ func update_residents(delta: float = 0.0) -> void:
 		var actor: Dictionary = world.residents[id]
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
 		var actor_z: float = float(actor.get("z",0.3))
-		actor_sprites[id].position = Vector3(float(actor.get("x",0.0)),y,actor_z)
+		var actor_x:float=depth_visual_x(
+			str(actor.get("room_id","")),float(actor.get("x",0.0)),actor_z)
+		actor_sprites[id].position = Vector3(actor_x,y,actor_z)
 		var actor_scale:=depth_visual_scale(actor_z)
 		actor_sprites[id].scale=Vector3.ONE*actor_scale
 		actor_sprites[id].visible = semantic_view.actor_visible(actor)

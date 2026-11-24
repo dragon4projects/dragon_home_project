@@ -24,6 +24,24 @@ const DEPTH_BACK_SCALE := 0.62
 func _visual_depth_scale(z: float) -> float:
 	var t:float=clampf((z-DEPTH_BACK_Z)/(DEPTH_FRONT_Z-DEPTH_BACK_Z),0.0,1.0)
 	return lerpf(DEPTH_BACK_SCALE,1.0,t)
+
+func _visual_role_modulate(role: String, z: float) -> Color:
+	var t:float=clampf((z-DEPTH_BACK_Z)/(DEPTH_FRONT_Z-DEPTH_BACK_Z),0.0,1.0)
+	match role:
+		"backdrop":
+			return Color(1.18,1.06,0.94,1.0)
+		"back_decor":
+			var b:float=lerpf(0.98,1.08,t)
+			return Color(1.06*b,0.98*b,0.90*b,1.0)
+		"furniture_back":
+			var b:float=lerpf(0.92,1.10,t)
+			return Color(1.05*b,0.97*b,0.89*b,1.0)
+		"foreground","front_trim":
+			return Color(1.04,0.98,0.92,1.0)
+		"light_overlay":
+			return Color(1.30,1.14,0.90,1.0)
+		_:
+			return Color.WHITE
 var config: Dictionary = {}
 var textures: Dictionary = {}
 var max_cache := 6
@@ -207,8 +225,12 @@ func _add_component_role(parent: Node3D, room_type: String, width: int,
 			var floor_y:float=component_y-half_height
 			component_y=floor_y+half_height*depth_scale
 			sprite.set_meta("floor_y",floor_y)
-		sprite.position=Vector3(float(item.get("x",0.0)),component_y,component_z)
+		var physical_x:float=float(item.get("x",0.0))
+		sprite.position=Vector3(physical_x*depth_scale,component_y,component_z)
 		sprite.scale=Vector3.ONE*depth_scale
+		sprite.modulate=_visual_role_modulate(role,component_z)
+		sprite.set_meta("physical_x",physical_x)
+		sprite.set_meta("visual_x",sprite.position.x)
 		sprite.no_depth_test=false
 		sprite.shaded=false
 		sprite.render_priority=0
@@ -355,6 +377,7 @@ func add_layers(parent: Node3D, room_type: String, width: int, physical_width: f
 			layer_z=float(item["physical_z"])
 			sprite.set_meta("physical_z",layer_z)
 		sprite.position=Vector3(0.0,1.50,layer_z)
+		sprite.modulate=_visual_role_modulate(role,layer_z)
 		if bool(item.get("candidate_review",false)):
 			sprite.set_meta("candidate_review",true)
 		sprite.no_depth_test=false

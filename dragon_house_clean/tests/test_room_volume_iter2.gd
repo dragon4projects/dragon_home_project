@@ -112,13 +112,15 @@ func run() -> void:
 	var bench_right:Sprite3D=art.get_node("Art_furniture_back_bench_right")
 	var round_table:Sprite3D=art.get_node("Art_furniture_back_round_table")
 	var chair_right:Sprite3D=art.get_node("Art_furniture_back_chair_right")
-	assert(absf(shelf_left.position.x+6.10)<0.01 and absf(shelf_left.position.z+1.70)<0.01)
-	assert(absf(shelf_mid.position.x-0.95)<0.01 and absf(shelf_mid.position.z+1.70)<0.01)
+	assert(absf(float(shelf_left.get_meta("physical_x",0.0))+6.10)<0.01 and absf(shelf_left.position.z+1.70)<0.01)
+	assert(absf(shelf_left.position.x) < absf(float(shelf_left.get_meta("physical_x",0.0))),
+		"Rear visual component X must converge toward room center")
+	assert(absf(float(shelf_mid.get_meta("physical_x",0.0))-0.95)<0.01 and absf(shelf_mid.position.z+1.70)<0.01)
 	assert(absf(wall_light.position.z+1.70)<0.01)
-	assert(absf(sofa.position.x+5.25)<0.01 and absf(sofa.position.z+0.88)<0.01)
+	assert(absf(float(sofa.get_meta("physical_x",0.0))+5.25)<0.01 and absf(sofa.position.z+0.88)<0.01)
 	assert(shelf_left.position.z < sofa.position.z-0.7,
 		"Rear bookshelf must sort as a separate object behind the nearer sofa")
-	assert(absf(side_table.position.x+3.55)<0.01 and absf(side_table.position.z+0.10)<0.01)
+	assert(absf(float(side_table.get_meta("physical_x",0.0))+3.55)<0.01 and absf(side_table.position.z+0.10)<0.01)
 	assert(absf(chair_left.position.z+0.72)<0.01)
 	assert(absf(bench_right.position.z+0.82)<0.01)
 	assert(absf(round_table.position.z-0.18)<0.01)
@@ -166,17 +168,27 @@ func run() -> void:
 	var lib_left:Sprite3D=library_art.get_node("Art_furniture_back_chair_left")
 	var lib_table:Sprite3D=library_art.get_node("Art_furniture_back_table")
 	var lib_right:Sprite3D=library_art.get_node("Art_furniture_back_chair_right")
-	assert(absf(lib_shelf_left.position.x+3.45)<0.01 and absf(lib_shelf_left.position.z+1.70)<0.01)
-	assert(absf(lib_shelf_mid.position.x-0.15)<0.01 and absf(lib_shelf_mid.position.z+1.70)<0.01)
-	assert(absf(lib_shelf_right.position.x-3.35)<0.01 and absf(lib_shelf_right.position.z+1.70)<0.01)
-	assert(absf(lib_left.position.x+2.15)<0.01 and absf(lib_left.position.z+0.68)<0.01)
+	assert(absf(float(lib_shelf_left.get_meta("physical_x",0.0))+3.45)<0.01 and absf(lib_shelf_left.position.z+1.70)<0.01)
+	assert(absf(float(lib_shelf_mid.get_meta("physical_x",0.0))-0.15)<0.01 and absf(lib_shelf_mid.position.z+1.70)<0.01)
+	assert(absf(float(lib_shelf_right.get_meta("physical_x",0.0))-3.35)<0.01 and absf(lib_shelf_right.position.z+1.70)<0.01)
+	assert(absf(float(lib_left.get_meta("physical_x",0.0))+2.15)<0.01 and absf(lib_left.position.z+0.68)<0.01)
 	assert(lib_shelf_left.position.z < lib_left.position.z-0.9)
-	assert(absf(lib_right.position.x-2.15)<0.01 and absf(lib_right.position.z+0.68)<0.01)
+	assert(absf(float(lib_right.get_meta("physical_x",0.0))-2.15)<0.01 and absf(lib_right.position.z+0.68)<0.01)
 	assert(absf(lib_table.position.x)<0.01 and absf(lib_table.position.z-0.18)<0.01)
 	assert(lib_table.position.z > lib_left.position.z+0.8)
 	assert(lib_shelf_left.scale.x < lib_left.scale.x and lib_left.scale.x < lib_table.scale.x,
 		"Library R2 must show rear-to-front perspective scaling")
 	assert(absf(lib_table.scale.x-scene.world.room_space.perspective_scale(lib_table.position.z))<0.001)
+
+	var actor:Dictionary=scene.world.residents["RES_01"]
+	actor["room_id"]=str(common["id"])
+	actor["x"]=scene.world.room_center_pos(common).x+5.0
+	actor["z"]=scene.world.room_space.BACK_Z
+	actor["visual_y"]=scene.world.room_center_pos(common).y
+	scene.update_residents()
+	var rear_visual_x:float=scene.actor_sprites["RES_01"].position.x
+	assert(absf(rear_visual_x-scene.world.room_center_pos(common).x) < 5.0,
+		"Rear actor visual X must converge toward the room center")
 
 	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true component_depth=true rear_decor_sort=true depth_scale=true")
 	quit(0)
