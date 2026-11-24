@@ -132,7 +132,12 @@ def main():
         "room_types": room_types,
     })
 
-    anchors = load(T6_ANCHORS)
+    # Canonical TEEA006 handoff contains one literal control character in
+    # non_station_furniture metadata. Preserve the source byte-for-byte and
+    # relax JSON string control-character parsing only for this legacy candidate.
+    # Runtime integration below consumes room_variants[*].stations, not the
+    # malformed non-station furniture label.
+    anchors = json.loads(T6_ANCHORS.read_text(encoding="utf-8"), strict=False)
     if anchors.get("schema") != 3 or anchors.get("approved") is not False or anchors.get("owner_approved") is not False:
         raise SystemExit("TEEA006 station candidate approval/schema contract mismatch")
 
