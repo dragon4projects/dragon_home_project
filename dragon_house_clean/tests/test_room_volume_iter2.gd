@@ -24,6 +24,10 @@ func run() -> void:
 	current_scene=scene
 	await process_frame
 
+	var mountain:Node3D=scene.get_node("MountainMassBehindRooms")
+	assert(mountain!=null and mountain.get_child_count()==1,
+		"HOUSE mountain must be one continuous textured mass without floating support boxes")
+
 	var common:Dictionary=scene.world.get_room(-2,0)
 	assert(scene.world.room_size_modules(common)==3)
 	var node:Node3D=scene.room_root.get_node(str(common["id"]))

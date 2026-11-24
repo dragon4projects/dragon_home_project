@@ -29,17 +29,17 @@ func _visual_role_modulate(role: String, z: float) -> Color:
 	var t:float=clampf((z-DEPTH_BACK_Z)/(DEPTH_FRONT_Z-DEPTH_BACK_Z),0.0,1.0)
 	match role:
 		"backdrop":
-			return Color(1.04,1.02,1.00,1.0)
+			return Color(1.08,1.05,1.02,1.0)
 		"back_decor":
-			var b:float=lerpf(0.98,1.05,t)
-			return Color(1.04*b,1.00*b,0.96*b,1.0)
+			var b:float=lerpf(1.04,1.10,t)
+			return Color(1.06*b,1.02*b,0.98*b,1.0)
 		"furniture_back":
-			var b:float=lerpf(0.99,1.07,t)
-			return Color(1.04*b,1.01*b,0.98*b,1.0)
+			var b:float=lerpf(1.06,1.14,t)
+			return Color(1.06*b,1.03*b,1.00*b,1.0)
 		"foreground","front_trim":
-			return Color(1.06,1.03,1.00,1.0)
+			return Color(1.12,1.07,1.02,1.0)
 		"light_overlay":
-			return Color(1.10,1.04,0.92,1.0)
+			return Color(1.16,1.08,0.94,1.0)
 		_:
 			return Color.WHITE
 

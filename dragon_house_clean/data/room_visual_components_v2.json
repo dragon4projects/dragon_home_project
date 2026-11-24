@@ -1,10 +1,12 @@
 {
   "schema": 1,
-  "note": "Physical Sprite3D crops from accepted transparent room layers. Crop rectangles are alpha-component bounds; physical X/Y/Z come from calibrated TEEA anchors or the original wall projection. No topology mutation. Components carry explicit anchor_mode and use the same mild 0.85→1.00 artistic Z correction as actors; the perspective camera supplies the remaining depth. Owner-approved backdrop is now rendered behind decomposed components for Common R3 and Library R2; structural rear wall remains only as physical backup.",
+  "note": "Physical Sprite3D crops from accepted transparent room layers. Common R3 and Library R2 keep the sparse black-frame backdrop suppressed; the physical textured rear wall owns architecture while approved decor/furniture components retain X/Z depth.",
   "pixel_size": 0.003125,
   "variants": {
     "common/R3": {
-      "suppress_roles": [],
+      "suppress_roles": [
+        "backdrop"
+      ],
       "role_components": {
         "furniture_back": {
           "source_path": "assets/rooms/common/R3/furniture_back.png",
@@ -237,7 +239,9 @@
       }
     },
     "library/R2": {
-      "suppress_roles": [],
+      "suppress_roles": [
+        "backdrop"
+      ],
       "role_components": {
         "furniture_back": {
           "source_path": "assets/rooms/library/R2/furniture_back.png",

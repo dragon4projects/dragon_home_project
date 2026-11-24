@@ -462,13 +462,9 @@ func make_mountain() -> void:
 	material.roughness = 1.0
 	material.uv1_scale = Vector3(19.0, 6.0, 1.0)
 	rock.material_override = material
-	# Only a few irregular framing buttresses, no regular brick mosaic.
-	for idx in range(10):
-		var x := float(idx - 4) * 8.5
-		var y := -7.0 + float(idx % 4) * 4.2
-		var support := box(shell, Vector3(x, y, -4.9),
-			Vector3(2.5 + float(idx % 3), 3.4, 0.28), Color("#4b4549"))
-		support.rotation.z = 0.07 * float((idx % 3) - 1)
+	# Keep the mountain as one continuous textured mass. The old floating
+	# grey support boxes read as prototype debris in HOUSE view and had no
+	# topology or collision role.
 
 func label3(parent: Node3D, content: String, pos: Vector3, size: int, color: Color) -> Label3D:
 	var l := Label3D.new()
@@ -858,6 +854,12 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 		# generic side-wall UVs to avoid giant cliff forms across an R3 span.
 		var rear_material:StandardMaterial3D=mat(palette["rock"]).duplicate() as StandardMaterial3D
 		rear_material.uv1_scale=Vector3(4.8,3.1,1.0)
+		rear_material.albedo_color=Color(1.42,1.30,1.17,1.0)
+		rear_material.emission_enabled=true
+		rear_material.emission=Color("#5a4030")
+		rear_material.emission_energy_multiplier=0.16
+		if rear_material.albedo_texture!=null:
+			rear_material.emission_texture=rear_material.albedo_texture
 		rear_panel.material_override=rear_material
 	box(rear,Vector3(-span*0.5+0.16,1.47,-1.59),
 		Vector3(0.18,2.76,0.24),palette["rock_light"])
