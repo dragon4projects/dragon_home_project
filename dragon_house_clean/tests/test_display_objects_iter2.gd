@@ -29,6 +29,12 @@ func run() -> void:
 		assert(typeof(anchor)==TYPE_ARRAY and anchor.size()==3)
 		assert(str(object.get("preview_path","")).begins_with("res://assets/props/artifacts/"))
 		assert(scene.object_nodes.has(object_id))
+		var object_node:Node3D=scene.object_nodes[object_id]
+		var visual:Sprite3D=object_node.get_node_or_null("Visual")
+		var frame:Node3D=object_node.get_node_or_null("WallFrame")
+		assert(visual!=null and visual.texture!=null)
+		assert(frame!=null and frame.get_child_count()==5)
+		assert(float(object.get("display_world_height",0.0))>=1.15)
 
 	var layout:Array=scene.life.stations.layout_for_world(scene.world,artifact)
 	var station_ids:Array=[]

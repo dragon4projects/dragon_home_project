@@ -151,7 +151,7 @@ func _ensure_canonical_wall_displays() -> int:
 			"interaction_station_id":str(spec["station"]),
 			"interaction_point":spec["point"],
 			"interaction_approach_z":0.95,
-			"display_world_height":0.95
+			"display_world_height":1.18
 		}
 		if world.register_physical_object(
 				object_id,display_name,"",str(room["id"]),
@@ -1487,6 +1487,31 @@ func make_physical_objects() -> void:
 			var visual_height:float=float(object.get("display_world_height",0.48))
 			sprite.pixel_size = visual_height / maxf(1.0,float(texture.get_height()))
 			sprite.position.y = 0.0 if wall_display else 0.28
+			if wall_display:
+				# A wall display is a physical mounted object, not a floating
+				# transparent PNG. Build its frame from the actual texture
+				# aspect ratio so every canonical master remains readable.
+				var world_width:float=visual_height*float(texture.get_width())/maxf(
+					1.0,float(texture.get_height()))
+				var frame:=Node3D.new()
+				frame.name="WallFrame"
+				anchor.add_child(frame)
+				var pad:float=0.075
+				var rail:float=0.055
+				var backing:=box(frame,Vector3(0,0,-0.022),
+					Vector3(world_width+pad*2.0,visual_height+pad*2.0,0.028),
+					Color("#241c19"))
+				backing.name="Backing"
+				for sx in [-1.0,1.0]:
+					var side:=box(frame,
+						Vector3(float(sx)*(world_width*0.5+pad*0.55),0,0.012),
+						Vector3(rail,visual_height+pad*2.0,0.045),palette["wood"])
+					side.name="FrameSide_%s" % ("L" if sx<0 else "R")
+				for sy in [-1.0,1.0]:
+					var edge:=box(frame,
+						Vector3(0,float(sy)*(visual_height*0.5+pad*0.55),0.012),
+						Vector3(world_width+pad*2.0,rail,0.045),palette["wood"])
+					edge.name="FrameEdge_%s" % ("B" if sy<0 else "T")
 			anchor.add_child(sprite)
 		else:
 			var marker := box(anchor,Vector3(0,0.12,0),Vector3(0.22,0.22,0.22),palette["bronze"])
