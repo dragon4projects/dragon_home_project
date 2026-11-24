@@ -253,7 +253,10 @@ def build(root: Path) -> dict:
                     continue
                 variants[key]={
                     "source_batch":batch,
-                    "suppress_roles":sorted(role_components.keys()),
+                    # role_components replaces the monolithic role in runtime;
+                    # suppress_roles is reserved for roles intentionally hidden
+                    # without a component replacement (for example foreground).
+                    "suppress_roles":[],
                     "role_components":role_components,
                 }
                 unresolved=sum(
