@@ -13,6 +13,23 @@ func _settle(frames:int)->void:
 	for i in range(frames):
 		await process_frame
 
+func _dump_room_art_state(scene: Node, room_id: String, label: String) -> void:
+	var node:Node3D=scene.room_root.get_node_or_null(room_id)
+	if node==null:
+		print("ROOM_ART_STATE label=%s room=%s node=missing" % [label,room_id])
+		return
+	var stage:Node3D=node.get_node_or_null("Layer_Background/Stage_Backwall")
+	var art:Node3D=node.get_node_or_null("Layer_ApprovedArt")
+	var names:Array=[]
+	if art!=null:
+		for child in art.get_children():
+			names.append(str(child.name))
+	print("ROOM_ART_STATE label=%s room=%s loaded=%s stage_visible=%s art=%s" % [
+		label,room_id,
+		str(scene.art_loaded_groups.has(room_id)),
+		str(stage.visible if stage!=null else null),
+		str(names)])
+
 func capture() -> void:
 	DirAccess.make_dir_recursive_absolute(
 		ProjectSettings.globalize_path("res://private_review"))
@@ -36,6 +53,7 @@ func capture() -> void:
 	scene.apply_camera(1.0)
 	scene.update_render_lod()
 	await _settle(70)
+	_dump_room_art_state(scene,str(common["id"]),"common_before_capture")
 	var common_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v014_common_r3.png"))
 
@@ -55,6 +73,7 @@ func capture() -> void:
 	scene.apply_camera(1.0)
 	scene.update_render_lod()
 	await _settle(70)
+	_dump_room_art_state(scene,str(left["id"]),"library_before_capture")
 	var library_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v014_library_r2.png"))
 
@@ -82,6 +101,7 @@ func capture() -> void:
 	scene.update_hud()
 	await _settle(40)
 	assert(scene.hud_status.text.contains("смотрит «QA: конкретный фильм»"))
+	_dump_room_art_state(scene,str(cinema["id"]),"cinema_before_capture")
 	var cinema_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v014_cinema_activity.png"))
 
