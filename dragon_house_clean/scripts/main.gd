@@ -10,6 +10,7 @@ const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
 const OwnerDecorBankScript = preload("res://scripts/owner_decor_bank.gd")
+const TEEA008ReviewScript = preload("res://scripts/teea008_review_bank.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
@@ -27,6 +28,7 @@ var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
 var room_visual_layout = RoomVisualLayoutScript.new()
 var owner_decor_bank = OwnerDecorBankScript.new()
+var teea008_review = TEEA008ReviewScript.new()
 var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
 var candidate_content = CandidateContentRuntimeScript.new()
@@ -195,6 +197,8 @@ func _ready() -> void:
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
 	life.setup(world)
 	interior_skin.initialize()
+	if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1" and not teea008_review.initialize():
+		push_warning("TEEA008 review unavailable: "+teea008_review.error)
 	if not room_visual_layout.initialize():
 		push_warning("Physical room visual layout unavailable: "+room_visual_layout.error)
 	door_registry.initialize()
@@ -1249,7 +1253,14 @@ func _populate_furniture(group_node: Node3D) -> void:
 			var offset:Vector2=spot.get("offset",Vector2.ZERO)
 			anchor.position=Vector3(offset.x,0.0,offset.y)
 			seen[name]=true
-		if bool(group.get("native_decor",false)):
+		if bool(group.get("teea008_review",false)):
+			var review:=Node3D.new()
+			review.name="TEEA008CandidateFurniture"
+			root.add_child(review)
+			var count:int=teea008_review.populate(review,str(group["art_type"]),int(group["width"]),Callable(self,"depth_visual_scale"))
+			if count==0:
+				push_error("TEEA008 candidate layout did not materialize")
+		elif bool(group.get("native_decor",false)):
 			var decor:=Node3D.new()
 			decor.name="OwnerDecorBank"
 			root.add_child(decor)
@@ -1265,7 +1276,16 @@ func _populate_furniture(group_node: Node3D) -> void:
 			furnish(root,str(group["type"]),int(group["x_start"]),int(group["level"]))
 			_ensure_fallback_anchor_furniture(
 				root,life.stations.layout_for_world(world,physical_room))
-	_add_physical_room_dressing(decoration_layer,group)
+	if bool(group.get("teea008_review",false)):
+		# Retain the current Common hearth, without duplicate legacy rugs/sconces.
+		if str(group["type"])=="common":
+			var dressing:=_named_dressing(decoration_layer,"PhysicalDressing")
+			_add_authored_room_atmosphere(dressing,"common",float(group["width"])*W,true)
+			var rug:Node3D=dressing.get_node_or_null("Dressing_Rug")
+			if rug!=null:
+				rug.free()
+	else:
+		_add_physical_room_dressing(decoration_layer,group)
 	detailed_room_groups[group_node.name]=true
 	detail_materialization_count+=1
 
@@ -1303,6 +1323,9 @@ func make_room(group: Dictionary) -> void:
 	# with real shelves/cabinets/tables. Preserve accepted Common/Cinema art.
 	var native_decor:bool=not facade_only and owner_decor_bank.ready_for(t) and (
 		t in ["artifact","workshop"] or not has_authored_furniture)
+	var teea008_variant:bool=not facade_only and iter1_owner_review and not teea008_review.variant(art_type,int(group["width"])).is_empty()
+	visual_room_groups[n.name]["teea008_review"]=teea008_variant
+	native_decor=native_decor or teea008_variant
 	visual_room_groups[n.name]["native_decor"]=native_decor
 	visual_room_groups[n.name]["has_decor_art"]=not native_decor and accepted.any(
 		func(item): return str(item.get("role","")) == "back_decor")
@@ -2870,7 +2893,7 @@ func update_render_lod() -> void:
 		if furniture != null:
 			# Model-only furnishings are the room's visible art at all zooms.
 			# Semantic visibility above still evicts inaccessible/offscreen groups.
-			var show_furniture:bool=near or bool(group.get("native_decor",false))
+			var show_furniture:bool=near or (bool(group.get("native_decor",false)) and not bool(group.get("teea008_review",false)))
 			if show_furniture:
 				_populate_furniture(group_node)
 			else:
@@ -2902,7 +2925,10 @@ func update_render_lod() -> void:
 
 func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
-	life.tick(delta)
+	# Candidate layouts are deliberately visual-only until measured stations and
+	# actor footprint paths are bound. Do not simulate against stale furniture.
+	if not teea008_review.enabled:
+		life.tick(delta)
 	update_residents(delta)
 	update_creatures(delta)
 	update_physical_objects()
