@@ -8,6 +8,7 @@ const ContentViewerScript = preload("res://scripts/content_viewer.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
+const OwnerDecorBankScript = preload("res://scripts/owner_decor_bank.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
@@ -24,6 +25,7 @@ var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
 var interior_skin = InteriorSkinScript.new()
 var room_visual_layout = RoomVisualLayoutScript.new()
+var owner_decor_bank = OwnerDecorBankScript.new()
 var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
 var candidate_content = CandidateContentRuntimeScript.new()
@@ -1084,7 +1086,7 @@ func _load_room_art(group_node: Node3D) -> void:
 		return
 	var art_type := str(group.get("art_type",group["type"]))
 	var count: int=interior_skin.add_layers(layer,art_type,
-		int(group["width"]),float(group["width"])*W)
+		int(group["width"]),float(group["width"])*W,bool(group.get("native_decor",false)))
 	if count>0:
 		art_loaded_groups[group_node.name]=count
 		art_layer_count+=count
@@ -1235,6 +1237,14 @@ func _populate_furniture(group_node: Node3D) -> void:
 			var offset:Vector2=spot.get("offset",Vector2.ZERO)
 			anchor.position=Vector3(offset.x,0.0,offset.y)
 			seen[name]=true
+		if bool(group.get("native_decor",false)):
+			var decor:=Node3D.new()
+			decor.name="OwnerDecorBank"
+			root.add_child(decor)
+			var count:int=owner_decor_bank.populate(decor,str(group["type"]),int(group["width"]),
+				life.stations.layout_for_world(world,physical_room),Callable(self,"depth_visual_scale"))
+			if count==0:
+				push_error("Owner decor did not materialize: "+str(group["type"]))
 	else:
 		var used_authored:bool=_populate_physical_fallback(root,group)
 		if not used_authored:
@@ -1275,8 +1285,14 @@ func make_room(group: Dictionary) -> void:
 	visual_room_groups[n.name]["art_type"] = art_type
 	var accepted: Array=interior_skin.validated_layers(art_type,int(group["width"]))
 	visual_room_groups[n.name]["has_art"] = not accepted.is_empty()
-	visual_room_groups[n.name]["replaces_furniture"] = accepted.any(
+	var has_authored_furniture:bool=accepted.any(
 		func(item): return str(item.get("role","")) == "furniture_back")
+	# The owner explicitly replaced Artifact pedestals and Workshop workbenches
+	# with real shelves/cabinets/tables. Preserve accepted Common/Cinema art.
+	var native_decor:bool=not facade_only and owner_decor_bank.ready_for(t) and (
+		t in ["artifact","workshop"] or not has_authored_furniture)
+	visual_room_groups[n.name]["native_decor"]=native_decor
+	visual_room_groups[n.name]["replaces_furniture"]=has_authored_furniture or native_decor
 	var side_left: Dictionary = world.get_room(x_start-1,level)
 	var side_right: Dictionary = world.get_room(x_end+1,level)
 	# Render hierarchy is spatial, not a single baked background image.
@@ -2684,13 +2700,16 @@ func update_render_lod() -> void:
 			_release_room_art(group_node)
 		var near: bool = _is_near_detail(group_node) if furniture != null else false
 		if furniture != null:
-			if near:
+			# Model-only furnishings are the room's visible art at all zooms.
+			# Semantic visibility above still evicts inaccessible/offscreen groups.
+			var show_furniture:bool=near or bool(group.get("native_decor",false))
+			if show_furniture:
 				_populate_furniture(group_node)
 			else:
 				_release_furniture(group_node)
-			furniture.visible = near
+			furniture.visible=show_furniture
 			if cues != null:
-				cues.visible = not near and not art_loaded_groups.has(group_node.name)
+				cues.visible=not show_furniture and not art_loaded_groups.has(group_node.name)
 		var cutaway_depth: Node3D = group_node.get_node_or_null(
 			"Layer_Structure/Stage_CutawayDepth")
 		if cutaway_depth != null:
