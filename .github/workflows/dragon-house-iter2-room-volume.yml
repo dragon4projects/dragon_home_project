@@ -144,6 +144,19 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      - name: Emit QA previews for visual inspection
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dragon_house_clean/private_review
+          for f in v014_house.png v014_common_r3.png v014_library_r2.png v014_cinema_activity.png
+          do
+            echo "BEGIN_IMAGE::$f"
+            base64 -w 0 "$f"
+            echo
+            echo "END_IMAGE::$f"
+          done
+
       - name: Export templates
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         shell: bash
