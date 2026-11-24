@@ -94,7 +94,7 @@ var palette := {
 	"bronze": Color("#ae8860"), "copper": Color("#bd8058"),
 	"couch": Color("#6e253a"), "rug": Color("#5c2d39"),
 	"light": Color("#f0bb78"), "screen": Color("#32516f"),
-	"book": Color("#9a7966"), "floor": Color("#8d7569"),
+	"book": Color("#9a7966"), "floor": Color("#5f5049"),
 	"black": Color("#171418")
 }
 var room_names := {
@@ -848,8 +848,8 @@ func make_room(group: Dictionary) -> void:
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
 	# Structural slabs are deliberately thin: they frame the cutaway instead of
 	# competing with the room artwork at close zoom.
-	var floor_slab:=box(structure,Vector3(0,-0.055,-0.15),
-		Vector3(span*1.01,0.10,3.60),palette["floor"])
+	var floor_slab:=box(structure,Vector3(0,-0.040,-0.15),
+		Vector3(span*1.01,0.055,3.60),palette["floor"])
 	floor_slab.name="CutawayFloorSlab"
 	if not facade_only:
 		var cutaway_depth:=Node3D.new()
@@ -867,8 +867,8 @@ func make_room(group: Dictionary) -> void:
 	var ceiling_slab:=box(structure,Vector3(0,3.055,-0.62),
 		Vector3(span*1.01,0.09,2.72),palette["border"])
 	ceiling_slab.name="CutawayCeilingSlab"
-	var front_lip:=box(overlay,Vector3(0,-0.095,1.39),
-		Vector3(span*1.01,0.07,0.09),palette["border"])
+	var front_lip:=box(overlay,Vector3(0,-0.070,1.39),
+		Vector3(span*1.01,0.04,0.075),palette["border"])
 	front_lip.name="CutawayFrontLip"
 	# Expensive full-resolution artwork is loaded on demand by
 	# update_render_lod(), not permanently allocated for all 49+ rooms.
@@ -880,9 +880,9 @@ func make_room(group: Dictionary) -> void:
 			not world.connection_between(physical_room,neighbour).is_empty())
 		if not connected:
 			box(structure,Vector3(edge,1.42,-0.42),
-				Vector3(0.22,2.75,3.08),palette["rock_light"])
+				Vector3(0.16,2.75,3.08),palette["rock"])
 			box(overlay,Vector3(edge,0.18,1.31),
-				Vector3(0.22,0.34,0.14),palette["rock_light"])
+				Vector3(0.16,0.34,0.14),palette["rock"])
 		else:
 			# Only an explicit connector opens the wall.
 			box(structure,Vector3(edge,2.84,-0.61),
@@ -2045,7 +2045,7 @@ func effective_camera_yaw() -> float:
 	# A gentle Shelter-like oblique cutaway shows the rear and side depth
 	# of the 3D room at close zoom, then fades back to a readable flat
 	# overview. Q/E remains an additive *manual* adjustment.
-	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.075
+	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.12
 	return clampf(yaw+close_bias,-0.38,0.38)
 
 func apply_camera(delta: float) -> void:
@@ -2083,7 +2083,7 @@ func apply_camera(delta: float) -> void:
 	var view_yaw: float=effective_camera_yaw()
 	var x_shift := sin(view_yaw) * zoom_current
 	var z_shift := cos(view_yaw) * zoom_current
-	var height_ratio:float=lerpf(0.055,0.16,
+	var height_ratio:float=lerpf(0.085,0.16,
 		clampf((zoom_current-12.0)/36.0,0.0,1.0))
 	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*height_ratio,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
