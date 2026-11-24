@@ -102,6 +102,7 @@ func run() -> void:
 		assert(art.get_node_or_null("Art_back_decor")==null)
 		var furniture_components:int=0
 		var decor_components:int=0
+		var foreground_components:int=0
 		for child in art.get_children():
 			var node_name:String=str(child.name)
 			if node_name.begins_with("Art_furniture_back_"):
@@ -110,7 +111,18 @@ func run() -> void:
 			elif node_name.begins_with("Art_back_decor_"):
 				decor_components+=1
 				assert(bool(child.get_meta("candidate_review",false)))
+			elif node_name.begins_with("Art_foreground_"):
+				foreground_components+=1
+				assert(bool(child.get_meta("candidate_review",false)))
 		assert(furniture_components>0 and decor_components>0)
+		var has_foreground:=false
+		for layer in scene.interior_skin.validated_layers(
+				str(review_room["type"]),scene.world.room_size_modules(review_room)):
+			if str(layer.get("role",""))=="foreground":
+				has_foreground=true
+		if has_foreground:
+			assert(art.get_node_or_null("Art_foreground")==null)
+			assert(foreground_components>0)
 		var variant:Dictionary=scene.interior_skin._component_variant(
 			str(review_room["type"]),scene.world.room_size_modules(review_room))
 		assert(str(variant.get("source_batch",""))==str(room_spec[3]))

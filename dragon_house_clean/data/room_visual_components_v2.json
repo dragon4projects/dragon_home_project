@@ -4,9 +4,7 @@
   "pixel_size": 0.003125,
   "variants": {
     "common/R3": {
-      "suppress_roles": [
-        "foreground"
-      ],
+      "suppress_roles": [],
       "role_components": {
         "furniture_back": {
           "source_path": "assets/rooms/common/R3/furniture_back.png",
@@ -187,13 +185,59 @@
               "anchor_mode": "wall"
             }
           ]
+        },
+        "foreground": {
+          "source_path": "assets/rooms/common/R3/foreground.png",
+          "source_sha256": "ba74d0bd6bb7f9d8acf681c148fb4e1d0ad099c12a48580c311037518b9f1e0d",
+          "components": [
+            {
+              "id": "sofa_front_left",
+              "rect": [
+                335,
+                776,
+                578,
+                207
+              ],
+              "x": -5.25,
+              "y": 0.348438,
+              "z": -0.4711,
+              "source_anchor": "foreground_role_physical_z",
+              "anchor_mode": "floor"
+            },
+            {
+              "id": "table_front_right",
+              "rect": [
+                3189,
+                725,
+                374,
+                258
+              ],
+              "x": 3.35,
+              "y": 0.428125,
+              "z": -0.4711,
+              "source_anchor": "foreground_role_physical_z",
+              "anchor_mode": "floor"
+            },
+            {
+              "id": "chair_front_right",
+              "rect": [
+                3889,
+                805,
+                254,
+                178
+              ],
+              "x": 5.35,
+              "y": 0.303125,
+              "z": -0.4711,
+              "source_anchor": "foreground_role_physical_z",
+              "anchor_mode": "floor"
+            }
+          ]
         }
       }
     },
     "library/R2": {
-      "suppress_roles": [
-        "foreground"
-      ],
+      "suppress_roles": [],
       "role_components": {
         "furniture_back": {
           "source_path": "assets/rooms/library/R2/furniture_back.png",
@@ -330,6 +374,40 @@
               "z": -1.7,
               "source_anchor": "projected_back_wall",
               "anchor_mode": "wall"
+            }
+          ]
+        },
+        "foreground": {
+          "source_path": "assets/rooms/library/R2/foreground.png",
+          "source_sha256": "582292391c3d71d91e475e05b13018109560262700593ac2f87da954fe5867d4",
+          "components": [
+            {
+              "id": "chair_front_left",
+              "rect": [
+                715,
+                795,
+                266,
+                188
+              ],
+              "x": -2.15,
+              "y": 0.31875,
+              "z": -0.2436,
+              "source_anchor": "foreground_role_physical_z",
+              "anchor_mode": "floor"
+            },
+            {
+              "id": "chair_front_right",
+              "rect": [
+                2121,
+                797,
+                206,
+                186
+              ],
+              "x": 2.15,
+              "y": 0.315625,
+              "z": -0.2436,
+              "source_anchor": "foreground_role_physical_z",
+              "anchor_mode": "floor"
             }
           ]
         }

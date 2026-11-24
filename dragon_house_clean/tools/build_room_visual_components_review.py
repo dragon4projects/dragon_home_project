@@ -210,8 +210,74 @@ def back_decor_components(path: Path, width: int) -> list[dict]:
         item["id"]=f"decor_{i:02d}"
     return result
 
+def role_physical_z(review_art: dict, key: str, role: str):
+    room,variant=key.split("/",1)
+    entry=review_art.get("room_types",{}).get(room,{}).get(variant,{})
+    for raw in entry.get("layers",[]):
+        if str(raw.get("role",""))==role and raw.get("physical_z") is not None:
+            return float(raw["physical_z"])
+    return None
+
+def foreground_components(path: Path, width: int, physical_z: float) -> list[dict]:
+    raw,w,h=alpha(path)
+    work=ndimage.binary_dilation(raw,iterations=1)
+    labels,n=ndimage.label(work)
+    slices=ndimage.find_objects(labels)
+    pixel_size=(MODULE_W*width)/float(w)
+    parts=[]
+    for label_id,sl in enumerate(slices,1):
+        if sl is None:
+            continue
+        local=(labels[sl]==label_id) & raw[sl]
+        if int(local.sum())<MIN_ALPHA_PIXELS:
+            continue
+        ys,xs=np.nonzero(local)
+        yslice,xslice=sl
+        x0=int(xs.min())+xslice.start
+        x1=int(xs.max())+xslice.start+1
+        y0=int(ys.min())+yslice.start
+        y1=int(ys.max())+yslice.start+1
+        parts.append([x0,y0,x1-x0,y1-y0])
+
+    # A chair/table may have disconnected legs. Merge alpha islands that
+    # belong to the same narrow X cluster; widely separated foreground props
+    # remain independent physical sprites.
+    parts.sort(key=lambda b:b[0]+b[2]/2.0)
+    clusters=[]
+    for box in parts:
+        cx=((box[0]+box[2]/2.0)-w/2.0)*pixel_size
+        if clusters:
+            last=clusters[-1]
+            centers=[((b[0]+b[2]/2.0)-w/2.0)*pixel_size for b in last]
+            if abs(cx-sum(centers)/len(centers))<=0.48:
+                last.append(box)
+                continue
+        clusters.append([box])
+
+    result=[]
+    for i,cluster in enumerate(clusters):
+        x0=min(b[0] for b in cluster)
+        y0=min(b[1] for b in cluster)
+        x1=max(b[0]+b[2] for b in cluster)
+        y1=max(b[1]+b[3] for b in cluster)
+        bw,bh=x1-x0,y1-y0
+        cx=(x0+x1)/2.0
+        result.append({
+            "id":f"foreground_{i:02d}",
+            "rect":[x0,y0,bw,bh],
+            "x":round((cx-w/2.0)*pixel_size,6),
+            "y":round(FLOOR_Y+bh*pixel_size/2.0,6),
+            "z":round(float(physical_z),6),
+            "anchor_mode":"floor",
+            "pixel_size":round(pixel_size,9),
+            "confidence":"role_exact_z_alpha_component",
+            "source_anchor":"foreground_role_physical_z",
+        })
+    return result
+
 def build(root: Path) -> dict:
     cand=root/"data"/"integration_candidates"
+    review_art=load(cand/"ITER1_ROOM_ART_REVIEW.json")
     variants={}
     report={}
     for batch,station_file,rooms in BATCHES:
@@ -249,6 +315,17 @@ def build(root: Path) -> dict:
                         "source_sha256":sha256(source),
                         "components":comps,
                     }
+
+                foreground=variant_dir/"foreground.png"
+                foreground_z=role_physical_z(review_art,key,"foreground")
+                if foreground.is_file() and foreground_z is not None:
+                    comps=foreground_components(foreground,width,foreground_z)
+                    if comps:
+                        role_components["foreground"]={
+                            "source_path":foreground.relative_to(root).as_posix(),
+                            "source_sha256":sha256(foreground),
+                            "components":comps,
+                        }
                 if not role_components:
                     continue
                 variants[key]={
