@@ -544,6 +544,73 @@ func _add_warm_room_light(parent: Node3D, at: Vector3, energy: float = 0.42) -> 
 	light.shadow_enabled=false
 	parent.add_child(light)
 
+func _add_authored_room_atmosphere(root: Node3D, kind: String, span: float) -> void:
+	# When photorealistic furniture exists, procedural geometry must not
+	# duplicate it. Keep only lighting, floor textiles and architecture that
+	# adds depth without pretending to be replacement furniture.
+	match kind:
+		"common":
+			var rug:=_named_dressing(root,"Dressing_Rug")
+			box(rug,Vector3(-0.25,0.018,0.18),
+				Vector3(minf(span*0.56,7.6),0.028,1.72),palette["rug"])
+			var fire:=_named_dressing(root,"Dressing_Fireplace",Vector3(-0.35,0,-1.50))
+			box(fire,Vector3(-0.58,0.72,0),Vector3(0.22,1.45,0.32),palette["rock_light"])
+			box(fire,Vector3(0.58,0.72,0),Vector3(0.22,1.45,0.32),palette["rock_light"])
+			box(fire,Vector3(0,1.43,0),Vector3(1.42,0.20,0.40),palette["wood"])
+			box(fire,Vector3(0,0.36,0.04),Vector3(0.86,0.68,0.25),palette["black"])
+			box(fire,Vector3(0,0.36,0.19),Vector3(0.55,0.44,0.045),Color("#e97935"),true)
+			for x in [-0.42,0.0,0.39]:
+				_add_candle(fire,Vector3(float(x),1.55,0.06),0.20+0.05*absf(float(x)))
+			_add_sconces(root,span,-1.54)
+			_add_warm_room_light(root,Vector3(-0.35,1.05,-1.05),0.62)
+		"library":
+			var rug:=_named_dressing(root,"Dressing_ReadingRug")
+			box(rug,Vector3(0,0.016,0.24),
+				Vector3(minf(span*0.68,4.0),0.025,1.65),palette["rug"])
+			_add_sconces(root,span)
+			_add_warm_room_light(root,Vector3(0,1.55,-0.85),0.34)
+		"music":
+			var rug:=_named_dressing(root,"Dressing_MusicRug")
+			box(rug,Vector3(0,0.016,0.20),
+				Vector3(minf(span*0.72,4.1),0.025,1.62),palette["rug"])
+			_add_sconces(root,span,-1.52)
+			_add_warm_room_light(root,Vector3(0,1.55,-0.85),0.34)
+		"cinema":
+			var runner:=_named_dressing(root,"Dressing_TheatreRunner")
+			box(runner,Vector3(0,0.016,0.18),
+				Vector3(minf(span*0.74,4.2),0.025,1.82),Color("#4b222b"))
+			_add_sconces(root,span,-1.46)
+			_add_warm_room_light(root,Vector3(0,1.45,-0.85),0.24)
+		"study":
+			var rug:=_named_dressing(root,"Dressing_StudyRug")
+			box(rug,Vector3(0,0.016,0.18),
+				Vector3(minf(span*0.58,4.0),0.025,1.55),palette["rug"])
+			_add_sconces(root,span)
+			_add_warm_room_light(root,Vector3(0,1.45,-0.90),0.28)
+		"rest":
+			var rug:=_named_dressing(root,"Dressing_RestRug")
+			box(rug,Vector3(0,0.016,0.18),
+				Vector3(minf(span*0.64,5.5),0.025,1.72),palette["rug"])
+			_add_warm_room_light(root,Vector3(0,1.40,-0.80),0.25)
+		"artifact":
+			var rug:=_named_dressing(root,"Dressing_ArtifactRug")
+			box(rug,Vector3(0,0.016,0.18),
+				Vector3(minf(span*0.58,4.8),0.025,1.52),Color("#49333e"))
+			_add_sconces(root,span)
+			_add_warm_room_light(root,Vector3(0,1.25,-0.72),0.32)
+		"workshop":
+			var mat_node:=_named_dressing(root,"Dressing_WorkMat")
+			box(mat_node,Vector3(0,0.016,0.12),
+				Vector3(minf(span*0.66,5.0),0.025,1.48),Color("#4a413d"))
+			_add_warm_room_light(root,Vector3(-minf(span*0.18,0.75),1.10,-0.88),0.34)
+		"arrival","corridor":
+			var runner:=_named_dressing(root,"Dressing_Runner")
+			box(runner,Vector3(0,0.016,0.18),
+				Vector3(maxf(1.4,span*0.62),0.025,1.46),Color("#4b2e33"))
+			_add_warm_room_light(root,Vector3(0,1.40,-0.90),0.20)
+		_:
+			pass
+
 func _add_physical_room_dressing(parent: Node3D, group: Dictionary) -> Node3D:
 	# Supplemental atmosphere only. Main authored furniture/stations stay owned
 	# by the art + station contracts. Dressing remains behind z=0.70 except for
@@ -551,6 +618,9 @@ func _add_physical_room_dressing(parent: Node3D, group: Dictionary) -> Node3D:
 	var root:=_named_dressing(parent,"PhysicalDressing")
 	var kind:String=str(group.get("type",""))
 	var span:float=float(group.get("width",1))*W
+	if bool(group.get("replaces_furniture",false)):
+		_add_authored_room_atmosphere(root,kind,span)
+		return root
 	match kind:
 		"common":
 			var rug:=_named_dressing(root,"Dressing_Rug")
