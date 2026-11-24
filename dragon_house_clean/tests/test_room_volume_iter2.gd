@@ -75,6 +75,7 @@ func run() -> void:
 	var common_dressing:Node3D=local.get_node_or_null("PhysicalDressing")
 	assert(common_dressing!=null)
 	assert(common_dressing.get_node_or_null("Dressing_Rug")!=null)
+	assert(common_dressing.get_node_or_null("Dressing_CommonSideTable")!=null)
 	var fireplace:Node3D=common_dressing.get_node_or_null("Dressing_Fireplace")
 	assert(fireplace!=null and fireplace.position.z<=-1.0)
 	for child in common_dressing.get_children():
@@ -190,6 +191,22 @@ func run() -> void:
 	assert(lib_shelf_left.scale.x < lib_left.scale.x and lib_left.scale.x < lib_table.scale.x,
 		"Library R2 must show rear-to-front perspective scaling")
 	assert(absf(lib_table.scale.x-scene.world.room_space.perspective_scale(lib_table.position.z))<0.001)
+
+	var artifact_room:Dictionary=scene.world.get_room(1,-1)
+	var artifact_node:Node3D=scene.room_root.get_node(str(artifact_room["id"]))
+	scene._populate_furniture(artifact_node)
+	var artifact_dressing:Node3D=artifact_node.get_node("LocalFurniture/PhysicalDressing")
+	assert(artifact_dressing.get_node_or_null("Dressing_ArtifactPedestal")!=null)
+	assert(artifact_dressing.get_node_or_null("Dressing_ArtifactPedestal/DisplayOrb")!=null)
+
+	var workshop_room:Dictionary=scene.world.make_room(14,2,"workshop",1,false)
+	var workshop_group:Dictionary=scene.world.merged_group(14,2)
+	scene.make_room(workshop_group)
+	var workshop_node:Node3D=scene.room_root.get_node(str(workshop_room["id"]))
+	scene._populate_furniture(workshop_node)
+	var workshop_dressing:Node3D=workshop_node.get_node("LocalFurniture/PhysicalDressing")
+	assert(workshop_dressing.get_node_or_null("Dressing_Forge")!=null)
+	assert(workshop_dressing.get_node_or_null("Dressing_Workbench")!=null)
 
 	var actor:Dictionary=scene.world.residents["RES_01"]
 	actor["room_id"]=str(common["id"])
