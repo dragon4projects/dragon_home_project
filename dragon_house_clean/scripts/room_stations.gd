@@ -214,7 +214,10 @@ func _paired_spots(points: Array, used: Dictionary, seats_only: bool = false) ->
 			if absf(one.y-two.y)>0.04:
 				continue
 			var dx:float=absf(one.x-two.x)
-			if dx>=0.72 and dx<=1.35:
+			# Authored R1 sofa seats are 0.6608 m apart; TEEA review anchors
+			# legally reach ~0.605 m. Both are distinct physical seats, so the
+			# social-pair gate must match the accepted X/Z spacing contract.
+			if dx>=0.60 and dx<=1.35:
 				return [left,right]
 	return []
 
