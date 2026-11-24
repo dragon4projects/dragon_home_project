@@ -8,12 +8,12 @@ const VALID_ROLES := ["backdrop","back_decor","furniture_back","foreground","fro
 const VALID_VARIANTS := ["R1","R2","R3"]
 const VALID_IMAGE_FORMATS := ["png","webp","jpg","jpeg"]
 const Z_FOR_ROLE := {
-	"backdrop": -1.79,
-	"back_decor": -1.63,
-	"furniture_back": -1.37,
-	"foreground": 1.63,
-	"front_trim": 1.91,
-	"light_overlay": 1.96
+	"backdrop": -1.90,
+	"back_decor": -1.68,
+	"furniture_back": -0.82,
+	"foreground": 1.42,
+	"front_trim": 1.56,
+	"light_overlay": 1.60
 }
 var config: Dictionary = {}
 var textures: Dictionary = {}
@@ -191,9 +191,14 @@ func add_layers(parent: Node3D, room_type: String, width: int, physical_width: f
 		sprite.texture = tex
 		sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED
 		sprite.pixel_size = physical_width / maxf(1.0,float(tex.get_width()))
-		sprite.position = Vector3(0.0,1.50,Z_FOR_ROLE[role])
+		var layer_z:float=float(Z_FOR_ROLE[role])
 		if item.has("physical_z"):
-			sprite.set_meta("physical_z",float(item["physical_z"]))
+			# physical_z is runtime geometry, not documentation. Foreground
+			# still receives camera-plane compensation in main.gd, while
+			# back/mid layers live directly at their authored depth.
+			layer_z=float(item["physical_z"])
+			sprite.set_meta("physical_z",layer_z)
+		sprite.position = Vector3(0.0,1.50,layer_z)
 		if bool(item.get("candidate_review",false)):
 			sprite.set_meta("candidate_review",true)
 		sprite.no_depth_test = false
