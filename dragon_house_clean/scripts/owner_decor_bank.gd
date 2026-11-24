@@ -136,7 +136,12 @@ func populate(parent: Node3D, kind: String, width: int, spots: Array, scale_at: 
 			# A shelf is a storage/display surface, not a procedural pedestal.
 			# Keep it on the rear wall, away from standing approach points.
 			var shelf_x:float=-span*0.5+0.78
-			_place(parent,"wooden_display_shelves_01",shelf_x,-1.57,1.78,1.22,0.58,scale_at)
+			var has_shelf:bool=false
+			for child in parent.get_children():
+				if str(child.get_meta("source_asset_id",""))=="wooden_display_shelves_01":
+					has_shelf=true
+			if not has_shelf:
+				_place(parent,"wooden_display_shelves_01",shelf_x,-1.57,1.78,1.22,0.58,scale_at)
 			if groups.is_empty():
 				_place(parent,"chinese_commode",span*0.5-0.85,-1.30,0.86,1.25,0.55,scale_at)
 		"workshop":
