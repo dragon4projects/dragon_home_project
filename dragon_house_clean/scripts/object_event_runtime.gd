@@ -322,6 +322,12 @@ func _migration_registration(object: Dictionary) -> Dictionary:
 		"preview_path":str(object.get("preview_path","")),
 		"asset_id":str(object.get("asset_id","")),
 		"viewer_category":str(object.get("viewer_category","artifacts")),
+		"display_mode":str(object.get("display_mode","")),
+		"home_anchor":object.get("home_anchor",[]),
+		"interaction_station_id":str(object.get("interaction_station_id","")),
+		"interaction_point":object.get("interaction_point",[]),
+		"interaction_approach_z":float(object.get("interaction_approach_z",0.95)),
+		"display_world_height":float(object.get("display_world_height",0.8)),
 		"legacy_history":(object.get("history",[]) as Array).duplicate(true)
 	}
 	var payload := {
@@ -537,7 +543,13 @@ func register_object(object_id: String, display_name: String,
 			"description":str(metadata.get("description","")),
 			"preview_path":str(metadata.get("preview_path","")),
 			"asset_id":str(metadata.get("asset_id","")),
-			"viewer_category":str(metadata.get("viewer_category","artifacts"))
+			"viewer_category":str(metadata.get("viewer_category","artifacts")),
+			"display_mode":str(metadata.get("display_mode","")),
+			"home_anchor":metadata.get("home_anchor",[]),
+			"interaction_station_id":str(metadata.get("interaction_station_id","")),
+			"interaction_point":metadata.get("interaction_point",[]),
+			"interaction_approach_z":float(metadata.get("interaction_approach_z",0.95)),
+			"display_world_height":float(metadata.get("display_world_height",0.8))
 		},
 		"sim_clock":float(world.sim_clock)
 	}

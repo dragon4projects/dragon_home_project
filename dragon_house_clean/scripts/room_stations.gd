@@ -117,8 +117,62 @@ func layout(room: Dictionary) -> Array:
 		return []
 	return _layout_from_anchors(room,_physical_anchor_data(room))
 
-func layout_for_world(_world, room: Dictionary) -> Array:
-	return layout(room)
+func _display_anchor_data(world, room: Dictionary) -> Array:
+	var result:Array=[]
+	var seen:Dictionary={}
+	for object_id in world.objects:
+		var object:Dictionary=world.objects[object_id]
+		if str(object.get("current_room_id",""))!=str(room.get("id","")) or str(object.get("state",""))!="PLACED":
+			continue
+		var station_id:String=str(object.get("interaction_station_id",""))
+		var point=object.get("interaction_point",[])
+		if station_id=="" or seen.has(station_id) or typeof(point)!=TYPE_ARRAY or point.size()<2:
+			continue
+		seen[station_id]=true
+		result.append({
+			"id":station_id,
+			"x":float(point[0]),"z":float(point[1]),
+			"kind":"standing","furniture_id":"DISPLAY_WALL",
+			"pose_hint":"VIEW",
+			"approach_z":float(object.get("interaction_approach_z",0.95))
+		})
+	return result
+
+func layout_for_world(world, room: Dictionary) -> Array:
+	if room.is_empty() or str(room.get("privacy","public"))!="public":
+		return []
+	var anchors:Array=_display_anchor_data(world,room)
+	anchors.append_array(_physical_anchor_data(room))
+	return _layout_from_anchors(room,anchors)
+
+func display_objects(world, room: Dictionary) -> Array:
+	var result:Array=[]
+	for object_id in world.objects:
+		var object:Dictionary=world.objects[object_id]
+		if str(object.get("current_room_id",""))!=str(room.get("id","")) or str(object.get("state",""))!="PLACED":
+			continue
+		if str(object.get("display_mode",""))!="wall" or str(object.get("interaction_station_id",""))=="":
+			continue
+		result.append(object)
+	result.sort_custom(func(a,b): return str(a.get("id",""))<str(b.get("id","")))
+	return result
+
+func display_claim(world, actor: Dictionary, room: Dictionary,
+		object: Dictionary) -> Dictionary:
+	var station_id:String=str(object.get("interaction_station_id",""))
+	if station_id=="":
+		return {}
+	var id:String=str(actor.get("id",""))
+	if not world.is_accessible(room,id):
+		return {}
+	var used:Dictionary=used_slots(world,str(room["id"]),[id])
+	var points:Array=layout_for_world(world,room)
+	for idx in range(points.size()):
+		if used.has(idx):
+			continue
+		if str(points[idx].get("id",""))==station_id:
+			return _claim(room,idx,points[idx])
+	return {}
 
 func _intent_prefers_station(intent: String, kind: String) -> bool:
 	match intent:

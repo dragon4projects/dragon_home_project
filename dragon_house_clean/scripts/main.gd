@@ -110,6 +110,57 @@ var room_names := {
 	"lift": "Подъёмник", "artifact": "Артефакты"
 }
 
+func _artifact_room() -> Dictionary:
+	for room in world.rooms:
+		if str(room.get("type",""))=="artifact" and str(room.get("privacy","public"))=="public":
+			return room
+	return {}
+
+func _ensure_canonical_wall_displays() -> int:
+	if asset_banks.manifest.is_empty():
+		return 0
+	var room:Dictionary=_artifact_room()
+	if room.is_empty():
+		return 0
+	var specs:Array=[
+		{"id":"POSTER_SHURSHUN","anchor":[-0.55,1.45,-1.52],
+			"station":"WALL_GALLERY_LEFT","point":[-0.55,-1.22]},
+		{"id":"PHOTO_MOON","anchor":[0.55,1.45,-1.52],
+			"station":"WALL_GALLERY_RIGHT","point":[0.85,-1.22]},
+		{"id":"PORTRAIT_SHURS","anchor":[1.65,1.45,-1.52],
+			"station":"WALL_GALLERY_RIGHT","point":[0.85,-1.22]}
+	]
+	var added:=0
+	for spec in specs:
+		var object_id:String=str(spec["id"])
+		if not world.physical_object(object_id).is_empty():
+			continue
+		var record:Dictionary=asset_banks.prop_display_record(object_id)
+		var master:String=asset_banks.prop_master_path(object_id)
+		if record.is_empty() or master=="":
+			continue
+		var display_name:String=str(record.get("display_name",
+			record.get("title",object_id)))
+		var metadata:Dictionary={
+			"description":str(record.get("description","")),
+			"preview_path":"res://"+master,
+			"asset_id":object_id,
+			"viewer_category":"artifacts",
+			"display_mode":"wall",
+			"home_anchor":spec["anchor"],
+			"interaction_station_id":str(spec["station"]),
+			"interaction_point":spec["point"],
+			"interaction_approach_z":0.95,
+			"display_world_height":0.95
+		}
+		if world.register_physical_object(
+				object_id,display_name,"",str(room["id"]),
+				false,false,false,false,true,metadata):
+			added+=1
+	if added>0:
+		world.save_world()
+	return added
+
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	iter1_owner_review = FileAccess.file_exists(ITER1_REVIEW_MARKER)
@@ -128,6 +179,7 @@ func _ready() -> void:
 			push_warning("Iteration-1 candidate contract could not be initialized: "+candidate_content.last_error)
 	semantic_view.install(world,"HOUSE")
 	asset_banks.initialize()
+	_ensure_canonical_wall_displays()
 	if iter1_owner_review:
 		_register_iter1_review_creatures()
 	# Metadata is not a physical book or a movie/audio file.
@@ -449,6 +501,8 @@ func add_sofa(parent: Node3D, at: Vector3, width: float = 2.5, color: Color = Co
 
 func add_canonical_prop(parent: Node3D, prop_id: String, position: Vector3,
 		world_height: float = 0.8) -> bool:
+	if not world.physical_object(prop_id).is_empty():
+		return true
 	var tex: Texture2D = asset_banks.prop_display_texture(prop_id)
 	if tex == null:
 		return false
@@ -1428,9 +1482,11 @@ func make_physical_objects() -> void:
 			var sprite := Sprite3D.new()
 			sprite.name = "Visual"
 			sprite.texture = texture
-			sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
-			sprite.pixel_size = 0.48 / maxf(1.0,float(texture.get_height()))
-			sprite.position.y = 0.28
+			var wall_display:bool=str(object.get("display_mode",""))=="wall"
+			sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED if wall_display else BaseMaterial3D.BILLBOARD_FIXED_Y
+			var visual_height:float=float(object.get("display_world_height",0.48))
+			sprite.pixel_size = visual_height / maxf(1.0,float(texture.get_height()))
+			sprite.position.y = 0.0 if wall_display else 0.28
 			anchor.add_child(sprite)
 		else:
 			var marker := box(anchor,Vector3(0,0.12,0),Vector3(0.22,0.22,0.22),palette["bronze"])
@@ -1481,11 +1537,23 @@ func update_physical_objects() -> void:
 		if not anchor.visible:
 			continue
 		var room_center:Vector3=world.room_center_pos(room)
-		anchor.position = Vector3(
-			room_center.x,
-			room_center.y+0.22,
-			0.72) + _object_offset(str(object_id))
-		anchor.scale=Vector3.ONE*depth_visual_scale(anchor.position.z)
+		var home_anchor=object.get("home_anchor",[])
+		if str(object.get("display_mode",""))=="wall" and (
+				typeof(home_anchor)==TYPE_ARRAY and home_anchor.size()>=3):
+			var local_x:float=float(home_anchor[0])
+			var local_y:float=float(home_anchor[1])
+			var local_z:float=float(home_anchor[2])
+			var physical_x:float=room_center.x+local_x
+			anchor.position=Vector3(
+				depth_visual_x(room_id,physical_x,local_z),
+				room_center.y+local_y,local_z)
+			anchor.scale=Vector3.ONE*depth_visual_scale(local_z)
+		else:
+			anchor.position = Vector3(
+				room_center.x,
+				room_center.y+0.22,
+				0.72) + _object_offset(str(object_id))
+			anchor.scale=Vector3.ONE*depth_visual_scale(anchor.position.z)
 
 func make_residents() -> void:
 	var resident_tex := make_sprite_texture(false)

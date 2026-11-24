@@ -67,6 +67,12 @@ func status(actor: Dictionary) -> String:
 			"READ_BOOK": return "читает "+active_title
 			"WATCH_FILM": return "смотрит "+active_title
 			"LISTEN_MUSIC": return "слушает "+active_title
+	if intent=="VIEW_ART":
+		var viewing_id:String=str(actor.get("viewing_object_id",""))
+		if viewing_id!="":
+			var display:Dictionary=world.physical_object(viewing_id)
+			if not display.is_empty():
+				return "рассматривает "+str(display.get("display_name",viewing_id))
 	var browse_title:=_quoted_media_title(
 		actor,"browsing_category","browsing_item_id")
 	if browse_title!="":
@@ -409,6 +415,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	stations.release(actor)
 	end_catalog_browse(actor)
 	end_concrete_media(actor)
+	actor.erase("viewing_object_id")
 	if task.is_empty():
 		actor["until"] = clock + 15.0
 		return
@@ -423,6 +430,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	var partner_route: Array = []
 	var partner_claim: Dictionary = {}
 	var actor_claim: Dictionary = {}
+	var viewing_object:Dictionary={}
 	var partner_waypoints: Array = []
 	var end_time := 0.0
 	if intent == "TALK_PAIR":
@@ -445,7 +453,13 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			return
 		end_time = clock + maxf(float(route.size()),float(partner_route.size()))*3.2+34.0
 	else:
-		actor_claim = stations.single(world,actor,room,intent)
+		if intent=="VIEW_ART":
+			var displays:Array=stations.display_objects(world,room)
+			if not displays.is_empty():
+				viewing_object=displays[rng.randi_range(0,displays.size()-1)]
+				actor_claim=stations.display_claim(world,actor,room,viewing_object)
+		if actor_claim.is_empty():
+			actor_claim = stations.single(world,actor,room,intent)
 		if actor_claim.is_empty():
 			actor["until"] = clock + 10.0
 			return
@@ -536,6 +550,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		actor["browsing_item_id"] = browse_id
 	if concrete_category!="" and not concrete_item.is_empty():
 		_set_concrete_media(actor,concrete_category,concrete_item)
+	if intent=="VIEW_ART" and not viewing_object.is_empty():
+		actor["viewing_object_id"]=str(viewing_object.get("id",""))
 	actor["intent"] = intent
 	actor["waypoints"] = actor_waypoints
 	actor["waypoint_index"] = 0

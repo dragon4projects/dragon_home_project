@@ -270,6 +270,16 @@ func manka_texture(state: String, index: int) -> Texture2D:
 		return null
 	return _load_checked_texture(path)
 
+func prop_display_record(prop_id: String) -> Dictionary:
+	var items: Array = manifest.get("props",{}).get("display_previews",[])
+	for raw in items:
+		if typeof(raw) != TYPE_DICTIONARY:
+			continue
+		var item: Dictionary = raw
+		if str(item.get("id","")) == prop_id:
+			return item.duplicate(true)
+	return {}
+
 func prop_master_path(prop_id: String) -> String:
 	var items: Array = manifest.get("props",{}).get("display_previews",[])
 	for item in items:
