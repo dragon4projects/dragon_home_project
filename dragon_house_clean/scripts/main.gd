@@ -318,6 +318,15 @@ func box(parent: Node3D, pos: Vector3, size: Vector3, color: Color, emissive: bo
 		node.add_to_group("low_end_micro_detail")
 	return node
 
+func box_line_xz(parent: Node3D, name: String, a: Vector3, b: Vector3,
+		width: float, height: float, color: Color) -> MeshInstance3D:
+	var delta:=b-a
+	var length:=sqrt(delta.x*delta.x+delta.z*delta.z)
+	var node:=box(parent,(a+b)*0.5,Vector3(width,height,length),color)
+	node.name=name
+	node.rotation.y=atan2(delta.x,delta.z)
+	return node
+
 func _texture_from_source(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
 		var loaded = load(path)
@@ -648,8 +657,8 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 				Vector3(0.15,0.14,0.09),Color("#b17c55"),true)
 
 func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
-	# One continuous X/Z floor volume. Depth markers span the entire physical
-	# room and therefore cannot read as per-module separators.
+	# Render-only perspective scaffold. Physical navigation remains the full
+	# rectangular X/Z room, but visual floor guides converge toward the rear.
 	var kind:String=str(group["type"])
 	if kind in ["private","lift"]:
 		return
@@ -657,14 +666,32 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 	var volume:=Node3D.new()
 	volume.name="PhysicalDepthVolume"
 	parent.add_child(volume)
+	var guide_index:=0
 	for z in [-1.19,0.18,1.10]:
-		box(volume,Vector3(0,-0.004,float(z)),
-			Vector3(maxf(0.5,span-0.52),0.014,0.018),Color("#3f3637"))
-	box(volume,Vector3(0,-0.09,1.31),
-		Vector3(maxf(0.5,span-0.34),0.055,0.11),palette["rock_light"])
+		var zz:float=float(z)
+		var scale_value:float=depth_visual_scale(zz)
+		var guide:=box(volume,Vector3(0,-0.004,zz),
+			Vector3(maxf(0.5,(span-0.52)*scale_value),0.014,0.018),Color("#3f3637"))
+		guide.name="PerspectiveGuide_%d" % guide_index
+		guide.set_meta("depth_scale",scale_value)
+		guide_index+=1
+	var rear_z:float=-1.52
+	var front_z:float=1.31
+	var rear_half:float=(span*0.5-0.18)*depth_visual_scale(rear_z)
+	var front_half:float=span*0.5-0.18
 	for side in [-1.0,1.0]:
-		box(volume,Vector3(side*(span*0.5-0.18),0.14,1.28),
+		box_line_xz(volume,
+			"PerspectiveRail_%s" % ("L" if side<0 else "R"),
+			Vector3(side*rear_half,-0.035,rear_z),
+			Vector3(side*front_half,-0.035,front_z),
+			0.055,0.018,Color("#4a3f3f"))
+	var front_lip:=box(volume,Vector3(0,-0.09,front_z),
+		Vector3(maxf(0.5,span-0.34),0.055,0.11),palette["rock_light"])
+	front_lip.name="PerspectiveFrontLip"
+	for side in [-1.0,1.0]:
+		var pier:=box(volume,Vector3(side*front_half,0.14,1.28),
 			Vector3(0.10,0.26,0.14),palette["rock_light"])
+		pier.name="PerspectiveFrontPier_%s" % ("L" if side<0 else "R")
 	# No rear panel here: accepted backdrop or Stage_Backwall owns the rear
 	# architecture. Depth geometry must never occlude room art.
 

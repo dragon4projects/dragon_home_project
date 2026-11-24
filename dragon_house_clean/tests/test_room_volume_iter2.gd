@@ -53,6 +53,17 @@ func run() -> void:
 		if child is Node3D:
 			assert((child as Node3D).position.z > scene.world.room_space.BACK_Z+0.20,
 				"Depth helpers must stay out of the rear art/backdrop zone")
+	var guide0:MeshInstance3D=physical_depth.get_node("PerspectiveGuide_0")
+	var guide1:MeshInstance3D=physical_depth.get_node("PerspectiveGuide_1")
+	var guide2:MeshInstance3D=physical_depth.get_node("PerspectiveGuide_2")
+	assert(guide0!=null and guide1!=null and guide2!=null)
+	var width0:float=(guide0.mesh as BoxMesh).size.x
+	var width1:float=(guide1.mesh as BoxMesh).size.x
+	var width2:float=(guide2.mesh as BoxMesh).size.x
+	assert(width0<width1 and width1<width2,
+		"Floor depth guides must widen continuously toward the front")
+	assert(physical_depth.get_node_or_null("PerspectiveRail_L")!=null)
+	assert(physical_depth.get_node_or_null("PerspectiveRail_R")!=null)
 	for name in _names(rear):
 		assert(not str(name).begins_with("RearBay_"))
 	for name in _names(depth):
@@ -190,5 +201,5 @@ func run() -> void:
 	assert(absf(rear_visual_x-scene.world.room_center_pos(common).x) < 5.0,
 		"Rear actor visual X must converge toward the room center")
 
-	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true component_depth=true rear_decor_sort=true depth_scale=true")
+	print("ITER2_ROOM_VOLUME_PASS R3_single_shell=true authored_fallback=true component_depth=true rear_decor_sort=true depth_scale=true perspective_floor=true")
 	quit(0)
