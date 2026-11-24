@@ -2,7 +2,7 @@ name: Dragon House Iteration 2 physical room volume
 
 on:
   push:
-    branches: [integration/dragon-house-iter2-room-volume]
+    branches: [integration/dragon-house-iter2-room-volume, integration/iter2-owner-decor-bank]
   workflow_dispatch:
 
 permissions:
