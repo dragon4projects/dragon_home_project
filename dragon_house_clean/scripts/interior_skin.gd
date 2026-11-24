@@ -4,6 +4,7 @@ extends RefCounted
 const PATH := "res://data/interior_layers_v1.json"
 const REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
 const REVIEW_PATH := "res://data/integration_candidates/ITER1_ROOM_ART_REVIEW.json"
+const COMPONENT_PATH := "res://data/room_visual_components_v2.json"
 const VALID_ROLES := ["backdrop","back_decor","furniture_back","foreground","front_trim","light_overlay"]
 const VALID_VARIANTS := ["R1","R2","R3"]
 const VALID_IMAGE_FORMATS := ["png","webp","jpg","jpeg"]
@@ -22,6 +23,8 @@ var cache_order: Array = []
 var error := ""
 var candidate_config: Dictionary = {}
 var candidate_review_enabled := false
+var component_config: Dictionary = {}
+var component_textures: Dictionary = {}
 
 func initialize(path: String = PATH) -> bool:
 	config = {}
@@ -30,6 +33,8 @@ func initialize(path: String = PATH) -> bool:
 	error = ""
 	candidate_config = {}
 	candidate_review_enabled = false
+	component_config = {}
+	component_textures.clear()
 	if not FileAccess.file_exists(path):
 		error = "No accepted room layers found; using structural geometry"
 		return false
@@ -50,6 +55,7 @@ func initialize(path: String = PATH) -> bool:
 		return false
 	config = json.data
 	_load_candidate_overlay()
+	_load_component_config()
 	return true
 
 func _load_candidate_overlay() -> void:
@@ -75,6 +81,88 @@ func _load_candidate_overlay() -> void:
 		return
 	candidate_config = doc
 	candidate_review_enabled = true
+
+func _load_component_config() -> void:
+	component_config={}
+	if not FileAccess.file_exists(COMPONENT_PATH):
+		return
+	var f:=FileAccess.open(COMPONENT_PATH,FileAccess.READ)
+	if f==null:
+		return
+	var parsed=JSON.parse_string(f.get_as_text())
+	f.close()
+	if typeof(parsed)!=TYPE_DICTIONARY or int(parsed.get("schema",0))!=1:
+		push_warning("Room visual component manifest is malformed")
+		return
+	component_config=parsed
+
+func _component_variant(room_type: String, width: int) -> Dictionary:
+	if component_config.is_empty():
+		return {}
+	var key:="%s/R%d" % [room_type,width]
+	var raw=component_config.get("variants",{}).get(key,{})
+	return raw if typeof(raw)==TYPE_DICTIONARY else {}
+
+func _component_texture(source_path: String, component: Dictionary) -> Texture2D:
+	var rect_raw=component.get("rect",[])
+	if typeof(rect_raw)!=TYPE_ARRAY or rect_raw.size()!=4:
+		return null
+	var rect:=Rect2i(int(rect_raw[0]),int(rect_raw[1]),
+		int(rect_raw[2]),int(rect_raw[3]))
+	var key:="%s:%d:%d:%d:%d" % [
+		source_path,rect.position.x,rect.position.y,rect.size.x,rect.size.y]
+	if component_textures.has(key):
+		return component_textures[key]
+	var source:Texture2D=texture_for(source_path)
+	if source==null:
+		return null
+	var image:Image=source.get_image()
+	if image==null or image.is_empty():
+		return null
+	var bounds:=Rect2i(Vector2i.ZERO,image.get_size())
+	if not bounds.encloses(rect) or rect.size.x<=0 or rect.size.y<=0:
+		return null
+	var crop:Image=image.get_region(rect)
+	if crop==null or crop.is_empty():
+		return null
+	var tex:=ImageTexture.create_from_image(crop)
+	component_textures[key]=tex
+	return tex
+
+func _add_component_furniture(parent: Node3D, room_type: String, width: int,
+		source_path: String, candidate_review: bool) -> int:
+	var variant:Dictionary=_component_variant(room_type,width)
+	if variant.is_empty() or str(variant.get("source_path",""))!=source_path:
+		return 0
+	var entries=variant.get("components",[])
+	if typeof(entries)!=TYPE_ARRAY:
+		return 0
+	var count:=0
+	for raw in entries:
+		if typeof(raw)!=TYPE_DICTIONARY:
+			continue
+		var item:Dictionary=raw
+		var tex:Texture2D=_component_texture(source_path,item)
+		if tex==null:
+			continue
+		var sprite:=Sprite3D.new()
+		sprite.name="Art_furniture_back_"+str(item.get("id","component"))
+		sprite.texture=tex
+		sprite.billboard=BaseMaterial3D.BILLBOARD_DISABLED
+		sprite.pixel_size=float(item.get("pixel_size",
+			component_config.get("pixel_size",0.003125)))
+		sprite.position=Vector3(float(item.get("x",0.0)),
+			float(item.get("y",0.0)),float(item.get("z",-0.8)))
+		sprite.no_depth_test=false
+		sprite.shaded=false
+		sprite.render_priority=0
+		sprite.set_meta("physical_component",true)
+		sprite.set_meta("source_anchor",str(item.get("source_anchor","")))
+		if candidate_review:
+			sprite.set_meta("candidate_review",true)
+		parent.add_child(sprite)
+		count+=1
+	return count
 
 func _safe_path(room_type: String, variant: String, path: String,
 		candidate_review: bool = false) -> bool:
@@ -180,31 +268,39 @@ func texture_for(path: String) -> Texture2D:
 	return tex
 
 func add_layers(parent: Node3D, room_type: String, width: int, physical_width: float) -> int:
-	var count := 0
+	var count:=0
+	var component_variant:Dictionary=_component_variant(room_type,width)
+	var suppressed:Array=component_variant.get("suppress_roles",[]) if not component_variant.is_empty() else []
 	for item in validated_layers(room_type,width):
-		var role: String = item["role"]
-		var tex: Texture2D = texture_for(item["path"])
-		if tex == null:
+		var role:String=item["role"]
+		if suppressed.has(role):
 			continue
-		var sprite := Sprite3D.new()
-		sprite.name = "Art_" + role
-		sprite.texture = tex
-		sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED
-		sprite.pixel_size = physical_width / maxf(1.0,float(tex.get_width()))
+		var source_path:String=str(item["path"])
+		if role=="furniture_back" and not component_variant.is_empty():
+			var component_count:int=_add_component_furniture(parent,room_type,width,
+				source_path,bool(item.get("candidate_review",false)))
+			if component_count>0:
+				count+=component_count
+				continue
+		var tex:Texture2D=texture_for(source_path)
+		if tex==null:
+			continue
+		var sprite:=Sprite3D.new()
+		sprite.name="Art_"+role
+		sprite.texture=tex
+		sprite.billboard=BaseMaterial3D.BILLBOARD_DISABLED
+		sprite.pixel_size=physical_width/maxf(1.0,float(tex.get_width()))
 		var layer_z:float=float(Z_FOR_ROLE[role])
 		if item.has("physical_z"):
-			# physical_z is runtime geometry, not documentation. Foreground
-			# still receives camera-plane compensation in main.gd, while
-			# back/mid layers live directly at their authored depth.
 			layer_z=float(item["physical_z"])
 			sprite.set_meta("physical_z",layer_z)
-		sprite.position = Vector3(0.0,1.50,layer_z)
+		sprite.position=Vector3(0.0,1.50,layer_z)
 		if bool(item.get("candidate_review",false)):
 			sprite.set_meta("candidate_review",true)
-		sprite.no_depth_test = false
-		sprite.shaded = false
-		sprite.render_priority = 0
+		sprite.no_depth_test=false
+		sprite.shaded=false
+		sprite.render_priority=0
 		parent.add_child(sprite)
-		count += 1
+		count+=1
 	return count
 
