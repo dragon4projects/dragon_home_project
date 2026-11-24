@@ -708,20 +708,21 @@ func _proxy_authored_object(parent: Node3D, item: Dictionary) -> void:
 	var node:=furniture_object(parent,id)
 	var x:float=float(item.get("x",0.0))
 	var z:float=float(item.get("z",-1.0))
+	node.position=Vector3(x,0.0,z)
 	var scale_value:float=maxf(0.25,float(item.get("scale",0.7)))
 	var asset:String=str(item.get("asset",item.get("type",""))).to_lower()
 	if asset.contains("chair") or asset.contains("lounge"):
-		box(node,Vector3(x,0.27,z),Vector3(0.62*scale_value,0.42,0.58),palette["wood"])
-		box(node,Vector3(x,0.70,z-0.24),Vector3(0.62*scale_value,0.70,0.12),palette["wood"])
+		box(node,Vector3(0,0.27,0),Vector3(0.62*scale_value,0.42,0.58),palette["wood"])
+		box(node,Vector3(0,0.70,-0.24),Vector3(0.62*scale_value,0.70,0.12),palette["wood"])
 	elif asset.contains("shelf") or asset.contains("bookshelf"):
-		add_shelf(node,Vector3(x,0.12,z),maxf(0.9,1.9*scale_value))
+		add_shelf(node,Vector3(0,0.12,0),maxf(0.9,1.9*scale_value))
 	elif asset.contains("day_bed") or asset.contains("sofa"):
-		add_sofa(node,Vector3(x,0.0,z),maxf(1.2,2.8*scale_value),palette["couch"])
+		add_sofa(node,Vector3.ZERO,maxf(1.2,2.8*scale_value),palette["couch"])
 	elif asset.contains("lamp"):
-		box(node,Vector3(x,0.58,z),Vector3(0.08,1.10,0.08),palette["bronze"])
-		box(node,Vector3(x,1.15,z),Vector3(0.32,0.18,0.28),Color("#b17c55"),true)
+		box(node,Vector3(0,0.58,0),Vector3(0.08,1.10,0.08),palette["bronze"])
+		box(node,Vector3(0,1.15,0),Vector3(0.32,0.18,0.28),Color("#b17c55"),true)
 	else:
-		box(node,Vector3(x,0.42,z),
+		box(node,Vector3(0,0.42,0),
 			Vector3(maxf(0.48,1.05*scale_value),0.78,maxf(0.30,0.62*scale_value)),
 			palette["wood"])
 
@@ -733,11 +734,12 @@ func _proxy_authored_procedural(parent: Node3D, item: Dictionary) -> void:
 	var height:float=maxf(0.06,float(item.get("height",0.72)))
 	var x:float=float(item.get("x",0.0))
 	var z:float=float(item.get("z",-1.0))
+	node.position=Vector3(x,0.0,z)
 	var kind:String=str(item.get("type",""))
 	if kind.contains("rest_pad"):
-		box(node,Vector3(x,height*0.5,z),Vector3(width,height,depth),palette["rug"])
+		box(node,Vector3(0,height*0.5,0),Vector3(width,height,depth),palette["rug"])
 	else:
-		box(node,Vector3(x,height*0.5,z),Vector3(width,height,depth),palette["wood"])
+		box(node,Vector3(0,height*0.5,0),Vector3(width,height,depth),palette["wood"])
 
 func _populate_physical_fallback(parent: Node3D, group: Dictionary) -> bool:
 	var kind:String=str(group["type"])
