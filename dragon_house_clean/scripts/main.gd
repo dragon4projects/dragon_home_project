@@ -760,8 +760,8 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 	for z in [-1.19,0.18,1.10]:
 		var zz:float=float(z)
 		var scale_value:float=depth_visual_scale(zz)
-		var guide:=box(volume,Vector3(0,-0.004,zz),
-			Vector3(maxf(0.5,(span-0.52)*scale_value),0.014,0.018),Color("#3f3637"))
+		var guide:=box(volume,Vector3(0,-0.006,zz),
+			Vector3(maxf(0.5,(span-0.52)*scale_value),0.006,0.008),palette["floor"])
 		guide.name="PerspectiveGuide_%d" % guide_index
 		guide.set_meta("depth_scale",scale_value)
 		guide_index+=1
@@ -774,7 +774,7 @@ func add_cutaway_depth(parent: Node3D, group: Dictionary) -> void:
 			"PerspectiveRail_%s" % ("L" if side<0 else "R"),
 			Vector3(side*rear_half,-0.035,rear_z),
 			Vector3(side*front_half,-0.035,front_z),
-			0.055,0.018,Color("#4a3f3f"))
+			0.020,0.008,palette["floor"])
 	var front_lip:=box(volume,Vector3(0,-0.09,front_z),
 		Vector3(maxf(0.5,span-0.34),0.055,0.11),palette["rock_light"])
 	front_lip.name="PerspectiveFrontLip"
@@ -2305,11 +2305,16 @@ func _unhandled_input(event: InputEvent) -> void:
 				set_mode("ROOM")
 
 func effective_camera_yaw() -> float:
-	# A gentle Shelter-like oblique cutaway shows the rear and side depth
-	# of the 3D room at close zoom, then fades back to a readable flat
-	# overview. Q/E remains an additive *manual* adjustment.
-	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.12
-	return clampf(yaw+close_bias,-0.38,0.38)
+	# Close rooms need a genuinely oblique Shelter-like view so X/Z reads as
+	# volume. HOUSE fades toward frontal readability; Q/E remains additive.
+	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.18
+	return clampf(yaw+close_bias,-0.42,0.42)
+
+func effective_camera_height_ratio() -> float:
+	# At ROOM/FREE close zoom, look down enough to expose the traversable floor.
+	# At HOUSE scale flatten the angle so the whole cutaway stays readable.
+	var close_t:float=1.0-clampf((zoom_current-12.0)/36.0,0.0,1.0)
+	return lerpf(0.105,0.185,close_t)
 
 func apply_camera(delta: float) -> void:
 	if follow_id != "" and world.residents.has(follow_id):
@@ -2346,8 +2351,7 @@ func apply_camera(delta: float) -> void:
 	var view_yaw: float=effective_camera_yaw()
 	var x_shift := sin(view_yaw) * zoom_current
 	var z_shift := cos(view_yaw) * zoom_current
-	var height_ratio:float=lerpf(0.085,0.16,
-		clampf((zoom_current-12.0)/36.0,0.0,1.0))
+	var height_ratio:float=effective_camera_height_ratio()
 	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*height_ratio,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
 	register_loaded_foregrounds()
