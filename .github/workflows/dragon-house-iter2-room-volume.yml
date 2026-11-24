@@ -82,7 +82,7 @@ jobs:
             fi
           }
           trap restore_marker EXIT
-          for t in tests/test_model.gd tests/test_xz_topology_iter2.gd tests/test_room_volume_iter2.gd tests/test_display_objects_iter2.gd tests/test_camera_construction.gd tests/test_object_home_v022.gd tests/test_iter2_predecor_gameplay.gd
+          for t in tests/test_model.gd tests/test_xz_topology_iter2.gd tests/test_room_volume_iter2.gd tests/test_display_objects_iter2.gd tests/test_camera_construction.gd tests/test_object_home_v022.gd tests/test_iter2_predecor_gameplay.gd tests/test_media.gd tests/test_concrete_media_v014.gd tests/test_content_viewer_v018.gd tests/test_guest_room_access_v018.gd tests/test_ambient_creatures_v018.gd tests/test_life_scheduler_v019.gd tests/test_life_due_wake_integration_v019.gd tests/test_object_event_gate_v020.gd tests/test_object_event_default_sqlite_v021.gd tests/test_object_event_replay_v020.gd
           do
             echo "RUN PROD $t" | tee -a godot_tests_room_volume.log
             result="$(timeout 100s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --script "res://$t" 2>&1)" || {

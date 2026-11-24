@@ -75,8 +75,9 @@ func return_book(actor_id: String, book_id: String, destination_id: String = "")
 	var book: Dictionary = _lookup("books", book_id)
 	if book.is_empty() or book.get("holder_id", "") != actor_id:
 		return false
-	var room: Dictionary = world.room_by_id(destination_id)
-	if room.is_empty() or not ["library", "rest", "study"].has(room.get("type", "")):
+	var target:String=destination_id if destination_id!="" else str(book.get("home_room_id",""))
+	var room: Dictionary = world.room_by_id(target)
+	if not world.public_cutaway_allowed(room) or not ["library", "rest", "study"].has(room.get("type", "")):
 		var rooms: Array = world.matching_rooms(["library", "rest", "study"])
 		if rooms.is_empty():
 			return false

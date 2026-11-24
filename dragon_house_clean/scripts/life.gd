@@ -102,9 +102,8 @@ func setup(p_world) -> void:
 	stations.reconcile(world)
 	stations.migrate_legacy_positions(world)
 	reconcile_concrete_media()
-	var now: int = int(Time.get_unix_time_from_system())
-	media_runtime.cleanup_abandoned(now)
-	last_cleanup_wall_time = now
+	# Daily restoration uses the simulation clock, including after reload.
+	media_runtime.tick_book_home_reset()
 	moving_ids.clear()
 	var active_ids: Array = []
 	for id in world.residents:
@@ -170,6 +169,45 @@ func wake_actor(id: String, reason: String) -> void:
 	if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):
 		return
 	life_scheduler.wake(id,clock,reason)
+
+func refresh_changed_station_claims() -> int:
+	# A mounted object may add/remove a station or move it to another room.
+	# Never teleport occupants to new coordinates to preserve old slot indices.
+	var changed:=0
+	for id in world.residents:
+		var actor:Dictionary=world.residents[id]
+		var room_id:String=str(actor.get("station_room_id",""))
+		if room_id=="":
+			continue
+		var room:Dictionary=world.room_by_id(room_id)
+		var points:Array=stations.layout_for_world(world,room)
+		var slot:int=int(actor.get("station_slot",-1))
+		var stable:String=str(actor.get("station_anchor_id",""))
+		var point:Array=actor.get("station_point",[])
+		var valid:bool=slot>=0 and slot<points.size() and point.size()==2
+		if valid:
+			var expected:Vector2=points[slot]["offset"]
+			valid=str(points[slot]["id"])==stable and expected.distance_to(Vector2(float(point[0]),float(point[1])))<0.01
+		if valid:
+			continue
+		var book_id:String=str(actor.get("held_book",""))
+		if book_id!="":
+			media_runtime.return_book(str(id),book_id)
+			actor.erase("held_book")
+		end_concrete_media(actor)
+		var partner_id:String=str(actor.get("partner_id",""))
+		actor.erase("partner_id")
+		if partner_id!="" and world.residents.has(partner_id):
+			world.residents[partner_id].erase("partner_id")
+		stations.release(actor)
+		actor["phase"]="idle"
+		actor["waypoints"]=[]
+		actor["waypoint_index"]=0
+		actor["until"]=clock
+		moving_ids.erase(str(id))
+		wake_actor(str(id),"STATION_LAYOUT_CHANGED")
+		changed+=1
+	return changed
 
 func scheduler_metrics() -> Dictionary:
 	return {

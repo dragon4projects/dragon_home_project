@@ -2063,6 +2063,26 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 		if distance < best:
 			best = distance
 			found = entry
+	# Inspect a real book/film/track currently consumed by a visible actor.
+	# Do not fabricate a film frame or a final decor surface before TEEA008.
+	for id in actor_sprites:
+		var actor:Dictionary=world.residents.get(id,{})
+		var node:Node3D=actor_sprites[id]
+		if not node.is_visible_in_tree() or not world.public_cutaway_allowed(world.room_by_id(str(actor.get("room_id","")))):
+			continue
+		if str(actor.get("phase",""))!="perform" or not life._concrete_media_is_valid(actor):
+			continue
+		var body:Sprite3D=node.get_node_or_null("Body")
+		if body==null or camera.is_position_behind(body.global_position):
+			continue
+		var distance:float=camera.unproject_position(body.global_position).distance_to(point)
+		if distance<best:
+			var category:String=str(actor.get("activity_media_category",""))
+			var item_id:String=str(actor.get("activity_media_id",""))
+			var record:Dictionary=life.media_runtime._lookup(category,item_id)
+			if not record.is_empty():
+				best=distance
+				found={"anchor":node,"category":category,"item_id":item_id,"display_name":str(record.get("title",item_id)),"actor_id":str(id)}
 	for creature_id in creature_nodes:
 		var creature:Dictionary=world.creatures.get(creature_id,{})
 		var node:Node3D=creature_nodes[creature_id]
@@ -2086,6 +2106,12 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	var item_id := str(entry.get("item_id",""))
 	var record: Dictionary = {}
 	if category in ["books","films","tracks"]:
+		if entry.has("actor_id"):
+			var actor:Dictionary=world.residents.get(str(entry["actor_id"]),{})
+			if str(actor.get("phase",""))!="perform" or not world.public_cutaway_allowed(world.room_by_id(str(actor.get("room_id","")))) or not life._concrete_media_is_valid(actor):
+				return false
+			if str(actor.get("activity_media_id",""))!=item_id or str(actor.get("activity_media_category",""))!=category:
+				return false
 		record = life.media_runtime._lookup(category,item_id)
 	elif category == "creatures":
 		var creature:Dictionary=world.creatures.get(item_id,{})
@@ -2177,6 +2203,7 @@ func _import_media(path: String) -> void:
 		life.media_runtime.setup(world)
 		media_panel.refresh()
 	if int(result.get("added",0))>0:
+		life.refresh_changed_station_claims()
 		make_physical_objects()
 	notice.text="Импорт: %s · предметов %d" % [path.get_file(),int(result.get("added",0))]
 	update_hud()
@@ -2561,6 +2588,7 @@ func _input(event: InputEvent) -> void:
 			object_home_drag_id=""
 			object_home_drag_room_id=""
 			if world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true):
+				life.refresh_changed_station_claims()
 				notice.text="Новое место назначено домом: %s" % str(
 					world.physical_object(moved_id).get("display_name",moved_id))
 			else:
