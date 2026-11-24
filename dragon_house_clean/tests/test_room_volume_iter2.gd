@@ -116,7 +116,9 @@ func run() -> void:
 	assert(backdrop.position.z < furniture_back.position.z)
 	assert(backdrop.position.z > rear_front,
 		"Backdrop must render in front of the structural rear wall")
-	assert(absf(backdrop.position.z+1.90)<0.01)
+	assert(backdrop.position.z < scene.world.room_space.BACK_Z,
+		"Backdrop must stay behind the deepest playable actor position")
+	assert(absf(backdrop.position.z+2.02)<0.01)
 	assert(absf(furniture_back.position.z+0.82)<0.01)
 	for role in ["backdrop","back_decor","furniture_back","foreground"]:
 		var sprite:Sprite3D=art.get_node_or_null("Art_"+role)
