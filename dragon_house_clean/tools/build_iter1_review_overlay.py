@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CAND = ROOT / "data" / "integration_candidates"
 T6 = ROOT / "data" / "asset_proposals" / "TEEA_INT_20261123_006_interiors.json"
-T6_ANCHORS = ROOT / "data" / "asset_proposals" / "TEEA_INT_20261123_006_furniture_anchors_candidate.json"
+T6_STATION_SOURCE = CAND / "TEEA006_station_source.json"
 BASE_FURN = ROOT / "data" / "furniture_interactions_v1.json"
 ROOM_OUT = CAND / "ITER1_ROOM_ART_REVIEW.json"
 FURN_OUT = CAND / "furniture_interactions_iter1_review.json"
@@ -132,66 +132,68 @@ def main():
         "room_types": room_types,
     })
 
-    # Canonical TEEA006 handoff contains one literal control character in
-    # non_station_furniture metadata. Preserve the source byte-for-byte and
-    # relax JSON string control-character parsing only for this legacy candidate.
-    # Runtime integration below consumes room_variants[*].stations, not the
-    # malformed non-station furniture label.
-    anchors = json.loads(T6_ANCHORS.read_text(encoding="utf-8"), strict=False)
-    if anchors.get("schema") != 3 or anchors.get("approved") is not False or anchors.get("owner_approved") is not False:
-        raise SystemExit("TEEA006 station candidate approval/schema contract mismatch")
-
     review_furn = json.loads(json.dumps(load(BASE_FURN)))
     overrides = review_furn.setdefault("variant_cell_overrides", {})
     station_count = 0
+    station_source_gap = True
+    station_source = "CORRUPT_GIT_MANIFEST_NO_VALID_ZIP_SOURCE"
+    min_spacing = None
     target_rooms = {"music","cinema","artifact","workshop"}
 
-    for variant_key, entry in anchors["room_variants"].items():
-        room, variant = variant_key.split("/", 1)
-        if room not in target_rooms:
-            continue
-        width = int(variant[1:])
-        for module_index in range(width):
-            overrides[f"{room}:{variant}:{module_index}"] = []
-        for raw in entry.get("stations", []):
-            module_index = int(raw["module_index"])
-            key = f"{room}:{variant}:{module_index}"
-            artist_pose = str(raw.get("pose_hint","IDLE_S"))
-            artist_kind = str(raw.get("kind","standing"))
-            if artist_pose not in POSE_MAP or artist_kind not in KIND_MAP:
-                raise SystemExit(f"unsupported TEEA006 station semantics: {raw.get('id')}")
-            overrides[key].append({
-                "id": str(raw["id"]),
-                "x": float(raw["cell_local_x"]),
-                "z": float(raw["cell_local_z"]),
-                "kind": KIND_MAP[artist_kind],
-                "furniture_id": str(raw.get("furniture_id","")),
-                "pose_hint": POSE_MAP[artist_pose],
-                "approach_z": float(raw["approach_local_z"]),
-                "source_batch": "TEEA_INT_20261123_006",
-                "candidate_review": True,
-            })
-            station_count += 1
+    if T6_STATION_SOURCE.is_file():
+        anchors = load(T6_STATION_SOURCE)
+        if anchors.get("schema") != 3 or anchors.get("approved") is not False or anchors.get("owner_approved") is not False:
+            raise SystemExit("TEEA006 hydrated station source approval/schema contract mismatch")
+        local_min_spacing = 999.0
+        for variant_key, entry in anchors["room_variants"].items():
+            room, variant = variant_key.split("/", 1)
+            if room not in target_rooms:
+                continue
+            width = int(variant[1:])
+            for module_index in range(width):
+                overrides[f"{room}:{variant}:{module_index}"] = []
+            for raw in entry.get("stations", []):
+                module_index = int(raw["module_index"])
+                key = f"{room}:{variant}:{module_index}"
+                artist_pose = str(raw.get("pose_hint","IDLE_S"))
+                artist_kind = str(raw.get("kind","standing"))
+                if artist_pose not in POSE_MAP or artist_kind not in KIND_MAP:
+                    raise SystemExit(f"unsupported TEEA006 station semantics: {raw.get('id')}")
+                overrides[key].append({
+                    "id": str(raw["id"]),
+                    "x": float(raw["cell_local_x"]),
+                    "z": float(raw["cell_local_z"]),
+                    "kind": KIND_MAP[artist_kind],
+                    "furniture_id": str(raw.get("furniture_id","")),
+                    "pose_hint": POSE_MAP[artist_pose],
+                    "approach_z": float(raw["approach_local_z"]),
+                    "source_batch": "TEEA_INT_20261123_006",
+                    "candidate_review": True,
+                })
+                station_count += 1
 
-    if station_count != 31:
-        raise SystemExit(f"TEEA006 expected 31 stations, got {station_count}")
+        if station_count != 31:
+            raise SystemExit(f"hydrated TEEA006 station source expected 31 stations, got {station_count}")
 
-    min_spacing = 999.0
-    for key, items in overrides.items():
-        if not key.startswith(("music:","cinema:","artifact:","workshop:")):
-            continue
-        for i, a in enumerate(items):
-            for b in items[i+1:]:
-                dx = float(a["x"]) - float(b["x"])
-                dz = float(a["z"]) - float(b["z"])
-                d = (dx*dx + dz*dz) ** 0.5
-                min_spacing = min(min_spacing, d)
-                if d < 0.60:
-                    raise SystemExit(f"review station spacing below 0.60m in {key}: {d:.4f}")
+        for key, items in overrides.items():
+            if not key.startswith(("music:","cinema:","artifact:","workshop:")):
+                continue
+            for i, a in enumerate(items):
+                for b in items[i+1:]:
+                    dx = float(a["x"]) - float(b["x"])
+                    dz = float(a["z"]) - float(b["z"])
+                    d = (dx*dx + dz*dz) ** 0.5
+                    local_min_spacing = min(local_min_spacing, d)
+                    if d < 0.60:
+                        raise SystemExit(f"review station spacing below 0.60m in {key}: {d:.4f}")
+        min_spacing = None if local_min_spacing == 999.0 else round(local_min_spacing, 6)
+        station_source_gap = False
+        station_source = T6_STATION_SOURCE.relative_to(ROOT).as_posix()
 
     review_furn["source"] = str(review_furn.get("source","")) + " + ITER1 TEEA006 review overlay"
     review_furn["review_only"] = True
     review_furn["owner_approved"] = False
+    review_furn["teea006_station_source_gap"] = station_source_gap
     write(FURN_OUT, review_furn)
 
     registry = load(ROOT / "data" / "asset_registry_nov2026.json")
@@ -221,8 +223,11 @@ def main():
             "commit": "887e5f1c874c7fb0deb600c58c06ad4e5dafb90f",
             "variants": t6_variants,
             "layers": t6_layers,
-            "stations": station_count,
-            "minimum_same_module_station_spacing_m": None if min_spacing == 999.0 else round(min_spacing, 6),
+            "stations_claimed": 31,
+            "stations_applied": station_count,
+            "station_source_gap": station_source_gap,
+            "station_source": station_source,
+            "minimum_same_module_station_spacing_m": min_spacing,
         },
         "teea007": {
             "commit": "996950493cc1e703abefc3659a13177160caa8d0",
@@ -243,7 +248,8 @@ def main():
 
     print(
         "ITER1_OVERLAY_PASS "
-        f"teea006_layers={t6_layers} stations={station_count} "
+        f"teea006_layers={t6_layers} stations_applied={station_count} "
+        f"station_source_gap={station_source_gap} "
         f"guest_art={guest_art} creatures={len(REQUIRED_CREATURE_BANKS)}"
     )
 
