@@ -37,15 +37,22 @@ func initialize(path: String = DEFAULT_PATH) -> bool:
 	var proposed_profiles: Dictionary = doc.get("room_profiles",{})
 	var proposed_overrides: Dictionary = doc.get("cell_overrides",{})
 	var proposed_variant_overrides: Dictionary = doc.get("variant_cell_overrides",{})
-	var min_spacing := 0.60 if path == REVIEW_PATH else 0.65
+	var review_mode := path == REVIEW_PATH
+	var min_spacing := 0.60 if review_mode else 0.65
+	var max_abs_x := 2.04 if review_mode else 1.90
+	var min_z := -1.95 if review_mode else -1.65
+	var max_z := 1.55
+	var min_approach := -1.85 if review_mode else -1.50
+	var max_approach := 1.85 if review_mode else 1.65
 	for kind in proposed_profiles:
-		if not TYPES.has(str(kind)) or not _valid_spots(proposed_profiles[kind],min_spacing):
+		if not TYPES.has(str(kind)) or not _valid_spots(
+			proposed_profiles[kind],min_spacing,max_abs_x,min_z,max_z,min_approach,max_approach):
 			last_error = "Invalid room profile: "+str(kind)
 			return false
 	for key in proposed_overrides:
 		var parts: PackedStringArray = str(key).split(":")
 		if parts.size()!=2 or not TYPES.has(parts[0]) or not parts[1].is_valid_int() or (
-			not _valid_spots(proposed_overrides[key],min_spacing)):
+			not _valid_spots(proposed_overrides[key],min_spacing,max_abs_x,min_z,max_z,min_approach,max_approach)):
 			last_error = "Invalid cell override: "+str(key)
 			return false
 	for key in proposed_variant_overrides:
@@ -54,7 +61,7 @@ func initialize(path: String = DEFAULT_PATH) -> bool:
 		var module_ok: bool = width_ok and parts[2].is_valid_int() and (
 			int(parts[2])>=0 and int(parts[2])<int(parts[1].substr(1)))
 		if not width_ok or not module_ok or not TYPES.has(parts[0]) or (
-			not _valid_spots(proposed_variant_overrides[key],min_spacing)):
+			not _valid_spots(proposed_variant_overrides[key],min_spacing,max_abs_x,min_z,max_z,min_approach,max_approach)):
 			last_error = "Invalid variant cell override: "+str(key)
 			return false
 	# No partial acceptance: one bad profile prevents ALL new interaction data
@@ -65,7 +72,9 @@ func initialize(path: String = DEFAULT_PATH) -> bool:
 	source_path = path
 	return true
 
-func _valid_spots(items: Variant, min_spacing: float = 0.65) -> bool:
+func _valid_spots(items: Variant, min_spacing: float = 0.65,
+		max_abs_x: float = 1.90, min_z: float = -1.65, max_z: float = 1.55,
+		min_approach: float = -1.50, max_approach: float = 1.65) -> bool:
 	if typeof(items)!=TYPE_ARRAY or items.size()>MAX_ANCHORS:
 		return false
 	var ids: Dictionary={}
@@ -92,8 +101,8 @@ func _valid_spots(items: Variant, min_spacing: float = 0.65) -> bool:
 		var x:float=float(item["x"])
 		var z:float=float(item["z"])
 		var approach:float=float(item["approach_z"])
-		if absf(x)>1.90 or z < -1.65 or z>1.55 or (
-			approach < -1.5 or approach>1.65):
+		if absf(x)>max_abs_x or z < min_z or z>max_z or (
+			approach < min_approach or approach>max_approach):
 			return false
 		for other in coords:
 			if Vector2(x,z).distance_to(other)<min_spacing:
