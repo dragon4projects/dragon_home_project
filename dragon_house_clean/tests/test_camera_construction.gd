@@ -24,6 +24,13 @@ func run() -> void:
 	assert(scene.zoom > 15.0, "R3 has a wider close-up view")
 	scene.set_mode("HOUSE")
 	assert(scene.zoom > 20.0)
+	var bounds:Rect2=scene.camera_world_bounds()
+	var viewport:Vector2=scene.get_viewport().get_visible_rect().size
+	var aspect:float=maxf(1.0,viewport.x/maxf(1.0,viewport.y))
+	var angle:float=deg_to_rad(scene.camera.fov*0.5)
+	var legacy_horizontal:float=(bounds.size.x+3.0)/maxf(0.1,2.0*aspect*tan(angle))*1.12
+	assert(scene.zoom < legacy_horizontal,
+		"HOUSE framing must be tighter than the old diagram-like overview")
 	scene.toggle_build()
 	assert(scene.current_mode == "BUILD")
 	scene.build_type = "rest"

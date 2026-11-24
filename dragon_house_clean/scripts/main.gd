@@ -1844,9 +1844,11 @@ func fit_house_camera() -> void:
 	var size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = maxf(1.0, size.x / maxf(1.0,size.y))
 	var angle: float = deg_to_rad(camera.fov * 0.5)
-	var vertical_dist: float = (bounds.size.y + 2.0) / maxf(0.1, 2.0 * tan(angle))
-	var horizontal_dist: float = (bounds.size.x + 3.0) / maxf(0.1, 2.0 * aspect * tan(angle))
-	zoom = clampf(maxf(horizontal_dist,vertical_dist)*1.12, 12.0, 110.0)
+	# HOUSE is an overview, but it should feel like a Shelter cutaway filling
+	# the viewport rather than a tiny diagram floating in rock.
+	var vertical_dist: float = (bounds.size.y + 1.0) / maxf(0.1, 2.0 * tan(angle))
+	var horizontal_dist: float = (bounds.size.x + 0.8) / maxf(0.1, 2.0 * aspect * tan(angle))
+	zoom = clampf(maxf(horizontal_dist,vertical_dist)*1.01, 12.0, 110.0)
 	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
 
 func update_selection_outline() -> void:
