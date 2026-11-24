@@ -48,6 +48,12 @@ func run() -> void:
 		"Fallback rear panel must stay behind authored backdrop/playable back plane")
 	assert(_names(depth)==["PhysicalDepthVolume"],
 		"R3 depth floor must be one continuous physical volume")
+	var beams:Node3D=node.get_node_or_null("Layer_Structure/CeilingDepthBeams")
+	assert(beams!=null and beams.get_child_count()==3)
+	assert((beams.get_node("DepthBeam_0") as Node3D).position.z <
+		(beams.get_node("DepthBeam_1") as Node3D).position.z)
+	assert((beams.get_node("DepthBeam_1") as Node3D).position.z <
+		(beams.get_node("DepthBeam_2") as Node3D).position.z)
 	var physical_depth:Node3D=depth.get_node("PhysicalDepthVolume")
 	for child in physical_depth.get_children():
 		if child is Node3D:
@@ -162,6 +168,19 @@ func run() -> void:
 	assert(backdrop.position.z < scene.world.room_space.BACK_Z,
 		"Backdrop must stay behind the deepest playable actor position")
 	assert(absf(backdrop.position.z+2.02)<0.01)
+	scene.zoom_current=16.0
+	scene.yaw=0.0
+	scene.update_cutaway_return_visibility()
+	var return_l:Node3D=node.get_node_or_null("Layer_Structure/ConnectorRearReturn_L")
+	var return_r:Node3D=node.get_node_or_null("Layer_Structure/ConnectorRearReturn_R")
+	assert(return_l!=null and return_r!=null)
+	assert(return_l.visible and not return_r.visible,
+		"Positive close cutaway yaw must remove the near/right side wall")
+	scene.yaw=-0.30
+	scene.update_cutaway_return_visibility()
+	assert(not return_l.visible and return_r.visible,
+		"Negative cutaway yaw must remove the near/left side wall")
+	scene.yaw=0.0
 
 	# Library R2 uses the same physical component contract: rear chairs and
 	# a front table are independent sprites, not one flat image.
