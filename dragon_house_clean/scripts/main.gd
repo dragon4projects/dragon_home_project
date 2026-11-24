@@ -275,8 +275,8 @@ func surface_texture(color: Color) -> Texture2D:
 		preference = "res://assets/materials/texture_albedo/rough_linen_diff_1k.jpg"
 	elif color == palette["bronze"] or color == palette["copper"]:
 		preference = "res://assets/materials/texture_albedo/rust_coarse_01_diff_1k.jpg"
-	if preference != "" and ResourceLoader.exists(preference):
-		return load(preference)
+	if preference != "":
+		return _texture_from_source(preference)
 	return null
 
 func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
@@ -313,9 +313,11 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 		elif color == palette["bronze"] or color == palette["copper"]:
 			m.albedo_color = Color("#e2c7ac")
 		m.uv1_scale = Vector3(2.3, 1.35, 1.0)
-	elif texture_path != "" and ResourceLoader.exists(texture_path):
-		m.albedo_texture = load(texture_path)
-		m.uv1_scale = Vector3(2.0, 2.0, 1.0)
+	elif texture_path != "":
+		var fallback_texture:Texture2D=_texture_from_source(texture_path)
+		if fallback_texture!=null:
+			m.albedo_texture=fallback_texture
+			m.uv1_scale=Vector3(2.0,2.0,1.0)
 	if emissive:
 		m.emission_enabled = true
 		m.emission = color
