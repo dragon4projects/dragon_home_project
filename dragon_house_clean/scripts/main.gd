@@ -1292,7 +1292,7 @@ func make_room(group: Dictionary) -> void:
 	var native_decor:bool=not facade_only and owner_decor_bank.ready_for(t) and (
 		t in ["artifact","workshop"] or not has_authored_furniture)
 	visual_room_groups[n.name]["native_decor"]=native_decor
-	visual_room_groups[n.name]["replaces_furniture"]=has_authored_furniture or native_decor
+	visual_room_groups[n.name]["replaces_furniture"]=has_authored_furniture or native_decor or t in ["common","cinema","artifact","workshop"]
 	var side_left: Dictionary = world.get_room(x_start-1,level)
 	var side_right: Dictionary = world.get_room(x_end+1,level)
 	# Render hierarchy is spatial, not a single baked background image.
