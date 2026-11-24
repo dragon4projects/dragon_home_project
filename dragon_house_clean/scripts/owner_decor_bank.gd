@@ -131,7 +131,12 @@ func populate(parent: Node3D, kind: String, width: int, spots: Array, scale_at: 
 						0.78,1.38,0.64,scale_at,id)
 	match kind:
 		"common":
+			if groups.is_empty():
+				_place(parent,"sofa_02",-0.75,-0.84,0.86,2.25,0.82,scale_at)
 			_place(parent,"gothic_coffee_table",0.0,0.28,0.48,1.18,0.60,scale_at)
+		"cinema":
+			if groups.is_empty():
+				_place(parent,"sofa_02",0.0,-0.38,0.86,2.25,0.82,scale_at)
 		"artifact":
 			# A shelf is a storage/display surface, not a procedural pedestal.
 			# Keep it on the rear wall, away from standing approach points.
@@ -142,11 +147,23 @@ func populate(parent: Node3D, kind: String, width: int, spots: Array, scale_at: 
 					has_shelf=true
 			if not has_shelf:
 				_place(parent,"wooden_display_shelves_01",shelf_x,-1.57,1.78,1.22,0.58,scale_at)
-			if groups.is_empty():
+			var has_cabinet:bool=false
+			for child in parent.get_children():
+				if str(child.get_meta("source_asset_id",""))=="chinese_commode":
+					has_cabinet=true
+			if not has_cabinet:
 				_place(parent,"chinese_commode",span*0.5-0.85,-1.30,0.86,1.25,0.55,scale_at)
 		"workshop":
 			_place(parent,"worn_metal_rack",-span*0.5+0.72,-1.57,1.75,1.10,0.52,scale_at)
-			if groups.is_empty():
+			var has_table:bool=false
+			var has_stool:bool=false
+			for child in parent.get_children():
+				if str(child.get_meta("source_asset_id",""))=="wooden_table_02":
+					has_table=true
+				if str(child.get_meta("source_asset_id",""))=="metal_stool_02":
+					has_stool=true
+			if not has_table:
 				_place(parent,"wooden_table_02",0.0,-0.75,0.78,1.38,0.64,scale_at)
+			if not has_stool:
 				_place(parent,"metal_stool_02",0.0,0.15,0.46,0.42,0.42,scale_at)
 	return parent.get_child_count()-start
