@@ -2006,17 +2006,22 @@ func update_render_lod() -> void:
 			continue
 		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
 		var cues: Node3D = group_node.get_node_or_null("Layer_OverviewCues")
-		var near: bool = (current_mode in ["ROOM","FOLLOW"] and _is_near_detail(group_node)) if furniture != null else false
+		# Real room art is part of the Fallout-Shelter cutaway at every zoom.
+		# Camera proximity controls only heavier 3D/furniture detail. Manual FREE
+		# navigation is equivalent to ROOM for detail materialization.
+		if bool(group.get("has_art",false)):
+			_load_room_art(group_node)
+		else:
+			_release_room_art(group_node)
+		var near: bool = _is_near_detail(group_node) if furniture != null else false
 		if furniture != null:
 			if near:
-				_load_room_art(group_node)
 				_populate_furniture(group_node)
 			else:
-				_release_room_art(group_node)
 				_release_furniture(group_node)
 			furniture.visible = near
 			if cues != null:
-				cues.visible = not near
+				cues.visible = not near and not art_loaded_groups.has(group_node.name)
 		var cutaway_depth: Node3D = group_node.get_node_or_null(
 			"Layer_Structure/Stage_CutawayDepth")
 		if cutaway_depth != null:

@@ -38,6 +38,27 @@ func run() -> void:
 	assert(scene.interior_skin.validated_layers("guest_centaur",1).size() == 3)
 	assert(FileAccess.file_exists("res://assets/props/dragon_mug_lod0_empty.glb"))
 
+	# Fallout-Shelter cutaway contract: room art remains visible in HOUSE,
+	# while manual FREE zoom gains the same proximity detail as ROOM/FOLLOW.
+	scene.update_render_lod()
+	var house_art_count: int = scene.art_loaded_groups.size()
+	assert(house_art_count > 0)
+	var near_group: Node3D = null
+	for group_node in scene.room_root.get_children():
+		var group: Dictionary = scene.visual_room_groups.get(group_node.name,{})
+		if bool(group.get("has_art",false)) and not scene._group_facade_only(group):
+			near_group = group_node
+			break
+	assert(near_group != null)
+	scene.current_mode = "FREE"
+	scene.zoom_current = 18.0
+	scene.smooth_focus = near_group.position
+	scene.desired_focus = near_group.position
+	scene.update_render_lod()
+	assert(scene.art_loaded_groups.size() >= house_art_count)
+	assert(scene.art_loaded_groups.has(near_group.name))
+	assert(scene.detailed_room_groups.has(near_group.name))
+
 	assert(scene.life.stations.furniture.source_path.ends_with(
 		"furniture_interactions_iter1_review.json"))
 
