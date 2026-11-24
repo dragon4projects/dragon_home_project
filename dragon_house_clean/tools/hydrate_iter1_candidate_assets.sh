@@ -128,5 +128,6 @@ for pattern in dragon_mug_* media_holder_* dragon_fur_rest_mat.*; do
   fi
 done
 
+python3 "$ROOT/tools/hydrate_owner_decor_bank.py"
 python3 "$ROOT/tools/build_iter1_review_overlay.py"
 echo "ITER1_HYDRATE_PASS t5_sha=$T5_SHA t6_sha=$T6_SHA t7_sha=$T7_SHA closure_sha=$T7_CLOSURE_SHA"
