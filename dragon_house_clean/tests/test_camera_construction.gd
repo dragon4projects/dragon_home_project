@@ -24,6 +24,15 @@ func run() -> void:
 	assert(scene.zoom > 15.0, "R3 has a wider close-up view")
 	scene.set_mode("HOUSE")
 	assert(scene.zoom > 20.0)
+	scene.zoom_current=16.0
+	var close_yaw:float=scene.effective_camera_yaw()
+	var close_height:float=scene.effective_camera_height_ratio()
+	assert(close_yaw>0.14 and close_height>0.16,
+		"Close cutaway must expose X/Z depth, not stay nearly frontal")
+	scene.zoom_current=50.0
+	assert(scene.effective_camera_yaw()<close_yaw)
+	assert(scene.effective_camera_height_ratio()<close_height)
+	scene.zoom_current=scene.zoom
 	var bounds:Rect2=scene.camera_world_bounds()
 	var viewport:Vector2=scene.get_viewport().get_visible_rect().size
 	var aspect:float=maxf(1.0,viewport.x/maxf(1.0,viewport.y))
