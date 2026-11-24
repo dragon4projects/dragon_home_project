@@ -8,7 +8,7 @@ const VALID_ROLES := ["backdrop","back_decor","furniture_back","foreground","fro
 const VALID_VARIANTS := ["R1","R2","R3"]
 const VALID_IMAGE_FORMATS := ["png","webp","jpg","jpeg"]
 const Z_FOR_ROLE := {
-	"backdrop": -1.90,
+	"backdrop": -2.02,
 	"back_decor": -1.68,
 	"furniture_back": -0.82,
 	"foreground": 1.42,
