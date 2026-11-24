@@ -57,6 +57,30 @@ func capture() -> void:
 	var common_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v014_common_r3.png"))
 
+	var seed_library:Dictionary=scene.world.get_room(2,0)
+	scene.selected_room=seed_library["id"]
+	scene.set_mode("ROOM")
+	scene.zoom_current=scene.zoom
+	scene.smooth_focus=scene.desired_focus
+	scene.apply_camera(1.0)
+	scene.update_render_lod()
+	await _settle(55)
+	_dump_room_art_state(scene,str(seed_library["id"]),"library_r1_teea005")
+	var library_r1_size:=_save_view(ProjectSettings.globalize_path(
+		"res://private_review/v014_library_r1_teea005.png"))
+
+	var seed_music:Dictionary=scene.world.get_room(3,0)
+	scene.selected_room=seed_music["id"]
+	scene.set_mode("ROOM")
+	scene.zoom_current=scene.zoom
+	scene.smooth_focus=scene.desired_focus
+	scene.apply_camera(1.0)
+	scene.update_render_lod()
+	await _settle(55)
+	_dump_room_art_state(scene,str(seed_music["id"]),"music_r1_teea006")
+	var music_r1_size:=_save_view(ProjectSettings.globalize_path(
+		"res://private_review/v014_music_r1_teea006.png"))
+
 	# QA-only synthetic R2: prove that accepted Library R2 art can be
 	# materialized with the exact R2 furniture contract without changing the
 	# seeded production house.
@@ -108,7 +132,8 @@ func capture() -> void:
 	for suffix in ["",".bak",".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(
 			scene.world.save_path+suffix))
-	print("V014_RENDER_REVIEW_PASS house=%dx%d common_R3=%dx%d library_R2=%dx%d cinema_activity=%dx%d" % [
+	print("V014_RENDER_REVIEW_PASS house=%dx%d common_R3=%dx%d library_R1=%dx%d music_R1=%dx%d library_R2=%dx%d cinema_activity=%dx%d" % [
 		house_size.x,house_size.y,common_size.x,common_size.y,
+		library_r1_size.x,library_r1_size.y,music_r1_size.x,music_r1_size.y,
 		library_size.x,library_size.y,cinema_size.x,cinema_size.y])
 	quit(0)
