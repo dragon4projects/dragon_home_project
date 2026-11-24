@@ -108,6 +108,11 @@ func run() -> void:
 	var backdrop:Sprite3D=art.get_node_or_null("Art_backdrop")
 	var furniture_back:Sprite3D=art.get_node_or_null("Art_furniture_back")
 	assert(backdrop!=null and furniture_back!=null)
+	assert(not rear.visible,
+		"Procedural Stage_Backwall must be hidden while a real backdrop is loaded")
+	for child in art.get_children():
+		assert(str(child.name).begins_with("Art_") and not str(child.name).begins_with("@"),
+			"Art reload must preserve stable layer node names")
 	assert(backdrop.position.z < furniture_back.position.z)
 	assert(backdrop.position.z > rear_front,
 		"Backdrop must render in front of the structural rear wall")
