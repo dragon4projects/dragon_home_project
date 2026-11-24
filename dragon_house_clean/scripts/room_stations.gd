@@ -22,18 +22,18 @@ func capacity(room: Dictionary) -> int:
 	if room.is_empty() or str(room.get("privacy","public"))!="public" or (
 			str(room.get("type",""))=="lift"):
 		return 0
-	var modules:=clampi(int(room.get("size_modules",1)),1,3)
+	var modules: int = clampi(int(room.get("size_modules",1)),1,3)
 	return int(CAPACITY_BY_SIZE[modules])
 
 func _spot(x: float, z: float, kind: String = "standing", object_id: String = "") -> Dictionary:
 	return {"offset":Vector2(x,z),"kind":kind,"furniture_id":object_id}
 
 func _physical_anchor_data(room: Dictionary) -> Array:
-	var width:=clampi(int(room.get("size_modules",1)),1,3)
+	var width: int = clampi(int(room.get("size_modules",1)),1,3)
 	var result:Array=[]
 	var center_index:float=(float(width)-1.0)*0.5
 	var per_module:Array=[]
-	var max_count:=0
+	var max_count: int = 0
 	for module_index in range(width):
 		var module_room:Dictionary=room.duplicate(true)
 		module_room["x"]=int(room.get("x",0))+module_index
@@ -64,7 +64,7 @@ func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 	for item in anchors:
 		if positions.size()>=count:
 			break
-		var offset:=Vector2(float(item.get("x",0.0)),float(item.get("z",0.0)))
+		var offset: Vector2 = Vector2(float(item.get("x",0.0)),float(item.get("z",0.0)))
 		if offset.x<=-half_width+0.10 or offset.x>=half_width-0.10 or (
 				offset.y<BACK_Z or offset.y>FRONT_Z):
 			continue
@@ -83,7 +83,7 @@ func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 		for module_index in range(width):
 			var module_center:float=(float(module_index)-center_index)*MODULE_W
 			for local_x in [-1.55,-0.52,0.52,1.55]:
-				var xx:=module_center+float(local_x)
+				var xx: float = module_center+float(local_x)
 				if xx<=-half_width+0.18 or xx>=half_width-0.18:
 					continue
 				candidates.append({
@@ -98,7 +98,7 @@ func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 		if positions.size()>=count:
 			break
 		var pos:Vector2=place["offset"]
-		var conflict:=false
+		var conflict: bool = false
 		for existing in positions:
 			if pos.distance_to(existing["offset"])<0.73:
 				conflict=true

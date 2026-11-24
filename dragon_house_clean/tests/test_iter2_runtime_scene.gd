@@ -34,8 +34,8 @@ func run() -> void:
 	var waypoints:Array=scene.life.locomotion.build_waypoints(
 		scene.world,actor,route,"PURPOSEFUL_EXPLORE",Vector2(0.0,-1.82),-1.30)
 	assert(not waypoints.is_empty())
-	var has_horizontal:=false
-	var has_lift:=false
+	var has_horizontal: bool = false
+	var has_lift: bool = false
 	for point in waypoints:
 		if str(point.get("kind","")) in ["connector_out","connector_in"]:
 			has_horizontal=true

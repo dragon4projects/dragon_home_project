@@ -110,10 +110,10 @@ func connection_between(a: Dictionary, b: Dictionary) -> Dictionary:
 
 func make_room(x: int, level: int, room_type: String,
 		size_modules: int = 1, immutable_topology: bool = false) -> Dictionary:
-	var modules:=room_space.normalize_size(size_modules)
+	var modules: int = int(room_space.normalize_size(size_modules))
 	if room_type=="lift":
 		modules=1
-	var room := {
+	var room: Dictionary = {
 		"id": "ROOM_%04d" % next_room_id,
 		"x": x,
 		"level": level,
@@ -172,7 +172,7 @@ func build(x: int, level: int, room_type: String) -> bool:
 	return build_room(x,level,room_type,1)
 
 func can_reconfigure_room(room_id: String) -> bool:
-	var room:=room_by_id(room_id)
+	var room: Dictionary = room_by_id(room_id)
 	return not room.is_empty() and not bool(room.get("immutable_topology",false))
 
 func can_remove_room(room_id: String) -> bool:
@@ -561,7 +561,7 @@ func seed_world() -> void:
 	runtime_state = {}
 
 func _initial_seed_cell(room: Dictionary) -> bool:
-	var key:=cell_key(int(room.get("x",0)),int(room.get("level",0)))
+	var key: String = cell_key(int(room.get("x",0)),int(room.get("level",0)))
 	return INITIAL_SEED_CELLS.get(key,"")==str(room.get("type",""))
 
 func _remap_room_references(mapping: Dictionary) -> void:
@@ -569,37 +569,37 @@ func _remap_room_references(mapping: Dictionary) -> void:
 		for id in collection:
 			var entity:Dictionary=collection[id]
 			for key in ["room_id","home_room_id","station_room_id","route_target_room_id","route_origin_room_id"]:
-				var old_id:=str(entity.get(key,""))
+				var old_id: String = str(entity.get(key,""))
 				if mapping.has(old_id):
 					entity[key]=mapping[old_id]
 			var route:Array=entity.get("route",[])
 			var remapped:Array=[]
 			for old_id in route:
-				var next_id:=str(mapping.get(str(old_id),str(old_id)))
+				var next_id: String = str(mapping.get(str(old_id),str(old_id)))
 				if remapped.is_empty() or str(remapped[-1])!=next_id:
 					remapped.append(next_id)
 			if not route.is_empty():
 				entity["route"]=remapped
 			for point in entity.get("waypoints",[]):
 				if typeof(point)==TYPE_DICTIONARY:
-					var point_room:=str(point.get("room_id",""))
+					var point_room: String = str(point.get("room_id",""))
 					if mapping.has(point_room):
 						point["room_id"]=mapping[point_room]
 	for object_id in objects:
 		var object:Dictionary=objects[object_id]
 		for key in ["current_room_id","home_room_id","canonical_home_room_id","location_room_id"]:
-			var old_id:=str(object.get(key,""))
+			var old_id: String = str(object.get(key,""))
 			if mapping.has(old_id):
 				object[key]=mapping[old_id]
 	for category in media:
 		for item in media.get(category,[]):
 			if typeof(item)==TYPE_DICTIONARY:
-				var old_id:=str(item.get("location_room_id",""))
+				var old_id: String = str(item.get("location_room_id",""))
 				if mapping.has(old_id):
 					item["location_room_id"]=mapping[old_id]
 
 func _migrate_legacy_topology() -> bool:
-	var needs_migration:=false
+	var needs_migration: bool = false
 	for room in rooms:
 		if int(room.get("topology_version",0))<2:
 			needs_migration=true
@@ -617,14 +617,14 @@ func _migrate_legacy_topology() -> bool:
 	var mapping:Dictionary={}
 	var migrated:Array=[]
 	for legacy in source:
-		var legacy_id:=str(legacy.get("id",""))
+		var legacy_id: String = str(legacy.get("id",""))
 		if visited.has(legacy_id):
 			continue
 		var run:Array=[legacy]
 		visited[legacy_id]=true
 		if MERGEABLE_TYPES.has(str(legacy.get("type",""))):
-			var next_x:=int(legacy.get("x",0))+1
-			var legacy_is_seed:=_initial_seed_cell(legacy)
+			var next_x: int = int(legacy.get("x",0))+1
+			var legacy_is_seed: bool = _initial_seed_cell(legacy)
 			while run.size()<3:
 				var found:Dictionary={}
 				for candidate in source:
@@ -642,7 +642,7 @@ func _migrate_legacy_topology() -> bool:
 				visited[str(found["id"])]=true
 				next_x+=1
 		var physical:Dictionary=run[0].duplicate(true)
-		var immutable:=true
+		var immutable: bool = true
 		for member in run:
 			if not _initial_seed_cell(member):
 				immutable=false
@@ -706,7 +706,7 @@ func load_or_seed() -> void:
 				saved_room["guest_access_state"] = "open"
 			if not saved_room.has("display_name"):
 				saved_room["display_name"] = "Гостевая"
-	var migrated:=_migrate_legacy_topology()
+	var migrated: bool = _migrate_legacy_topology()
 	sync_resident_profiles()
 	object_events_initialized = false
 	object_events_save_path = ""

@@ -44,7 +44,7 @@ func covers_cell(room: Dictionary, x: int, level: int) -> bool:
 	return int(room.get("level",0))==level and x>=x_start(room) and x<=x_end(room)
 
 func local_to_world(room: Dictionary, local: Vector2) -> Vector3:
-	var center:=center_world(room)
+	var center: Vector3 = center_world(room)
 	return Vector3(center.x+local.x,center.y,local.y)
 
 func world_to_local(room: Dictionary, position: Vector3) -> Vector2:
@@ -56,8 +56,8 @@ func local_contains(room: Dictionary, local: Vector2, margin: float = 0.0) -> bo
 		local.y>=BACK_Z+margin and local.y<=FRONT_Z-margin)
 
 func default_connectors(room_type: String, modules: int) -> Array:
-	var safe:=normalize_size(modules)
-	var hw:=float(safe)*MODULE_W*0.5
+	var safe: int = normalize_size(modules)
+	var hw: float = float(safe)*MODULE_W*0.5
 	var result:Array=[
 		{"id":"west","side":"west","axis":"x","kind":"passage",
 			"local":[-hw,SIDE_CONNECTOR_Z],"enabled":true},
@@ -72,7 +72,7 @@ func default_connectors(room_type: String, modules: int) -> Array:
 	return result
 
 func ensure_room_shape(room: Dictionary) -> void:
-	var modules:=normalize_size(int(room.get("size_modules",1)))
+	var modules: int = normalize_size(int(room.get("size_modules",1)))
 	room["size_modules"]=modules
 	room["size_id"]=size_id(modules)
 	room["topology_version"]=2
@@ -81,7 +81,7 @@ func ensure_room_shape(room: Dictionary) -> void:
 
 func virtual_modules(room: Dictionary) -> Array:
 	var result:Array=[]
-	var start:=x_start(room)
+	var start: int = x_start(room)
 	for module_index in range(size_modules(room)):
 		var module:Dictionary=room.duplicate(true)
 		module["x"]=start+module_index
@@ -101,12 +101,12 @@ func _connector(room: Dictionary, side: String) -> Dictionary:
 	return {}
 
 func connector_world(room: Dictionary, side: String, inside: bool = false) -> Vector3:
-	var connector:=_connector(room,side)
+	var connector: Dictionary = _connector(room,side)
 	if connector.is_empty():
 		return center_world(room)
 	var local:Array=connector.get("local",[0.0,SIDE_CONNECTOR_Z])
-	var x:=float(local[0])
-	var z:=float(local[1])
+	var x: float = float(local[0])
+	var z: float = float(local[1])
 	if inside:
 		if side=="west":
 			x+=CONNECTOR_INSET
@@ -117,8 +117,8 @@ func connector_world(room: Dictionary, side: String, inside: bool = false) -> Ve
 func connection_between(a: Dictionary, b: Dictionary) -> Dictionary:
 	if a.is_empty() or b.is_empty() or str(a.get("id",""))==str(b.get("id","")):
 		return {}
-	var a_level:=int(a.get("level",0))
-	var b_level:=int(b.get("level",0))
+	var a_level: int = int(a.get("level",0))
+	var b_level: int = int(b.get("level",0))
 	if a_level==b_level:
 		if x_end(a)+1==x_start(b):
 			if _connector(a,"east").is_empty() or _connector(b,"west").is_empty():
@@ -143,8 +143,8 @@ func connection_between(a: Dictionary, b: Dictionary) -> Dictionary:
 		return {}
 	if not is_equal_approx(center_cell(a),center_cell(b)):
 		return {}
-	var from_side:="up" if b_level>a_level else "down"
-	var to_side:="down" if b_level>a_level else "up"
+	var from_side: String = "up" if b_level>a_level else "down"
+	var to_side: String = "down" if b_level>a_level else "up"
 	if _connector(a,from_side).is_empty() or _connector(b,to_side).is_empty():
 		return {}
 	return {
@@ -154,5 +154,5 @@ func connection_between(a: Dictionary, b: Dictionary) -> Dictionary:
 	}
 
 func perspective_scale(z: float) -> float:
-	var t:=clampf((z-BACK_Z)/(FRONT_Z-BACK_Z),0.0,1.0)
+	var t: float = clampf((z-BACK_Z)/(FRONT_Z-BACK_Z),0.0,1.0)
 	return lerpf(0.62,1.0,t)

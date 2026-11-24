@@ -49,8 +49,8 @@ func _append_if_distinct(travel: Array, point: Dictionary) -> void:
 	if previous.size()!=3 or current.size()!=3:
 		travel.append(point)
 		return
-	var a:=Vector3(float(previous[0]),float(previous[1]),float(previous[2]))
-	var b:=Vector3(float(current[0]),float(current[1]),float(current[2]))
+	var a: Vector3 = Vector3(float(previous[0]),float(previous[1]),float(previous[2]))
+	var b: Vector3 = Vector3(float(current[0]),float(current[1]),float(current[2]))
 	if a.distance_to(b)>0.01 or str(travel[-1].get("room_id",""))!=str(point.get("room_id","")):
 		travel.append(point)
 
@@ -62,9 +62,9 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 	var first:Dictionary=world.room_by_id(str(room_path[0]))
 	if first.is_empty():
 		return []
-	var y:=float(first.get("level",0))*world.FLOOR_H
-	var actor_x:=float(actor.get("x",world.room_center_pos(first).x))
-	var actor_z:=float(actor.get("z",0.0))
+	var y: float = float(first.get("level",0))*float(world.FLOOR_H)
+	var actor_x: float = float(actor.get("x",world.room_center_pos(first).x))
+	var actor_z: float = float(actor.get("z",0.0))
 	_append_if_distinct(travel,waypoint(actor_x,y,actor_z,str(first["id"]),"leave_station"))
 	var previous:Dictionary=first
 	for i in range(1,room_path.size()):
@@ -76,7 +76,7 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 			return []
 		var from_point:Vector3=connection["from"]
 		var to_point:Vector3=connection["to"]
-		var kind:=str(connection.get("kind","horizontal"))
+		var kind: String = str(connection.get("kind","horizontal"))
 		_append_if_distinct(travel,waypoint(
 			from_point.x,from_point.y,from_point.z,str(previous["id"]),
 			"lift_core" if kind=="lift" else "connector_out"))
@@ -91,7 +91,7 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 		anchor=override_station
 	var station_world:Vector3=world.room_local_to_world(previous,anchor)
 	if override_station is Vector2:
-		var safe_approach_z:=clampf(override_approach_z,
+		var safe_approach_z: float = clampf(override_approach_z,
 			world.room_space.BACK_Z,world.room_space.FRONT_Z)
 		if absf(anchor.y-safe_approach_z)>0.20:
 			var approach_world:Vector3=world.room_local_to_world(

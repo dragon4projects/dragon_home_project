@@ -956,7 +956,7 @@ func update_creatures(delta: float = 0.0) -> void:
 			continue
 		var y := float(creature.get("visual_y",
 			float(creature.get("level",0))*H))
-		var creature_z:=float(creature.get("z",0.25))
+		var creature_z: float = float(creature.get("z",0.25))
 		anchor.position = Vector3(float(creature.get("x",0.0)),y,creature_z)
 		var creature_scale:=depth_visual_scale(creature_z)
 		anchor.scale=Vector3.ONE*creature_scale
@@ -1048,7 +1048,7 @@ func update_physical_objects() -> void:
 				float(holder.get("x",0.0)),
 				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
 				float(holder.get("z",0.25))+0.18) + _object_offset(str(object_id))*0.25
-			var held_scale:=depth_visual_scale(float(holder.get("z",0.25)))
+			var held_scale: float = depth_visual_scale(float(holder.get("z",0.25)))
 			anchor.scale=Vector3.ONE*held_scale
 			continue
 		if str(object.get("state","")) == "STASHED":
@@ -1139,7 +1139,7 @@ func update_residents(delta: float = 0.0) -> void:
 	for id in actor_sprites:
 		var actor: Dictionary = world.residents[id]
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
-		var actor_z:=float(actor.get("z",0.3))
+		var actor_z: float = float(actor.get("z",0.3))
 		actor_sprites[id].position = Vector3(float(actor.get("x",0.0)),y,actor_z)
 		var actor_scale:=depth_visual_scale(actor_z)
 		actor_sprites[id].scale=Vector3.ONE*actor_scale
@@ -1592,10 +1592,10 @@ func camera_world_bounds() -> Rect2:
 	var lo := Vector2(99999,99999)
 	var hi := Vector2(-99999,-99999)
 	for room in world.rooms:
-		var start_x:=float(room["x"])*W
-		var end_x:=float(world.room_space.x_end(room))*W
-		var center_x:=(start_x+end_x)*0.5
-		var span:=float(world.room_size_modules(room))*W
+		var start_x: float = float(room["x"])*W
+		var end_x: float = float(world.room_space.x_end(room))*W
+		var center_x: float = (start_x+end_x)*0.5
+		var span: float = float(world.room_size_modules(room))*W
 		var pos := Vector2(center_x, float(room["level"]) * H)
 		lo.x = minf(lo.x,pos.x - span * 0.5)
 		lo.y = minf(lo.y,pos.y - H * 0.5)
@@ -1881,8 +1881,8 @@ func _input(event: InputEvent) -> void:
 				build_marker.position = Vector3(center_x,float(build_cell.y)*H+1.4,0.0)
 				var cube:BoxMesh=build_marker.mesh
 				cube.size.x=W*float(build_size)*0.94
-				var permitted := world.can_build_room(
-					build_cell.x, build_cell.y, build_type, build_size)
+				var permitted: bool = bool(world.can_build_room(
+					build_cell.x, build_cell.y, build_type, build_size))
 				var preview_mat: StandardMaterial3D = build_marker.material_override
 				preview_mat.albedo_color = Color(0.22,0.90,0.55,0.28) if permitted else Color(0.82,0.23,0.26,0.28)
 	if event is InputEventKey and event.pressed and not event.echo:

@@ -14,9 +14,9 @@ func _initialize() -> void:
 	var group:Dictionary=w.merged_group(-1,0)
 	assert(group["width"]==3 and group["cells"].size()==3)
 	assert(str(group["primary_id"])==str(common["id"]))
-	var back_local:=Vector2(0.0,w.room_space.BACK_Z+0.08)
+	var back_local: Vector2 = Vector2(0.0,float(w.room_space.BACK_Z)+0.08)
 	assert(w.room_contains_local(common,back_local))
-	var back_world:=w.room_local_to_world(common,back_local)
+	var back_world: Vector3 = w.room_local_to_world(common,back_local)
 	assert(is_equal_approx(back_world.z,back_local.y))
 	var cinema:Dictionary=w.get_room(4,0)
 	var lift0:Dictionary=w.get_room(5,0)
@@ -33,7 +33,7 @@ func _initialize() -> void:
 	var locomotion=L.new()
 	var actor:Dictionary={"id":"TEST_XZ","room_id":common["id"],
 		"x":w.room_center_pos(common).x,"level":0,"z":1.35}
-	var wall_station:=Vector2(-5.2,-1.84)
+	var wall_station: Vector2 = Vector2(-5.2,-1.84)
 	assert(w.room_contains_local(common,wall_station,0.05))
 	var local_route:Array=[common["id"]]
 	var waypoints:Array=locomotion.build_waypoints(

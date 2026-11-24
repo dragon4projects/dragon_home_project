@@ -13,7 +13,7 @@ func _initialize() -> void:
 	assert(station.capacity(common)==16)
 	var layout:Array=station.layout_for_world(w,common)
 	assert(layout.size()==16)
-	var max_abs_x:=0.0
+	var max_abs_x: float = 0.0
 	for spot in layout:
 		var local:Vector2=spot["offset"]
 		max_abs_x=maxf(max_abs_x,absf(local.x))
@@ -42,7 +42,7 @@ func _initialize() -> void:
 	station.release(freed)
 	assert(station.available_count(w,common)==1)
 	w.residents[overflow["id"]]=overflow
-	var replacement:=station.single(w,overflow,common)
+	var replacement: Dictionary = station.single(w,overflow,common)
 	assert(not replacement.is_empty())
 	station.commit_claim(overflow,replacement)
 	assert(station.available_count(w,common)==0)
