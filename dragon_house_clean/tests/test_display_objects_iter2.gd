@@ -25,8 +25,11 @@ func run() -> void:
 		assert(str(object.get("display_mode",""))=="wall")
 		assert(str(object.get("viewer_category",""))=="artifacts")
 		assert(str(object.get("current_room_id",""))==str(artifact["id"]))
-		var anchor=object.get("home_anchor",[])
+		var anchor=object.get("display_anchor",[])
 		assert(typeof(anchor)==TYPE_ARRAY and anchor.size()==3)
+		assert((object.get("home_anchor",[]) as Array).size()==2)
+		assert(not bool(object.get("reset_eligible",true)))
+		assert(not scene.world.assign_physical_object_home(object_id,str(artifact["id"]),Vector2.ZERO,true))
 		assert(str(object.get("preview_path","")).begins_with("res://assets/props/artifacts/"))
 		assert(scene.object_nodes.has(object_id))
 		var object_node:Node3D=scene.object_nodes[object_id]

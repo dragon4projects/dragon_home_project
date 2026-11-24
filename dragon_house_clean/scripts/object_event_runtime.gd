@@ -277,7 +277,26 @@ func _visibility_for_room(room_id: String) -> String:
 	var room: Dictionary = world.room_by_id(room_id)
 	if room.is_empty():
 		return "house_public"
-	return "house_public" if str(room.get("privacy","public")) == "public" else 		"owner_controlled"
+	return "house_public" if str(room.get("privacy","public")) == "public" else "owner_controlled"
+
+func _default_anchor(object_id: String) -> Array:
+	var code:int=0
+	for i in range(object_id.length()):
+		code=(code*33+object_id.unicode_at(i)) & 0x7fffffff
+	var x:float=(float(code%7)-3.0)*0.16
+	var z:float=0.72+(float(int(code/7)%5)-2.0)*0.12
+	return [x,z]
+
+func _anchor_or_default(raw, object_id: String) -> Array:
+	if raw is Vector2:
+		var point:Vector2=raw
+		return [point.x,point.y]
+	if typeof(raw)==TYPE_ARRAY:
+		var value:Array=raw
+		if value.size()==2 and typeof(value[0]) in [TYPE_INT,TYPE_FLOAT] and (
+				typeof(value[1]) in [TYPE_INT,TYPE_FLOAT]):
+			return [float(value[0]),float(value[1])]
+	return _default_anchor(object_id)
 
 func _base_event(event_type: String, truth_class: String,
 		source_type: String, source_id: String, authority: String,
@@ -317,13 +336,15 @@ func _migration_registration(object: Dictionary) -> Dictionary:
 	var state: String = str(object.get("state",
 		"HELD" if current_holder != "" else "PLACED"))
 	var visible_room: String = current_location if current_location != "" else home_room_id
+	var home_anchor:Array=_anchor_or_default(object.get("home_anchor",[]),object_id)
+	var current_anchor:Array=_anchor_or_default(object.get("current_anchor",home_anchor),object_id)
 	var metadata := {
 		"description":str(object.get("description","")),
 		"preview_path":str(object.get("preview_path","")),
 		"asset_id":str(object.get("asset_id","")),
 		"viewer_category":str(object.get("viewer_category","artifacts")),
 		"display_mode":str(object.get("display_mode","")),
-		"home_anchor":object.get("home_anchor",[]),
+		"display_anchor":object.get("display_anchor",object.get("home_anchor",[])),
 		"interaction_station_id":str(object.get("interaction_station_id","")),
 		"interaction_point":object.get("interaction_point",[]),
 		"interaction_approach_z":float(object.get("interaction_approach_z",0.95)),
@@ -333,17 +354,21 @@ func _migration_registration(object: Dictionary) -> Dictionary:
 	var payload := {
 		"object_id":object_id,
 		"object_type":"physical_object",
+		"object_class":str(object.get("object_class","display_object")),
 		"display_name":str(object.get("display_name",object_id)),
 		"canonical_owner":str(object.get("canonical_owner_id","")),
 		"home_room_id":home_room_id,
+		"home_anchor":home_anchor,
 		"current_holder":current_holder,
 		"current_location":current_location,
+		"current_anchor":[] if current_holder!="" else current_anchor,
 		"state":state,
 		"movable":bool(object.get("movable",true)),
 		"recoverable":bool(object.get("recoverable",true)),
 		"ambient_move_allowed":bool(object.get("ambient_pickup_allowed",false)),
 		"ambient_hide_allowed":bool(object.get("ambient_hide_allowed",false)),
 		"ambient_protected":bool(object.get("ambient_protected",false)),
+		"reset_eligible":bool(object.get("reset_eligible",object.get("movable",true))),
 		"asset_id":str(object.get("asset_id","")),
 		"last_explicit_location":str(object.get("last_explicit_location",
 			visible_room)),
@@ -418,6 +443,10 @@ func _journal_accepted(event: Dictionary) -> void:
 		world._append_journal("OBJECT_OWNER_CHANGED",
 			str(event.get("subject_id","")),object_id,
 			str(event.get("from","")),str(event.get("to","")),details)
+	elif event_type == "OBJECT_HOME_ASSIGNED":
+		world._append_journal("OBJECT_HOME_ASSIGNED",
+			str(event.get("subject_id","")),object_id,
+			str(event.get("from","")),str(event.get("to","")),details)
 
 func _journal_has_event_id(event_id: String) -> bool:
 	if event_id == "":
@@ -475,6 +504,10 @@ func explain_object(object_id: String) -> Dictionary:
 		"canonical_owner_id":str(object.get("canonical_owner_id","")),
 		"current_holder_id":str(object.get("current_holder_id","")),
 		"current_room_id":str(object.get("current_room_id","")),
+		"current_anchor":object.get("current_anchor",[]),
+		"home_room_id":str(object.get("home_room_id","")),
+		"home_anchor":object.get("home_anchor",[]),
+		"object_class":str(object.get("object_class","display_object")),
 		"state":str(object.get("state","")),
 		"last_explicit_location":str(object.get("last_explicit_location","")),
 		"movement_reason":str(object.get("movement_reason","")),
@@ -521,20 +554,25 @@ func register_object(object_id: String, display_name: String,
 		movable: bool, recoverable: bool, ambient_pickup_allowed: bool,
 		ambient_hide_allowed: bool, ambient_protected: bool,
 		metadata: Dictionary) -> bool:
+	var home_anchor:Array=_anchor_or_default(metadata.get("home_anchor",[]),object_id)
 	var payload := {
 		"object_id":object_id,
 		"object_type":"physical_object",
+		"object_class":str(metadata.get("object_class","display_object")),
 		"display_name":display_name,
 		"canonical_owner":canonical_owner_id,
 		"home_room_id":home_room_id,
+		"home_anchor":home_anchor,
 		"current_holder":"",
 		"current_location":home_room_id,
+		"current_anchor":home_anchor.duplicate(true),
 		"state":"PLACED",
 		"movable":movable,
 		"recoverable":recoverable,
 		"ambient_move_allowed":ambient_pickup_allowed,
 		"ambient_hide_allowed":ambient_hide_allowed,
 		"ambient_protected":ambient_protected,
+		"reset_eligible":bool(metadata.get("reset_eligible",movable)),
 		"asset_id":str(metadata.get("asset_id","")),
 		"last_explicit_location":home_room_id,
 		"movement_reason":"REGISTERED",
@@ -545,7 +583,7 @@ func register_object(object_id: String, display_name: String,
 			"asset_id":str(metadata.get("asset_id","")),
 			"viewer_category":str(metadata.get("viewer_category","artifacts")),
 			"display_mode":str(metadata.get("display_mode","")),
-			"home_anchor":metadata.get("home_anchor",[]),
+			"display_anchor":metadata.get("display_anchor",metadata.get("home_anchor",[])),
 			"interaction_station_id":str(metadata.get("interaction_station_id","")),
 			"interaction_point":metadata.get("interaction_point",[]),
 			"interaction_approach_z":float(metadata.get("interaction_approach_z",0.95)),
@@ -557,8 +595,33 @@ func register_object(object_id: String, display_name: String,
 		"OBJECT_REGISTERED","EXPLICIT_WORLD_FACT","system","world_model",
 		"SYSTEM_RULE",_visibility_for_room(home_room_id),
 		"PERSISTENT_UNTIL_CHANGED",canonical_owner_id,object_id,home_room_id,
-		"",home_room_id,"WORLD_MODEL_OBJECT_REGISTRATION_V020",
+		"",home_room_id,"WORLD_MODEL_OBJECT_REGISTRATION_V022",
 		"Explicit object registration through WorldModel",payload)
+	return bool(submit(event).get("ok",false))
+
+func assign_home(object_id: String, target_room_id: String, home_anchor: Vector2,
+		move_now: bool = true, source_id: String = "LOCAL_DRAGON") -> bool:
+	var object:Dictionary=world.objects.get(object_id,{})
+	if object.is_empty():
+		return false
+	var target:Dictionary=world.room_by_id(target_room_id)
+	if target.is_empty() or not world.room_contains_local(target,home_anchor,0.08):
+		return false
+	var previous_home:String=str(object.get("home_room_id",""))
+	var event:=_base_event(
+		"OBJECT_HOME_ASSIGNED","EXPLICIT_WORLD_FACT","dragon",source_id,
+		"DRAGON_DECLARED",_visibility_for_room(target_room_id),
+		"PERSISTENT_UNTIL_CHANGED",source_id,object_id,target_room_id,
+		previous_home,target_room_id,"DRAGON_OBJECT_HOME_ASSIGNMENT_V022",
+		"Dragon assigned a new persistent object home",{
+			"object_id":object_id,
+			"previous_home_room_id":previous_home,
+			"previous_home_anchor":object.get("home_anchor",[]),
+			"home_room_id":target_room_id,
+			"home_anchor":[home_anchor.x,home_anchor.y],
+			"move_now":move_now,
+			"sim_clock":float(world.sim_clock)
+		})
 	return bool(submit(event).get("ok",false))
 
 func set_ambient_protection(object_id: String, protected: bool) -> bool:
@@ -597,7 +660,8 @@ func pickup(object_id: String, actor_id: String) -> bool:
 		"object_id":object_id,"movement_kind":"PICKED_UP","actor_id":actor_id,
 		"previous_holder":str(object.get("current_holder_id","")),
 		"previous_location":from_room,
-		"current_holder":actor_id,"current_location":"","state":"HELD",
+		"previous_anchor":object.get("current_anchor",[]),
+		"current_holder":actor_id,"current_location":"","current_anchor":[],"state":"HELD",
 		"canonical_owner":str(object.get("canonical_owner_id","")),
 		"sim_clock":float(world.sim_clock)
 	}
@@ -609,16 +673,19 @@ func pickup(object_id: String, actor_id: String) -> bool:
 	return bool(submit(event).get("ok",false))
 
 func place(object_id: String, actor_id: String, target_room_id: String,
-		state: String) -> bool:
+		state: String, target_anchor: Variant = null) -> bool:
 	var object: Dictionary = world.objects.get(object_id,{})
 	if object.is_empty():
 		return false
 	var context: Dictionary = _movement_context(actor_id)
+	var anchor:Array=_anchor_or_default(target_anchor,object_id)
 	var payload := {
 		"object_id":object_id,"movement_kind":state,"actor_id":actor_id,
 		"previous_holder":str(object.get("current_holder_id","")),
 		"previous_location":str(object.get("current_room_id","")),
-		"current_holder":"","current_location":target_room_id,"state":state,
+		"previous_anchor":object.get("current_anchor",[]),
+		"current_holder":"","current_location":target_room_id,
+		"current_anchor":anchor,"state":state,
 		"canonical_owner":str(object.get("canonical_owner_id","")),
 		"sim_clock":float(world.sim_clock)
 	}
@@ -636,11 +703,13 @@ func recover_to_lost_found(object_id: String, target_room_id: String) -> bool:
 	var previous_holder: String = str(object.get("current_holder_id",""))
 	var previous_location: String = str(object.get("current_room_id",""))
 	var from_value: String = previous_holder if previous_holder != "" else previous_location
+	var anchor:Array=_default_anchor(object_id)
 	var payload := {
 		"object_id":object_id,"movement_kind":"RECOVERED_TO_LOST_FOUND",
 		"actor_id":"HOUSE_SPIRIT","previous_holder":previous_holder,
-		"previous_location":previous_location,"current_holder":"",
-		"current_location":target_room_id,"state":"LOST_FOUND",
+		"previous_location":previous_location,"previous_anchor":object.get("current_anchor",[]),
+		"current_holder":"","current_location":target_room_id,
+		"current_anchor":anchor,"state":"LOST_FOUND",
 		"canonical_owner":str(object.get("canonical_owner_id","")),
 		"sim_clock":float(world.sim_clock)
 	}
@@ -651,7 +720,7 @@ func recover_to_lost_found(object_id: String, target_room_id: String) -> bool:
 		"HOUSE_SPIRIT_RECOVERY_RULE_V020","House-spirit lost/found recovery",payload)
 	return bool(submit(event).get("ok",false))
 
-func restore_home(object_id: String) -> bool:
+func restore_home(object_id: String, reset_day: int = -1) -> bool:
 	var object: Dictionary = world.objects.get(object_id,{})
 	if object.is_empty():
 		return false
@@ -659,19 +728,26 @@ func restore_home(object_id: String) -> bool:
 	var previous_holder: String = str(object.get("current_holder_id",""))
 	var previous_location: String = str(object.get("current_room_id",""))
 	var from_value: String = previous_holder if previous_holder != "" else previous_location
+	var home_anchor:Array=_anchor_or_default(object.get("home_anchor",[]),object_id)
 	var payload := {
 		"object_id":object_id,"movement_kind":"RESTORED_HOME","actor_id":"",
 		"previous_holder":previous_holder,"previous_location":previous_location,
-		"current_holder":"","current_location":home_room_id,"state":"PLACED",
+		"previous_anchor":object.get("current_anchor",[]),
+		"current_holder":"","current_location":home_room_id,
+		"current_anchor":home_anchor,"state":"PLACED",
 		"canonical_owner":str(object.get("canonical_owner_id","")),
 		"sim_clock":float(world.sim_clock)
 	}
+	if reset_day>=0:
+		payload["reset_day"]=reset_day
 	var event := _base_event(
-		"OBJECT_MOVED","EXPLICIT_WORLD_FACT","system","world_model",
+		"OBJECT_MOVED","EXPLICIT_WORLD_FACT","system",
+		"object_home_scheduler" if reset_day>=0 else "world_model",
 		"SYSTEM_RULE",_visibility_for_room(home_room_id),
 		"PERSISTENT_UNTIL_CHANGED","",object_id,home_room_id,from_value,
-		home_room_id,"EXPLICIT_OBJECT_RESTORE_API_V020",
-		"Explicit restore to canonical home",payload)
+		home_room_id,
+		"DAILY_OBJECT_HOME_RESET_V022" if reset_day>=0 else "EXPLICIT_OBJECT_RESTORE_API_V022",
+		"Daily home reset" if reset_day>=0 else "Explicit restore to canonical home",payload)
 	return bool(submit(event).get("ok",false))
 
 func storage_paths() -> Array:

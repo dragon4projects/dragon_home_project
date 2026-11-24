@@ -28,6 +28,12 @@ func _append_history(object: Dictionary, entry: Dictionary) -> void:
 		history.pop_front()
 	object["history"] = history
 
+func _legacy_anchor(object_id: String) -> Array:
+	var code:int=0
+	for i in range(object_id.length()):
+		code=(code*33+object_id.unicode_at(i)) & 0x7fffffff
+	return [(float(code%7)-3.0)*0.16,0.72+(float(int(code/7)%5)-2.0)*0.12]
+
 func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 	last_error = ""
 	var next: Dictionary = projection.duplicate(true)
@@ -48,25 +54,31 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		var history: Array = legacy_history.duplicate(true)
 		if history.is_empty():
 			history.append(_history_entry(event,"REGISTERED",""))
+		var home_anchor:Array=payload.get("home_anchor",_legacy_anchor(object_id))
+		var current_anchor:Array=payload.get("current_anchor",[] if str(payload.get("current_holder",""))!="" else home_anchor)
 		next[object_id] = {
 			"id":object_id,
 			"display_name":str(payload.get("display_name",object_id)),
 			"canonical_owner_id":str(payload.get("canonical_owner","")),
+			"object_class":str(payload.get("object_class","display_object")),
 			"home_room_id":home_room_id,
+			"home_anchor":home_anchor.duplicate(true),
 			"current_holder_id":str(payload.get("current_holder","")),
 			"current_room_id":current_location,
+			"current_anchor":current_anchor.duplicate(true),
 			"state":str(payload.get("state","PLACED")),
 			"movable":bool(payload.get("movable",true)),
 			"recoverable":bool(payload.get("recoverable",true)),
 			"ambient_pickup_allowed":bool(payload.get("ambient_move_allowed",false)),
 			"ambient_hide_allowed":bool(payload.get("ambient_hide_allowed",false)),
 			"ambient_protected":bool(payload.get("ambient_protected",false)),
+			"reset_eligible":bool(payload.get("reset_eligible",payload.get("movable",true))),
 			"description":str(metadata.get("description","")),
 			"preview_path":str(metadata.get("preview_path","")),
 			"asset_id":str(payload.get("asset_id",metadata.get("asset_id",""))),
 			"viewer_category":str(metadata.get("viewer_category","artifacts")),
 			"display_mode":str(metadata.get("display_mode","")),
-			"home_anchor":metadata.get("home_anchor",[]),
+			"display_anchor":metadata.get("display_anchor",metadata.get("home_anchor",[])),
 			"interaction_station_id":str(metadata.get("interaction_station_id","")),
 			"interaction_point":metadata.get("interaction_point",[]),
 			"interaction_approach_z":float(metadata.get("interaction_approach_z",0.95)),
@@ -89,11 +101,31 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 	var object: Dictionary = next[object_id]
 
 	if event_type == "OBJECT_POLICY_SET":
-		for field in ["ambient_pickup_allowed","ambient_hide_allowed","ambient_protected"]:
+		for field in ["ambient_pickup_allowed","ambient_hide_allowed","ambient_protected","reset_eligible"]:
 			if payload.has(field):
 				object[field] = bool(payload[field])
 		object["updated_event_id"] = event_id
 		object["movement_authority"] = authority
+		return next
+
+	if event_type == "OBJECT_HOME_ASSIGNED":
+		var old_home:String=str(object.get("home_room_id",""))
+		var new_home:String=str(payload.get("home_room_id",""))
+		var new_anchor:Array=payload.get("home_anchor",object.get("home_anchor",[0.0,0.72]))
+		object["home_room_id"]=new_home
+		object["home_anchor"]=new_anchor.duplicate(true)
+		object["movement_reason"]="HOME_ASSIGNED"
+		object["movement_authority"]=authority
+		object["updated_event_id"]=event_id
+		if bool(payload.get("move_now",true)):
+			object["current_holder_id"]=""
+			object["current_room_id"]=new_home
+			object["current_anchor"]=new_anchor.duplicate(true)
+			object["state"]="PLACED"
+			object["last_explicit_location"]=new_home
+		_append_history(object,_history_entry(event,"HOME_ASSIGNED",
+			str(event.get("subject_id",""))))
+		object["previous_home_room_id"]=old_home
 		return next
 
 	if event_type == "OBJECT_OWNER_CHANGED":
@@ -107,12 +139,16 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		var actor_id: String = str(payload.get("actor_id",event.get("subject_id","")))
 		object["current_holder_id"] = str(payload.get("current_holder",""))
 		object["current_room_id"] = str(payload.get("current_location",""))
+		var raw_anchor=payload.get("current_anchor",[] if str(payload.get("current_holder",""))!="" else object.get("home_anchor",_legacy_anchor(object_id)))
+		object["current_anchor"]=(raw_anchor as Array).duplicate(true) if typeof(raw_anchor)==TYPE_ARRAY else []
 		object["state"] = str(payload.get("state",""))
 		object["movement_reason"] = movement_kind
 		object["movement_authority"] = authority
 		object["visibility"] = str(event.get("visibility",
 			object.get("visibility","house_public")))
 		object["updated_event_id"] = event_id
+		if payload.has("reset_day"):
+			object["last_home_reset_day"]=int(payload.get("reset_day",-1))
 		if str(event.get("truth_class","")) == "EXPLICIT_WORLD_FACT":
 			var explicit_location: String = str(payload.get("current_location",""))
 			if explicit_location == "":
