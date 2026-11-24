@@ -114,7 +114,8 @@ func run() -> void:
 	var art:Node3D=node.get_node("Layer_ApprovedArt")
 	scene._load_room_art(node)
 	var backdrop:Sprite3D=art.get_node_or_null("Art_backdrop")
-	assert(backdrop!=null)
+	assert(backdrop==null,
+		"Common R3 sparse black-frame backdrop is replaced by physical rear architecture")
 	assert(art.get_node_or_null("Art_furniture_back")==null,
 		"Common R3 must not keep a monolithic furniture_back plane")
 	assert(art.get_node_or_null("Art_back_decor")==null,
@@ -165,16 +166,15 @@ func run() -> void:
 	assert(absf(table_floor-float(side_table.get_meta("floor_y",999.0)))<0.001)
 	assert(absf(sofa_floor-0.025)<0.03 and absf(table_floor-0.025)<0.03,
 		"Depth scaling must preserve the physical floor contact point")
-	assert(not rear.visible,
-		"Procedural Stage_Backwall must be hidden while a real backdrop is loaded")
+	assert(rear.visible,
+		"Physical Stage_Backwall must remain visible when sparse backdrop is suppressed")
+	var rear_arch:Node3D=rear.get_node_or_null("PhysicalRearWall/RearArchitecture")
+	assert(rear_arch!=null)
+	assert(rear_arch.get_node_or_null("RearLightwell")!=null)
+	assert(rear_arch.get_node_or_null("RearTimberHeader")!=null)
 	for child in art.get_children():
 		assert(str(child.name).begins_with("Art_") and not str(child.name).begins_with("@"),
 			"Art reload must preserve stable layer node names")
-	assert(backdrop.position.z > rear_front and backdrop.position.z > structural_front,
-		"Backdrop must render in front of every structural rear surface")
-	assert(backdrop.position.z < scene.world.room_space.BACK_Z,
-		"Backdrop must stay behind the deepest playable actor position")
-	assert(absf(backdrop.position.z+2.02)<0.01)
 	scene.zoom_current=16.0
 	scene.yaw=0.0
 	scene.update_cutaway_return_visibility()
@@ -197,6 +197,10 @@ func run() -> void:
 	var library_node:Node3D=scene.room_root.get_node(str(library["id"]))
 	scene._load_room_art(library_node)
 	var library_art:Node3D=library_node.get_node("Layer_ApprovedArt")
+	assert(library_art.get_node_or_null("Art_backdrop")==null)
+	assert(library_node.get_node("Layer_Background/Stage_Backwall").visible)
+	assert(library_node.get_node_or_null(
+		"Layer_Background/Stage_Backwall/PhysicalRearWall/RearArchitecture/RearLightwell")!=null)
 	assert(library_art.get_node_or_null("Art_furniture_back")==null)
 	assert(library_art.get_node_or_null("Art_back_decor")==null)
 	assert(library_art.get_node_or_null("Art_foreground")==null)

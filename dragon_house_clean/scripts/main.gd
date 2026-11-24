@@ -154,14 +154,14 @@ func _ready() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#111018")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#9f856d")
-	env.ambient_light_energy = 0.74
+	env.ambient_light_color = Color("#c5b9aa")
+	env.ambient_light_energy = 0.90
 	ambient.environment = env
 	add_child(ambient)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-30, -23, 0)
-	sun.light_color = Color("#d8aa78")
-	sun.light_energy = 0.60
+	sun.light_color = Color("#ead7c0")
+	sun.light_energy = 0.68
 	sun.shadow_enabled = false
 	add_child(sun)
 	make_mountain()
@@ -296,6 +296,22 @@ func mat(color: Color, emissive: bool = false) -> StandardMaterial3D:
 	var licensed: Texture2D = surface_texture(color)
 	if licensed != null:
 		m.albedo_texture = licensed
+		# The imported albedos are already naturally graded. Multiplying them by
+		# the old near-black palette destroyed material readability.
+		if color == palette["rock"]:
+			m.albedo_color = Color("#eee8e3")
+		elif color == palette["rock_light"]:
+			m.albedo_color = Color("#f2e7dc")
+		elif color == palette["floor"]:
+			m.albedo_color = Color("#ded7d0")
+		elif color == palette["wood"]:
+			m.albedo_color = Color("#ead9c5")
+		elif color == palette["couch"]:
+			m.albedo_color = Color("#e1d0c7")
+		elif color == palette["rug"]:
+			m.albedo_color = Color("#dfd0c9")
+		elif color == palette["bronze"] or color == palette["copper"]:
+			m.albedo_color = Color("#e2c7ac")
 		m.uv1_scale = Vector3(2.3, 1.35, 1.0)
 	elif texture_path != "" and ResourceLoader.exists(texture_path):
 		m.albedo_texture = load(texture_path)
@@ -714,6 +730,44 @@ func furnish(parent: Node3D, kind: String, x: int, level: int) -> void:
 			if offset == 0:
 				box(parent, Vector3(0, 0.5, -1.70), Vector3(1.0, 1.05, 0.16), palette["wood"])
 
+func _add_rear_architecture(parent: Node3D, group: Dictionary) -> void:
+	var kind:String=str(group.get("type",""))
+	if kind not in ["common","library"]:
+		return
+	var span:float=float(group.get("width",1))*W
+	var root:=Node3D.new()
+	root.name="RearArchitecture"
+	parent.add_child(root)
+	# Structural timber gives one continuous room rhythm without reintroducing
+	# module seams. All elements stay behind the playable rear boundary.
+	for fraction in [-0.36,-0.12,0.14,0.38]:
+		var x:float=span*float(fraction)
+		var post:=box(root,Vector3(x,1.47,-2.005),
+			Vector3(0.14,2.72,0.10),palette["wood"])
+		post.name="RearTimberPost_%d" % root.get_child_count()
+	var header:=box(root,Vector3(0,2.77,-2.00),
+		Vector3(span-0.70,0.16,0.12),palette["wood"])
+	header.name="RearTimberHeader"
+
+	# A cool lightwell breaks the brown cave wall and gives the room the
+	# architectural depth visible in the target concepts. It is scenery only.
+	var lightwell_x:float=span*0.28 if kind=="common" else -span*0.18
+	var well:=Node3D.new()
+	well.name="RearLightwell"
+	well.position=Vector3(lightwell_x,0,-1.995)
+	root.add_child(well)
+	var pane:=box(well,Vector3(0,1.55,0),
+		Vector3(1.70,1.68,0.035),Color("#506678"),true)
+	pane.name="LightwellGlass"
+	pane.material_override.emission_energy_multiplier=0.18
+	for sx in [-0.90,0.90]:
+		box(well,Vector3(float(sx),1.55,0.025),
+			Vector3(0.13,1.94,0.10),palette["rock_light"])
+	box(well,Vector3(0,2.51,0.025),Vector3(1.93,0.14,0.10),palette["rock_light"])
+	box(well,Vector3(0,0.59,0.025),Vector3(1.93,0.14,0.10),palette["rock_light"])
+	box(well,Vector3(0,1.55,0.045),Vector3(0.08,1.68,0.06),palette["wood"])
+	box(well,Vector3(0,1.55,0.045),Vector3(1.70,0.08,0.06),palette["wood"])
+
 func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	# One continuous rear wall per physical room. R2/R3 are not three
 	# architectural bays stitched together; only outer returns frame the volume.
@@ -732,6 +786,7 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	var rear:=Node3D.new()
 	rear.name="PhysicalRearWall"
 	parent.add_child(rear)
+	_add_rear_architecture(rear,group)
 	var rear_panel:=box(rear,Vector3(0,1.49,-2.12),
 		Vector3(span-0.42,2.67,0.08),base_color)
 	rear_panel.name="StructuralRearPanel"

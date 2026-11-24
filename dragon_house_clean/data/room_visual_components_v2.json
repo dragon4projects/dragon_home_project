@@ -4,7 +4,9 @@
   "pixel_size": 0.003125,
   "variants": {
     "common/R3": {
-      "suppress_roles": [],
+      "suppress_roles": [
+        "backdrop"
+      ],
       "role_components": {
         "furniture_back": {
           "source_path": "assets/rooms/common/R3/furniture_back.png",
@@ -237,7 +239,9 @@
       }
     },
     "library/R2": {
-      "suppress_roles": [],
+      "suppress_roles": [
+        "backdrop"
+      ],
       "role_components": {
         "furniture_back": {
           "source_path": "assets/rooms/library/R2/furniture_back.png",
