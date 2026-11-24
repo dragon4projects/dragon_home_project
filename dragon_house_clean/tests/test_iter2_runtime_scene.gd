@@ -8,6 +8,15 @@ func run() -> void:
 	var scene=load("res://scenes/main.tscn").instantiate()
 	root.add_child(scene)
 	current_scene=scene
+	assert(scene.qa_visual_preview,
+		"Owner-review marker must enable delivered resident bank preview")
+	var bound_count:int=0
+	for resident_id in scene.world.residents:
+		var resident:Dictionary=scene.world.residents[resident_id]
+		if bool(resident.get("active",false)) and bool(resident.get("runtime_visual_bound",false)):
+			bound_count+=1
+	assert(bound_count>=20,
+		"Owner-review must render real delivered resident banks, not placeholder blobs")
 	var common:Dictionary=scene.world.get_room(-2,0)
 	assert(not common.is_empty() and scene.world.room_size_modules(common)==3)
 	assert(common["id"]==scene.world.get_room(0,0)["id"])
@@ -45,6 +54,6 @@ func run() -> void:
 		if str(point.get("kind","")) in ["local_aisle_entry","local_aisle"]:
 			has_local_aisle=true
 	assert(has_horizontal and has_lift and has_local_aisle)
-	print("ITER2_RUNTIME_SCENE_PASS common=R3 back_scale=%.2f front_scale=%.2f connectors=true lift=true aisle_route=true" % [
-		back_scale,front_scale])
+	print("ITER2_RUNTIME_SCENE_PASS common=R3 back_scale=%.2f front_scale=%.2f connectors=true lift=true aisle_route=true resident_banks=%d" % [
+		back_scale,front_scale,bound_count])
 	quit(0)

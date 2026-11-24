@@ -109,6 +109,9 @@ var room_names := {
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	iter1_owner_review = FileAccess.file_exists(ITER1_REVIEW_MARKER)
+	# Owner-review is explicitly allowed to show delivered candidate resident
+	# banks without changing their approval state. Production stays strict.
+	qa_visual_preview = iter1_owner_review
 	if iter1_owner_review:
 		world.save_path = "user://dragon_house_iter1_owner_review.json"
 	world.load_or_seed()
