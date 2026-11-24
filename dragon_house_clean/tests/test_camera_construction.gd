@@ -12,44 +12,58 @@ func run() -> void:
 	scene.make_rooms()
 	await process_frame
 	await process_frame
-	assert(scene.world.rooms.size() == 21)
+	assert(scene.world.rooms.size() == 19)
 	assert(scene.room_root.get_child_count() == 19)
 	var common: Dictionary = scene.world.get_room(-1,0)
+	assert(scene.world.room_size_modules(common)==3)
 	scene.selected_room = common["id"]
 	scene.set_mode("ROOM")
 	assert(scene.current_mode == "ROOM")
 	assert(is_equal_approx(scene.desired_focus.x, -1.0*scene.W),
-		"R3 selection targets visual group CENTER, not clicked cell edge")
-	assert(scene.zoom > 15.0, "Three-module room has wider close-up view")
+		"R3 selection targets physical room center, not clicked module")
+	assert(scene.zoom > 15.0, "R3 has a wider close-up view")
 	scene.set_mode("HOUSE")
 	assert(scene.zoom > 20.0)
 	scene.toggle_build()
 	assert(scene.current_mode == "BUILD")
 	scene.build_type = "rest"
-	for x in [0,-1]:
-		scene.build_cell = Vector2i(x,1)
-		var e := InputEventMouseButton.new()
-		e.button_index = MOUSE_BUTTON_LEFT
-		e.pressed = true
-		scene._unhandled_input(e)
-	assert(scene.world.merged_group(0,1)["width"] == 3)
-	assert(scene.world.rooms.size() == 23)
+	scene.build_size = 2
+	scene.build_cell = Vector2i(6,1)
+	var build_r2 := InputEventMouseButton.new()
+	build_r2.button_index = MOUSE_BUTTON_LEFT
+	build_r2.pressed = true
+	scene._unhandled_input(build_r2)
+	var new_r2:Dictionary=scene.world.get_room(6,1)
+	assert(not new_r2.is_empty())
+	assert(new_r2["id"]==scene.world.get_room(7,1)["id"])
+	assert(scene.world.room_size_modules(new_r2)==2)
+	assert(scene.world.rooms.size()==20)
 	await process_frame
 	await process_frame
-	assert(scene.room_root.get_child_count() == 19,
-		"Render must use one shell for merged R3, not 3 individual boxes")
-	scene.build_cell = Vector2i(-2,1)
+	assert(scene.room_root.get_child_count()==20)
+	scene.build_size = 1
+	scene.build_cell = Vector2i(8,1)
+	var build_r1 := InputEventMouseButton.new()
+	build_r1.button_index = MOUSE_BUTTON_LEFT
+	build_r1.pressed = true
+	scene._unhandled_input(build_r1)
+	assert(scene.world.rooms.size()==21)
+	assert(scene.world.get_room(8,1)["id"]!=new_r2["id"])
+	assert(scene.world.room_size_modules(new_r2)==2,
+		"Adjacent construction must not resize an existing R2")
+	scene.build_cell = Vector2i(7,1)
 	var invalid := InputEventMouseButton.new()
 	invalid.button_index = MOUSE_BUTTON_LEFT
 	invalid.pressed = true
 	scene._unhandled_input(invalid)
-	assert(scene.world.rooms.size() == 23, "R4 attempt must not change geometry")
+	assert(scene.world.rooms.size()==21,"Overlap must not alter topology")
 	scene.toggle_build()
 	var actor: Dictionary = scene.world.residents["RES_01"]
-	actor["room_id"] = scene.world.get_room(4,1)["id"]
+	var upper_corridor:Dictionary=scene.world.get_room(4,1)
+	actor["room_id"] = upper_corridor["id"]
 	actor["phase"] = "perform"
 	actor["until"] = scene.life.clock + 10000.0
-	actor["x"] = 4.0*scene.W
+	actor["x"] = scene.world.room_center_pos(upper_corridor).x
 	actor["level"] = 1
 	actor["visual_y"] = scene.H
 	actor["z"] = 1.0
@@ -80,8 +94,7 @@ func run() -> void:
 	scene._input(mouse)
 	assert(scene.follow_id == "" and scene.current_mode == "FREE",
 		"User panning exits automatic follow")
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(scene.world.save_path))
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(scene.world.save_path+".bak"))
-	print("CAMERA_CONSTRUCTION_TEST_PASS groups=19 R3=3 zoom=independent yaw=clamped")
+	for suffix in ["",".bak",".tmp"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(scene.world.save_path+suffix))
+	print("CAMERA_CONSTRUCTION_TEST_PASS physical=19 R2_add=true no_auto_merge=true")
 	quit(0)
-
