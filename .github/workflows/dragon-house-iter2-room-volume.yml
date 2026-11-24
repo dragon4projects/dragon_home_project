@@ -122,6 +122,11 @@ jobs:
             dragon_house_clean/assets/rooms/library/R2/foreground.png
             dragon_house_clean/assets/room_candidates/TEEA_INT_20261123_005/**/*.png
             dragon_house_clean/assets/room_candidates/TEEA_INT_20261123_006/**/*.png
+            dragon_house_clean/data/integration_candidates/TEEA005_interiors_source.json
+            dragon_house_clean/data/integration_candidates/TEEA005_station_source.json
+            dragon_house_clean/data/integration_candidates/TEEA006_station_source.json
+            dragon_house_clean/data/integration_candidates/ITER1_ROOM_ART_REVIEW.json
+            dragon_house_clean/data/integration_candidates/furniture_interactions_iter1_review.json
           if-no-files-found: ignore
           retention-days: 7
 
