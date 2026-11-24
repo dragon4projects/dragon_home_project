@@ -157,6 +157,34 @@ jobs:
             echo "END_IMAGE::$f"
           done
 
+      - name: Emit source-layer comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          emit_png() {
+            local label="$1"
+            local path="$2"
+            if [ ! -f "$path" ]; then
+              echo "MISSING_SOURCE::$label::$path"
+              return 0
+            fi
+            echo "BEGIN_SOURCE_IMAGE::$label"
+            base64 -w 0 "$path"
+            echo
+            echo "END_SOURCE_IMAGE::$label"
+          }
+          root="dragon_house_clean"
+          for role in backdrop back_decor furniture_back foreground
+          do
+            emit_png "accepted_common_R3_$role" "$root/assets/rooms/common/R3/$role.png"
+            emit_png "candidate_common_R3_$role" "$root/assets/room_candidates/TEEA_INT_20261123_005/common/R3/$role.png"
+          done
+          for role in backdrop back_decor furniture_back foreground
+          do
+            emit_png "accepted_library_R2_$role" "$root/assets/rooms/library/R2/$role.png"
+            emit_png "candidate_library_R2_$role" "$root/assets/room_candidates/TEEA_INT_20261123_005/library/R2/$role.png"
+          done
+
       - name: Export templates
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         shell: bash
