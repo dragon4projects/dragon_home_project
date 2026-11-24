@@ -15,6 +15,10 @@ const CandidateContentRuntimeScript = preload("res://scripts/candidate_content_r
 const ITER1_REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
 const W := 4.8
 const H := 4.6
+const BASE_FOV := 35.0
+const CLOSE_FOV := 50.0
+const CLOSE_FOV_NEAR_ZOOM := 12.0
+const CLOSE_FOV_FAR_ZOOM := 48.0
 var world = WorldScript.new()
 var life = LifeScript.new()
 var asset_banks = AssetBankResolverScript.new()
@@ -141,7 +145,7 @@ func _ready() -> void:
 	camera.name = "ShelterPerspectiveCamera"
 	camera.current = true
 	camera.projection = Camera3D.PROJECTION_PERSPECTIVE
-	camera.fov = 35.0
+	camera.fov = BASE_FOV
 	camera.near = 0.1
 	camera.far = 300.0
 	add_child(camera)
@@ -1479,6 +1483,13 @@ func make_residents() -> void:
 
 func update_residents(delta: float = 0.0) -> void:
 	for id in actor_sprites:
+		# Review captures may reseed/reset the world while old visual anchors are
+		# still alive for one frame. Stale visuals must never crash the renderer.
+		if not world.residents.has(id):
+			actor_sprites[id].visible=false
+			if actor_labels.has(id):
+				actor_labels[id].visible=false
+			continue
 		var actor: Dictionary = world.residents[id]
 		var y: float = float(actor.get("visual_y", float(actor.get("level", 0)) * H))
 		var actor_z: float = float(actor.get("z",0.3))
@@ -1951,7 +1962,7 @@ func fit_house_camera() -> void:
 	var bounds: Rect2 = camera_world_bounds()
 	var size: Vector2 = get_viewport().get_visible_rect().size
 	var aspect: float = maxf(1.0, size.x / maxf(1.0,size.y))
-	var angle: float = deg_to_rad(camera.fov * 0.5)
+	var angle: float = deg_to_rad(BASE_FOV * 0.5)
 	# HOUSE is an overview, but it should feel like a Shelter cutaway filling
 	# the viewport rather than a tiny diagram floating in rock.
 	var vertical_dist: float = (bounds.size.y + 1.0) / maxf(0.1, 2.0 * tan(angle))
@@ -2011,7 +2022,7 @@ func fit_level_camera(level: int) -> bool:
 		return false
 	var viewport := get_viewport().get_visible_rect().size
 	var aspect := maxf(1.0,viewport.x/maxf(1.0,viewport.y))
-	var angle := deg_to_rad(camera.fov*0.5)
+	var angle := deg_to_rad(BASE_FOV*0.5)
 	var vertical_dist := (bounds.size.y+1.4)/maxf(0.1,2.0*tan(angle))
 	var horizontal_dist := (bounds.size.x+3.0)/maxf(0.1,2.0*aspect*tan(angle))
 	zoom = clampf(maxf(vertical_dist,horizontal_dist)*1.08,12.0,82.0)
@@ -2324,6 +2335,22 @@ func _unhandled_input(event: InputEvent) -> void:
 					notice.text = room_names.get(room["type"], room["type"])
 				set_mode("ROOM")
 
+func effective_camera_fov() -> float:
+	# HOUSE keeps the restrained overview lens. As the camera approaches a room
+	# we widen the lens and move the camera closer while preserving framing.
+	# That makes the physical 3.6 m X/Z room produce real perspective instead
+	# of relying on a telephoto view plus exaggerated sprite scaling.
+	var close_t:float=1.0-clampf(
+		(zoom_current-CLOSE_FOV_NEAR_ZOOM)/
+		(CLOSE_FOV_FAR_ZOOM-CLOSE_FOV_NEAR_ZOOM),0.0,1.0)
+	return lerpf(BASE_FOV,CLOSE_FOV,close_t)
+
+func effective_camera_distance(view_fov: float = -1.0) -> float:
+	var fov_value:float=view_fov if view_fov>0.0 else effective_camera_fov()
+	var base_tan:float=tan(deg_to_rad(BASE_FOV*0.5))
+	var view_tan:float=maxf(0.01,tan(deg_to_rad(fov_value*0.5)))
+	return zoom_current*base_tan/view_tan
+
 func effective_camera_yaw() -> float:
 	# Close rooms need a genuinely oblique Shelter-like view so X/Z reads as
 	# volume. HOUSE fades toward frontal readability; Q/E remains additive.
@@ -2366,7 +2393,7 @@ func apply_camera(delta: float) -> void:
 			var target := Vector3(float(actor.get("x", 0)),
 				float(actor.get("visual_y", float(actor.get("level", 0))*H)) + 1.05,
 				float(actor.get("z", 0)))
-			var half_height: float = tan(deg_to_rad(camera.fov*0.5))*zoom_current
+			var half_height: float = tan(deg_to_rad(BASE_FOV*0.5))*zoom_current
 			var aspect: float = get_viewport().get_visible_rect().size.aspect()
 			var deadzone_x: float = half_height * aspect * follow_deadzone_ratio
 			var deadzone_y: float = half_height * follow_deadzone_ratio
@@ -2384,11 +2411,15 @@ func apply_camera(delta: float) -> void:
 	var k: float = 1.0 - exp(-4.0 * minf(delta,0.25))
 	smooth_focus = smooth_focus.lerp(desired_focus,k)
 	zoom_current = lerpf(zoom_current,zoom,1.0-exp(-4.6*minf(delta,0.25)))
+	var view_fov:float=effective_camera_fov()
+	camera.fov=view_fov
+	var camera_distance:float=effective_camera_distance(view_fov)
 	var view_yaw: float=effective_camera_yaw()
-	var x_shift := sin(view_yaw) * zoom_current
-	var z_shift := cos(view_yaw) * zoom_current
+	var x_shift := sin(view_yaw) * camera_distance
+	var z_shift := cos(view_yaw) * camera_distance
 	var height_ratio:float=effective_camera_height_ratio()
-	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*height_ratio,z_shift)
+	camera.global_position = smooth_focus + Vector3(
+		x_shift,camera_distance*height_ratio,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
 	update_cutaway_return_visibility()
 	register_loaded_foregrounds()

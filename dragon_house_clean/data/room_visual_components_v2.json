@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "note": "Physical Sprite3D crops from accepted transparent room layers. Crop rectangles are alpha-component bounds; physical X/Y/Z come from calibrated TEEA anchors or the original wall projection. No topology mutation. Components carry explicit anchor_mode and use the same 0.62→1.00 Z depth-scale law as actors.",
+  "note": "Physical Sprite3D crops from accepted transparent room layers. Crop rectangles are alpha-component bounds; physical X/Y/Z come from calibrated TEEA anchors or the original wall projection. No topology mutation. Components carry explicit anchor_mode and use the same mild 0.85→1.00 artistic Z correction as actors; the perspective camera supplies the remaining depth.",
   "pixel_size": 0.003125,
   "variants": {
     "common/R3": {

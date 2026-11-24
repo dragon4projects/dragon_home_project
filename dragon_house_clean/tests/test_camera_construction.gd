@@ -27,11 +27,18 @@ func run() -> void:
 	scene.zoom_current=16.0
 	var close_yaw:float=scene.effective_camera_yaw()
 	var close_height:float=scene.effective_camera_height_ratio()
+	var close_fov:float=scene.effective_camera_fov()
+	var close_distance:float=scene.effective_camera_distance(close_fov)
 	assert(close_yaw>0.14 and close_height>0.16,
 		"Close cutaway must expose X/Z depth, not stay nearly frontal")
+	assert(close_fov>48.0,
+		"Close room view must use a wider perspective lens than HOUSE")
+	assert(close_distance<scene.zoom_current*0.76,
+		"Wider close lens must move the camera closer while preserving framing")
 	scene.zoom_current=50.0
 	assert(scene.effective_camera_yaw()<close_yaw)
 	assert(scene.effective_camera_height_ratio()<close_height)
+	assert(scene.effective_camera_fov()<close_fov)
 	scene.zoom_current=scene.zoom
 	var bounds:Rect2=scene.camera_world_bounds()
 	var viewport:Vector2=scene.get_viewport().get_visible_rect().size

@@ -155,4 +155,6 @@ func connection_between(a: Dictionary, b: Dictionary) -> Dictionary:
 
 func perspective_scale(z: float) -> float:
 	var t: float = clampf((z-BACK_Z)/(FRONT_Z-BACK_Z),0.0,1.0)
-	return lerpf(0.62,1.0,t)
+	# The perspective camera now provides most of the apparent depth. Keep only
+	# a mild artistic correction so far actors/props retain Shelter readability.
+	return lerpf(0.85,1.0,t)

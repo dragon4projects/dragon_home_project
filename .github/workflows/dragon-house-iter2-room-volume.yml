@@ -104,8 +104,9 @@ jobs:
           fi
           cd dragon_house_clean
           mkdir -p private_review
-          xvfb-run -a /tmp/Godot_v4.7.2-stable_linux.x86_64 --path .             --rendering-method gl_compatibility             --script res://tests/capture_v014_review.gd | tee room_volume_render.log
+          xvfb-run -a /tmp/Godot_v4.7.2-stable_linux.x86_64 --path .             --rendering-method gl_compatibility             --script res://tests/capture_v014_review.gd 2>&1 | tee room_volume_render.log
           grep -q "V014_RENDER_REVIEW_PASS" room_volume_render.log
+          ! grep -qE "SCRIPT ERROR|Parse Error|Assertion failed" room_volume_render.log
 
       - name: Upload visual QA immediately
         if: always()

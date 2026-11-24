@@ -19,7 +19,7 @@ const Z_FOR_ROLE := {
 }
 const DEPTH_BACK_Z := -1.95
 const DEPTH_FRONT_Z := 1.65
-const DEPTH_BACK_SCALE := 0.62
+const DEPTH_BACK_SCALE := 0.85
 
 func _visual_depth_scale(z: float) -> float:
 	var t:float=clampf((z-DEPTH_BACK_Z)/(DEPTH_FRONT_Z-DEPTH_BACK_Z),0.0,1.0)

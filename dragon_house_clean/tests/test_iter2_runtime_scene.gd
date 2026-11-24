@@ -45,7 +45,7 @@ func run() -> void:
 	actor["z"]=scene.world.room_space.FRONT_Z
 	scene.update_residents()
 	var front_scale:float=scene.actor_sprites["RES_01"].scale.x
-	assert(absf(back_scale-0.62)<0.01)
+	assert(absf(back_scale-0.85)<0.01)
 	assert(absf(front_scale-1.0)<0.01)
 	assert(back_scale<front_scale)
 	var route:Array=scene.world.find_route(common["id"],scene.world.get_room(4,1)["id"],"RES_01")

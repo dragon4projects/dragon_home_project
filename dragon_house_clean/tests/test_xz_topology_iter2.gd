@@ -67,9 +67,9 @@ func _initialize() -> void:
 		w.room_space.perspective_scale(0.0))
 	assert(w.room_space.perspective_scale(0.0) <
 		w.room_space.perspective_scale(w.room_space.FRONT_Z))
-	assert(absf(w.room_space.perspective_scale(w.room_space.BACK_Z)-0.62)<0.001)
+	assert(absf(w.room_space.perspective_scale(w.room_space.BACK_Z)-0.85)<0.001)
 	assert(absf(w.room_space.perspective_scale(w.room_space.FRONT_Z)-1.0)<0.001)
 	for suffix in ["",".bak",".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(w.save_path+suffix))
-	print("ITER2_XZ_TOPOLOGY_PASS R1/R2/R3 immutable_seed connectors lift rear_wall_station scale_62_100")
+	print("ITER2_XZ_TOPOLOGY_PASS R1/R2/R3 immutable_seed connectors lift rear_wall_station scale_85_100_camera_perspective")
 	quit(0)
