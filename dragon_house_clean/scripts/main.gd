@@ -89,13 +89,13 @@ var door_note_title: Label
 var door_note_text: RichTextLabel
 var catalog_metadata_added := 0
 var palette := {
-	"rock": Color("#665a5b"), "border": Color("#675957"),
-	"rock_light": Color("#83706a"), "wood": Color("#98755d"),
-	"bronze": Color("#ae8860"), "copper": Color("#bd8058"),
-	"couch": Color("#6e253a"), "rug": Color("#5c2d39"),
-	"light": Color("#f0bb78"), "screen": Color("#32516f"),
-	"book": Color("#9a7966"), "floor": Color("#5f5049"),
-	"black": Color("#171418")
+	"rock": Color("#453b3a"), "border": Color("#4b3b35"),
+	"rock_light": Color("#6b574d"), "wood": Color("#805a3c"),
+	"bronze": Color("#a87645"), "copper": Color("#ad6f45"),
+	"couch": Color("#5a2431"), "rug": Color("#4b2530"),
+	"light": Color("#e8a45f"), "screen": Color("#263d54"),
+	"book": Color("#795643"), "floor": Color("#403632"),
+	"black": Color("#120f12")
 }
 var room_names := {
 	"arrival": "Вход", "corridor": "Переход",
@@ -150,13 +150,14 @@ func _ready() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#111018")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#c8b6a6")
-	env.ambient_light_energy = 1.04
+	env.ambient_light_color = Color("#9f856d")
+	env.ambient_light_energy = 0.74
 	ambient.environment = env
 	add_child(ambient)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-30, -23, 0)
-	sun.light_energy = 0.78
+	sun.light_color = Color("#d8aa78")
+	sun.light_energy = 0.60
 	sun.shadow_enabled = false
 	add_child(sun)
 	make_mountain()
@@ -1955,7 +1956,9 @@ func fit_house_camera() -> void:
 	# the viewport rather than a tiny diagram floating in rock.
 	var vertical_dist: float = (bounds.size.y + 1.0) / maxf(0.1, 2.0 * tan(angle))
 	var horizontal_dist: float = (bounds.size.x + 0.8) / maxf(0.1, 2.0 * aspect * tan(angle))
-	zoom = clampf(maxf(horizontal_dist,vertical_dist)*1.01, 12.0, 110.0)
+	# HOUSE is a navigable overview, not a mandatory fit-all blueprint.
+	# A modest crop keeps rooms legible; mouse pan still reaches every edge.
+	zoom = clampf(maxf(horizontal_dist,vertical_dist)*0.87, 12.0, 110.0)
 	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
 
 func update_selection_outline() -> void:
