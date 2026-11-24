@@ -17,7 +17,7 @@ Review rules:
 - TEEA006 runtime assets are hydrated from immutable ZIP SHA-256 `5ae489046eefb6dc3718f2334945bb6fc7786dc59fc0758060e7f7e1d010e275`;
 - TEEA007 base runtime assets are hydrated from immutable ZIP SHA-256 `05f734b2af745a062a4942653834e38149b10301c9bb035b4682ae7004a78cbb`;
 - TEEA007 closure addendum SHA-256 `abc63bc791fb5bd90e08dcc57bf9447df68385373675fec2ecd4a928f562292b` is verified as closure evidence;
-- the TEEA007 base payload contains runtime room art for Vampire Girl and Miu, but no `guest_centaur` room art. Centaur therefore retains procedural room fallback for this review; no replacement interior is invented;
+- the Git-tracked TEEA007 payload manifest omits `guest_centaur` runtime room art, but the immutable SHA-verified base ZIP actually contains a complete 3-layer `guest_centaur/R1` room alongside Vampire Girl and Miu. Runtime review follows the immutable payload bytes; the manifest-vs-ZIP discrepancy remains recorded as a provenance seam;
 - three guests are frozen candidates with autonomy disabled;
 - media surfaces remain unbound unless an explicit binding exists;
 - Shurshun uses delivered `npc_cat_black_hero` and owner `RES_03` per owner decision;
