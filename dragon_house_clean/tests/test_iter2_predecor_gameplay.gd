@@ -2,6 +2,7 @@ extends SceneTree
 const W=preload("res://scripts/world_model.gd")
 const M=preload("res://scripts/media_runtime.gd")
 const V=preload("res://scripts/content_viewer.gd")
+const I=preload("res://scripts/runtime_object_import.gd")
 
 func _initialize()->void:
 	call_deferred("run")
@@ -64,6 +65,22 @@ func run()->void:
 	assert(viewer.open_record("creatures",{"id":"CAT_TEST","display_name":"Cat · owner"},tex))
 	assert(viewer.preview.texture==tex and viewer.title_label.text=="Cat · owner")
 	viewer.queue_free()
+	var image_path:String="user://iter2_import_test.png"
+	assert(image.save_png(image_path)==OK)
+	var object_catalog:String="user://iter2_import_objects.json"
+	var object_file:=FileAccess.open(object_catalog,FileAccess.WRITE)
+	object_file.store_string(JSON.stringify({"posters":[{"id":"IMPORT_POSTER","title":"Imported poster","home_room_id":art["id"],"home_anchor":[0.3,1.4,-1.52],"preview_path":image_path}],"cups":[{"id":"IMPORT_CUP","title":"Imported cup","home_room_id":common["id"],"home_anchor":[0.4,0.4],"preview_path":image_path}]}))
+	object_file.close()
+	var importer=I.new()
+	var imported:Dictionary=importer.import_file(reloaded,object_catalog)
+	assert(bool(imported.get("ok",false)) and int(imported.get("added",0))==2)
+	assert(str(reloaded.physical_object("IMPORT_POSTER")["viewer_category"])=="posters")
+	assert(not reloaded.can_ambient_pickup_object("IMPORT_CUP"))
+	assert(not bool(importer.import_file(reloaded,object_catalog).get("ok",false)))
+	for id in ["IMPORT_POSTER","IMPORT_CUP"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(str(reloaded.physical_object(id)["preview_path"])))
+	for filename in [image_path,object_catalog]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(filename))
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	for suffix in ["",".bak",".tmp",".world_events_v1.json",".world_events_v1.json.bak",".world_events_v1.json.tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path+suffix))

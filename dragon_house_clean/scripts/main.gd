@@ -5,6 +5,7 @@ const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const ContentViewerScript = preload("res://scripts/content_viewer.gd")
+const ObjectImportScript = preload("res://scripts/runtime_object_import.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
@@ -92,6 +93,7 @@ var content_hotspots: Array = []
 var object_home_drag_id := ""
 var object_home_drag_room_id := ""
 var object_home_drag_anchor := Vector2.ZERO
+var object_home_drag_world_x := 0.0
 var bank_gallery: PanelContainer
 var door_note_panel: PanelContainer
 var door_note_title: Label
@@ -1578,6 +1580,8 @@ func make_physical_objects() -> void:
 		object_root.add_child(anchor)
 		var asset_id := str(object.get("asset_id",""))
 		var texture: Texture2D = asset_banks.prop_display_texture(asset_id) if asset_id != "" else null
+		if texture==null and content_viewer!=null:
+			texture=content_viewer._load_preview(str(object.get("preview_path","")))
 		if texture != null:
 			var sprite := Sprite3D.new()
 			sprite.name = "Visual"
@@ -1963,7 +1967,7 @@ func build_interface() -> void:
 	journal_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	journal_panel.add_child(journal_text)
 	var import_button := Button.new()
-	import_button.text = "Импорт книг / фильмов / музыки (JSON)"
+	import_button.text = "Импорт контента / предметов (JSON)"
 	import_button.pressed.connect(func(): catalog_picker.popup_centered_ratio(0.65))
 	hud_main_body.add_child(import_button)
 	hud_help = Label.new()
@@ -1986,7 +1990,7 @@ func build_interface() -> void:
 	catalog_picker = FileDialog.new()
 	catalog_picker.access = FileDialog.ACCESS_FILESYSTEM
 	catalog_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-	catalog_picker.add_filter("*.json", "Media catalog JSON")
+	catalog_picker.add_filter("*.json", "Content catalog JSON")
 	catalog_picker.file_selected.connect(_import_media)
 	root.add_child(catalog_picker)
 
@@ -2156,12 +2160,25 @@ func door_note_at_screen(point:Vector2)->String:
 	return found
 
 func _import_media(path: String) -> void:
-	if world.import_catalog(path):
+	var importer=ObjectImportScript.new()
+	var result:Dictionary=importer.import_file(world,path)
+	if not bool(result.get("ok",false)):
+		notice.text="Ошибка импорта: "+str(result.get("error","unknown"))
+		if int(result.get("added",0))>0:
+			make_physical_objects()
+		update_hud()
+		return
+	if bool(result.get("has_media",false)):
+		if not world.import_catalog(path):
+			notice.text="Предметы добавлены: %d; ошибка медиакаталога" % int(result.get("added",0))
+			make_physical_objects()
+			update_hud()
+			return
 		life.media_runtime.setup(world)
 		media_panel.refresh()
-		notice.text = "Медиатека импортирована: " + path.get_file()
-	else:
-		notice.text = "Ошибка каталога: нужен JSON с books/films/tracks (id, title)"
+	if int(result.get("added",0))>0:
+		make_physical_objects()
+	notice.text="Импорт: %s · предметов %d" % [path.get_file(),int(result.get("added",0))]
 	update_hud()
 
 func toggle_hud() -> void:
@@ -2532,6 +2549,7 @@ func _input(event: InputEvent) -> void:
 					object_home_drag_id=object_id
 					object_home_drag_room_id=room_id
 					object_home_drag_anchor=Vector2(float(raw[0]),float(raw[1]))
+					object_home_drag_world_x=world.room_center_pos(room).x+object_home_drag_anchor.x
 					notice.text="Переставляю %s · отпусти ЛКМ, чтобы назначить новый дом" % [
 						str(object.get("display_name",object_id))]
 					get_viewport().set_input_as_handled()
@@ -2565,15 +2583,15 @@ func _input(event: InputEvent) -> void:
 				var drag_scale:float=zoom_current*0.0019
 				var dragged:Dictionary=world.physical_object(object_home_drag_id)
 				var wall:bool=str(dragged.get("display_mode",""))=="wall"
-				object_home_drag_anchor.x+=e.relative.x*drag_scale
+				object_home_drag_world_x+=e.relative.x*drag_scale
 				if not wall:
 					object_home_drag_anchor.y+=e.relative.y*drag_scale
-				var absolute_x:float=world.room_center_pos(room).x+object_home_drag_anchor.x
+				var absolute_x:float=object_home_drag_world_x
 				var candidate:Dictionary=world.get_room(roundi(absolute_x/W),int(room.get("level",0)))
 				if world.public_cutaway_allowed(candidate) and str(candidate["id"])!=object_home_drag_room_id:
 					room=candidate
 					object_home_drag_room_id=str(room["id"])
-					object_home_drag_anchor.x=absolute_x-world.room_center_pos(room).x
+				object_home_drag_anchor.x=absolute_x-world.room_center_pos(room).x
 				var half_width:float=world.room_space.half_width(room)
 				var edge:float=0.60 if wall else 0.16
 				object_home_drag_anchor.x=clampf(
