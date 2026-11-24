@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "note": "Physical Sprite3D crops from accepted furniture_back layers. Crop rectangles come from alpha components; X/Z come from TEEA002 calibrated furniture anchors/collision footprints. No topology mutation.",
+  "pixel_size": 0.003125,
+  "variants": {
+    "common/R3": {
+      "source_path": "assets/rooms/common/R3/furniture_back.png",
+      "source_sha256": "7809f05cabd1813d9dee93e57562e8aecf63bbff44152b02532641f5b06604a7",
+      "suppress_roles": [
+        "foreground"
+      ],
+      "components": [
+        {
+          "id": "sofa_left",
+          "rect": [
+            333,
+            754,
+            582,
+            230
+          ],
+          "x": -5.25,
+          "y": 0.384375,
+          "z": -0.88,
+          "source_anchor": "common_sofa_left"
+        },
+        {
+          "id": "side_table",
+          "rect": [
+            1091,
+            831,
+            154,
+            153
+          ],
+          "x": -3.55,
+          "y": 0.264062,
+          "z": -0.1,
+          "source_anchor": "common_side_table"
+        },
+        {
+          "id": "chair_left",
+          "rect": [
+            1365,
+            680,
+            246,
+            304
+          ],
+          "x": -2.55,
+          "y": 0.5,
+          "z": -0.72,
+          "source_anchor": "common_chair_left"
+        },
+        {
+          "id": "bench_right",
+          "rect": [
+            3188,
+            696,
+            314,
+            288
+          ],
+          "x": 3.253125,
+          "y": 0.475,
+          "z": -0.82,
+          "source_anchor": "common_bench_right"
+        },
+        {
+          "id": "round_table",
+          "rect": [
+            3502,
+            696,
+            325,
+            288
+          ],
+          "x": 4.251563,
+          "y": 0.475,
+          "z": 0.18,
+          "source_anchor": "common_round_table"
+        },
+        {
+          "id": "chair_right",
+          "rect": [
+            3889,
+            689,
+            254,
+            295
+          ],
+          "x": 5.35,
+          "y": 0.485937,
+          "z": -0.78,
+          "source_anchor": "common_chair_right"
+        }
+      ]
+    },
+    "library/R2": {
+      "source_path": "assets/rooms/library/R2/furniture_back.png",
+      "source_sha256": "99c733d6604dd68810c2af9a7227f46a84ddb92d839e2e47603ff695c7c64621",
+      "suppress_roles": [
+        "foreground"
+      ],
+      "components": [
+        {
+          "id": "chair_left",
+          "rect": [
+            714,
+            674,
+            268,
+            310
+          ],
+          "x": -2.15,
+          "y": 0.509375,
+          "z": -0.68,
+          "source_anchor": "library_chair_left"
+        },
+        {
+          "id": "table",
+          "rect": [
+            1396,
+            781,
+            280,
+            203
+          ],
+          "x": 0,
+          "y": 0.342187,
+          "z": 0.18,
+          "source_anchor": "library_table"
+        },
+        {
+          "id": "chair_right",
+          "rect": [
+            2120,
+            725,
+            208,
+            259
+          ],
+          "x": 2.15,
+          "y": 0.429688,
+          "z": -0.68,
+          "source_anchor": "library_chair_right"
+        }
+      ]
+    }
+  }
+}
