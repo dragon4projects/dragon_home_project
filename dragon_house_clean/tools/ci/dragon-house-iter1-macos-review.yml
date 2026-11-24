@@ -50,8 +50,8 @@ jobs:
           assert d["teea006"]["station_source_gap"] is (d["teea006"]["stations_applied"] == 0)
           assert d["teea007"]["guest_art_layer_count"]["guest_vampire"] == 3
           assert d["teea007"]["guest_art_layer_count"]["guest_miu"] == 3
-          assert d["teea007"]["guest_art_layer_count"]["guest_centaur"] == 0
-          assert d["teea007"]["centaur_room_art_gap"] is True
+          assert d["teea007"]["guest_art_layer_count"]["guest_centaur"] == 3
+          assert d["teea007"]["centaur_room_art_gap"] is False
           print("ITER1_INTAKE_REPORT_PASS",
                 "stations_applied=", d["teea006"]["stations_applied"],
                 "station_source_gap=", d["teea006"]["station_source_gap"],
@@ -156,7 +156,7 @@ jobs:
           Dragon House - Iteration 1 owner-review candidate.
           Candidate TEEA006/007 art remains approved=false / owner_approved=false.
           Candidate review uses a separate save file and does not overwrite accepted room art.
-          Centaur guest room uses procedural fallback because the immutable TEEA007 base payload has no guest_centaur runtime room art.
+          Centaur, Vampire Girl, and Miu guest rooms use immutable TEEA007 candidate room art recovered directly from the SHA-verified payload.
           Guest/media/fauna intake is under review; media hotspots remain unbound unless explicitly assigned.
           macOS build is Universal and unsigned; Gatekeeper may require right-click -> Open.
           NOTE
