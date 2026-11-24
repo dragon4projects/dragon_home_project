@@ -28,9 +28,16 @@ func run() -> void:
 	assert(scene.world.room_size_modules(common)==3)
 	var node:Node3D=scene.room_root.get_node(str(common["id"]))
 	assert(node!=null)
-	var rear:Node3D=node.get_node("Layer_Background/Stage_Backwall")
+	var background:Node3D=node.get_node("Layer_Background")
+	var rear:Node3D=background.get_node("Stage_Backwall")
 	var depth:Node3D=node.get_node("Layer_Structure/Stage_CutawayDepth")
-	assert(rear!=null and depth!=null)
+	var rear_backup:MeshInstance3D=background.get_node("StructuralRearBackup")
+	assert(rear!=null and depth!=null and rear_backup!=null)
+	var rear_box:BoxMesh=rear_backup.mesh as BoxMesh
+	assert(rear_box!=null)
+	var rear_front:float=rear_backup.position.z+rear_box.size.z*0.5
+	assert(rear_front < scene.world.room_space.BACK_Z,
+		"Structural rear wall must stay behind the playable room boundary")
 	assert(_names(rear)==["PhysicalRearWall"],
 		"R3 rear wall must be one continuous physical wall")
 	assert(_names(depth)==["PhysicalDepthVolume"],
@@ -71,6 +78,8 @@ func run() -> void:
 	var furniture_back:Sprite3D=art.get_node_or_null("Art_furniture_back")
 	assert(backdrop!=null and furniture_back!=null)
 	assert(backdrop.position.z < furniture_back.position.z)
+	assert(backdrop.position.z > rear_front,
+		"Backdrop must render in front of the structural rear wall")
 	assert(absf(backdrop.position.z+1.90)<0.01)
 	assert(absf(furniture_back.position.z+0.82)<0.01)
 
