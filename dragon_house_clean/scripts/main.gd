@@ -2521,7 +2521,10 @@ func update_render_lod() -> void:
 			var art_layer: Node3D = group_node.get_node_or_null("Layer_ApprovedArt")
 			var backdrop_loaded: bool = art_layer != null and (
 				art_layer.get_node_or_null("Art_backdrop") != null)
-			rear_stage.visible = near and not backdrop_loaded
+			# The physical rear shell is cheap and is the room's architecture,
+			# not close-range furniture. If a sparse photographic backdrop is
+			# suppressed, the rear wall must remain visible in HOUSE/FREE too.
+			rear_stage.visible = not backdrop_loaded
 		var roof_label: Label3D = group_node.get_node_or_null("RoomRoofLabel")
 		if roof_label != null:
 			roof_label.visible = zoom_current >= 35.0 and current_mode != "FOLLOW"
