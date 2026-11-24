@@ -1113,6 +1113,16 @@ func make_room(group: Dictionary) -> void:
 	var ceiling_slab:=box(structure,Vector3(0,3.055,-0.62),
 		Vector3(span*1.01,0.09,2.72),palette["border"])
 	ceiling_slab.name="CutawayCeilingSlab"
+	if not facade_only and t not in ["cinema","lift"]:
+		var beams:=Node3D.new()
+		beams.name="CeilingDepthBeams"
+		structure.add_child(beams)
+		var beam_i:=0
+		for beam_z in [-1.48,-0.62,0.24]:
+			var beam:=box(beams,Vector3(0,2.91,float(beam_z)),
+				Vector3(maxf(0.6,span-0.38),0.12,0.15),palette["wood"])
+			beam.name="DepthBeam_%d" % beam_i
+			beam_i+=1
 	var front_lip:=box(overlay,Vector3(0,-0.070,1.39),
 		Vector3(span*1.01,0.04,0.075),palette["border"])
 	front_lip.name="CutawayFrontLip"
@@ -2323,6 +2333,22 @@ func effective_camera_height_ratio() -> float:
 	var close_t:float=1.0-clampf((zoom_current-12.0)/36.0,0.0,1.0)
 	return lerpf(0.105,0.185,close_t)
 
+func update_cutaway_return_visibility() -> void:
+	var view_yaw:float=effective_camera_yaw()
+	var cutaway_close:bool=zoom_current<36.0 and absf(view_yaw)>0.045
+	for group_node in room_root.get_children():
+		if not group_node.visible:
+			continue
+		var structure:Node3D=group_node.get_node_or_null("Layer_Structure")
+		if structure==null:
+			continue
+		var left:Node3D=structure.get_node_or_null("ConnectorRearReturn_L")
+		var right:Node3D=structure.get_node_or_null("ConnectorRearReturn_R")
+		if left!=null:
+			left.visible=not (cutaway_close and view_yaw<0.0)
+		if right!=null:
+			right.visible=not (cutaway_close and view_yaw>0.0)
+
 func apply_camera(delta: float) -> void:
 	if follow_id != "" and world.residents.has(follow_id):
 		var actor: Dictionary = world.residents[follow_id]
@@ -2361,6 +2387,7 @@ func apply_camera(delta: float) -> void:
 	var height_ratio:float=effective_camera_height_ratio()
 	camera.global_position = smooth_focus + Vector3(x_shift,zoom_current*height_ratio,z_shift)
 	camera.look_at(smooth_focus,Vector3.UP)
+	update_cutaway_return_visibility()
 	register_loaded_foregrounds()
 
 func update_render_lod() -> void:
