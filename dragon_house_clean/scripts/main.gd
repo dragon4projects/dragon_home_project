@@ -1800,7 +1800,11 @@ func update_residents(delta: float = 0.0) -> void:
 		actor_sprites[id].position = Vector3(actor_x,y,actor_z)
 		var actor_scale:=depth_visual_scale(actor_z)
 		actor_sprites[id].scale=Vector3.ONE*actor_scale
-		actor_sprites[id].visible = semantic_view.actor_visible(actor)
+		var actor_room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+		# An accessible private owner room is still not a public cutaway.
+		# Transit on its front aisle remains visible; interior poses do not.
+		var frontage:bool=world.allows_transit(actor_room) and str(actor.get("phase",""))=="travel" and actor_z>=1.35
+		actor_sprites[id].visible = semantic_view.actor_visible(actor) and (world.public_cutaway_allowed(actor_room) or frontage)
 		if not actor_sprites[id].visible:
 			continue
 		if actor.get("runtime_visual_bound",false):
