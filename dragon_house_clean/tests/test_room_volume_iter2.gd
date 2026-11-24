@@ -85,7 +85,8 @@ func run() -> void:
 	var common_dressing:Node3D=local.get_node_or_null("PhysicalDressing")
 	assert(common_dressing!=null)
 	assert(common_dressing.get_node_or_null("Dressing_Rug")!=null)
-	assert(common_dressing.get_node_or_null("Dressing_CommonSideTable")!=null)
+	assert(common_dressing.get_node_or_null("Dressing_CommonSideTable")==null,
+		"Authored Common furniture must not be duplicated by greybox side-table geometry")
 	var fireplace:Node3D=common_dressing.get_node_or_null("Dressing_Fireplace")
 	assert(fireplace!=null and fireplace.position.z<=-1.0)
 	for child in common_dressing.get_children():
@@ -237,12 +238,26 @@ func run() -> void:
 		"Library R2 must show rear-to-front perspective scaling")
 	assert(absf(lib_table.scale.x-scene.world.room_space.perspective_scale(lib_table.position.z))<0.001)
 
+	var cinema_room:Dictionary=scene.world.get_room(4,0)
+	var cinema_node:Node3D=scene.room_root.get_node(str(cinema_room["id"]))
+	scene._populate_furniture(cinema_node)
+	var cinema_dressing:Node3D=cinema_node.get_node("LocalFurniture/PhysicalDressing")
+	assert(cinema_dressing.get_node_or_null("Dressing_CinemaSeats")==null)
+	assert(cinema_dressing.get_node_or_null("Dressing_Speaker_L")==null)
+	assert(cinema_dressing.get_node_or_null("Dressing_Speaker_R")==null)
+	assert(cinema_dressing.get_node_or_null("Dressing_Curtain_L")==null)
+	assert(cinema_dressing.get_node_or_null("Dressing_Curtain_R")==null)
+	scene._load_room_art(cinema_node)
+	var cinema_art:Node3D=cinema_node.get_node("Layer_ApprovedArt")
+	assert(cinema_art.get_node_or_null("Art_furniture_back")!=null,
+		"Accepted Cinema furniture art must own the visible seating/furniture")
+
 	var artifact_room:Dictionary=scene.world.get_room(1,-1)
 	var artifact_node:Node3D=scene.room_root.get_node(str(artifact_room["id"]))
 	scene._populate_furniture(artifact_node)
 	var artifact_dressing:Node3D=artifact_node.get_node("LocalFurniture/PhysicalDressing")
-	assert(artifact_dressing.get_node_or_null("Dressing_ArtifactPedestal")!=null)
-	assert(artifact_dressing.get_node_or_null("Dressing_ArtifactPedestal/DisplayOrb")!=null)
+	assert(artifact_dressing.get_node_or_null("Dressing_ArtifactPedestal")==null,
+		"Accepted Artifact furniture art must not be duplicated by a greybox pedestal")
 
 	var workshop_room:Dictionary=scene.world.make_room(14,2,"workshop",1,false)
 	var workshop_group:Dictionary=scene.world.merged_group(14,2)
@@ -250,8 +265,9 @@ func run() -> void:
 	var workshop_node:Node3D=scene.room_root.get_node(str(workshop_room["id"]))
 	scene._populate_furniture(workshop_node)
 	var workshop_dressing:Node3D=workshop_node.get_node("LocalFurniture/PhysicalDressing")
-	assert(workshop_dressing.get_node_or_null("Dressing_Forge")!=null)
-	assert(workshop_dressing.get_node_or_null("Dressing_Workbench")!=null)
+	assert(workshop_dressing.get_node_or_null("Dressing_Forge")==null)
+	assert(workshop_dressing.get_node_or_null("Dressing_Workbench")==null,
+		"Accepted Workshop furniture art must own the visible workstation")
 
 	var actor:Dictionary=scene.world.residents["RES_01"]
 	actor["room_id"]=str(common["id"])
