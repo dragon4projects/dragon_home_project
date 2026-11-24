@@ -5,6 +5,7 @@ const PATH := "res://data/interior_layers_v1.json"
 const REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
 const REVIEW_PATH := "res://data/integration_candidates/ITER1_ROOM_ART_REVIEW.json"
 const COMPONENT_PATH := "res://data/room_visual_components_v2.json"
+const REVIEW_COMPONENT_PATH := "res://data/integration_candidates/room_visual_components_iter2_review.json"
 const VALID_ROLES := ["backdrop","back_decor","furniture_back","foreground","front_trim","light_overlay"]
 const VALID_VARIANTS := ["R1","R2","R3"]
 const VALID_IMAGE_FORMATS := ["png","webp","jpg","jpeg"]
@@ -89,19 +90,43 @@ func _load_candidate_overlay() -> void:
 	candidate_config = doc
 	candidate_review_enabled = true
 
-func _load_component_config() -> void:
-	component_config={}
-	if not FileAccess.file_exists(COMPONENT_PATH):
-		return
-	var f:=FileAccess.open(COMPONENT_PATH,FileAccess.READ)
+func _read_component_doc(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var f:=FileAccess.open(path,FileAccess.READ)
 	if f==null:
-		return
+		return {}
 	var parsed=JSON.parse_string(f.get_as_text())
 	f.close()
 	if typeof(parsed)!=TYPE_DICTIONARY or int(parsed.get("schema",0))!=1:
-		push_warning("Room visual component manifest is malformed")
+		push_warning("Room visual component manifest is malformed: "+path)
+		return {}
+	return parsed
+
+func _load_component_config() -> void:
+	component_config=_read_component_doc(COMPONENT_PATH)
+	if not candidate_review_enabled or not FileAccess.file_exists(REVIEW_COMPONENT_PATH):
 		return
-	component_config=parsed
+	var review:Dictionary=_read_component_doc(REVIEW_COMPONENT_PATH)
+	if review.is_empty():
+		return
+	if not bool(review.get("review_only",false)) or bool(review.get("approved",true)) or (
+			bool(review.get("owner_approved",true))):
+		push_warning("Review component overlay violates candidate approval boundary")
+		return
+	var merged_variants:Dictionary={}
+	if typeof(component_config.get("variants",null))==TYPE_DICTIONARY:
+		merged_variants=component_config["variants"].duplicate(true)
+	var review_variants=review.get("variants",{})
+	if typeof(review_variants)!=TYPE_DICTIONARY:
+		return
+	for key in review_variants:
+		merged_variants[key]=review_variants[key]
+	if component_config.is_empty():
+		component_config={"schema":1}
+	component_config["variants"]=merged_variants
+	component_config["review_overlay_loaded"]=true
+	component_config["review_report"]=review.get("report",{})
 
 func _component_variant(room_type: String, width: int) -> Dictionary:
 	if component_config.is_empty():

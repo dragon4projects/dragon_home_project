@@ -27,6 +27,14 @@ jobs:
           git lfs pull
           bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
 
+      - name: Build deterministic review component overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet pillow scipy
+          python3 dragon_house_clean/tools/build_room_visual_components_review.py | tee component_overlay_build.log
+          grep -q "ITER2_COMPONENT_OVERLAY_PASS variants=20" component_overlay_build.log
+
       - name: Godot 4.7.2
         shell: bash
         run: |
@@ -129,6 +137,8 @@ jobs:
             dragon_house_clean/data/integration_candidates/TEEA006_station_source.json
             dragon_house_clean/data/integration_candidates/ITER1_ROOM_ART_REVIEW.json
             dragon_house_clean/data/integration_candidates/furniture_interactions_iter1_review.json
+            dragon_house_clean/data/integration_candidates/room_visual_components_iter2_review.json
+            component_overlay_build.log
           if-no-files-found: ignore
           retention-days: 7
 
