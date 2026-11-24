@@ -52,6 +52,13 @@ func _place(parent: Node3D, asset: String, x: float, z: float,
 		instance.free()
 		push_error("Owner decor invalid bounds: "+asset)
 		return false
+	# Normalize the wide axis of shelves/cabinets to room X before fitting.
+	# Source meshes may be authored sideways; never squeeze an edge-on shelf
+	# to fit the depth limit. Rotation stays at the actual model root.
+	var orientation:=Basis.IDENTITY
+	if asset in ["wooden_display_shelves_01","chinese_commode","worn_metal_rack"] and bounds.size.z>bounds.size.x:
+		orientation=Basis(Vector3.UP,PI*0.5)
+		bounds=Transform3D(orientation,Vector3.ZERO)*bounds
 	var uniform:float=minf(height/bounds.size.y,
 		minf(max_width/bounds.size.x,max_depth/bounds.size.z))
 	var depth:float=float(scale_at.call(z))
@@ -66,10 +73,11 @@ func _place(parent: Node3D, asset: String, x: float, z: float,
 	wrapper.set_meta("physical_width",bounds.size.x*uniform)
 	wrapper.set_meta("physical_depth",bounds.size.z*uniform)
 	wrapper.set_meta("station_furniture_id",station)
+	wrapper.set_meta("normalized_yaw_deg",rad_to_deg(orientation.get_euler().y))
 	parent.add_child(wrapper)
 	var normalized:=Node3D.new()
-	normalized.scale=Vector3.ONE*uniform
-	normalized.position=Vector3(-center.x,-bounds.position.y,-center.z)*uniform
+	normalized.transform=Transform3D(orientation.scaled(Vector3.ONE*uniform),
+		Vector3(-center.x,-bounds.position.y,-center.z)*uniform)
 	wrapper.add_child(normalized)
 	normalized.add_child(instance)
 	return true
@@ -119,7 +127,8 @@ func populate(parent: Node3D, kind: String, width: int, spots: Array, scale_at: 
 				_place(parent,asset,x,clampf(center.y-0.16,-1.30,0.38),0.86,
 					2.25 if points.size()>1 else 0.95,0.82,scale_at,id)
 			"artifact":
-				var is_shelf:bool=lower.contains("shelf")
+				# Preserve the stable legacy station ID, not its obsolete furniture type.
+				var is_shelf:bool=lower.contains("shelf") or lower.contains("pedestal")
 				_place(parent,"wooden_display_shelves_01" if is_shelf else "chinese_commode",
 					x,clampf(center.y-0.43,-1.58,0.25),
 					1.75 if is_shelf else 0.86,1.22,0.56,scale_at,id)

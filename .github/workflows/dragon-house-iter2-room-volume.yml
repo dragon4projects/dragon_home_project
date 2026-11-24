@@ -223,6 +223,28 @@ jobs:
           unzip -l DragonHouse_Iter2_RoomVolume_macOS_Universal.zip | grep -qi 'gdsqlite.*macos.*template_release'
           cp DragonHouse_Iter2_RoomVolume_macOS_Universal.zip DragonHouse_Iter2_RoomVolume_macOS15_M1.zip
 
+      - name: Audit exported Mac PCK (isolated project)
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
+        shell: bash
+        run: |
+          set -euo pipefail
+          audit="$(mktemp -d)"
+          python3 - "$audit" <<'PY'
+          import sys, zipfile, pathlib
+          out=pathlib.Path(sys.argv[1])
+          with zipfile.ZipFile("releases/DragonHouse_Iter2_RoomVolume_macOS15_M1.zip") as z:
+              names=[n for n in z.namelist() if n.endswith(".pck")]
+              assert len(names)==1, names
+              with z.open(names[0]) as src, (out/"mac.pck").open("wb") as dst:
+                  import shutil
+                  shutil.copyfileobj(src,dst)
+          (out/"project.godot").write_text('config_version=5\n[application]\nconfig/name="MacPackAudit"\n')
+          PY
+          cp dragon_house_clean/tools/audit_mac_pack.gd "$audit/audit.gd"
+          timeout 120s /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path "$audit" --script "$audit/audit.gd" -- "$audit/mac.pck" 2>&1 | tee releases/mac_pack_audit.log
+          grep -q MAC_PACK_AUDIT_PASS releases/mac_pack_audit.log
+          ! grep -qE "SCRIPT ERROR|Parse Error|MAC_PACK_AUDIT_FAIL" releases/mac_pack_audit.log
+
       - name: Upload Mac build
         if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         uses: actions/upload-artifact@v4
@@ -231,6 +253,7 @@ jobs:
           path: |
             releases/DragonHouse_Iter2_RoomVolume_macOS15_M1.zip
             releases/mac_export_room_volume.log
+            releases/mac_pack_audit.log
           retention-days: 7
 
       - name: Upload QA
