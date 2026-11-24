@@ -45,12 +45,17 @@ jobs:
           d=json.loads(p.read_text())
           assert d["approved"] is False and d["owner_approved"] is False
           assert d["teea006"]["layers"] == 40
-          assert d["teea006"]["stations"] == 31
+          assert d["teea006"]["stations_claimed"] == 31
+          assert d["teea006"]["stations_applied"] in (0, 31)
+          assert d["teea006"]["station_source_gap"] is (d["teea006"]["stations_applied"] == 0)
           assert d["teea007"]["guest_art_layer_count"]["guest_vampire"] == 3
           assert d["teea007"]["guest_art_layer_count"]["guest_miu"] == 3
           assert d["teea007"]["guest_art_layer_count"]["guest_centaur"] == 0
           assert d["teea007"]["centaur_room_art_gap"] is True
-          print("ITER1_INTAKE_REPORT_PASS", d["teea007"]["guest_art_layer_count"])
+          print("ITER1_INTAKE_REPORT_PASS",
+                "stations_applied=", d["teea006"]["stations_applied"],
+                "station_source_gap=", d["teea006"]["station_source_gap"],
+                "guest_art=", d["teea007"]["guest_art_layer_count"])
           PY
 
       - name: Download official Godot 4.7.2 Linux
