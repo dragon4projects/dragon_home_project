@@ -375,13 +375,14 @@ func texture_for(path: String) -> Texture2D:
 			textures.erase(cache_order.pop_front())
 	return tex
 
-func add_layers(parent: Node3D, room_type: String, width: int, physical_width: float) -> int:
+func add_layers(parent: Node3D, room_type: String, width: int, physical_width: float,
+		native_decor: bool = false) -> int:
 	var count:=0
 	var component_variant:Dictionary=_component_variant(room_type,width)
 	var suppressed:Array=component_variant.get("suppress_roles",[]) if not component_variant.is_empty() else []
 	for item in validated_layers(room_type,width):
 		var role:String=item["role"]
-		if suppressed.has(role):
+		if suppressed.has(role) or (native_decor and role in ["back_decor","furniture_back","foreground"]):
 			continue
 		var source_path:String=str(item["path"])
 		var role_config:Dictionary=_component_role_config(room_type,width,role)
