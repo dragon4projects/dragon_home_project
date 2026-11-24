@@ -1130,11 +1130,18 @@ func make_room(group: Dictionary) -> void:
 			box(overlay,Vector3(edge,0.18,1.31),
 				Vector3(0.16,0.34,0.14),palette["rock"])
 		else:
-			# Only an explicit connector opens the wall.
-			box(structure,Vector3(edge,2.84,-0.61),
-				Vector3(0.16,0.34,2.52),palette["rock_light"])
-			box(structure,Vector3(edge,0.48,-1.82),
+			# The explicit connector occupies the front aisle. Keep a solid
+			# rear-side return so the room still reads as a cutaway volume,
+			# while z≈1.5 remains fully traversable between rooms.
+			var rear_return:=box(structure,Vector3(edge,1.40,-0.58),
+				Vector3(0.14,2.68,2.18),palette["rock"])
+			rear_return.name="ConnectorRearReturn_%s" % ("L" if side<0 else "R")
+			var header:=box(structure,Vector3(edge,2.84,0.73),
+				Vector3(0.16,0.34,0.92),palette["rock_light"])
+			header.name="ConnectorHeader_%s" % ("L" if side<0 else "R")
+			var rear_jamb:=box(structure,Vector3(edge,0.48,-1.82),
 				Vector3(0.18,0.96,0.16),palette["rock_light"])
+			rear_jamb.name="ConnectorRearJamb_%s" % ("L" if side<0 else "R")
 	# Physical R2/R3 rooms deliberately have no internal module ribs.
 	if not facade_only:
 		var overview := Node3D.new()
