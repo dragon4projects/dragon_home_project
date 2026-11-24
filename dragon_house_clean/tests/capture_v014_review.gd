@@ -129,11 +129,37 @@ func capture() -> void:
 	var cinema_size:=_save_view(ProjectSettings.globalize_path(
 		"res://private_review/v014_cinema_activity.png"))
 
+	var artifact:Dictionary=scene.world.get_room(1,-1)
+	scene.selected_room=artifact["id"]
+	scene.set_mode("ROOM")
+	scene.zoom_current=scene.zoom
+	scene.smooth_focus=scene.desired_focus
+	scene.apply_camera(1.0)
+	scene.update_render_lod()
+	await _settle(55)
+	_dump_room_art_state(scene,str(artifact["id"]),"artifact_r1_teea006")
+	var artifact_size:=_save_view(ProjectSettings.globalize_path(
+		"res://private_review/v014_artifact_r1_teea006.png"))
+
+	var workshop:Dictionary=scene.world.make_room(10,2,"workshop",1,false)
+	scene.make_room(scene.world.merged_group(10,2))
+	scene.selected_room=workshop["id"]
+	scene.set_mode("ROOM")
+	scene.zoom_current=scene.zoom
+	scene.smooth_focus=scene.desired_focus
+	scene.apply_camera(1.0)
+	scene.update_render_lod()
+	await _settle(55)
+	_dump_room_art_state(scene,str(workshop["id"]),"workshop_r1_teea006")
+	var workshop_size:=_save_view(ProjectSettings.globalize_path(
+		"res://private_review/v014_workshop_r1_teea006.png"))
+
 	for suffix in ["",".bak",".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(
 			scene.world.save_path+suffix))
-	print("V014_RENDER_REVIEW_PASS house=%dx%d common_R3=%dx%d library_R1=%dx%d music_R1=%dx%d library_R2=%dx%d cinema_activity=%dx%d" % [
+	print("V014_RENDER_REVIEW_PASS house=%dx%d common_R3=%dx%d library_R1=%dx%d music_R1=%dx%d library_R2=%dx%d cinema_activity=%dx%d artifact_R1=%dx%d workshop_R1=%dx%d" % [
 		house_size.x,house_size.y,common_size.x,common_size.y,
 		library_r1_size.x,library_r1_size.y,music_r1_size.x,music_r1_size.y,
-		library_size.x,library_size.y,cinema_size.x,cinema_size.y])
+		library_size.x,library_size.y,cinema_size.x,cinema_size.y,
+		artifact_size.x,artifact_size.y,workshop_size.x,workshop_size.y])
 	quit(0)
