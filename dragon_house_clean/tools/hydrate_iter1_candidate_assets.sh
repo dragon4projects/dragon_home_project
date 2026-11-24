@@ -46,7 +46,9 @@ for p in root.rglob("*.json"):
     except Exception:
         continue
     variants = data.get("room_variants")
-    if not isinstance(variants, dict):
+    if (data.get("schema") != 3 or data.get("approved") is not False
+            or data.get("owner_approved") is not False
+            or not isinstance(variants, dict)):
         continue
     count = sum(len(v.get("stations", [])) for v in variants.values()
                 if isinstance(v, dict) and isinstance(v.get("stations", []), list))
