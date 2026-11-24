@@ -60,8 +60,16 @@ func run() -> void:
 
 	scene._populate_furniture(node)
 	var local:Node3D=node.get_node("LocalFurniture")
-	assert(local.get_child_count()==1)
-	assert(str(local.get_child(0).name)=="PhysicalFurniture")
+	assert(local.get_node_or_null("PhysicalFurniture")!=null)
+	var common_dressing:Node3D=local.get_node_or_null("PhysicalDressing")
+	assert(common_dressing!=null)
+	assert(common_dressing.get_node_or_null("Dressing_Rug")!=null)
+	var fireplace:Node3D=common_dressing.get_node_or_null("Dressing_Fireplace")
+	assert(fireplace!=null and fireplace.position.z<=-1.0)
+	for child in common_dressing.get_children():
+		if child is Node3D and not str(child.name).contains("Rug"):
+			assert((child as Node3D).position.z<0.70,
+				"Solid supplemental dressing must stay behind the front connector aisle")
 	for child in local.get_children():
 		assert(not str(child.name).ends_with("_furniture"))
 
@@ -74,7 +82,8 @@ func run() -> void:
 	assert(scene.room_visual_layout.has_variant("study",3))
 	scene._populate_furniture(study_node)
 	var study_local:Node3D=study_node.get_node("LocalFurniture")
-	assert(study_local.get_child_count()==1)
+	assert(study_local.get_node_or_null("PhysicalDressing")!=null)
+	assert(study_local.get_node("PhysicalDressing").get_node_or_null("Dressing_StudyRug")!=null)
 	var physical:Node3D=study_local.get_node("PhysicalFurniture")
 	assert(physical!=null)
 	assert(physical.get_child_count()>=3,
