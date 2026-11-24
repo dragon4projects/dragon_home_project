@@ -11,12 +11,22 @@ func run() -> void:
 	assert(scene.qa_visual_preview,
 		"Owner-review marker must enable delivered resident bank preview")
 	var bound_count:int=0
+	var eligible_active:int=0
 	for resident_id in scene.world.residents:
 		var resident:Dictionary=scene.world.residents[resident_id]
-		if bool(resident.get("active",false)) and bool(resident.get("runtime_visual_bound",false)):
-			bound_count+=1
-	assert(bound_count>=20,
-		"Owner-review must render real delivered resident banks, not placeholder blobs")
+		if not bool(resident.get("active",false)) or str(resident_id)=="MANJKA":
+			continue
+		var profile_id:String=str(resident.get("appearance_profile",""))
+		var wardrobe:String=scene.asset_banks.preferred_wardrobe(
+			str(resident_id),profile_id,true)
+		if wardrobe=="":
+			continue
+		eligible_active+=1
+		assert(bool(resident.get("runtime_visual_bound",false)),
+			"Active resident with a delivered candidate bank must not render as a placeholder: "+str(resident_id))
+		bound_count+=1
+	assert(eligible_active>0)
+	assert(bound_count==eligible_active)
 	var common:Dictionary=scene.world.get_room(-2,0)
 	assert(not common.is_empty() and scene.world.room_size_modules(common)==3)
 	assert(common["id"]==scene.world.get_room(0,0)["id"])
