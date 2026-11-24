@@ -32,15 +32,25 @@ func _physical_anchor_data(room: Dictionary) -> Array:
 	var width:=clampi(int(room.get("size_modules",1)),1,3)
 	var result:Array=[]
 	var center_index:float=(float(width)-1.0)*0.5
+	var per_module:Array=[]
+	var max_count:=0
 	for module_index in range(width):
 		var module_room:Dictionary=room.duplicate(true)
 		module_room["x"]=int(room.get("x",0))+module_index
-		var module_offset_x:float=(float(module_index)-center_index)*MODULE_W
 		var anchors:Array=furniture.for_room_variant(module_room,width,module_index)
-		for raw in anchors:
+		per_module.append(anchors)
+		max_count=maxi(max_count,anchors.size())
+	# Round-robin across modules: truncating to R1/R2/R3 capacity must not
+	# populate only the left side of a wide physical room.
+	for anchor_index in range(max_count):
+		for module_index in range(width):
+			var anchors:Array=per_module[module_index]
+			if anchor_index>=anchors.size():
+				continue
+			var raw:Dictionary=anchors[anchor_index]
 			var item:Dictionary=raw.duplicate(true)
 			item["id"]="m%d_%s" % [module_index,str(item.get("id","station"))]
-			item["x"]=module_offset_x+float(item.get("x",0.0))
+			item["x"]=(float(module_index)-center_index)*MODULE_W+float(item.get("x",0.0))
 			result.append(item)
 	return result
 
