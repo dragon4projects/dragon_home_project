@@ -96,7 +96,32 @@ jobs:
           xvfb-run -a /tmp/Godot_v4.7.2-stable_linux.x86_64 --path .             --rendering-method gl_compatibility             --script res://tests/capture_v014_review.gd | tee room_volume_render.log
           grep -q "V014_RENDER_REVIEW_PASS" room_volume_render.log
 
+      - name: Upload visual QA immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-Iter2-RoomVolume-Visual-QA
+          path: |
+            dragon_house_clean/godot_import_room_volume.log
+            dragon_house_clean/godot_tests_room_volume.log
+            dragon_house_clean/room_volume_render.log
+            dragon_house_clean/private_review/v014_house.png
+            dragon_house_clean/private_review/v014_common_r3.png
+            dragon_house_clean/private_review/v014_library_r2.png
+            dragon_house_clean/private_review/v014_cinema_activity.png
+            dragon_house_clean/assets/rooms/common/R3/backdrop.png
+            dragon_house_clean/assets/rooms/common/R3/back_decor.png
+            dragon_house_clean/assets/rooms/common/R3/furniture_back.png
+            dragon_house_clean/assets/rooms/common/R3/foreground.png
+            dragon_house_clean/assets/rooms/library/R2/backdrop.png
+            dragon_house_clean/assets/rooms/library/R2/back_decor.png
+            dragon_house_clean/assets/rooms/library/R2/furniture_back.png
+            dragon_house_clean/assets/rooms/library/R2/foreground.png
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Export templates
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         shell: bash
         run: |
           set -euo pipefail
@@ -106,6 +131,7 @@ jobs:
           unzip -jo /tmp/godot_export.tpz templates/version.txt templates/macos.zip -d "$dest"
 
       - name: Export macOS Universal
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         shell: bash
         run: |
           set -euo pipefail
@@ -118,6 +144,7 @@ jobs:
           cp DragonHouse_Iter2_RoomVolume_macOS_Universal.zip DragonHouse_Iter2_RoomVolume_macOS15_M1.zip
 
       - name: Upload Mac build
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         uses: actions/upload-artifact@v4
         with:
           name: DragonHouse-Iter2-RoomVolume-macOS15-M1
@@ -127,7 +154,7 @@ jobs:
           retention-days: 7
 
       - name: Upload QA
-        if: always()
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build]')
         uses: actions/upload-artifact@v4
         with:
           name: DragonHouse-Iter2-RoomVolume-QA
