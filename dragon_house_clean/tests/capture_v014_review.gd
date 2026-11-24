@@ -42,11 +42,12 @@ func capture() -> void:
 	# QA-only synthetic R2: prove that accepted Library R2 art can be
 	# materialized with the exact R2 furniture contract without changing the
 	# seeded production house.
-	var left:Dictionary=scene.world.make_room(-1,2,"library")
-	scene.world.make_room(0,2,"library")
+	var left:Dictionary=scene.world.make_room(-1,2,"library",2,false)
 	scene.make_rooms()
 	var group:Dictionary=scene.world.merged_group(-1,2)
 	assert(int(group["width"])==2)
+	assert(left["id"]==scene.world.get_room(0,2)["id"],
+		"QA R2 must be one physical room, never two auto-merged R1 rooms")
 	scene.selected_room=left["id"]
 	scene.set_mode("ROOM")
 	scene.zoom_current=scene.zoom
