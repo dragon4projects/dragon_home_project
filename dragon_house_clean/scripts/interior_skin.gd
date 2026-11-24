@@ -78,7 +78,7 @@ func _load_candidate_overlay() -> void:
 
 func _safe_path(room_type: String, variant: String, path: String,
 		candidate_review: bool = false) -> bool:
-	if not VALID_VARIANTS.has(variant) or not path.begins_with("assets/rooms/"):
+	if not VALID_VARIANTS.has(variant):
 		return false
 	if path.contains("..") or path.contains("\\") or path.begins_with("/"):
 		return false
@@ -87,6 +87,8 @@ func _safe_path(room_type: String, variant: String, path: String,
 			return false
 		var expected_tail := "/%s/%s/" % [room_type,variant]
 		return path.contains(expected_tail) and VALID_IMAGE_FORMATS.has(path.get_extension().to_lower())
+	if not path.begins_with("assets/rooms/"):
+		return false
 	var allowed_prefix := "assets/rooms/%s/%s/" % [room_type,variant]
 	return path.begins_with(allowed_prefix) and VALID_IMAGE_FORMATS.has(path.get_extension().to_lower())
 

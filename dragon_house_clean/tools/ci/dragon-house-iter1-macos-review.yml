@@ -111,7 +111,7 @@ jobs:
         run: |
           set -euo pipefail
           cd dragon_house_clean
-          result="$(timeout 120s /tmp/Godot_v4.7.2-stable_linux.x86_64             --headless --path . --script res://tests/test_iter1_owner_review.gd 2>&1)" || {
+          result="$(timeout 30s /tmp/Godot_v4.7.2-stable_linux.x86_64             --headless --path . --script res://tests/test_iter1_owner_review.gd 2>&1)" || {
               echo "$result" | tee -a godot_tests_iter1.log
               exit 1
             }
