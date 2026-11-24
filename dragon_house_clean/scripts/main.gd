@@ -178,6 +178,11 @@ func _ready() -> void:
 	qa_visual_preview = iter1_owner_review
 	if iter1_owner_review:
 		world.save_path = "user://dragon_house_iter1_owner_review.json"
+		if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1":
+			if teea008_review.initialize():
+				world.save_path="user://dragon_house_teea008_review.json"
+			else:
+				push_warning("TEEA008 review unavailable: "+teea008_review.error)
 	world.load_or_seed()
 	if iter1_owner_review:
 		if candidate_content.initialize():
@@ -197,8 +202,6 @@ func _ready() -> void:
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
 	life.setup(world)
 	interior_skin.initialize()
-	if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1" and not teea008_review.initialize():
-		push_warning("TEEA008 review unavailable: "+teea008_review.error)
 	if not room_visual_layout.initialize():
 		push_warning("Physical room visual layout unavailable: "+room_visual_layout.error)
 	door_registry.initialize()
@@ -254,7 +257,8 @@ func _ready() -> void:
 	zoom_current = zoom
 	apply_camera(0.1)
 	update_render_lod()
-	notice.text = ("ITER1 OWNER REVIEW · candidate art/guests/fauna · approved=false"
+	notice.text = ("TEEA008 GEOMETRY REVIEW · life paused · approved=false" if teea008_review.enabled else
+		"ITER1 OWNER REVIEW · candidate art/guests/fauna · approved=false"
 		if iter1_owner_review else
 		"Независимый прототип: камера, постройка, автономная жизнь")
 
@@ -1256,6 +1260,7 @@ func _populate_furniture(group_node: Node3D) -> void:
 		if bool(group.get("teea008_review",false)):
 			var review:=Node3D.new()
 			review.name="TEEA008CandidateFurniture"
+			review.set_meta("room_id",str(physical_room["id"]))
 			root.add_child(review)
 			var count:int=teea008_review.populate(review,str(group["art_type"]),int(group["width"]),Callable(self,"depth_visual_scale"))
 			if count==0:
@@ -2120,6 +2125,10 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 		if distance<best:
 			best=distance
 			found={"anchor":node,"category":"creatures","item_id":str(creature_id),"display_name":world.creature_display_label(str(creature_id))}
+	if found.is_empty():
+		var surface:Dictionary=teea008_review.aperture_hit(camera,point)
+		if not surface.is_empty() and world.public_cutaway_allowed(world.room_by_id(str(surface.get("room_id","")))):
+			found=surface
 	return found
 
 func open_content_hotspot(entry: Dictionary) -> bool:
@@ -2128,6 +2137,27 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	var category := str(entry.get("category",""))
 	var item_id := str(entry.get("item_id",""))
 	var record: Dictionary = {}
+	if category=="teea008_surface":
+		var surface:Dictionary=teea008_review.surfaces.get(item_id,{})
+		if surface.is_empty() or not world.public_cutaway_allowed(world.room_by_id(str(entry.get("room_id","")))):
+			return false
+		var bound_category:String=str(surface.get("legacy_runtime_category",""))
+		var bindings:Dictionary=world.runtime_state.get("media_surface_bindings",{})
+		var binding:Dictionary=bindings.get(item_id,{})
+		var bound_id:String=str(binding.get("item_id",""))
+		if bound_id!="" and bound_category in ["books","films","tracks"]:
+			record=life.media_runtime._lookup(bound_category,bound_id)
+			if not record.is_empty():
+				return content_viewer.open_record(bound_category,record)
+		if bound_id!="" and bound_category=="artifacts":
+			return open_content_hotspot({"category":"artifacts","item_id":bound_id})
+		# An unbound physical carrier opens its real catalogue, not a fake title.
+		if bound_category in ["books","films","tracks"]:
+			media_panel.visible=true
+			media_panel.switch_category(bound_category)
+		else:
+			notice.text="Медиадержатель: "+item_id+" · предмет ещё не назначен"
+		return true
 	if category in ["books","films","tracks"]:
 		if entry.has("actor_id"):
 			var actor:Dictionary=world.residents.get(str(entry["actor_id"]),{})
@@ -2900,7 +2930,7 @@ func update_render_lod() -> void:
 				_release_furniture(group_node)
 			furniture.visible=show_furniture
 			if cues != null:
-				cues.visible=not show_furniture and not art_loaded_groups.has(group_node.name)
+				cues.visible=not show_furniture and (bool(group.get("teea008_review",false)) or not art_loaded_groups.has(group_node.name))
 		var cutaway_depth: Node3D = group_node.get_node_or_null(
 			"Layer_Structure/Stage_CutawayDepth")
 		if cutaway_depth != null:
