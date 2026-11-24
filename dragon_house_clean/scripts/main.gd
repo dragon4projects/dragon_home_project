@@ -307,6 +307,17 @@ func box(parent: Node3D, pos: Vector3, size: Vector3, color: Color, emissive: bo
 		node.add_to_group("low_end_micro_detail")
 	return node
 
+func _texture_from_source(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var loaded = load(path)
+		if loaded is Texture2D:
+			return loaded
+	if FileAccess.file_exists(path):
+		var image := Image.new()
+		if image.load(path) == OK:
+			return ImageTexture.create_from_image(image)
+	return null
+
 func make_mountain() -> void:
 	# Tiled original basalt atlas behind the cutaway, not rectangular checkerboard.
 	var shell := Node3D.new()
@@ -315,7 +326,7 @@ func make_mountain() -> void:
 	var rock := box(shell, Vector3(-0.5, -1.0, -5.6), Vector3(83, 26, 0.8), Color("#6f696a"))
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Color("#655d5e")
-	material.albedo_texture = load("res://assets/textures/basalt.jpg")
+	material.albedo_texture = _texture_from_source("res://assets/textures/basalt.jpg")
 	material.roughness = 1.0
 	material.uv1_scale = Vector3(19.0, 6.0, 1.0)
 	rock.material_override = material
