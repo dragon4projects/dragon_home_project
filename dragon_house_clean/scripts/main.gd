@@ -502,7 +502,7 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 	var rear:=Node3D.new()
 	rear.name="PhysicalRearWall"
 	parent.add_child(rear)
-	var rear_panel:=box(rear,Vector3(0,1.49,-2.03),
+	var rear_panel:=box(rear,Vector3(0,1.49,-2.12),
 		Vector3(span-0.42,2.67,0.08),base_color)
 	rear_panel.name="StructuralRearPanel"
 	box(rear,Vector3(-span*0.5+0.16,1.47,-1.59),
