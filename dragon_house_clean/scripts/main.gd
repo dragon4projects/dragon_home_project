@@ -2267,7 +2267,7 @@ func desired_actor_animation(actor: Dictionary) -> String:
 			return str(contact["state"])
 		if str(actor.get("intent",""))=="WATCH_FILM":
 			return "IDLE_N"
-		if str(actor.get("intent","")) in ["GET_COFFEE","TALK_PAIR","REST","SLEEP","READ_BOOK","WORK_CREATE","LISTEN_MUSIC"]:
+		if str(actor.get("intent","")) in ["GET_COFFEE","TALK_PAIR","TALK_GROUP","REST","SLEEP","READ_BOOK","WORK_CREATE","LISTEN_MUSIC"]:
 			# Uncalibrated activity art can contain a seated body. Never use it
 			# at a standing approach point or at a stale furniture claim.
 			return "IDLE_S"
@@ -2290,7 +2290,7 @@ func desired_actor_animation(actor: Dictionary) -> String:
 			"SLEEP":
 				if str(actor.get("station_kind","")) in ["seat","floor_rest"]:
 					requested = str(actor.get("station_pose_hint","SLEEP"))
-			"TALK_PAIR":
+			"TALK_PAIR","TALK_GROUP":
 				# A participant waiting for the other arrival is not talking.
 				var session:Dictionary=life._pair_session(actor)
 				if str(session.get("phase",""))=="active":
