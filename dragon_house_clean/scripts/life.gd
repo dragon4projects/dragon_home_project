@@ -322,7 +322,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("BROWSE_FILMS")
 	if world.media.get("tracks",[]).is_empty():
 		scores.erase("BROWSE_AUDIO")
-	if media_runtime.watch_candidates(str(actor["id"])).is_empty():
+	if media_runtime.watch_candidates(str(actor["id"]),clock).is_empty():
 		scores.erase("WATCH_FILM")
 	if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty():
 		scores.erase("LISTEN_MUSIC")
@@ -682,7 +682,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	# Watching/listening needs a concrete timed simulation record.
 	# A room visit alone is not evidence of completed consumption.
 	if intent=="WATCH_FILM":
-		var playable_films:Array=media_runtime.watch_candidates(str(actor["id"]))
+		var playable_films:Array=media_runtime.watch_candidates(str(actor["id"]),clock)
 		if playable_films.is_empty():
 			actor["until"]=clock+12.0
 			return
@@ -694,11 +694,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 				return
 			concrete_item=candidate_media_bindings.choose_film(str(room["id"]),str(actor["id"]))
 		if concrete_item.is_empty():
-			var previous:Dictionary=media_runtime._lookup("films",str(actor.get("last_watch_id","")))
-			if str(previous.get("media_type",""))=="series" and not media_runtime.next_watch_unit(str(actor["id"]),previous).is_empty():
-				concrete_item=previous
-			else:
-				concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]
+			concrete_item=media_runtime.choose_watch_item(str(actor["id"]),rng,clock)
 		if not media_runtime.can_watch(str(actor["id"]),
 				str(concrete_item.get("id","")),str(room["id"])):
 			actor["until"]=clock+12.0

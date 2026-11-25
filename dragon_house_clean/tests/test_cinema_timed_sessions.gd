@@ -75,5 +75,32 @@ func run()->void:
 	m.setup(copy)
 	assert(m.next_watch_unit("RES_01",series)["season"]==2)
 	assert(m.next_watch_unit("RES_02",series)["season"]==1)
+	var restored:Dictionary=copy.residents["RES_01"]
+	restored["activity_media_id"]="QA_SERIES"
+	var start:float=210000.0
+	assert(m.begin_watch(restored,start))
+	assert(m.finish_watch(restored,start+1800.0))
+	assert(m.begin_watch(restored,start+1801.0))
+	var finale:float=start+1801.0+1920.0
+	assert(m.finish_watch(restored,finale))
+	var row:Dictionary=copy.runtime_state["cinema_progress"]["RES_01"]["QA_SERIES"]
+	assert(row["complete"] and row["completed_count"]==1)
+	var saved_series:Dictionary=m._lookup("films","QA_SERIES")
+	assert(m.next_watch_unit("RES_01",saved_series,finale+W.GAME_DAY_SECONDS-0.01).is_empty())
+	assert(m.next_watch_unit("RES_01",saved_series,finale+W.GAME_DAY_SECONDS)["episode"]==1)
+	assert(not m.begin_watch(restored,finale+1.0))
+	# An authored extension is new material, not a replay.
+	saved_series["latest_episode"]=3
+	saved_series["episode_runtime_seconds"]["2"].append(2000)
+	assert(m.next_watch_unit("RES_01",saved_series,finale+1.0)["episode"]==3)
+	assert(m.begin_watch(restored,finale+1.0))
+	assert(m.finish_watch(restored,finale+2001.0))
+	var repeat_at:float=finale+2001.0+W.GAME_DAY_SECONDS
+	assert(m.begin_watch(restored,repeat_at))
+	assert(restored["watch_session"]["season"]==1 and restored["watch_session"]["episode"]==1)
+	assert(m.finish_watch(restored,repeat_at+2400.0))
+	row=copy.runtime_state["cinema_progress"]["RES_01"]["QA_SERIES"]
+	assert(row["repeat_cycle"]==1 and not row["complete"])
+	assert(m.next_watch_unit("RES_01",saved_series,repeat_at+2400.0)["episode"]==2)
 	print("CINEMA_TIMED_SESSIONS_PASS")
 	quit(0)

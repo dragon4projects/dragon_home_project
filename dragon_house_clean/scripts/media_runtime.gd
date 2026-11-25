@@ -182,40 +182,84 @@ func _book_return_slot(id:String,home:String)->Dictionary:
 func playable(_kind: String) -> Array:
 	return []
 
-func next_watch_unit(actor_id:String,item:Dictionary)->Dictionary:
+func _cinema_history(actor_id:String,id:String)->Dictionary:
+	return world.runtime_state.get("cinema_progress",{}).get(actor_id,{}).get(id,{})
+
+func _episode_key(season:int,episode:int)->String:
+	return "%d:%d" % [season,episode]
+
+func _at_catalog_end(row:Dictionary,item:Dictionary)->bool:
+	var s:int=int(item.get("latest_season",0))
+	var e:int=int(item.get("latest_episode",0))
+	return s>0 and e>0 and int(row.get("last_completed_season",0))==s and int(row.get("last_completed_episode",0))==e
+
+func _unit_repeat_eligible(row:Dictionary,season:int,episode:int,now:float)->bool:
+	var stamps:Dictionary=row.get("unit_completed_at",{})
+	var key:String=_episode_key(season,episode)
+	if not stamps.has(key):return true
+	var last:float=float(stamps[key])
+	return is_finite(now) and is_finite(last) and now-last>=world.GAME_DAY_SECONDS
+
+func next_watch_unit(actor_id:String,item:Dictionary,now:float=-1.0)->Dictionary:
 	if not bool(item.get("simulation_only",false)):return {}
+	var at:float=world.sim_clock if now<0.0 else now
 	var id:String=str(item.get("id",""))
-	if id=="":return {}
-	var progress:Dictionary=world.runtime_state.get("cinema_progress",{}).get(actor_id,{}).get(id,{})
+	if id=="" or not is_finite(at):return {}
+	var progress:Dictionary=_cinema_history(actor_id,id)
 	if str(item.get("media_type",""))=="film":
-		if bool(progress.get("complete",false)) and world.sim_clock-float(progress.get("last_completed_at",0))<world.GAME_DAY_SECONDS:return {}
+		if bool(progress.get("complete",false)) and at-float(progress.get("last_completed_at",0))<world.GAME_DAY_SECONDS:return {}
 		var duration:float=float(item.get("runtime_seconds",0))
 		if duration<=0 or not is_finite(duration):return {}
 		return {"item_id":id,"season":0,"episode":0,"seconds":duration}
 	if str(item.get("media_type",""))!="series":return {}
 	var season:int=int(progress.get("next_season",1))
 	var episode:int=int(progress.get("next_episode",1))
-	# Advance an exhausted season only with explicit evidence of its
-	# completeness. A partial array is NOT a season finale.
-	var completed_seasons:Array=item.get("complete_seasons",[])
-	var current:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
-	if not current.is_empty() and episode>current.size() and completed_seasons.any(func(value):return int(value)==season) and season<int(item.get("latest_season",0)):
-		season+=1
-		episode=1
 	var latest_season:int=int(item.get("latest_season",0))
 	var latest_episode:int=int(item.get("latest_episode",0))
-	if season>latest_season or (season==latest_season and episode>latest_episode):return {}
+	# A legacy caught-up row is also a completed cycle. Only the declared
+	# source boundary counts, never exhaustion of a partially researched array.
+	var restart_cycle:bool=_at_catalog_end(progress,item)
+	if restart_cycle:
+		if at-float(progress.get("last_completed_at",0))<world.GAME_DAY_SECONDS:return {}
+		season=1
+		episode=1
+	# If authoring extended a completed series, use its saved next cursor.
+	# Crossing into a new season still requires explicit completeness.
+	var completed_seasons:Array=item.get("complete_seasons",[])
+	var current:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
+	if not current.is_empty() and episode>current.size() and completed_seasons.any(func(value):return int(value)==season) and season<latest_season:
+		season+=1
+		episode=1
+	if season<1 or season>latest_season or (season==latest_season and episode>latest_episode):return {}
 	var runtimes:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
-	if episode<1 or episode>runtimes.size():return {}
+	if episode<1 or episode>runtimes.size() or not _unit_repeat_eligible(progress,season,episode,at):return {}
 	var duration:float=float(runtimes[episode-1])
 	if duration<=0 or not is_finite(duration):return {}
-	return {"item_id":id,"season":season,"episode":episode,"seconds":duration}
+	return {"item_id":id,"season":season,"episode":episode,"seconds":duration,"restart_cycle":restart_cycle}
 
-func watch_candidates(actor_id:String)->Array:
+func watch_candidates(actor_id:String,now:float=-1.0)->Array:
 	var result:Array=[]
 	for item in world.media.get("films",[]):
-		if not next_watch_unit(actor_id,item).is_empty():result.append(item)
+		if not next_watch_unit(actor_id,item,now).is_empty():result.append(item)
 	return result
+
+func choose_watch_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Dictionary:
+	var options:Array=watch_candidates(actor_id,now)
+	if options.is_empty():return {}
+	var weights:=PackedFloat32Array()
+	for item in options:
+		var id:String=str(item["id"])
+		var row:Dictionary=_cinema_history(actor_id,id)
+		var unit:Dictionary=next_watch_unit(actor_id,item,now)
+		if str(item.get("media_type",""))=="series" and not row.is_empty() and not bool(unit.get("restart_cycle",false)):
+			# An unfinished series or newly added episode is a continuation.
+			weights.append(6.0)
+			continue
+		var n:int=int(row.get("completed_count",1 if not row.is_empty() else 0))
+		var age:float=now-float(row.get("last_completed_at",0))
+		var recovery:float=clampf((age-world.GAME_DAY_SECONDS)/(7.0*world.GAME_DAY_SECONDS),0.0,1.0)
+		weights.append(1.0 if n==0 else lerpf(0.10,0.45+0.10*minf(float(n),4.0),recovery))
+	return options[maxi(0,rng.rand_weighted(weights))]
 
 func timed_session_key(actor:Dictionary)->String:
 	match str(actor.get("intent","")):
@@ -239,8 +283,8 @@ func timed_session_valid(actor:Dictionary,now:float)->bool:
 	var item_id:String=str(actor.get("activity_media_id",""))
 	if item_id=="" or item_id!=str(unit.get("item_id","")):return false
 	if key=="watch_session":
-		if not can_watch(str(actor["id"]),item_id,room_id):return false
-		var expected:Dictionary=next_watch_unit(str(actor["id"]),_lookup("films",item_id))
+		if not can_watch(str(actor["id"]),item_id,room_id,start):return false
+		var expected:Dictionary=next_watch_unit(str(actor["id"]),_lookup("films",item_id),start)
 		return int(expected.get("season",-1))==int(unit.get("season",-2)) and int(expected.get("episode",-1))==int(unit.get("episode",-2))
 	return can_listen(str(actor["id"]),item_id,room_id,start)
 
@@ -250,7 +294,7 @@ func _timed_arrival_valid(actor:Dictionary,now:float,intent:String)->bool:
 	if room_id=="" or room_id!=str(actor.get("station_room_id","")):return false
 	var actor_id:String=str(actor.get("id",""))
 	var item_id:String=str(actor.get("activity_media_id",""))
-	if intent=="WATCH_FILM":return can_watch(actor_id,item_id,room_id)
+	if intent=="WATCH_FILM":return can_watch(actor_id,item_id,room_id,now)
 	if intent=="LISTEN_MUSIC":return can_listen(actor_id,item_id,room_id,now)
 	return false
 
@@ -262,7 +306,7 @@ func begin_watch(actor:Dictionary,now:float)->bool:
 		actor["until"]=float(actor["watch_session"]["ends_at"])
 		return true
 	var item:Dictionary=_lookup("films",str(actor.get("activity_media_id","")))
-	var unit:Dictionary=next_watch_unit(str(actor["id"]),item)
+	var unit:Dictionary=next_watch_unit(str(actor["id"]),item,now)
 	if unit.is_empty():return false
 	unit["started_at"]=now
 	unit["ends_at"]=now+float(unit["seconds"])
@@ -277,7 +321,7 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 	if now<float(unit["ends_at"]):return false
 	var id:String=str(unit["item_id"])
 	var item:Dictionary=_lookup("films",id)
-	var expected:Dictionary=next_watch_unit(str(actor["id"]),item)
+	var expected:Dictionary=next_watch_unit(str(actor["id"]),item,float(unit["started_at"]))
 	if expected.is_empty() or int(expected["season"])!=int(unit["season"]) or int(expected["episode"])!=int(unit["episode"]):return false
 	var all:Dictionary=world.runtime_state.get("cinema_progress",{})
 	var actor_id:String=str(actor["id"])
@@ -285,20 +329,29 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 	var season:int=int(unit["season"])
 	var episode:int=int(unit["episode"])
 	var previous:Dictionary=progress.get(id,{})
-	var row:Dictionary={"last_completed_season":season,"last_completed_episode":episode,"last_completed_at":now,"complete":false,"completed_units":int(previous.get("completed_units",0))+1,"total_seconds":float(previous.get("total_seconds",0))+float(unit["seconds"])}
+	var row:Dictionary=previous.duplicate(true)
+	row.merge({"last_completed_season":season,"last_completed_episode":episode,"last_completed_at":now,"complete":false,"completed_units":int(previous.get("completed_units",0))+1,"total_seconds":float(previous.get("total_seconds",0))+float(unit["seconds"])},true)
+	var stamps:Dictionary=row.get("unit_completed_at",{})
+	stamps[_episode_key(season,episode)]=now
+	row["unit_completed_at"]=stamps
+	var old_count:int=int(previous.get("completed_count",1 if bool(previous.get("complete",false)) else 0))
+	# Migrate an old caught-up record before its first repeat.
+	if _at_catalog_end(previous,item):old_count=maxi(1,old_count)
+	row["completed_count"]=old_count
 	if season==0:
 		row["complete"]=true
-		row["completed_count"]=int(previous.get("completed_count",1 if bool(previous.get("complete",false)) else 0))+1
+		row["completed_count"]=old_count+1
 	else:
 		var latest_season:int=int(item.get("latest_season",0))
 		var latest_episode:int=int(item.get("latest_episode",0))
 		var runtimes:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
-		if season==latest_season and episode>=latest_episode:
-			# Caught up to the source snapshot, not necessarily series finale.
+		row["repeat_cycle"]=int(previous.get("repeat_cycle",0))+(1 if bool(expected.get("restart_cycle",false)) else 0)
+		if season==latest_season and episode==latest_episode:
+			row["complete"]=true
+			row["completed_count"]=old_count+1
 			row["next_season"]=season
 			row["next_episode"]=episode+1
 		elif episode==runtimes.size() and season<latest_season and item.get("complete_seasons",[]).any(func(value):return int(value)==season):
-			# Explicitly verified complete earlier season.
 			row["next_season"]=season+1
 			row["next_episode"]=1
 		else:
@@ -312,10 +365,10 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 	world._append_journal("CINEMA_UNIT_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"season":season,"episode":episode,"seconds":unit["seconds"]})
 	return true
 
-func can_watch(actor_id: String, item_id: String, room_id: String) -> bool:
+func can_watch(actor_id: String, item_id: String, room_id: String, now:float=-1.0) -> bool:
 	if not world.residents.get(actor_id, {}).get("active", false) or world.room_by_id(room_id).get("type", "")!="cinema":return false
 	var item:Dictionary=_lookup("films",item_id)
-	return not next_watch_unit(actor_id,item).is_empty()
+	return not next_watch_unit(actor_id,item,now).is_empty()
 
 func track_duration(item:Dictionary)->float:
 	if not bool(item.get("simulation_only",false)) or not bool(item.get("autonomous_music",false)):return 0.0
