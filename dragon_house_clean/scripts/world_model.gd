@@ -787,58 +787,141 @@ func merge_zna_media_previews() -> int:
 	if changed:save_world()
 	return added
 
+# Local-only catalog ingestion. A partial recovery must not erase researched
+# durations or change the identity of a work with saved resident progress.
+func _positive_catalog_seconds(value)->bool:
+	return typeof(value) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(value)) and float(value)>0.0
+
+func _valid_cinema_record(raw:Dictionary,verify_preview:bool=true)->bool:
+	var id:String=str(raw.get("id",""))
+	if not id.begins_with("FILMIX_") or id.length()<=7 or id.contains("/") or id.contains("\\") or id.contains("..") or str(raw.get("title","")).strip_edges()=="":return false
+	var kind:String=str(raw.get("media_type",""))
+	if not kind in ["film","series"]:return false
+	var path:String=str(raw.get("preview",""))
+	if path!="user://filmix_previews/"+id+".webp":return false
+	if verify_preview:
+		if not FileAccess.file_exists(path):return false
+		var digest:String=str(raw.get("preview_sha256",""))
+		if digest!="" and FileAccess.get_sha256(path)!=digest:return false
+	if kind=="film":
+		var value=raw.get("runtime_seconds",0)
+		return typeof(value) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(value)) and float(value)>=0
+	var season:int=int(raw.get("latest_season",0))
+	var episode:int=int(raw.get("latest_episode",0))
+	if season<0 or episode<0:return false
+	var table=raw.get("episode_runtime_seconds",{})
+	var complete=raw.get("complete_seasons",[])
+	if typeof(table)!=TYPE_DICTIONARY or typeof(complete)!=TYPE_ARRAY:return false
+	for key in table:
+		if not str(key).is_valid_int():return false
+		var s:int=int(key)
+		if s<1 or s>season:return false
+		var values=table[key]
+		if typeof(values)!=TYPE_ARRAY:return false
+		if s==season and episode>0 and values.size()>episode:return false
+		for value in values:
+			if typeof(value) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(value)) or float(value)<0:return false
+	for s_raw in complete:
+		if typeof(s_raw) not in [TYPE_INT,TYPE_FLOAT]:return false
+		var s:int=int(s_raw)
+		if not table.has(str(s)) or table[str(s)].is_empty():return false
+		for value in table[str(s)]:
+			if not _positive_catalog_seconds(value):return false
+	return true
+
+func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
+	if previous.is_empty():return incoming.duplicate(true)
+	# Only identical stable IDs and types enter this function. Preserve
+	# positive old timings against unknown/zero fields in recovered input.
+	var row:Dictionary=incoming.duplicate(true)
+	if str(row.get("media_type",""))=="film":
+		if _positive_catalog_seconds(previous.get("runtime_seconds",0)) and not _positive_catalog_seconds(row.get("runtime_seconds",0)):
+			row["runtime_seconds"]=previous["runtime_seconds"]
+			for field in ["duration_status","duration_source","duration_evidence","runtime_edition"]:
+				if previous.has(field):row[field]=previous[field]
+		return row
+	var ps:int=int(previous.get("latest_season",0))
+	var pe:int=int(previous.get("latest_episode",0))
+	var ns:int=int(row.get("latest_season",0))
+	var ne:int=int(row.get("latest_episode",0))
+	if ps>ns or (ps==ns and pe>ne):
+		row["latest_season"]=ps
+		row["latest_episode"]=pe
+	var old:Dictionary=previous.get("episode_runtime_seconds",{})
+	var updated:Dictionary=row.get("episode_runtime_seconds",{}).duplicate(true)
+	for key in old:
+		if typeof(old[key])!=TYPE_ARRAY:continue
+		var values:Array=updated.get(str(key),[]).duplicate()
+		var prior:Array=old[key]
+		while values.size()<prior.size():values.append(0)
+		for i in range(prior.size()):
+			if not _positive_catalog_seconds(values[i]) and _positive_catalog_seconds(prior[i]):values[i]=prior[i]
+		updated[str(key)]=values
+	row["episode_runtime_seconds"]=updated
+	var complete:Array=row.get("complete_seasons",[]).duplicate()
+	for s in previous.get("complete_seasons",[]):
+		if not complete.has(s):complete.append(s)
+	row["complete_seasons"]=complete
+	var old_sources:Dictionary=previous.get("episode_duration_sources",{}).duplicate(true)
+	old_sources.merge(row.get("episode_duration_sources",{}),true)
+	if not old_sources.is_empty():row["episode_duration_sources"]=old_sources
+	if not old.is_empty() and str(row.get("duration_status",""))=="UNVERIFIED":
+		row["duration_status"]=str(previous.get("duration_status","PARTIAL"))
+		for field in ["duration_source","duration_evidence"]:
+			if previous.has(field):row[field]=previous[field]
+	return row
+
 func load_private_cinema_catalog()->int:
-	# The real cinema bookmarks are private local content. Never ship the
-	# user's list or poster bytes in the public project repository.
+	# No private titles or poster bytes are included in the public project.
+	var path:="user://filmix_catalog.json"
+	var incoming:Array=[]
+	var seen:Dictionary={}
+	if FileAccess.file_exists(path):
+		var file:=FileAccess.open(path,FileAccess.READ)
+		if file==null:return 0
+		var parsed=JSON.parse_string(file.get_as_text())
+		if typeof(parsed)!=TYPE_DICTIONARY or typeof(parsed.get("films",null))!=TYPE_ARRAY:return 0
+		for raw in parsed["films"]:
+			if typeof(raw)!=TYPE_DICTIONARY or not _valid_cinema_record(raw):return 0
+			var id:String=str(raw["id"])
+			if seen.has(id):return 0
+			seen[id]=true
+			var row:Dictionary=raw.duplicate(true)
+			row["simulation_only"]=true
+			row["file_path"]=""
+			row.erase("source_url")
+			incoming.append(row)
 	var changed:=false
 	var kept:Array=[]
-	var archived:Dictionary=runtime_state.get("superseded_zna_film_records",{})
+	var archived:Dictionary=runtime_state.get("superseded_zna_film_records",{}).duplicate(true)
 	for entry in media.get("films",[]):
 		if str(entry.get("classification_authority",""))=="OWNER_20261125_ALL_UNCLASSIFIED_ARE_FILMS":
 			archived[str(entry["id"])]=entry
 			changed=true
-		else:
-			kept.append(entry)
-	media["films"]=kept
-	if changed:
-		runtime_state["superseded_zna_film_records"]=archived
-		save_world()
-	var path:="user://filmix_catalog.json"
-	if not FileAccess.file_exists(path):return 0
-	var file:=FileAccess.open(path,FileAccess.READ)
-	if file==null:return 0
-	var parsed=JSON.parse_string(file.get_as_text())
-	if typeof(parsed)!=TYPE_DICTIONARY or typeof(parsed.get("films",null))!=TYPE_ARRAY:return 0
-	var incoming:Array=[]
-	var seen:Dictionary={}
-	for raw in parsed["films"]:
-		if typeof(raw)!=TYPE_DICTIONARY:return 0
-		var id:String=str(raw.get("id",""))
-		var image:String=str(raw.get("preview",""))
-		if not id.begins_with("FILMIX_") or id.contains("/") or id.contains("\\") or seen.has(id) or str(raw.get("title",""))=="":return 0
-		if image!="user://filmix_previews/"+id+".webp" or not FileAccess.file_exists(image):return 0
-		var row:Dictionary=raw.duplicate(true)
-		row["simulation_only"]=true
-		row["file_path"]=""
-		row.erase("source_url")
-		incoming.append(row)
-		seen[id]=true
-	var records:Array=media.get("films",[])
+		else:kept.append(entry)
 	var index:Dictionary={}
-	for i in range(records.size()):index[str(records[i].get("id",""))]=i
+	for i in range(kept.size()):index[str(kept[i].get("id",""))]=i
 	var count:=0
 	for row in incoming:
-		var id:String=row["id"]
+		var id:String=str(row["id"])
 		if not index.has(id):
-			index[id]=records.size()
-			records.append(row)
+			index[id]=kept.size()
+			kept.append(row)
 			count+=1
 			changed=true
-		elif records[int(index[id])]!=row:
-			records[int(index[id])]=row
-			changed=true
-	media["films"]=records
-	if changed:save_world()
+		else:
+			var at:int=int(index[id])
+			var previous:Dictionary=kept[at]
+			if str(previous.get("media_type",""))!=str(row.get("media_type","")):return 0
+			var merged:Dictionary=_merge_cinema_record(previous,row)
+			if not _valid_cinema_record(merged,false):return 0
+			if previous!=merged:
+				kept[at]=merged
+				changed=true
+	if changed:
+		media["films"]=kept
+		runtime_state["superseded_zna_film_records"]=archived
+		save_world()
 	return count
 
 func read_resident_profiles() -> Array:
