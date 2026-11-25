@@ -281,6 +281,9 @@ func refresh_changed_station_claims() -> int:
 		if str(actor.get("cup_task_stage",""))=="fetch":
 			_clear_cup_task(actor)
 		_cancel_pair_for(actor,"STATION_LAYOUT_CHANGED")
+		if bool(actor.get("social_cancelled_lift",false)):
+			changed+=1
+			continue
 		stations.release(actor)
 		actor["phase"]="idle"
 		actor["waypoints"]=[]
@@ -476,7 +479,9 @@ func _pair_session(actor:Dictionary)->Dictionary:
 	var sessions=world.runtime_state.get("pair_sessions",{})
 	if typeof(sessions)!=TYPE_DICTIONARY:return {}
 	var row=sessions.get(str(actor.get("social_session_id","")),{})
-	return row if typeof(row)==TYPE_DICTIONARY else {}
+	if typeof(row)!=TYPE_DICTIONARY or typeof(row.get("members",null))!=TYPE_ARRAY:return {}
+	if not row["members"].has(str(actor.get("id",""))):return {}
+	return row
 
 func _create_pair_session(actor:Dictionary,partner:Dictionary,room:Dictionary,deadline:float)->void:
 	var serial:int=int(world.runtime_state.get("pair_session_serial",0))+1
@@ -496,45 +501,104 @@ func _create_pair_session(actor:Dictionary,partner:Dictionary,room:Dictionary,de
 	_schedule_actor(partner,"PAIR_ASSEMBLING")
 	world._append_journal("PAIR_RESERVED",a,sid,"",str(room["id"]),{"members":[a,b]})
 
+func _social_member_valid(sid:String,row:Dictionary,id:String,room:Dictionary)->bool:
+	var actor:Dictionary=world.residents.get(id,{})
+	var kind:String=str(row.get("kind","pair"))
+	if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or not world.is_accessible(room,id):return false
+	if str(actor.get("social_session_id",""))!=sid or str(actor.get("intent",""))!=("TALK_GROUP" if kind=="group" else "TALK_PAIR"):return false
+	if kind=="pair":
+		var ids:Array=row["members"]
+		var i:int=ids.find(id)
+		if i<0 or ids.size()!=2 or str(actor.get("partner_id",""))!=str(ids[1-i]):return false
+	elif str(actor.get("partner_id",""))!="":return false
+	var phase:String=str(actor.get("phase",""))
+	var room_id:String=str(room["id"])
+	if phase not in ["travel","perform"] or str(actor.get("station_room_id",""))!=room_id:return false
+	var anchor:String=str(actor.get("station_anchor_id",""))
+	if anchor=="" or anchor!=str(row["stations"].get(id,"")):return false
+	var point=actor.get("station_point",[])
+	if typeof(point)!=TYPE_ARRAY or point.size()!=2:return false
+	for coordinate in point:
+		if typeof(coordinate) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(coordinate)):return false
+	if phase=="perform":
+		if str(actor.get("room_id",""))!=room_id:return false
+		var expected:Vector3=world.room_local_to_world(room,Vector2(float(point[0]),float(point[1])))
+		var actual:=Vector3(float(actor.get("x",0.0)),float(actor.get("visual_y",expected.y)),float(actor.get("z",0.0)))
+		if not actual.is_finite() or actual.distance_to(expected)>0.12:return false
+	if str(row.get("phase",""))=="active" and phase!="perform":return false
+	return true
+
 func _pair_members_valid(sid:String,row:Dictionary)->bool:
 	var ids=row.get("members",[])
 	var kind:String=str(row.get("kind","pair"))
 	if kind not in ["pair","group"] or typeof(ids)!=TYPE_ARRAY:return false
 	if (kind=="pair" and ids.size()!=2) or (kind=="group" and (ids.size()<3 or ids.size()>6)):return false
-	var expected_intent:String="TALK_GROUP" if kind=="group" else "TALK_PAIR"
-	var seen:Dictionary={}
-	var claims=row.get("stations",{})
-	if typeof(claims)!=TYPE_DICTIONARY:return false
-	var room_id:String=str(row.get("room_id",""))
-	var room:Dictionary=world.room_by_id(room_id)
+	if typeof(row.get("stations",null))!=TYPE_DICTIONARY:return false
+	var room:Dictionary=world.room_by_id(str(row.get("room_id","")))
 	if room.is_empty() or str(room.get("privacy","public"))!="public":return false
+	var seen:Dictionary={}
 	var anchors:Array=[]
 	var positions:Array=[]
-	for i in range(ids.size()):
-		var id:String=str(ids[i])
-		if id=="" or seen.has(id):return false
+	for raw_id in ids:
+		var id:String=str(raw_id)
+		if id=="" or seen.has(id) or not _social_member_valid(sid,row,id,room):return false
 		seen[id]=true
-		var actor:Dictionary=world.residents.get(id,{})
-		if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or not world.is_accessible(room,id):return false
-		if str(actor.get("social_session_id",""))!=sid or str(actor.get("intent",""))!=expected_intent:return false
-		if kind=="pair" and str(actor.get("partner_id",""))!=str(ids[1-i]):return false
-		if kind=="group" and str(actor.get("partner_id",""))!="":return false
-		if str(actor.get("phase","")) not in ["travel","perform"] or str(actor.get("station_room_id",""))!=room_id:return false
-		var anchor:String=str(actor.get("station_anchor_id",""))
-		if anchor=="" or anchor!=str(claims.get(id,"")) or anchors.has(anchor):return false
+		var actor:Dictionary=world.residents[id]
+		var anchor:String=str(actor["station_anchor_id"])
+		if anchors.has(anchor):return false
 		anchors.append(anchor)
-		var station_point=actor.get("station_point",[])
-		if typeof(station_point)!=TYPE_ARRAY or station_point.size()!=2:return false
-		positions.append(Vector2(float(station_point[0]),float(station_point[1])))
-		if str(actor.get("phase",""))=="perform":
-			if str(actor.get("room_id",""))!=room_id:return false
-			var point=actor.get("station_point",[])
-			if typeof(point)!=TYPE_ARRAY or point.size()!=2:return false
-			var expected:Vector3=world.room_local_to_world(room,Vector2(float(point[0]),float(point[1])))
-			var actual:=Vector3(float(actor.get("x",0.0)),float(actor.get("visual_y",expected.y)),float(actor.get("z",0.0)))
-			if actual.distance_to(expected)>0.12:return false
-		if str(row.get("phase",""))=="active" and str(actor.get("phase",""))!="perform":return false
+		var point:Array=actor["station_point"]
+		positions.append(Vector2(float(point[0]),float(point[1])))
 	return kind=="pair" or stations.group_geometry(room,positions)
+
+# Remove only identified departures. A conflicting surviving geometry is
+# not repaired by teleportation or arbitrarily selecting a different group.
+func _try_group_departures(sid:String,row:Dictionary,departures:Array,reason:String)->bool:
+	if str(row.get("kind","pair"))!="group" or departures.is_empty():return false
+	if typeof(row.get("members",null))!=TYPE_ARRAY or typeof(row.get("stations",null))!=TYPE_DICTIONARY:return false
+	var original:Array=row["members"]
+	if original.size()<3 or original.size()>6:return false
+	var unique:Dictionary={}
+	for raw_id in original:
+		var id:String=str(raw_id)
+		if id=="" or unique.has(id):return false
+		unique[id]=true
+	var survivors:Array=[]
+	var claims:Dictionary={}
+	for id in original:
+		if departures.has(str(id)):continue
+		survivors.append(id)
+		claims[id]=row["stations"].get(id,"")
+	var proposed:Dictionary=row.duplicate(true)
+	proposed["members"]=survivors
+	proposed["stations"]=claims
+	if not _pair_members_valid(sid,proposed):return false
+	# Keep the shared timeline unchanged. Leaving is not full completion.
+	row["members"]=survivors
+	row["stations"]=claims
+	for raw_id in original:
+		var id:String=str(raw_id)
+		if not departures.has(id):continue
+		var actor:Dictionary=world.residents.get(id,{})
+		if not actor.is_empty() and str(actor.get("social_session_id",""))==sid:
+			actor.erase("social_session_id")
+			actor.erase("partner_id")
+			actor.erase("social_facing_xz")
+			if str(actor.get("intent",""))=="TALK_GROUP":_reset_pair_actor(actor)
+		world._append_journal("GROUP_LEFT",id,sid,str(row.get("room_id","")),"",{"reason":reason,"remaining":survivors})
+	_update_pair(world.residents[str(survivors[0])],true)
+	return true
+
+func _repair_group_members(sid:String,row:Dictionary,reason:String)->bool:
+	if str(row.get("kind","pair"))!="group" or typeof(row.get("members",null))!=TYPE_ARRAY or typeof(row.get("stations",null))!=TYPE_DICTIONARY:return false
+	var room:Dictionary=world.room_by_id(str(row.get("room_id","")))
+	if room.is_empty() or str(room.get("privacy","public"))!="public":return false
+	var departures:Array=[]
+	for raw_id in row["members"]:
+		var id:String=str(raw_id)
+		if not _social_member_valid(sid,row,id,room):departures.append(id)
+	return _try_group_departures(sid,row,departures,reason)
+
 
 func _reset_pair_actor(actor:Dictionary)->void:
 	actor.erase("social_facing_xz")
@@ -582,7 +646,11 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 
 func _cancel_pair_for(actor:Dictionary,reason:String)->void:
 	var sid:String=str(actor.get("social_session_id",""))
-	if sid!="":_finish_pair(sid,false,reason)
+	var row:Dictionary=_pair_session(actor)
+	if not row.is_empty():
+		if _try_group_departures(sid,row,[str(actor.get("id",""))],reason):return
+		_finish_pair(sid,false,reason)
+	# An orphan backlink must never close a session it does not belong to.
 	# Legacy links never prove an actual conversation or completion.
 	var partner_id:String=str(actor.get("partner_id",""))
 	actor.erase("social_session_id")
@@ -600,7 +668,8 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 		_cancel_pair_for(actor,"NO_SESSION")
 		return
 	if not _pair_members_valid(sid,row):
-		_finish_pair(sid,false,"PARTICIPANT_OR_STATION_INVALID")
+		if not _repair_group_members(sid,row,"PARTICIPANT_OR_STATION_INVALID"):
+			_finish_pair(sid,false,"PARTICIPANT_OR_STATION_INVALID")
 		return
 	var phase:String=str(row.get("phase",""))
 	var duration:float=float(row.get("duration_seconds",0.0))
@@ -661,8 +730,12 @@ func reconcile_pair_sessions()->void:
 	for raw_sid in sessions.keys().duplicate():
 		var sid:String=str(raw_sid)
 		var row=sessions[sid]
-		if typeof(row)!=TYPE_DICTIONARY or not _pair_members_valid(sid,row):
+		if typeof(row)!=TYPE_DICTIONARY:
 			_finish_pair(sid,false,"RESTORE_INVALID_SESSION")
+			continue
+		if not _pair_members_valid(sid,row):
+			if not _repair_group_members(sid,row,"RESTORE_INVALID_MEMBER"):
+				_finish_pair(sid,false,"RESTORE_INVALID_SESSION")
 			continue
 		_update_pair(world.residents[str(row["members"][0])],true)
 	for actor in world.residents.values():
