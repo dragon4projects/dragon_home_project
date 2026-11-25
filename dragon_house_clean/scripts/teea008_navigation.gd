@@ -504,7 +504,7 @@ func book_slots(room:Dictionary)->Array:
 	if book_slot_cache.has(variant):
 		return book_slot_cache[variant]
 	var out:Array=[]
-	if str(room.get("type",""))!="library":
+	if not str(room.get("type","")) in ["library","rest"]:
 		return out
 	var row:Dictionary=layouts.get(variant,{})
 	var used:Dictionary={}
@@ -528,6 +528,20 @@ func book_slots(room:Dictionary)->Array:
 			if float(p[1])<0.35 or float(p[1])>1.65 or float(fit[0])<0.16 or float(fit[1])<0.18 or float(fit[2])<0.045:
 				continue
 			out.append({"id":str(slot["room_slot_id"]),"station_id":station_id,"xyz":p,"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
+	# Measured rest-room surfaces with an existing accessible approach.
+	if str(room.get("type",""))=="rest":
+		for item in row.get("instances",[]):
+			if not str(item.get("asset_id","")).to_lower().contains("table"):continue
+			for slot in item.get("support_slots",[]):
+				var sid:String=str(slot.get("room_slot_id",""))
+				var p:Array=slot.get("room_xyz",[])
+				var fit:Array=slot.get("max_dimensions_m",[])
+				if used.has(sid) or str(slot.get("status",""))!="MEASURED_SURFACE_CANDIDATE" or p.size()!=3 or fit.size()!=3:continue
+				if float(fit[0])<0.16 or float(fit[1])<0.18 or float(fit[2])<0.045:continue
+				for spot in spots:
+					if str(spot.get("cup_slot_id",""))==sid:
+						out.append({"id":sid,"station_id":str(spot["id"]),"xyz":p,"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
+						break
 	out.sort_custom(func(a,b):return str(a["id"])<str(b["id"]))
 	book_slot_cache[variant]=out
 	return out

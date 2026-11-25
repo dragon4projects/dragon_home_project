@@ -533,6 +533,14 @@ func housekeeping_age(object:Dictionary)->float:
 func housekeeping_slot_free(object:Dictionary,room_id:String,anchor:Array,support_id:String)->bool:
 	if anchor.size()!=2:return false
 	if support_id!="":
+		# Books, cups and other objects cannot share one physical support.
+		for book_id in runtime_state.get("teea008_book_slot_assignments",{}):
+			if str(book_id)==str(object.get("id","")):continue
+			var assigned:Dictionary=runtime_state["teea008_book_slot_assignments"][book_id]
+			if str(assigned.get("room_id",""))==room_id and str(assigned.get("slot_id",""))==support_id:return false
+		for actor in residents.values():
+			if not bool(actor.get("active",false)):continue
+			if str(actor.get("book_task_id",""))!=str(object.get("id","")) and str(actor.get("book_task_stage",""))=="return" and str(actor.get("book_return_room",""))==room_id and str(actor.get("book_return_slot",""))==support_id:return false
 		for actor in residents.values():
 			if not bool(actor.get("active",false)):continue
 			if str(actor.get("cup_task_id",""))==str(object.get("id","")):continue
@@ -1159,7 +1167,7 @@ func import_catalog(path: String) -> bool:
 			var updated:Dictionary=old.duplicate(true)
 			updated.merge(incoming,true)
 			if category=="books":
-				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id","last_interaction_at","physical_item_id","work_id"]:
+				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id","last_interaction_at","physical_item_id","work_id","home_slot_id"]:
 					if old.has(field):
 						updated[field]=old[field]
 				if bool(old.get("physical",true)):

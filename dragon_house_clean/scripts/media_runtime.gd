@@ -142,7 +142,6 @@ func choose_book_options(actor_id:String,rng:RandomNumberGenerator,now:float,rec
 	if not target.is_empty():
 		for copy in available:
 			if book_work_id(copy)==book_work_id(target):
-				if record_wait:_set_wait(actor_id,"")
 				return [copy]
 		if record_wait:_set_wait(actor_id,book_work_id(target))
 		available=detours
@@ -193,9 +192,12 @@ func begin_reading(actor:Dictionary,now:float,duration:float)->bool:
 	var remaining:float=maxf(0.0,book_reading_length(book)-float(row["progress"]))
 	if remaining<=0:return false
 	var seconds:float=minf(duration,remaining)
-	actor["reading_session"]={"book_id":str(book["id"]),"room_id":str(actor["room_id"]),"started_at":now,"ends_at":now+seconds}
+	actor["reading_session"]={"book_id":str(book["id"]),"room_id":str(actor["room_id"]),"started_at":now,"ends_at":now+seconds,"seconds":seconds,"progress_at_start":float(row["progress"])}
 	actor["until"]=now+seconds
-	_reading_state(id)["current_work_id"]=book_work_id(book)
+	var state:Dictionary=_reading_state(id)
+	state["current_work_id"]=book_work_id(book)
+	if str(state.get("wait_work_id",""))!="" and str(state["wait_work_id"])!=book_work_id(book):state["detour_work_id"]=book_work_id(book)
+	else:state.erase("detour_work_id")
 	world._append_journal("BOOK_READING_RESUME" if float(row["progress"])>0 else "BOOK_READING_START",id,str(book["id"]),"",str(actor["room_id"]),{"progress":row["progress"],"ends_at":actor["until"]})
 	return true
 
@@ -208,7 +210,11 @@ func reading_session_valid(actor:Dictionary,now:float)->bool:
 	var rid:String=str(actor.get("room_id",""))
 	var start:float=float(s.get("started_at",-1))
 	var end:float=float(s.get("ends_at",-1))
-	return not book.is_empty() and str(book.get("holder_id",""))==id and str(actor.get("held_book",""))==str(book["id"]) and str(actor.get("phase",""))=="perform" and str(actor.get("intent",""))=="READ_BOOK" and rid==str(s.get("room_id","")) and rid==str(actor.get("station_room_id","")) and world.is_accessible(world.room_by_id(rid),id) and is_finite(start) and is_finite(end) and is_finite(now) and start>=0 and start<=now and end>start and end-start<=book_reading_length(book)
+	if book.is_empty() or str(book.get("holder_id",""))!=id or str(actor.get("held_book",""))!=str(book["id"]) or str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="READ_BOOK" or rid!=str(s.get("room_id","")) or rid!=str(actor.get("station_room_id","")) or not world.is_accessible(world.room_by_id(rid),id):return false
+	var seconds:float=float(s.get("seconds",0))
+	var progress:float=float(s.get("progress_at_start",-1))
+	var row:Dictionary=book_history(id,book)
+	return is_finite(start) and is_finite(end) and is_finite(now) and is_finite(seconds) and is_finite(progress) and start>=0 and start<=now and seconds>0 and absf(end-start-seconds)<0.001 and progress>=0 and absf(progress-float(row.get("progress",0)))<0.001 and seconds<=book_reading_length(book)-progress+0.001 and not bool(row.get("complete",false))
 
 func pause_reading(actor:Dictionary,now:float)->bool:
 	var valid:bool=reading_session_valid(actor,now)
@@ -226,6 +232,9 @@ func pause_reading(actor:Dictionary,now:float)->bool:
 	var elapsed:float=maxf(0.0,minf(now,end)-start)
 	if elapsed<=0:return false
 	if not read(id,book_id,elapsed):return false
+	var state:Dictionary=_reading_state(id)
+	state.erase("current_work_id")
+	state["last_work_id"]=book_work_id(book)
 	if not bool(book_history(id,book).get("complete",false)):world._append_journal("BOOK_READING_PAUSE",id,book_id,str(actor["room_id"]),"",{"seconds":elapsed})
 	return true
 
@@ -243,6 +252,7 @@ func borrow(actor_id: String, book_id: String, now: int = 0) -> bool:
 		return false
 	if not _book_copy_available(actor_id,book) or not book_eligible(actor_id,book,float(now)):
 		return false
+	if str(_reading_state(actor_id).get("wait_work_id",""))==book_work_id(book):_set_wait(actor_id,"")
 	book["holder_id"] = actor_id
 	book["location_room_id"] = ""
 	book["idle_since"] = 0
@@ -267,6 +277,7 @@ func read(actor_id:String,book_id:String,seconds:float)->bool:
 		row["completed_count"]=int(row.get("completed_count",0))+1
 		row["last_completed_at"]=world.sim_clock
 		var state:Dictionary=_reading_state(actor_id)
+		state["last_completed_work_id"]=book_work_id(book)
 		state["recent"].append(book_work_id(book))
 		if state["recent"].size()>32:state["recent"].pop_front()
 		var sid:String=_series_id(book)
@@ -324,7 +335,8 @@ func _rolling_book_returns(now:float)->int:
 		var home:String=str(book.get("home_room_id",""))
 		var previous:String=str(book.get("location_room_id",""))
 		var holder:String=str(book.get("holder_id",""))
-		if holder=="" and previous==home:continue
+		var assigned:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{}).get(id,{})
+		if holder=="" and previous==home and (str(book.get("home_slot_id",""))=="" or str(book.get("home_slot_id",""))==str(assigned.get("slot_id",""))):continue
 		var last:float=float(book.get("last_interaction_at",now))
 		var age:float=now-last
 		if age<=world.RETURN_PREPARE_SECONDS:continue
@@ -372,7 +384,9 @@ func _book_return_slot(id:String,home:String)->Dictionary:
 	if not preferred.is_empty():
 		rooms.erase(preferred)
 		rooms.push_front(preferred)
+	var book:Dictionary=_lookup("books",id)
 	var prior:Dictionary=assignments.get(id,{})
+	if str(book.get("home_slot_id",""))!="":prior={"room_id":home,"slot_id":str(book["home_slot_id"])}
 	for room in rooms:
 		if not world.public_cutaway_allowed(room):continue
 		var rid:String=str(room["id"])
@@ -383,7 +397,7 @@ func _book_return_slot(id:String,home:String)->Dictionary:
 				slots.push_front(slot)
 				break
 		for slot in slots:
-			if used.has(rid+"|"+str(slot["id"])):continue
+			if used.has(rid+"|"+str(slot["id"])) or not _book_support_free(id,rid,slot):continue
 			var result:Dictionary=slot.duplicate(true)
 			result["room_id"]=rid
 			return result
@@ -915,6 +929,10 @@ func borrow_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
 	world._append_journal("BOOK_PICKED_UP_AT_SHELF",actor_id,book_id,room_id,actor_id,{"station_id":str(actor.get("station_anchor_id","")),"shelf_slot_id":str(slot.get("id",""))})
 	return true
 
+func _book_support_free(book_id:String,room_id:String,slot:Dictionary)->bool:
+	var p:Array=slot.get("xyz",[])
+	return p.size()==3 and world.housekeeping_slot_free({"id":book_id},room_id,[p[0],p[2]],str(slot.get("id","")))
+
 func free_book_slot(book_id:String,room:Dictionary)->Dictionary:
 	if candidate_navigation==null or not world.public_cutaway_allowed(room):return {}
 	var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
@@ -928,7 +946,7 @@ func free_book_slot(book_id:String,room:Dictionary)->Dictionary:
 		var entry:Dictionary=assignments[id]
 		if str(entry.get("room_id",""))==str(room["id"]):occupied[str(entry["slot_id"])]=true
 	for slot in candidate_navigation.book_slots(room):
-		if not occupied.has(str(slot["id"])):return slot
+		if not occupied.has(str(slot["id"])) and _book_support_free(book_id,str(room["id"]),slot):return slot
 	return {}
 
 func return_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
@@ -946,9 +964,13 @@ func return_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
 				for other in world.runtime_state.get("teea008_book_slot_assignments",{}):
 					var entry:Dictionary=world.runtime_state["teea008_book_slot_assignments"][other]
 					if str(other)!=book_id and str(entry.get("room_id",""))==room_id and str(entry.get("slot_id",""))==wanted:used=true
-				if not used:slot=candidate.duplicate(true);slot["room_id"]=room_id
+				if not used and _book_support_free(book_id,room_id,candidate):
+					slot=candidate.duplicate(true)
+					slot["room_id"]=room_id
 				break
 		if slot.is_empty() or str(slot.get("room_id",""))!=room_id or str(actor.get("station_anchor_id",""))!=str(slot["station_id"]):return false
+	if not world.is_accessible(world.room_by_id(room_id),actor_id) or not world.public_cutaway_allowed(world.room_by_id(room_id)):return false
+	if candidate_navigation!=null and not _book_support_free(book_id,room_id,slot):return false
 	if not return_book(actor_id,book_id,room_id):
 		return false
 	if candidate_navigation!=null:
@@ -986,6 +1008,7 @@ func install_canonical_book_catalog()->Dictionary:
 			book["catalog_only"]=false
 			book["physical_item_id"]=id
 			book["home_room_id"]=str(room["id"])
+			book["home_slot_id"]=str(slot["id"])
 			book["location_room_id"]=str(room["id"])
 			book["holder_id"]=""
 			book["last_interaction_at"]=world.sim_clock

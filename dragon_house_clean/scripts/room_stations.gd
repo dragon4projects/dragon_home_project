@@ -542,8 +542,13 @@ func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary
 		claim["pose_hint"]="IDLE_S"
 		return claim
 	if intent in ["FETCH_BOOK","RETURN_BOOK"]:
-		if str(room.get("type",""))!="library" or kind!="standing" or not str(spot.get("candidate_asset_id","")).contains("shelf") or spot.get("candidate_supports",[]).is_empty():
-			return {}
+		if kind!="standing":return {}
+		var compatible:bool=false
+		for support in candidate_navigation.book_slots(room):
+			if str(support.get("station_id",""))==str(spot.get("id","")):
+				compatible=true
+				break
+		if not compatible:return {}
 		claim["pose_hint"]="VIEW"
 		return claim
 	if intent in ["REST","SLEEP","READ_BOOK","TALK_PAIR","LISTEN_MUSIC"]:
