@@ -149,6 +149,7 @@ const INTENTS := {
 
 func setup(p_world) -> void:
 	world = p_world
+	clock = world.sim_clock
 	var previously_initialized:bool=bool(world.runtime_state.get("teea008_navigation_initialized",false))
 	if candidate_navigation!=null:
 		stations.candidate_navigation=candidate_navigation
@@ -165,9 +166,12 @@ func setup(p_world) -> void:
 		canonical_lifts.setup(world)
 		creature_runtime.canonical_lifts=canonical_lifts
 	rng.seed = 814223
-	clock = world.sim_clock
+	# Restore catalogue possession before station reconciliation can invalidate
+	# a route or erase its presentation cache.
+	reconcile_book_possession()
 	stations.reconcile(world)
 	stations.migrate_legacy_positions(world)
+	reconcile_book_possession()
 	reconcile_concrete_media()
 	# Rolling restoration uses only simulation time, including after reload.
 	media_runtime.tick_book_home_reset()
@@ -185,6 +189,7 @@ func setup(p_world) -> void:
 	life_scheduler.restore(saved_scheduler,active_ids,clock,idle_retry_seconds,3.0)
 	if candidate_navigation!=null:
 		_migrate_review_geometry(previously_initialized)
+		reconcile_book_possession()
 	if candidate_navigation!=null:
 		for id in reconcile_cup_tasks():
 			if active_ids.has(id):
@@ -1174,6 +1179,112 @@ func _concrete_media_is_valid(actor: Dictionary) -> bool:
 		return media_runtime.can_listen(str(actor.get("id","")),item_id,destination_id)
 	return false
 
+# Catalogue possession is authoritative; actor task/label fields are caches.
+# Never borrow a second copy or move a book to a shelf to repair a snapshot.
+func reconcile_book_possession()->int:
+	var by_holder:Dictionary={}
+	var issues:Array=[]
+	for raw in world.media.get("books",[]):
+		if typeof(raw)!=TYPE_DICTIONARY or not bool(raw.get("physical",true)):continue
+		var holder:String=str(raw.get("holder_id",""))
+		if holder=="":continue
+		if not world.residents.has(holder):
+			issues.append({"reason":"UNKNOWN_BOOK_HOLDER","book_id":str(raw.get("id",""))})
+			continue
+		if not by_holder.has(holder):by_holder[holder]=[]
+		by_holder[holder].append(str(raw["id"]))
+	var repaired:int=0
+	var reserved:Dictionary={}
+	var ids:Array=world.residents.keys()
+	ids.sort()
+	for raw_id in ids:
+		var id:String=str(raw_id)
+		var actor:Dictionary=world.residents[id]
+		var copies:Array=by_holder.get(id,[])
+		copies.sort()
+		var cached:String=str(actor.get("held_book",""))
+		var task:String=str(actor.get("book_task_id",""))
+		var stage:String=str(actor.get("book_task_stage",""))
+		if copies.size()>1:
+			issues.append({"reason":"MULTIPLE_BOOKS_HELD","actor_id":id,"book_ids":copies.duplicate()})
+		if not copies.is_empty():
+			# Preserve an existing correct reference first. Extra copies stay
+			# held in the catalogue and are recovered sequentially on return.
+			var actual:String=cached if copies.has(cached) else str(copies[0])
+			if cached!=actual:
+				actor["held_book"]=actual
+				repaired+=1
+			if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):continue
+			if candidate_navigation==null:
+				if str(actor.get("activity_media_category","")) in ["","books"]:_set_concrete_media(actor,"books",media_runtime._lookup("books",actual))
+				continue
+			var valid_stage:bool=task==actual and stage in ["read","return","return_wait"]
+			if valid_stage and stage=="read":
+				valid_stage=(str(actor.get("phase",""))=="travel" and _book_recovery_route_valid(actor,str(actor.get("station_room_id","")))) or media_runtime.reading_session_valid(actor,clock)
+			if valid_stage and stage=="return":
+				valid_stage=str(actor.get("phase",""))=="travel" and _book_recovery_route_valid(actor,str(actor.get("book_return_room",""))) and media_runtime.book_return_claim_valid(actor)
+			if valid_stage:continue
+			# Never replace an independent commitment. Wait until it ends.
+			if actor.has("social_session_id") or actor.has("social_join_session_id") or actor.has("watch_session") or actor.has("listen_session") or actor.has("cup_task_stage"):
+				issues.append({"reason":"BOOK_HELD_WITH_OTHER_COMMITMENT","actor_id":id,"book_id":actual})
+				continue
+			media_runtime.pause_reading(actor,clock)
+			_clear_book_task(actor)
+			actor["book_task_id"]=actual
+			actor["book_task_stage"]="return_wait"
+			actor["intent"]="RETURN_BOOK"
+			actor.erase("activity_media_category")
+			actor.erase("activity_media_id")
+			actor.erase("activity_media_title")
+			_reset_recovered_book_route(actor)
+			repaired+=1
+			continue
+		if cached!="":
+			actor.erase("held_book")
+			repaired+=1
+		if candidate_navigation==null:continue
+		if stage=="fetch":
+			var book:Dictionary=media_runtime._lookup("books",task)
+			var room_id:String=str(actor.get("book_source_room",""))
+			var slot:Dictionary=media_runtime.book_slot(task)
+			if not book.is_empty() and bool(actor.get("active",false)) and bool(actor.get("autonomy_enabled",true)) and str(book.get("holder_id",""))=="" and str(book.get("location_room_id",""))==room_id and not reserved.has(task) and world.is_accessible(world.room_by_id(room_id),id) and not slot.is_empty() and str(slot.get("room_id",""))==room_id and str(slot.get("station_id",""))==str(actor.get("station_anchor_id","")) and _book_recovery_route_valid(actor,room_id):
+				reserved[task]=id
+				continue
+		if stage!="" or str(actor.get("intent","")) in ["FETCH_BOOK","RETURN_BOOK"] or (cached!="" and str(actor.get("intent",""))=="READ_BOOK"):
+			actor.erase("reading_session")
+			_clear_book_task(actor)
+			if str(actor.get("activity_media_category",""))=="books":
+				actor.erase("activity_media_category")
+				actor.erase("activity_media_id")
+				actor.erase("activity_media_title")
+			if str(actor.get("intent","")) in ["FETCH_BOOK","RETURN_BOOK","READ_BOOK"]:
+				actor["intent"]="REST"
+				_reset_recovered_book_route(actor)
+			repaired+=1
+	world.runtime_state["book_recovery_issues"]=issues
+	return repaired
+
+func _book_recovery_route_valid(actor:Dictionary,room_id:String)->bool:
+	if room_id=="" or str(actor.get("phase",""))!="travel" or str(actor.get("station_room_id",""))!=room_id:return false
+	var points=actor.get("waypoints",[])
+	var idx:int=int(actor.get("waypoint_index",0))
+	return typeof(points)==TYPE_ARRAY and idx>=0 and idx<points.size() and typeof(points[-1])==TYPE_DICTIONARY and str(points[-1].get("kind",""))=="station" and str(points[-1].get("room_id",""))==room_id
+
+func _reset_recovered_book_route(actor:Dictionary)->void:
+	stations.release(actor)
+	if world.canonical_house_seed and canonical_lifts._vertical(actor) and canonical_lifts._in_air(actor):
+		actor["book_recovery_lift_drain"]=true
+		return
+	if world.canonical_house_seed:canonical_lifts.release(actor)
+	actor.erase("book_recovery_lift_drain")
+	actor["phase"]="idle"
+	actor["route"]=[]
+	actor["waypoints"]=[]
+	actor["waypoint_index"]=0
+	actor["until"]=clock
+	moving_ids.erase(str(actor.get("id","")))
+	wake_actor(str(actor.get("id","")),"BOOK_RECOVERY")
+
 func reconcile_concrete_media() -> int:
 	# Saves from before v0.14 may contain a real borrowed book but no concrete
 	# media metadata. That identity is recoverable from holder_id and is safe
@@ -1191,6 +1302,7 @@ func reconcile_concrete_media() -> int:
 			var stage:String=str(actor["book_task_stage"])
 			var book:Dictionary=media_runtime._lookup("books",str(actor.get("book_task_id","")))
 			var valid:bool=not book.is_empty() and ((stage=="fetch" and str(book.get("holder_id",""))=="" and str(book.get("location_room_id",""))==str(actor.get("book_source_room","")) and str(actor.get("phase",""))=="travel") or (stage in ["read","return","return_wait"] and str(book.get("holder_id",""))==str(id)))
+			if valid and stage=="return_wait":continue
 			if not valid:
 				_clear_book_task(actor)
 				actor.erase("held_book")
@@ -1572,6 +1684,10 @@ func _move(actor: Dictionary, delta: float) -> void:
 		actor["waypoint_index"] = idx + 1
 		if world.canonical_house_seed and str(point["kind"])=="lift" and (idx+1>=waypoints.size() or str(waypoints[idx+1]["kind"])!="lift"):
 			canonical_lifts.release(actor)
+			if bool(actor.get("book_recovery_lift_drain",false)):
+				_reset_recovered_book_route(actor)
+				_schedule_actor(actor,"BOOK_LIFT_DRAINED")
+				return
 			if bool(actor.get("social_cancelled_lift",false)):
 				actor.erase("social_cancelled_lift")
 				_reset_pair_actor(actor)
@@ -1727,6 +1843,8 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 					_schedule_actor(actor,"CUP_RETURN_RETRY")
 					return
 		_clear_cup_task(actor)
+	if candidate_navigation!=null and actor.has("held_book") and not actor.has("book_task_stage"):
+		reconcile_book_possession()
 	if candidate_navigation!=null and actor.has("book_task_stage"):
 		if _continue_book_task(actor):
 			_schedule_actor(actor,"BOOK_TASK")
@@ -1921,6 +2039,8 @@ func _arrive_book_shelf(actor:Dictionary)->void:
 	actor["waypoint_index"]=0
 	actor["until"]=clock+3.0
 	moving_ids.erase(id)
+	# Recover any extra catalogue-held copy only after the real return.
+	reconcile_book_possession()
 	_schedule_actor(actor,"BOOK_FINISHED")
 
 func _continue_book_task(actor:Dictionary)->bool:
