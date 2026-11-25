@@ -58,7 +58,14 @@ func sign_text(owner_id:String,profiles:Array,debug:bool=false)->String:
 		return fallback
 	return owner_id if debug else "ЛИЧНОЕ"
 
+func _local_note_path(owner_id:String)->String:
+	# Read only explicit, locally installed door-note files. Never scan other personal folders.
+	if not owner_id in ["RES_03","RES_04","RES_07","RES_08","RES_20"]:return ""
+	return "user://house_content/door_notes/"+owner_id+"/00_ДВЕРЬ.md"
+
 func has_public_note(owner_id:String)->bool:
+	var local:=_local_note_path(owner_id)
+	if local!="" and FileAccess.file_exists(local):return true
 	var entry:Dictionary=doors.get(owner_id,{})
 	var path:String=str(entry.get("note_path",""))
 	return bool(entry.get("owner_public_note",false)) and path.begins_with(NOTE_ROOT) and FileAccess.file_exists(path)
@@ -66,6 +73,7 @@ func has_public_note(owner_id:String)->bool:
 func note_text(owner_id:String)->String:
 	if not has_public_note(owner_id):
 		return ""
-	var path:String=str(doors[owner_id]["note_path"])
+	var local:=_local_note_path(owner_id)
+	var path:String=local if local!="" and FileAccess.file_exists(local) else str(doors.get(owner_id,{}).get("note_path",""))
 	var f:=FileAccess.open(path,FileAccess.READ)
 	return "" if f==null else f.get_as_text()

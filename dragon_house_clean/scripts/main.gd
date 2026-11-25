@@ -1504,13 +1504,26 @@ func make_room(group: Dictionary) -> void:
 			sign="Резерв"
 		var door_label := label3(n,sign,Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
 		door_label.name = "RoomRoofLabel"
-		if t=="private" and door_registry.has_public_note(owner_id):
+		if architecture_review and t=="private":
+			# Public front only. The 0.3m transit lane remains in front of this wall.
+			var front:=Node3D.new()
+			front.name="PrivateFrontWall"
+			n.add_child(front)
+			var wing:float=(span-2.08)*0.5
+			for side in [-1.0,1.0]:
+				box(front,Vector3(float(side)*(1.04+wing*0.5),1.525,0.97),Vector3(wing,3.05,0.18),palette["rock"])
+			box(front,Vector3(0,2.925,0.97),Vector3(2.08,0.25,0.18),palette["rock"])
+			if owner_id!="":
+				var sign_node:=label3(front,sign,Vector3(1.72,2.28,1.10),20,Color("#eadfc8"))
+				sign_node.name="DoorOwnerSign"
+				sign_node.pixel_size=0.003
+		if t=="private" and (door_registry.has_public_note(owner_id) or (architecture_review and owner_id!="")):
 			# Public framed note is a clickable threshold object, never interior access.
-			box(n,Vector3(-0.58,1.67,1.19),Vector3(0.52,0.70,0.055),palette["bronze"])
-			box(n,Vector3(-0.58,1.67,1.225),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
+			box(n,Vector3(1.72 if architecture_review else -0.58,1.67,1.19),Vector3(0.52,0.70,0.055),palette["bronze"])
+			box(n,Vector3(1.72 if architecture_review else -0.58,1.67,1.225),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
 			var note_anchor:=Node3D.new()
 			note_anchor.name="DoorPublicNoteAnchor"
-			note_anchor.position=Vector3(-0.58,1.67,1.27)
+			note_anchor.position=Vector3(1.72 if architecture_review else -0.58,1.67,1.27)
 			n.add_child(note_anchor)
 			door_note_anchors[str(private_room["id"])]=note_anchor
 	else:
@@ -1674,6 +1687,9 @@ func update_creatures(delta: float = 0.0) -> void:
 		var creature_z: float = float(creature.get("z",0.25))
 		var creature_x:float=depth_visual_x(
 			str(creature.get("room_id","")),float(creature.get("x",0.0)),creature_z)
+		if architecture_review and str(creature.get("bank_id","")).contains("sphere"):
+			# Visual levitation only; navigation and lift occupancy stay grounded.
+			y+=0.70+0.08*sin(float(world.sim_clock)*2.1)
 		anchor.position = Vector3(creature_x,y,creature_z)
 		var creature_scale:=depth_visual_scale(creature_z)
 		anchor.scale=Vector3.ONE*creature_scale
@@ -2372,7 +2388,10 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 		if not surface.is_empty() and world.public_cutaway_allowed(world.room_by_id(str(surface.get("room_id","")))):
 			var item:Dictionary=teea008_media_bindings.resolve(str(surface["room_id"]),str(surface["item_id"]))
 			if not item.is_empty():
-				surface["display_name"]=str(item.get("title",item.get("display_name",surface["item_id"])))
+				surface["display_name"]=str(item.get("title",item.get("display_name","Без названия")))
+			elif architecture_review:
+				var category:String=str(teea008_review.surfaces.get(str(surface["item_id"]),{}).get("legacy_runtime_category",""))
+				surface["display_name"]={"books":"Книжная полка","artifacts":"Полка артефактов","tracks":"Аудиопроигрыватель","films":"Экран / афиша"}.get(category,"Место для контента")
 			found=surface
 	return found
 
@@ -2456,7 +2475,7 @@ func open_door_note(room_id:String)->bool:
 		return false
 	var owner_id:String=str(room.get("owner_id",""))
 	var body:String=door_registry.note_text(owner_id)
-	if body=="":
+	if body=="" and (not architecture_review or owner_id==""):
 		return false
 	door_note_title.text=door_registry.sign_text(owner_id,world.read_resident_profiles())
 	door_note_text.text=body
@@ -3395,6 +3414,11 @@ func _update_teea008_media_previews()->void:
 		var room_id:String=str(anchor.get_meta("room_id",""))
 		var surface_id:String=str(anchor.get_meta("surface_id",""))
 		var item:Dictionary=teea008_media_bindings.resolve(room_id,surface_id)
+		# Real furniture/device is the interaction surface, never a floating cover quad.
+		if bool(anchor.get_meta("direct_carrier",false)):
+			var old_preview:MeshInstance3D=anchor.get_node_or_null("BoundPreview")
+			if old_preview!=null:old_preview.free()
+			continue
 		var path:String=str(item.get("preview",item.get("preview_path","")))
 		if str(anchor.get_meta("preview_source",""))==path:
 			continue

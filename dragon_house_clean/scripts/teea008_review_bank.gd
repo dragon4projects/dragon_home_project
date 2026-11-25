@@ -86,7 +86,7 @@ func initialize(force_review:bool=false) -> bool:
 func variant(kind:String, width:int)->Dictionary:
 	return layouts.get("%s/R%d" % [kind,width],{}) if enabled else {}
 
-func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->Node3D:
+func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true,support_items:Dictionary={})->Node3D:
 	var asset:String=str(item["asset_id"])
 	var position:Array=item["room_local_xyz"]
 	var rotation:Array=item["rotation_deg_xyz"]
@@ -108,6 +108,14 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->
 	# room coordinates as metadata for inspection.
 	var depth:float=float(scale_at.call(z))
 	wrapper.position=Vector3(float(position[0])*depth,float(position[1]),z)
+	# A supported child must use its carrier coordinate transform, not a second
+	# independent depth warp. This fixes render-space gaps even when physical AABBs touch.
+	var support_id:String=str(item.get("support_ref","")).get_slice(".",0)
+	if not support_items.has(support_id):support_id=str(item.get("decor_slot_id","")).get_slice(".",0)
+	if support_items.has(support_id):
+		var carrier:Array=support_items[support_id]["room_local_xyz"]
+		depth=float(scale_at.call(float(carrier[2])))
+		wrapper.position=Vector3(float(position[0])*depth,float(carrier[1])+(float(position[1])-float(carrier[1]))*depth,float(carrier[2])+(z-float(carrier[2]))*depth)
 	wrapper.rotation_degrees=Vector3(float(rotation[0]),float(rotation[1]),float(rotation[2]))
 	wrapper.scale=Vector3.ONE*float(item.get("uniform_scale",1.0))*depth
 	wrapper.set_meta("candidate_instance_id",str(item["instance_id"]))
@@ -134,10 +142,12 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 	var row:Dictionary=variant(kind,width)
 	var count:=0
 	var nodes:Dictionary={}
+	var support_items:Dictionary={}
+	for item in row.get("instances",[]):support_items[str(item["instance_id"])]=item
 	for item in row.get("instances",[]):
 		if live_physical_objects and str(item.get("asset_id","")) in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:
 			continue
-		var wrapper:Node3D=_mount(parent,item,scale_at)
+		var wrapper:Node3D=_mount(parent,item,scale_at,true,support_items)
 		if wrapper!=null:
 			nodes[str(item["instance_id"])]=wrapper
 			count+=1
@@ -147,7 +157,17 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 			continue
 		var holder:Dictionary=spec.get("holder_instance",{})
 		var carrier:Node3D
-		if holder.is_empty():
+		var direct_carrier:=false
+		var category:String=str(spec.get("legacy_runtime_category",""))
+		var carrier_id:String=str(spec.get("carrier_instance_id",""))
+		if str(row.get("variant_id","")) in ["library/R3","artifact/R3","music/R3"] and category in ["books","artifacts","tracks"]:
+			if category=="tracks":
+				var audio_ids:Dictionary={"music.r3.audio.01":"music_r3_p2_boombox","music.r3.audio.02":"music_r3_p2_cassette","music.r3.audio.03":"music_cassette_deck"}
+				carrier_id=str(audio_ids.get(str(id),""))
+			if not nodes.has(carrier_id):continue
+			carrier=nodes[carrier_id]
+			direct_carrier=true
+		elif holder.is_empty():
 			# Three screens already exist in the room layout: never duplicate.
 			carrier=nodes.get(str(spec.get("carrier_instance_id","")))
 		else:
@@ -160,9 +180,22 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 		var anchor:=Node3D.new()
 		anchor.name="Aperture_"+str(id).validate_node_name()
 		anchor.position=Vector3(float(center[0]),float(center[1]),float(center[2]))
+		if direct_carrier:
+			var item:Dictionary=support_items[carrier_id]
+			var lo:Array=item["bounds_min_m"]
+			var hi:Array=item["bounds_max_m"]
+			var origin:Array=item["room_local_xyz"]
+			var factor:float=maxf(0.001,float(item.get("uniform_scale",1.0)))
+			anchor.position=Vector3((float(lo[0])+float(hi[0]))*0.5-float(origin[0]),(float(lo[1])+float(hi[1]))*0.5-float(origin[1]),float(hi[2])-float(origin[2])+0.008)/factor
+			anchor.set_meta("direct_carrier",true)
 		anchor.set_meta("surface_id",str(id))
 		anchor.set_meta("surface_category",str(spec["legacy_runtime_category"]))
 		anchor.set_meta("surface_size",Vector2(float(aperture["width_m"]),float(aperture["height_m"])))
+		if direct_carrier:
+			var item:Dictionary=support_items[carrier_id]
+			var lo:Array=item["bounds_min_m"]
+			var hi:Array=item["bounds_max_m"]
+			anchor.set_meta("surface_size",Vector2(float(hi[0])-float(lo[0]),float(hi[1])-float(lo[1]))/maxf(0.001,float(item.get("uniform_scale",1.0))))
 		anchor.set_meta("room_id",str(parent.get_meta("room_id","")))
 		anchor.set_meta("owner_approved",false)
 		carrier.add_child(anchor)
@@ -308,12 +341,14 @@ func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->i
 	# resources can use Godot mesh LOD; no media hotspots or running fire clips.
 	var row:Dictionary=variant(kind,width)
 	var count:=0
+	var support_items:Dictionary={}
+	for item in row.get("instances",[]):support_items[str(item["instance_id"])]=item
 	for item in row.get("instances",[]):
 		var asset:String=str(item["asset_id"])
 		var policy:String=str(item.get("placement_policy",""))
 		if policy not in ["floor_fixed","soft_floor"] and asset not in ["media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
 			continue
-		var wrapper:Node3D=_mount(parent,item,scale_at,false)
+		var wrapper:Node3D=_mount(parent,item,scale_at,false,support_items)
 		if wrapper==null:continue
 		for player in wrapper.find_children("*","AnimationPlayer",true,false):
 			player.stop()
