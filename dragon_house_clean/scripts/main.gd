@@ -1997,7 +1997,7 @@ func update_residents(delta: float = 0.0) -> void:
 			str(actor.get("room_id","")),float(actor.get("x",0.0)),actor_z)
 		actor_sprites[id].position = Vector3(actor_x,y,actor_z)
 		var actor_scale:=depth_visual_scale(actor_z)
-		var contact:Dictionary=actor.get("station_contact",{}) if teea008_live and str(actor.get("phase",""))=="perform" else {}
+		var contact:Dictionary=_active_station_render_contact(actor)
 		if not contact.is_empty() and bool(actor.get("runtime_visual_bound",false)):
 			var room:Dictionary=world.room_by_id(str(actor.get("station_room_id","")))
 			if not room.is_empty():
@@ -2060,16 +2060,41 @@ func animate_manka(actor: Dictionary, delta: float) -> void:
 		sprite.pixel_size = 1.55/maxf(1.0,float(texture.get_height()))
 		sprite.position.y = 0.77
 
+func _active_station_render_contact(actor:Dictionary)->Dictionary:
+	# A contact is valid only for the actual visible actor, pose bank and room.
+	# Never project a fallback standing frame onto the top of a seat.
+	if not teea008_live or str(actor.get("phase",""))!="perform":
+		return {}
+	if not bool(actor.get("runtime_visual_bound",false)):
+		return {}
+	var room_id:String=str(actor.get("station_room_id",""))
+	if room_id=="" or room_id!=str(actor.get("room_id","")):
+		return {}
+	var contact:Dictionary=actor.get("station_contact",{})
+	if contact.is_empty():
+		return {}
+	var state:String=str(contact.get("state",""))
+	var wardrobe:String=str(actor.get("visual_wardrobe","HOME"))
+	var calibrated_wardrobe:String=str(actor.get("teea008_pose_wardrobe",wardrobe))
+	if calibrated_wardrobe!=wardrobe:
+		return {}
+	if state=="" or asset_banks.frame_count(str(actor.get("id","")),wardrobe,state)<1:
+		return {}
+	if contact.get("local_xyz",[]).size()!=3 or contact.get("instance_xyz",[]).size()!=3 or contact.get("contact_px",[]).size()!=2:
+		return {}
+	return contact
+
 func desired_actor_animation(actor: Dictionary) -> String:
 	# Pure pose selection. A sofa station is an actual authored seat, not
 	# simply two actors standing at the same arbitrary position in a room.
 	var requested := "IDLE_S"
 	if teea008_live and str(actor.get("phase",""))=="perform":
-		if not actor.get("station_contact",{}).is_empty():
-			return str(actor["station_contact"]["state"])
+		var contact:Dictionary=_active_station_render_contact(actor)
+		if not contact.is_empty():
+			return str(contact["state"])
 		if str(actor.get("intent",""))=="WATCH_FILM":
 			return "IDLE_N"
-		if str(actor.get("intent","")) in ["GET_COFFEE","TALK_PAIR","REST","SLEEP","READ_BOOK","WORK_CREATE"]:
+		if str(actor.get("intent","")) in ["GET_COFFEE","TALK_PAIR","REST","SLEEP","READ_BOOK","WORK_CREATE","LISTEN_MUSIC"]:
 			# Uncalibrated activity art can contain a seated body. Never use it
 			# at a standing approach point or at a stale furniture claim.
 			return "IDLE_S"
@@ -2131,7 +2156,7 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 			sprite.texture=texture
 		var height_m:float=2.45 if teea008_live else 1.9
 		sprite.pixel_size=height_m/maxf(1.0,float(texture.get_height()))
-		var contact:Dictionary=actor.get("station_contact",{}) if teea008_live and str(actor.get("phase",""))=="perform" else {}
+		var contact:Dictionary=_active_station_render_contact(actor)
 		if not contact.is_empty() and requested==str(contact.get("state","")):
 			var px:Array=contact["contact_px"]
 			sprite.position=Vector3((float(texture.get_width())*0.5-float(px[0]))*sprite.pixel_size,(float(px[1])-float(texture.get_height())*0.5)*sprite.pixel_size,0.0)

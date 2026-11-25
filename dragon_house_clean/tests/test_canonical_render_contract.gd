@@ -60,6 +60,23 @@ func run()->void:
 			for i in range(5):await process_frame
 			DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://private_review"))
 			assert(root.get_texture().get_image().save_png("res://private_review/canonical_pose_"+mode+".png")==OK)
+	# Negative cases must not move a standing sprite up to a furniture contact.
+	var invalid:Dictionary=contact.duplicate(true)
+	invalid["state"]="QA_NONEXISTENT_POSE"
+	actor["station_contact"]=invalid
+	scene.update_residents()
+	assert(scene._active_station_render_contact(actor).is_empty())
+	assert(scene.desired_actor_animation(actor)=="IDLE_S")
+	var standing:Node3D=scene.actor_sprites["RES_01"]
+	assert(absf(standing.position.y-float(actor["visual_y"]))<0.001)
+	actor["station_contact"]=contact
+	var saved_station_room:String=str(actor["station_room_id"])
+	actor["station_room_id"]="QA_STALE_ROOM"
+	scene.update_residents()
+	assert(scene._active_station_render_contact(actor).is_empty())
+	assert(absf(standing.position.y-float(actor["visual_y"]))<0.001)
+	actor["station_room_id"]=saved_station_room
+	actor["station_contact"]=contact
 	var guest:Dictionary=world.guest_room_for("NPC_CENTAUR")
 	var id:String=str(guest["id"])
 	assert(world.set_guest_room_open(id,false))
@@ -94,5 +111,5 @@ func run()->void:
 	world.runtime_state["teea008_book_slot_assignments"]=original_assignments
 	scene._refresh_conditional_dressing()
 	assert(decor.visible)
-	print("CANONICAL_RENDER_CONTRACT_PASS near_far_seat=true depth_test=true guest_facade_roundtrip=true conditional_slot_visibility=true")
+	print("CANONICAL_RENDER_CONTRACT_PASS near_far_seat=true missing_pose_floor_fallback=true stale_room_floor_fallback=true depth_test=true guest_facade_roundtrip=true conditional_slot_visibility=true")
 	quit(0)
