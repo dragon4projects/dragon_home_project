@@ -164,6 +164,11 @@ func setup(p_world) -> void:
 	life_scheduler.restore(saved_scheduler,active_ids,clock,idle_retry_seconds,3.0)
 	if candidate_navigation!=null:
 		_migrate_review_geometry(previously_initialized)
+	if candidate_navigation!=null:
+		for id in reconcile_cup_tasks():
+			if active_ids.has(id):
+				var repaired:Dictionary=world.residents[id]
+				life_scheduler.schedule_at(id,maxf(clock,float(repaired.get("until",clock))),"RESTORED_CUP_CARRIER")
 	# The session is the authoritative deadline, not a stale scheduler entry.
 	# Only active timed performers are rearmed, once on load.
 	for id in active_ids:
@@ -1287,6 +1292,74 @@ func _continue_book_task(actor:Dictionary)->bool:
 			return true
 	_clear_book_task(actor)
 	return false
+
+# Called at startup after station/geometry reconciliation. A pickup or
+# placement can be newer than the actor snapshot; never replay the pickup,
+# pour a new drink, or count a sip just to repair the actor projection.
+func reconcile_cup_tasks()->Array:
+	var held:Dictionary={}
+	for id in world.objects:
+		var item:Dictionary=world.objects[id]
+		if str(item.get("viewer_category",""))!="cups":continue
+		var holder:String=str(item.get("current_holder_id",""))
+		if holder!="" and world.residents.has(holder):held[holder]=str(id)
+	var claimed:Dictionary={}
+	var repaired:Array=[]
+	var ordered:Array=world.residents.keys()
+	ordered.sort()
+	for raw_id in ordered:
+		var id:String=str(raw_id)
+		var actor:Dictionary=world.residents[id]
+		var actual:String=str(held.get(id,""))
+		var task:String=str(actor.get("cup_task_id",""))
+		var stage:String=str(actor.get("cup_task_stage",""))
+		if actual!="":
+			# Retain genuinely live hold/service commitments, but never
+			# retain a stale service plan whose cup identity changed.
+			if task==actual and stage=="hold":continue
+			if task==actual and stage=="serve" and str(actor.get("phase",""))=="travel":continue
+			_clear_cup_task(actor)
+			var item:Dictionary=world.objects[actual]
+			var target:String=str(item.get("home_room_id",""))
+			var target_room:Dictionary=world.room_by_id(target)
+			if target_room.is_empty() or not world.is_accessible(target_room,id):
+				target=str(actor.get("room_id",""))
+			actor["cup_task_id"]=actual
+			actor["cup_task_stage"]="hold"
+			actor["cup_task_room"]=target
+			actor["cup_task_slot"]=""
+			actor["drink_sips_left"]=0
+			# Preserve an independent reading/media/social commitment.
+			# A stale cup-only route is cancelled and returns the cup
+			# through ordinary measured navigation on the next wake.
+			if str(actor.get("intent",""))=="GET_COFFEE":
+				_reset_recovered_cup_route(actor)
+			repaired.append(id)
+			continue
+		if stage=="" and task=="":continue
+		var item:Dictionary=world.physical_object(task)
+		var valid_fetch:bool=stage=="fetch" and bool(actor.get("active",false)) and str(actor.get("phase",""))=="travel" and not item.is_empty() and str(item.get("viewer_category",""))=="cups" and str(item.get("current_holder_id",""))=="" and str(item.get("current_room_id",""))==str(actor.get("cup_task_room","")) and str(item.get("state",""))=="PLACED" and not claimed.has(task)
+		if valid_fetch:
+			var slot:Dictionary=candidate_cups.slot_for_object(item)
+			valid_fetch=not slot.is_empty() and str(slot.get("id",""))==str(actor.get("cup_task_slot","")) and str(actor.get("station_room_id",""))==str(actor.get("cup_task_room","")) and str(actor.get("station_anchor_id",""))==str(actor.get("cup_task_slot",""))
+		if valid_fetch:
+			claimed[task]=id
+			continue
+		_clear_cup_task(actor)
+		if str(actor.get("intent",""))=="GET_COFFEE":
+			_reset_recovered_cup_route(actor)
+		repaired.append(id)
+	return repaired
+
+func _reset_recovered_cup_route(actor:Dictionary)->void:
+	stations.release(actor)
+	if world.canonical_house_seed:canonical_lifts.release(actor)
+	actor["phase"]="idle"
+	actor["route"]=[]
+	actor["waypoints"]=[]
+	actor["waypoint_index"]=0
+	actor["until"]=clock
+	moving_ids.erase(str(actor["id"]))
 
 func _clear_cup_task(actor:Dictionary)->void:
 	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage","drink_sips_left","drink_context","drink_service_id","drink_service_plan","drink_service_approach"]:
