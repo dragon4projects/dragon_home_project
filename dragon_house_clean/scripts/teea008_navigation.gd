@@ -1,0 +1,473 @@
+extends RefCounted
+## Candidate-only X/Z navigation. The immutable room graph remains authoritative.
+## Conservative 0.65 m diameter proxy; guest body-depth and sprite pose fit are separate gates.
+const STEP:=0.10
+const RADIUS:=0.325
+const BACK:=-1.95
+const FRONT:=1.65
+const AISLE:=1.50
+var layouts:Dictionary={}
+var grids:Dictionary={}
+var blockers:Dictionary={}
+var path_calls:=0
+var path_failures:=0
+var path_cache:Dictionary={}
+var path_cache_order:Array=[]
+var path_cache_hits:=0
+const PATH_CACHE_LIMIT:=1024
+const POSE_PATH:="res://data/teea008_pose_contacts_review.json"
+const CANVAS_HEIGHT:=2.45
+var pose_profiles:Dictionary={}
+var static_spots:Dictionary={}
+var display_cache:Dictionary={}
+var cup_slot_cache:Dictionary={}
+
+func configure(rows:Dictionary)->void:
+	layouts=rows
+	grids.clear()
+	blockers.clear()
+	path_cache.clear()
+	path_cache_order.clear()
+	path_cache_hits=0
+	static_spots.clear()
+	display_cache.clear()
+	cup_slot_cache.clear()
+	pose_profiles.clear()
+	if FileAccess.file_exists(POSE_PATH):
+		var f:=FileAccess.open(POSE_PATH,FileAccess.READ)
+		var doc=JSON.parse_string(f.get_as_text())
+		if typeof(doc)==TYPE_DICTIONARY and not bool(doc.get("owner_approved",true)):
+			for id in doc.get("profiles",{}):
+				var profile:Dictionary=doc["profiles"][id].duplicate(true)
+				for state in profile.get("states",{}).keys():
+					var entry:Dictionary=profile["states"][state]
+					var path:String="res://"+str(entry.get("path",""))
+					if not _pose_source_valid(path,entry):
+						profile["states"].erase(state)
+				pose_profiles[id]=profile
+
+func key(room:Dictionary)->String:
+	var kind:String=str(room.get("type",""))
+	if kind=="guest":
+		kind=str(room.get("candidate_room_id","")).trim_suffix("_01")
+	return "%s/R%d" % [kind,int(room.get("size_modules",1))]
+
+func has_layout(room:Dictionary)->bool:
+	return layouts.has(key(room))
+
+func _v2(p:Array)->Vector2:
+	return Vector2(float(p[0]),float(p[1]))
+
+func _xz(p:Array)->Vector2:
+	return Vector2(float(p[0]),float(p[2]))
+
+func _obstacles(room:Dictionary)->Array:
+	var k:=key(room)
+	if blockers.has(k):
+		return blockers[k]
+	var out:Array=[]
+	var row:Dictionary=layouts.get(k,{})
+	var raw:Array=[]
+	for item in row.get("instances",[]):
+		if str(item.get("placement_policy",""))=="floor_fixed":
+			raw.append(item)
+	raw.append_array(row.get("preserve_existing_runtime_geometry",[]))
+	for item in raw:
+		var lo:Vector2=_xz(item["bounds_min_m"])
+		var hi:Vector2=_xz(item["bounds_max_m"])
+		out.append(Rect2(lo,hi-lo))
+	blockers[k]=out
+	return out
+
+func clear(room:Dictionary,p:Vector2)->bool:
+	if not has_layout(room):
+		return true
+	var hw:float=float(room.get("size_modules",1))*2.4
+	# The front/side openings connect to adjacent volumes; don't shrink them.
+	if absf(p.x)>hw+0.001 or p.y<BACK+RADIUS-0.001 or p.y>FRONT+0.001:
+		return false
+	for box:Rect2 in _obstacles(room):
+		var near:=Vector2(clampf(p.x,box.position.x,box.end.x),clampf(p.y,box.position.y,box.end.y))
+		if p.distance_squared_to(near)<RADIUS*RADIUS-0.000001:
+			return false
+	return true
+
+func _point_box_distance_sq(p:Vector2,box:Rect2)->float:
+	var near:=Vector2(clampf(p.x,box.position.x,box.end.x),clampf(p.y,box.position.y,box.end.y))
+	return p.distance_squared_to(near)
+
+func _segment_box_intersects(a:Vector2,b:Vector2,box:Rect2)->bool:
+	# Slab clipping of the segment, not an infinite ray.
+	var lo:=0.0
+	var hi:=1.0
+	var direction:=b-a
+	for axis in range(2):
+		if absf(direction[axis])<0.000001:
+			if a[axis]<box.position[axis] or a[axis]>box.end[axis]:
+				return false
+			continue
+		var t1:float=(box.position[axis]-a[axis])/direction[axis]
+		var t2:float=(box.end[axis]-a[axis])/direction[axis]
+		lo=maxf(lo,minf(t1,t2))
+		hi=minf(hi,maxf(t1,t2))
+		if lo>hi:
+			return false
+	return true
+
+func segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
+	if not has_layout(room):
+		return true
+	var hw:float=float(room.get("size_modules",1))*2.4
+	for p in [a,b]:
+		if absf(p.x)>hw+0.001 or p.y<BACK+RADIUS-0.001 or p.y>FRONT+0.001:
+			return false
+	# Exact segment-to-AABB distance (rounded clearance rather than square
+	# expansion). Independent QA still samples the segment at 2.5 cm.
+	var sweep:=Rect2(Vector2(minf(a.x,b.x),minf(a.y,b.y)),Vector2(absf(a.x-b.x),absf(a.y-b.y))).grow(RADIUS)
+	var threshold:float=RADIUS*RADIUS-0.000001
+	for box:Rect2 in _obstacles(room):
+		if not sweep.intersects(box,true):
+			continue
+		if _segment_box_intersects(a,b,box):
+			return false
+		if _point_box_distance_sq(a,box)<threshold or _point_box_distance_sq(b,box)<threshold:
+			return false
+		for corner in [box.position,Vector2(box.end.x,box.position.y),box.end,Vector2(box.position.x,box.end.y)]:
+			var nearest:Vector2=Geometry2D.get_closest_point_to_segment(corner,a,b)
+			if corner.distance_squared_to(nearest)<threshold:
+				return false
+	return true
+
+func sampled_segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
+	var steps:int=maxi(1,ceili(a.distance_to(b)/0.025))
+	for i in range(steps+1):
+		if not clear(room,a.lerp(b,float(i)/float(steps))):
+			return false
+	return true
+
+func _grid(room:Dictionary)->AStarGrid2D:
+	var k:=key(room)
+	if grids.has(k):
+		return grids[k]
+	var hw:float=float(room.get("size_modules",1))*2.4
+	var g:=AStarGrid2D.new()
+	g.region=Rect2i(0,0,roundi(hw*2.0/STEP)+1,roundi((FRONT-BACK)/STEP)+1)
+	g.cell_size=Vector2(STEP,STEP)
+	g.offset=Vector2(-hw,BACK)
+	g.diagonal_mode=AStarGrid2D.DIAGONAL_MODE_NEVER
+	g.update()
+	for z in range(g.region.size.y):
+		for x in range(g.region.size.x):
+			var id:=Vector2i(x,z)
+			if not clear(room,g.get_point_position(id)):
+				g.set_point_solid(id)
+	grids[k]=g
+	return g
+
+func _near_grid(room:Dictionary,g:AStarGrid2D,p:Vector2)->Vector2i:
+	var approx:=Vector2i(roundi((p.x-g.offset.x)/STEP),roundi((p.y-g.offset.y)/STEP))
+	var best:=Vector2i(-1,-1)
+	var distance:=INF
+	for z in range(-3,4):
+		for x in range(-3,4):
+			var id:=approx+Vector2i(x,z)
+			if not g.region.has_point(id) or g.is_point_solid(id):
+				continue
+			var pt:=g.get_point_position(id)
+			var d:=p.distance_squared_to(pt)
+			if d<distance and segment_clear(room,p,pt):
+				best=id
+				distance=d
+	return best
+
+func nearest_clear(room:Dictionary,p:Vector2)->Vector2:
+	if clear(room,p):
+		return p
+	if not has_layout(room):
+		return p
+	var g:=_grid(room)
+	var best:=Vector2(p.x,AISLE)
+	var distance:=INF
+	for z in range(g.region.size.y):
+		for x in range(g.region.size.x):
+			var id:=Vector2i(x,z)
+			if g.is_point_solid(id):
+				continue
+			var pt:=g.get_point_position(id)
+			var d:=pt.distance_squared_to(p)
+			if d<distance:
+				distance=d
+				best=pt
+	return best
+
+func path(room:Dictionary,a:Vector2,b:Vector2)->Array:
+	path_calls+=1
+	var cache_key:String="%s|%.5f,%.5f|%.5f,%.5f" % [key(room),a.x,a.y,b.x,b.y]
+	if path_cache.has(cache_key):
+		var entry:Dictionary=path_cache[cache_key]
+		if a==entry["a"] and b==entry["b"]:
+			path_cache_hits+=1
+			return entry["points"].duplicate()
+	var points:Array=_compute_path(room,a,b)
+	if not points.is_empty() and has_layout(room):
+		if not path_cache.has(cache_key):
+			path_cache_order.append(cache_key)
+		path_cache[cache_key]={"a":a,"b":b,"points":points.duplicate()}
+		while path_cache_order.size()>PATH_CACHE_LIMIT:
+			path_cache.erase(path_cache_order.pop_front())
+	return points
+
+func _compute_path(room:Dictionary,a:Vector2,b:Vector2)->Array:
+	if not has_layout(room) or segment_clear(room,a,b):
+		return [b]
+	if not clear(room,a) or not clear(room,b):
+		path_failures+=1
+		return []
+	var g:=_grid(room)
+	var start:=_near_grid(room,g,a)
+	var end:=_near_grid(room,g,b)
+	if start.x<0 or end.x<0:
+		path_failures+=1
+		return []
+	var raw:=g.get_point_path(start,end)
+	if raw.is_empty():
+		path_failures+=1
+		return []
+	# Collapse only collinear runs before line-of-sight simplification.
+	# Grid adjacency alone is not enough: exact swept-body checks remain.
+	var points:Array=[a]
+	for i in range(raw.size()):
+		if i==0 or i==raw.size()-1:
+			points.append(raw[i])
+			continue
+		var before:Vector2=raw[i]-raw[i-1]
+		var after:Vector2=raw[i+1]-raw[i]
+		if not before.normalized().is_equal_approx(after.normalized()):
+			points.append(raw[i])
+	points.append(b)
+	var out:Array=[]
+	var at:=0
+	while at<points.size()-1:
+		var next:=points.size()-1
+		while next>at and not segment_clear(room,points[at],points[next]):
+			next-=1
+		if next<=at:
+			# A collapsed straight run can meet a rounded obstacle corner
+			# between cells; retry the uncompressed exact path before denial.
+			return _uncompressed_path(room,a,b,raw)
+		out.append(points[next])
+		at=next
+	return out
+
+func _uncompressed_path(room:Dictionary,a:Vector2,b:Vector2,raw:PackedVector2Array)->Array:
+	var points:Array=[a]
+	for p in raw:points.append(p)
+	points.append(b)
+	var out:Array=[]
+	var at:=0
+	while at<points.size()-1:
+		var next:=points.size()-1
+		while next>at and not segment_clear(room,points[at],points[next]):
+			next-=1
+		if next<=at:
+			path_failures+=1
+			return []
+		out.append(points[next])
+		at=next
+	return out
+
+func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
+	var variant_key:=key(room)
+	if display_anchors.is_empty() and static_spots.has(variant_key):
+		return static_spots[variant_key]
+	var row:Dictionary=layouts.get(variant_key,{})
+	if row.is_empty():
+		return []
+	var cap:int=[0,4,8,16][clampi(int(room.get("size_modules",1)),1,3)]
+	var out:Array=[]
+	# Wall display IDs are real world IDs; safe approach is derived without
+	# moving the actual object or changing its canonical home.
+	for d in display_anchors:
+		var p:=Vector2(float(d["x"]),float(d["z"]))
+		var cache_key:String="%s:%s:%.3f:%.3f" % [variant_key,str(d["id"]),p.x,p.y]
+		if display_cache.has(cache_key):
+			p=display_cache[cache_key]
+		else:
+			p=nearest_clear(room,p)
+			if display_cache.size()>256:
+				display_cache.clear()
+			display_cache[cache_key]=p
+		if segment_clear(room,p,p) and absf(p.x)<float(room["size_modules"])*2.4-0.18:
+			_add_spot(out,{"id":d["id"],"offset":p,"kind":"standing","furniture_id":"DISPLAY_WALL","pose_hint":"VIEW","approach_z":p.y},cap,0.60)
+	for item in row.get("instances",[]):
+		for station in item.get("station_candidates",[]):
+			var raw:Array=station.get("room_approach_xz",[])
+			var kind:String=str(station.get("kind",""))
+			if raw.size()!=2:
+				# Fur mats have a measured rest surface, not an authored approach.
+				# Explicitly derive a safe path to its center; no seated pose inferred.
+				if kind!="floor_rest" or station.get("room_local_xyz",[]).size()!=3:
+					continue
+				var at:=_xz(station["room_local_xyz"])
+				raw=[at.x,at.y]
+			var p:=_v2(raw)
+			if not clear(room,p):
+				continue
+			var spot:Dictionary={"id":str(station["station_candidate_id"]),"offset":p,"kind":"standing","furniture_id":str(item["instance_id"]),"pose_hint":"IDLE_S","approach_z":p.y,"candidate_kind":kind,"candidate_asset_id":str(item["asset_id"]),"candidate_supports":item.get("support_slots",[])}
+			if kind=="standing":
+				spot["pose_hint"]="VIEW"
+				if str(room.get("type","")) in ["study","workshop"]:
+					spot["kind"]="work"
+					spot["pose_hint"]="USE"
+			elif kind=="seat":
+				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0)}
+				var facing:Array=spot["candidate_contact"]["facing"]
+				if facing.size()==3 and float(facing[2])>0.5:
+					spot["kind"]="seat"
+					spot["pose_hint"]="RELAXED_SIT"
+				if str(item.get("asset_id",""))=="vintage_day_bed":
+					var lo:Array=item["bounds_min_m"]
+					var hi:Array=item["bounds_max_m"]
+					var pelvis:Array=spot["candidate_contact"]["pelvis"]
+					spot["candidate_contact"]["lie_surface"]=[(float(lo[0])+float(hi[0]))*0.5,float(pelvis[1]),float(pelvis[2])]
+					spot["candidate_contact"]["lie_width_m"]=float(hi[0])-float(lo[0])
+			elif kind=="floor_rest":
+				var lo:Array=item["bounds_min_m"]
+				var hi:Array=item["bounds_max_m"]
+				spot["candidate_contact"]={"floor":station.get("room_local_xyz",[]),"instance_xyz":item["room_local_xyz"],"lie_width_m":float(hi[0])-float(lo[0])}
+				spot["kind"]="floor_rest"
+				spot["pose_hint"]="LIE_SIDE_CURLED"
+			_add_spot(out,spot,cap,0.60)
+	for slot in cup_slots(room):
+		var p:Vector2=slot["approach"]
+		_add_spot(out,{"id":slot["id"],"offset":p,"kind":"standing","furniture_id":slot["furniture_id"],"pose_hint":"IDLE_S","approach_z":p.y,"cup_slot_id":slot["id"]},cap,0.60)
+	# Standing positions must themselves be clear and reachable from the aisle.
+	var width:int=int(room.get("size_modules",1))
+	for z in [0.75,0.05,-0.65,-1.35,1.25]:
+		for module in range(width):
+			for xx in [-1.55,-0.52,0.52,1.55]:
+				var p:=Vector2((float(module)-(float(width)-1.0)*0.5)*4.8+float(xx),float(z))
+				if not clear(room,p):
+					continue
+				_add_spot(out,{"id":"teea008_stand_%d_%d_%d" % [module,roundi(p.x*100),roundi(p.y*100)],"offset":p,"kind":"standing","furniture_id":"","pose_hint":"IDLE_S","approach_z":p.y},cap,0.73)
+	if display_anchors.is_empty():
+		static_spots[variant_key]=out
+	return out
+
+func _add_spot(out:Array,spot:Dictionary,cap:int,gap:float)->void:
+	if out.size()>=cap:
+		return
+	for previous in out:
+		if (previous["offset"] as Vector2).distance_to(spot["offset"])<gap:
+			return
+	out.append(spot)
+
+func pose_profile(actor:Dictionary,state:String)->Dictionary:
+	var profile:Dictionary=pose_profiles.get(str(actor.get("id","")),{})
+	if str(profile.get("appearance_profile",""))!=str(actor.get("appearance_profile","")) or str(profile.get("wardrobe",""))!=str(actor.get("teea008_pose_wardrobe","")):
+		return {}
+	return profile.get("states",{}).get(state,{})
+
+func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
+	var raw:Dictionary=spot.get("candidate_contact",{})
+	if raw.is_empty():
+		return {}
+	var state: String="RELAXED_SIT"
+	var anchor:Array=[]
+	var exclusive:=false
+	var kind:String=str(spot.get("kind",""))
+	if intent=="SLEEP" or (intent=="REST" and kind=="floor_rest"):
+		state="LIE_SIDE_CURLED"
+		anchor=raw.get("floor",raw.get("lie_surface",[]))
+		exclusive=raw.has("lie_surface") and not raw.has("floor")
+	elif intent=="READ_BOOK":
+		state="READ"
+		anchor=raw.get("pelvis",[])
+	else:
+		anchor=raw.get("pelvis",[])
+	if anchor.size()!=3:
+		return {}
+	var profile:Dictionary=pose_profile(actor,state)
+	if profile.is_empty():
+		return {}
+	var canvas:Array=profile["canvas"]
+	var px:Array=profile["contact_px"]
+	var bbox:Array=profile["alpha_bbox"]
+	var ratio:float=CANVAS_HEIGHT/float(canvas[1])
+	if state=="LIE_SIDE_CURLED":
+		if (float(bbox[2])-float(bbox[0]))*ratio>float(raw.get("lie_width_m",0.0))-0.04:
+			return {}
+	else:
+		var facing:Array=raw.get("facing",[])
+		if facing.size()!=3 or float(facing[2])<0.5:
+			return {}
+		var feet:Array=raw.get("feet",[])
+		if feet.size()!=3:
+			return {}
+		var foot_gap:float=float(anchor[1])-float(feet[1])-(float(bbox[3])-float(px[1]))*ratio
+		if absf(foot_gap)>0.15 or float(profile["contact_span_px"])*ratio>float(raw.get("width_m",0.0))+0.06:
+			return {}
+	return {"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":exclusive,"book_baked":bool(profile.get("book_baked",false)),"evidence":"VISUAL_ESTIMATE_REVIEW_ONLY"}
+
+func prepare_rooms(rooms:Array)->void:
+	# Build each existing variant once, off the live planner's hot path.
+	for room in rooms:
+		if has_layout(room):
+			_grid(room)
+			candidate_spots(room)
+
+func cup_slots(room:Dictionary)->Array:
+	var k:=key(room)
+	if cup_slot_cache.has(k):
+		return cup_slot_cache[k]
+	var out:Array=[]
+	if str(room.get("type",""))!="common":
+		return out
+	var row:Dictionary=layouts.get(k,{})
+	var by_id:Dictionary={}
+	for item in row.get("instances",[]):
+		by_id[str(item["instance_id"])]=item
+	for item in row.get("instances",[]):
+		var asset:String=str(item.get("asset_id",""))
+		if asset in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:
+			var ref:String=str(item.get("support_ref",""))
+			var parent:Dictionary=by_id.get(ref.get_slice(".",0),{})
+			if not parent.is_empty():
+				_add_cup_slot(room,out,ref,parent,item["room_local_xyz"])
+		elif asset.to_lower().contains("table"):
+			for slot in item.get("support_slots",[]):
+				if str(slot.get("status",""))=="MEASURED_SURFACE_CANDIDATE":
+					_add_cup_slot(room,out,str(slot["room_slot_id"]),item,slot["room_xyz"])
+	cup_slot_cache[k]=out
+	return out
+
+func _add_cup_slot(room:Dictionary,out:Array,id:String,item:Dictionary,pos:Array)->void:
+	var lo:Array=item["bounds_min_m"]
+	var hi:Array=item["bounds_max_m"]
+	var x:float=float(pos[0])
+	var z:float=float(pos[2])
+	var options:Array=[Vector2(x,float(hi[2])+RADIUS+0.025),Vector2(x,float(lo[2])-RADIUS-0.025),Vector2(float(lo[0])-RADIUS-0.025,z),Vector2(float(hi[0])+RADIUS+0.025,z)]
+	for at in options:
+		if not clear(room,at):
+			continue
+		if out.any(func(s):return at.distance_to(s["approach"])<0.60):
+			continue
+		out.append({"id":id,"furniture_id":str(item["instance_id"]),"xyz":pos,"instance_xyz":item["room_local_xyz"],"approach":at})
+		return
+
+func _pose_source_valid(path:String,entry:Dictionary)->bool:
+	if FileAccess.file_exists(path):
+		return FileAccess.get_sha256(path)==str(entry.get("sha256",""))
+	# Imported textures in exported PCK are remapped, not original PNG bytes.
+	# The export tool verifies original frame hashes before emitting its proof
+	# manifest; PCK audit separately verifies the texture dimensions.
+	if OS.has_feature("editor") or not FileAccess.file_exists("res://data/integration_candidates/TEEA008_LIVE_REVIEW.enabled"):
+		return false
+	var f:=FileAccess.open("res://data/integration_candidates/TEEA008_POSE_EXPORT_PROOF.json",FileAccess.READ)
+	if f==null:return false
+	var proof=JSON.parse_string(f.get_as_text())
+	if typeof(proof)!=TYPE_DICTIONARY or str(proof.get("frames",{}).get(path,""))!=str(entry.get("sha256","")):
+		return false
+	var tex:=ResourceLoader.load(path,"Texture2D") as Texture2D
+	var canvas:Array=entry.get("canvas",[])
+	return tex!=null and canvas.size()==2 and tex.get_width()==int(canvas[0]) and tex.get_height()==int(canvas[1])
