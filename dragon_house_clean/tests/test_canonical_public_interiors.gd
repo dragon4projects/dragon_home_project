@@ -97,5 +97,23 @@ func run()->void:
 			assert(anchor.get_node_or_null("BoundPreview")==null)
 			checked[id]=true
 		assert(checked.size()==(4 if kind=="music" else 1),str(checked))
+		if kind=="cinema":
+			var film:Dictionary=scene.life.media_runtime._lookup("films","YT_dpUIOPQgJpQ")
+			assert(not film.is_empty())
+			var rid:String=str(room["id"])
+			assert(scene.teea008_media_bindings.assign(rid,"cinema.r3.film.screen","films",film["id"]))
+			assert(scene.teea008_media_bindings.assign(rid,"cinema.r3.film.tv","films",film["id"]))
+			assert(scene.teea008_media_bindings.resolve(rid,"cinema.r3.film.tv")["id"]==film["id"])
+			scene._update_teea008_media_previews()
+			var found:=false
+			for anchor in get_nodes_in_group("teea008_media_surface"):
+				if str(anchor.get_meta("room_id",""))!=rid or str(anchor.get_meta("surface_id",""))!="cinema.r3.film.screen":continue
+				assert(anchor.get_node_or_null("BoundPreview")!=null)
+				found=true
+			assert(found)
+			assert(scene.content_viewer.open_record("films",film))
+			assert(scene.content_viewer.preview.texture!=null)
+			assert(scene.content_viewer.source_button.visible)
+			scene.content_viewer.close_viewer()
 	print("CANONICAL_PUBLIC_INTERIORS_PASS rooms=",tested," route_checks=",approaches," physical_media_carriers=5 supported_projection=",supported)
 	quit(0)

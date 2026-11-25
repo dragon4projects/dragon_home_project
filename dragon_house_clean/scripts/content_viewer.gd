@@ -12,6 +12,7 @@ var text_view: RichTextLabel
 var video: VideoStreamPlayer
 var audio: AudioStreamPlayer
 var play_button: Button
+var source_button: Button
 
 func _ready() -> void:
 	name = "ContentViewer"
@@ -66,10 +67,32 @@ func _ready() -> void:
 	play_button.text = "▶ Воспроизвести"
 	play_button.pressed.connect(play)
 	controls.add_child(play_button)
+	source_button=Button.new()
+	source_button.text="Открыть оригинал на YouTube"
+	source_button.visible=false
+	source_button.pressed.connect(_open_source)
+	controls.add_child(source_button)
 	var stop := Button.new()
 	stop.text = "■ Стоп"
 	stop.pressed.connect(stop_playback)
 	controls.add_child(stop)
+
+func _youtube_source(record:Dictionary)->String:
+	# Only the known exact YouTube watch URL shape is allowed, and only after
+	# an explicit click. No arbitrary OS-shell URLs or automatic requests.
+	var url:String=str(record.get("source_url",""))
+	const PREFIX:="https://www.youtube.com/watch?v="
+	if not url.begins_with(PREFIX):return ""
+	var video_id:String=url.trim_prefix(PREFIX)
+	if video_id.length()!=11:return ""
+	for i in range(video_id.length()):
+		if not "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-".contains(video_id.substr(i,1)):
+			return ""
+	return url
+
+func _open_source()->void:
+	var url:String=_youtube_source(item)
+	if url!="":OS.shell_open(url)
 
 func bind(p_media_runtime) -> void:
 	media_runtime = p_media_runtime
@@ -137,6 +160,7 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 		preview.visible = preview.texture != null
 	var file_path := str(item.get("file_path",""))
 	play_button.visible = p_category in ["films","tracks"]
+	source_button.visible=p_category in ["films","tracks"] and _youtube_source(item)!=""
 	if p_category in ["films","tracks"]:
 		if media_runtime == null or not media_runtime.playable(p_category).any(
 			func(candidate): return str(candidate.get("id","")) == str(item.get("id",""))):

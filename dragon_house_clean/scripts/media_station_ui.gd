@@ -7,6 +7,7 @@ var category := "books"
 var item_ids: Array = []
 var title: Label
 var list: ItemList
+var search_box: LineEdit
 var details: Label
 var preview: TextureRect
 var video: VideoStreamPlayer
@@ -43,6 +44,10 @@ func _ready() -> void:
 			"Книги": b.pressed.connect(func(): switch_category("books"))
 			"Музыка": b.pressed.connect(func(): switch_category("tracks"))
 			"Фильмы": b.pressed.connect(func(): switch_category("films"))
+	search_box=LineEdit.new()
+	search_box.placeholder_text="Поиск по названию / исполнителю"
+	search_box.text_changed.connect(func(_value): refresh())
+	col.add_child(search_box)
 	list = ItemList.new()
 	list.custom_minimum_size = Vector2(510, 145)
 	list.item_selected.connect(_on_selected)
@@ -120,6 +125,7 @@ func switch_category(k: String) -> void:
 		clear_surface_context()
 	stop_playback()
 	category = k
+	if search_box!=null:search_box.set_text("")
 	refresh()
 
 func refresh() -> void:
@@ -133,13 +139,16 @@ func refresh() -> void:
 		for item in model.objects.values():
 			if str(item.get("viewer_category",""))=="artifacts" and str(item.get("current_room_id",""))==surface_room_id and str(item.get("state",""))=="PLACED" and str(item.get("current_holder_id",""))=="":
 				records.append(item)
+	var query:String=search_box.text.strip_edges().to_lower() if search_box!=null else ""
 	for item in records:
 		var title_text: String = str(item.get("title",item.get("display_name","Без названия")))
+		var byline:String=str(item.get("artist",item.get("author","")))
+		if query!="" and not (title_text+" "+byline).to_lower().contains(query):continue
 		list.add_item(title_text)
 		item_ids.append(str(item.get("id","")))
 	var human: String = {"books":"КНИГИ","tracks":"АУДИОТЕКА","films":"ФИЛЬМОТЕКА","artifacts":"АРТЕФАКТЫ"}.get(category,"МЕДИА")
-	title.text = human + " — " + str(item_ids.size()) + " записей"
-	details.text = "Каталог пуст. Импортируйте проверенный JSON." if item_ids.is_empty() else "Выберите запись."
+	title.text = human + " — " + str(item_ids.size()) + ("/"+str(records.size()) if query!="" else "") + " записей"
+	details.text = ("Ничего не найдено." if query!="" else "Каталог пуст. Импортируйте проверенный JSON.") if item_ids.is_empty() else "Выберите запись."
 	preview.texture = null
 	preview.visible = true
 

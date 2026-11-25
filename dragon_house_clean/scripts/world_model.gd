@@ -604,15 +604,17 @@ func merge_reference_book_metadata(items: Array) -> int:
 
 func merge_zna_media_previews() -> int:
 	# ZNA004 delivered actual previews and source metadata, not local media
-	# files. Import classified records only; never promote unknown videos to
-	# films or manufacture playback. Run once on load, not in the life loop.
+	# files. Owner explicitly assigned all 495 formerly unclassified videos
+	# to the film library on 2026-11-25. Preserve the source classification
+	# and preview paths as provenance, not as runtime categories.
+	# Run once on load; never manufacture local playback.
 	var file:=FileAccess.open("res://assets/manifests/media_preview_index.json",FileAccess.READ)
 	if file==null:return 0
 	var manifest=JSON.parse_string(file.get_as_text())
 	if typeof(manifest)!=TYPE_DICTIONARY:return 0
 	var added:=0
 	var changed:=false
-	for pair in [["audio","tracks","audio"],["film","films","film"]]:
+	for pair in [["audio","tracks","audio"],["film","films","film"],["unclassified","films","unclassified"]]:
 		var source_key:String=pair[0]
 		var category:String=pair[1]
 		var folder:String=pair[2]
@@ -640,6 +642,9 @@ func merge_zna_media_previews() -> int:
 					changed=true
 				continue
 			var record:Dictionary={"id":id,"title":title,"artist":str(entry.get("artist","")),"duration":str(entry.get("duration","")),"preview":preview_path,"file_path":"","catalog_only":true,"provenance":"ZNA004 · source-derived preview","source_url":str(entry.get("source_url","")),"owner_approved":bool(entry.get("owner_approved",false))}
+			record["source_classification"]=source_key
+			if source_key=="unclassified":
+				record["classification_authority"]="OWNER_20261125_ALL_UNCLASSIFIED_ARE_FILMS"
 			records.append(record)
 			existing[id]=record
 			added+=1

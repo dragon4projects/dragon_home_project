@@ -48,7 +48,11 @@ func assign(room_id:String,surface_id:String,category:String,item_id:String)->bo
 		if category=="books" and bool(item.get("physical",true)) and (str(item.get("location_room_id",""))!=room_id or str(item.get("holder_id",""))!=""):
 			return false
 		if _is_screen(surface_id) and not media.playable("films").any(func(r):return str(r.get("id",""))==item_id):
-			return false
+			# A source-backed film may be shown as a static catalog preview.
+			# This does not grant WATCH_FILM eligibility or local playback.
+			var preview_path:String=str(item.get("preview",item.get("preview_path","")))
+			if not preview_path.begins_with("res://assets/media/previews/") or not (ResourceLoader.exists(preview_path,"Texture2D") or FileAccess.file_exists(preview_path)):
+				return false
 	var bindings:Dictionary=world.runtime_state.get("teea008_room_media_bindings",{})
 	var key:String=_key(room_id,surface_id)
 	var previous:String=str(bindings.get(key,{}).get("item_id",""))

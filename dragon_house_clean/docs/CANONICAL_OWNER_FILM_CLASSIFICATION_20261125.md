@@ -1,0 +1,5 @@
+# Owner classification override — 2026-11-25
+
+Owner explicitly directed: all 495 unclassified videos are films in Dragon House. This supersedes the earlier integration report's classification hold, not the historical ZNA source manifest. Source media index unchanged; runtime imports 203 audio and 495 film records, preserving all original IDs, titles, source URLs and preview paths. All 495 film entries are unique, disjoint from audio, and matched to existing Git tree WebP files. Owner's classification is recorded separately from artwork approval.
+
+Cinema screen can display source-backed film previews even without playable local media; television remains its own independent selection. Generic metadata-only rows with no verified preview still cannot be assigned to the main screen. Local playback and autonomous WATCH_FILM/LISTEN_MUSIC eligibility remain dependent on compatible local media files. No automatic network fetch. Full-screen viewer offers an explicit button to open an exact validated YouTube watch URL. Media catalog search matches title and artist. Regression tests added; Godot execution pending. No Actions dispatch.
