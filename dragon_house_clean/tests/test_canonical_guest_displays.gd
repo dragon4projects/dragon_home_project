@@ -45,7 +45,20 @@ func run()->void:
 	assert(img.save_png("user://qa_artifact_cube.png")==OK)
 	var rid:String=str(gallery["id"])
 	var aid:="QA_ARTIFACT_CUBE"
-	assert(world.register_physical_object(aid,"QA стеклянный куб","RES_01",rid,true,true,false,false,true,{"viewer_category":"artifacts","home_anchor":[0.0,0.7],"preview_path":"user://qa_artifact_cube.png","display_world_height":0.8}))
+	# Fresh runtime restores the existing historical master when available.
+	if scene.asset_banks.prop_master_path("CUBE_LETTERS")!="":
+		var letters:Dictionary=world.physical_object("CUBE_LETTERS")
+		assert(not letters.is_empty() and str(letters.get("home_support_id",""))!="")
+		assert(letters["home_support_id"]==letters["current_support_id"])
+		assert(not world.object_is_displaced(letters))
+		assert(not scene._ensure_canonical_artifact_cube())
+	var init_slot:Dictionary=nav.artifact_support(gallery,"artifact_r3_shelf_c.shelf_3_1")
+	assert(not init_slot.is_empty())
+	var init_pos:Array=init_slot["xyz"]
+	var init_metadata:Dictionary={"viewer_category":"artifacts","home_anchor":[init_pos[0],init_pos[2]],"home_support_id":init_slot["id"],"preview_path":"user://qa_artifact_cube.png","display_world_height":0.8}
+	assert(world.register_physical_object(aid,"QA стеклянный куб","RES_01",rid,true,true,false,false,true,init_metadata))
+	assert(not world.register_physical_object("QA_DUPLICATE_SUPPORT","QA duplicate","RES_01",rid,true,true,false,false,true,init_metadata))
+	assert(world.physical_object(aid)["current_support_id"]==init_slot["id"])
 	scene.make_physical_objects()
 	scene.selected_room=rid
 	scene.set_mode("ROOM")
@@ -55,8 +68,7 @@ func run()->void:
 	scene.update_render_lod()
 	var slot:Dictionary=nav.artifact_support(gallery,"artifact_r3_shelf_c.shelf_3_1")
 	assert(not slot.is_empty())
-	var p:Array=slot["xyz"]
-	assert(world.assign_physical_object_home(aid,rid,Vector2(float(p[0]),float(p[2])),true,str(slot["id"])))
+	assert(world.physical_object(aid)["home_support_id"]==slot["id"])
 	scene.update_physical_objects()
 	scene._refresh_conditional_dressing()
 	var node:Node3D=scene.object_nodes[aid]

@@ -166,6 +166,22 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 		if location!="" and not _valid_anchor(
 				world,location,payload.get("current_anchor",payload.get("home_anchor",[]))):
 			return reject("registered object requires valid current anchor")
+		var initial_support=payload.get("home_support_id","")
+		if typeof(initial_support)!=TYPE_STRING or str(initial_support).length()>180:
+			return reject("invalid initial support identity")
+		if str(initial_support)!="":
+			var meta:Dictionary=payload.get("metadata",{})
+			if holder!="" or location!=home_room_id or state!="PLACED" or not bool(payload.get("movable",false)) or str(meta.get("display_mode",""))=="wall" or str(meta.get("viewer_category",""))!="artifacts":
+				return reject("initial support requires a placed movable artifact")
+			if payload.get("current_anchor",[])!=payload.get("home_anchor",[]):
+				return reject("initial support requires matching home and current anchors")
+			if not world.public_cutaway_allowed(world.room_by_id(home_room_id)):
+				return reject("initial artifact support must be public")
+			for other in projection.values():
+				if str(other.get("home_room_id",""))==home_room_id and str(other.get("home_support_id",""))==str(initial_support):
+					return reject("initial support already reserved")
+				if str(other.get("current_room_id",""))==home_room_id and str(other.get("current_support_id",""))==str(initial_support):
+					return reject("initial support already occupied")
 		return true
 
 	var object_id: String = str(payload.get("object_id",""))

@@ -18,6 +18,8 @@ const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.g
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
 const CandidateContentRuntimeScript = preload("res://scripts/candidate_content_runtime.gd")
 const ITER1_REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
+const ARTIFACT_CUBE_SIDE:float=0.18
+const ARTIFACT_CUBE_MODEL:="res://assets/decor_bank/artifact_glass_cube_s/model.gltf"
 const W := 4.8
 const H := 4.6
 const BASE_FOV := 35.0
@@ -185,6 +187,46 @@ func _ensure_canonical_wall_displays() -> int:
 		world.save_world()
 	return added
 
+func _ensure_canonical_artifact_cube()->bool:
+	# Restore only the identified existing master; no automatic import of
+	# unverified candidates, no duplicate object, no fabricated owner event.
+	if not architecture_review or life.candidate_navigation==null:return false
+	const OBJECT_ID:="CUBE_LETTERS"
+	if not world.physical_object(OBJECT_ID).is_empty():return false
+	var record:Dictionary=asset_banks.prop_display_record(OBJECT_ID)
+	var master:String=asset_banks.prop_master_path(OBJECT_ID)
+	if record.is_empty() or master=="":return false
+	var room:Dictionary=_artifact_room()
+	if room.is_empty():return false
+	var rid:String=str(room["id"])
+	var slots:Array=life.candidate_navigation.artifact_slots(room).duplicate()
+	# Prefer the second marked display opening. Other existing homes are
+	# respected; this default is a system registration, not Dragon authorship.
+	var preferred:Dictionary=life.candidate_navigation.artifact_support(room,"artifact_r3_shelf_c.shelf_4_1")
+	if not preferred.is_empty():
+		slots.erase(preferred)
+		slots.push_front(preferred)
+	for slot in slots:
+		var p:Array=slot["xyz"]
+		var dims:Array=slot["dimensions"]
+		if float(p[1])<0.35 or float(p[1])>1.70:continue
+		if float(dims[0])<ARTIFACT_CUBE_SIDE or float(dims[1])<ARTIFACT_CUBE_SIDE or float(dims[2])<ARTIFACT_CUBE_SIDE:continue
+		var occupied:=false
+		for obj in world.objects.values():
+			if str(obj.get("home_room_id",""))==rid and str(obj.get("home_support_id",""))==str(slot["id"]):
+				occupied=true
+				break
+			if str(obj.get("current_room_id",""))==rid and str(obj.get("current_support_id",""))==str(slot["id"]):
+				occupied=true
+				break
+		if occupied:continue
+		var metadata:Dictionary={"description":str(record.get("description","")),"preview_path":"res://"+master,"asset_id":OBJECT_ID,"viewer_category":"artifacts","home_anchor":[p[0],p[2]],"home_support_id":str(slot["id"]),"display_world_height":ARTIFACT_CUBE_SIDE}
+		var title:String=str(record.get("display_name",record.get("title","Письма перед сном")))
+		if world.register_physical_object(OBJECT_ID,title,"",rid,true,true,false,false,true,metadata):
+			world.save_world()
+			return true
+	return false
+
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	architecture_review = FileAccess.file_exists(ARCHITECTURE_MARKER) or OS.get_environment("DRAGON_HOUSE_ARCHITECTURE")=="1"
@@ -233,6 +275,7 @@ func _ready() -> void:
 		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
+		_ensure_canonical_artifact_cube()
 		teea008_review.live_physical_objects=true
 		life.candidate_cups.setup(world,life.candidate_navigation)
 		life.candidate_cups.register_review_mugs()
@@ -1741,9 +1784,6 @@ func _object_offset(object_id: String) -> Vector3:
 	var ox := (float(code % 7) - 3.0) * 0.16
 	var oz := (float(int(code / 7) % 5) - 2.0) * 0.12
 	return Vector3(ox,0.0,oz)
-
-const ARTIFACT_CUBE_SIDE:float=0.18
-const ARTIFACT_CUBE_MODEL:="res://assets/decor_bank/artifact_glass_cube_s/model.gltf"
 
 func _make_artifact_cube(anchor:Node3D,texture:Texture2D)->bool:
 	# The physical artifact IS a glass cube, not a loose picture next to a cube.

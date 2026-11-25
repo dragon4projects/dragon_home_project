@@ -98,6 +98,10 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 				"PERSISTENT_UNTIL_CHANGED")),
 			"updated_event_id":event_id
 		}
+		var initial_support:String=str(payload.get("home_support_id",""))
+		if initial_support!="":
+			next[object_id]["home_support_id"]=initial_support
+			next[object_id]["current_support_id"]=initial_support
 		return next
 
 	var object_id: String = str(payload.get("object_id",""))

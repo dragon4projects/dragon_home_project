@@ -604,6 +604,10 @@ func register_object(object_id: String, display_name: String,
 		},
 		"sim_clock":float(world.sim_clock)
 	}
+	# Optional measured initial support belongs to registration itself,
+	# not to a synthetic owner assignment event.
+	if metadata.has("home_support_id"):
+		payload["home_support_id"]=metadata["home_support_id"]
 	var event := _base_event(
 		"OBJECT_REGISTERED","EXPLICIT_WORLD_FACT","system","world_model",
 		"SYSTEM_RULE",_visibility_for_room(home_room_id),
