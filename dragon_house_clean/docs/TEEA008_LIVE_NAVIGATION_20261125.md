@@ -1,0 +1,7 @@
+# TEEA008 live navigation review
+
+Enable only with existing ITER1 owner-review marker and DRAGON_TEEA008_REVIEW=1 DRAGON_TEEA008_LIVE=1. Independent live save, no production activation or topology changes. AStarGrid2D at .10 m, .325 m radius and independent .025 m segment samples. Room variant grids cached; paths are planned on intent changes, not every frame. Existing connector/lift graph remains authoritative. No pose calibration yet: measured seat approaches are standing interaction points; REST/SLEEP/WATCH_FILM are deliberately not issued for candidate layouts until real pose binding. Two fur mat centers are derived rather than supplied. Old lateral avoidance is disabled in candidate mode to prevent bypass into furniture; peer collision and actual species depth are not approved.
+
+Engine QA: 33 variants, 292 distinct safe station positions, 584/584 connector-to-station routes. 600 simulation seconds, 57,474 sampled positions clear against provisional body proxy, 918 path requests, zero failed. Centaur 8 rooms, vampire 9, Miu 6; all idle/travel/perform. Guest restart regression PASS: current room and assigned home remain independent, closed door stays closed, autonomy retained. Last baseline CI 45480370320 PASS; combined fresh import and scene PASS with zero invalid-UID warnings.
+
+Remaining: actual actor/seat contact and visual scale, rear-facing poses, support surfaces and true media interactions, peer collision, final geometry and actual platform QA, binary LFS delivery. This is live review only.

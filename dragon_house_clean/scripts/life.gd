@@ -21,6 +21,7 @@ var planner_usec_total := 0
 var planner_usec_max := 0
 var log: Array = []
 var steps := 0
+var candidate_navigation=null
 var last_cleanup_wall_time := 0
 
 const HUMAN_STATUS := {
@@ -95,6 +96,11 @@ const INTENTS := {
 
 func setup(p_world) -> void:
 	world = p_world
+	if candidate_navigation!=null:
+		stations.candidate_navigation=candidate_navigation
+		locomotion.candidate_navigation=candidate_navigation
+		creature_runtime.locomotion.candidate_navigation=candidate_navigation
+		_prepare_candidate_positions()
 	media_runtime.setup(world)
 	creature_runtime.setup(world)
 	rng.seed = 814223
@@ -317,6 +323,8 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 					and intent in ["REST","SLEEP"]
 					and str(room.get("owner_id","")) != str(actor.get("id",""))):
 				continue
+			if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent in ["REST","SLEEP","WATCH_FILM"]:
+				continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
 				candidates.append(room)
 		if candidates.is_empty():
@@ -454,6 +462,10 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	end_catalog_browse(actor)
 	end_concrete_media(actor)
 	actor.erase("viewing_object_id")
+	if candidate_navigation!=null:
+		actor["phase"]="idle"
+		actor["waypoints"]=[]
+		actor["waypoint_index"]=0
 	if task.is_empty():
 		actor["until"] = clock + 15.0
 		return
@@ -620,6 +632,9 @@ func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
 	# Cheap deterministic local avoidance for the public walking aisle.
 	# It changes only the transient movement target; authored waypoints and
 	# station coordinates remain untouched.
+	if candidate_navigation!=null:
+		# Old lateral bypass can cut through a newly authored obstacle.
+		return {"target":target,"wait":false,"passing":false}
 	if not PASSING_WAYPOINT_KINDS.has(str(point.get("kind",""))):
 		return {"target":target,"wait":false,"passing":false}
 	var dx:float=target.x-at.x
@@ -677,6 +692,22 @@ func _move(actor: Dictionary, delta: float) -> void:
 		actor["phase"] = "perform"
 		return
 	var point: Dictionary = waypoints[idx]
+	if candidate_navigation!=null and str(point.get("kind",""))=="station":
+		var destination:Dictionary=world.room_by_id(str(point.get("room_id","")))
+		if not world.is_accessible(destination,str(actor["id"])):
+			stations.release(actor)
+			end_catalog_browse(actor)
+			end_concrete_media(actor)
+			if actor.has("held_book"):
+				media_runtime.return_book(str(actor["id"]),str(actor["held_book"]))
+				actor.erase("held_book")
+			actor["phase"]="idle"
+			actor["waypoints"]=[]
+			actor["waypoint_index"]=0
+			actor["until"]=clock
+			moving_ids.erase(str(actor["id"]))
+			wake_actor(str(actor["id"]),"GUEST_ACCESS_REVOKED")
+			return
 	var authored_target: Vector3 = locomotion.get_target(actor)
 	var target: Vector3 = authored_target
 	var at := Vector3(float(actor.get("x",0.0)),
@@ -775,3 +806,30 @@ func tick(delta: float) -> void:
 		_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
 	world.runtime_state["life_scheduler_metrics"] = scheduler_metrics()
+
+func _prepare_candidate_positions()->void:
+	# One-time migration in the separate live-review save. Never teleport a
+	# walking actor every frame. Invalidate old route/claim commitments.
+	if bool(world.runtime_state.get("teea008_navigation_initialized",false)):
+		return
+	for collection in [world.residents,world.creatures]:
+		for id in collection:
+			var actor:Dictionary=collection[id]
+			var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+			if room.is_empty():
+				continue
+			var c:Vector3=world.room_center_pos(room)
+			var at:=Vector2(float(actor.get("x",c.x))-c.x,float(actor.get("z",0.0)))
+			if candidate_navigation.has_layout(room) and not candidate_navigation.clear(room,at):
+				var safe:Vector2=candidate_navigation.nearest_clear(room,at)
+				actor["x"]=c.x+safe.x
+				actor["z"]=safe.y
+				actor["visual_y"]=c.y
+				world._append_journal("TEEA008_REVIEW_POSITION_MIGRATED",str(id),str(id),str(room["id"]),str(room["id"]),{"from":[at.x,at.y],"to":[safe.x,safe.y]})
+			stations.release(actor)
+			actor["phase"]="idle"
+			actor["waypoints"]=[]
+			actor["waypoint_index"]=0
+			actor["until"]=world.sim_clock
+			actor.erase("partner_id")
+	world.runtime_state["teea008_navigation_initialized"]=true

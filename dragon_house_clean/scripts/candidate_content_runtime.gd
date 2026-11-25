@@ -96,7 +96,7 @@ func guest_preflight(world) -> Dictionary:
 			if mapped_id == "" or str(existing.get("id","")) != mapped_id or 					str(existing.get("type","")) != "guest":
 				return _fail("Occupied guest cell is not the recorded candidate mapping: "+cell_key)
 			var actor: Dictionary = world.residents.get(actor_id,{})
-			if actor.is_empty() or str(actor.get("entity_type","")) != "guest" or 					str(actor.get("room_id","")) != mapped_id:
+			if actor.is_empty() or str(actor.get("entity_type","")) != "guest" or 					str(actor.get("home_room_id","")) != mapped_id or str(existing.get("owner_id","")) != actor_id or world.room_by_id(str(actor.get("room_id",""))).is_empty():
 				return _fail("Mapped candidate guest actor/room state is inconsistent: "+actor_id)
 		plans.append({
 			"spec":spec.duplicate(true),
@@ -146,18 +146,16 @@ func apply_guest_candidate(world) -> Dictionary:
 					actor_id,display_name,str(room["id"]),"",actor_id):
 				_restore_snapshot(world,snapshot)
 				return _fail("Failed to register guest candidate actor: "+actor_id)
-		else:
-			if not world.configure_guest_room(
-					str(room["id"]),actor_id,"Гостевая · "+display_name):
-				_restore_snapshot(world,snapshot)
-				return _fail("Failed to configure guest candidate room: "+proposed_id)
-		room["guest_access_state"] = str(spec.get("access_state","open"))
+			room["guest_access_state"] = str(spec.get("access_state","open"))
+		# Existing mapped rooms retain their door state and assigned owner.
+		# Preflight validated the stable home and the current room separately.
 		var guest: Dictionary = world.residents.get(actor_id,{})
 		guest["appearance_profile"] = actor_id
 		guest["bank_id"] = actor_id
 		guest["visual_status"] = "CANDIDATE"
 		guest["candidate_source"] = "TEEA_INT_20261123_007"
-		guest["autonomy_enabled"] = false
+		if not guest.has("autonomy_enabled"):
+			guest["autonomy_enabled"] = false
 	world.runtime_state[GUEST_MAP_KEY] = mapping
 	world.runtime_state[GUEST_SOURCE_KEY] = {
 		"batch_id":"TEEA_INT_20261123_007",

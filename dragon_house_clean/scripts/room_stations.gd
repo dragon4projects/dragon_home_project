@@ -10,6 +10,7 @@ const MODULE_W := 4.8
 const BACK_Z := -1.95
 const FRONT_Z := 1.65
 var furniture = InteractionAnchors.new()
+var candidate_navigation=null
 
 func _init() -> void:
 	var selected := REVIEW_FURNITURE if FileAccess.file_exists(REVIEW_MARKER) else InteractionAnchors.DEFAULT_PATH
@@ -115,6 +116,8 @@ func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 func layout(room: Dictionary) -> Array:
 	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		return candidate_navigation.candidate_spots(room)
 	return _layout_from_anchors(room,_physical_anchor_data(room))
 
 func _display_anchor_data(world, room: Dictionary) -> Array:
@@ -142,6 +145,8 @@ func layout_for_world(world, room: Dictionary) -> Array:
 	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
 	var anchors:Array=_display_anchor_data(world,room)
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		return candidate_navigation.candidate_spots(room,anchors)
 	anchors.append_array(_physical_anchor_data(room))
 	return _layout_from_anchors(room,anchors)
 
@@ -206,7 +211,10 @@ func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
 func available_count(world, room: Dictionary) -> int:
 	if room.is_empty() or room.get("privacy","public") != "public":
 		return 0
-	return maxi(0,capacity(room)-used_slots(world,str(room["id"])).size())
+	var slots:int=capacity(room)
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		slots=layout_for_world(world,room).size()
+	return maxi(0,slots-used_slots(world,str(room["id"])).size())
 
 func _claim(room: Dictionary, index: int, spot: Dictionary) -> Dictionary:
 	return {"room_id":str(room["id"]),"slot":index,
@@ -222,6 +230,10 @@ func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> 
 		return {}
 	var used: Dictionary = used_slots(world,str(room["id"]),[id])
 	var points: Array = layout_for_world(world,room)
+	if points.is_empty():
+		return {}
+	if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent in ["REST","SLEEP","WATCH_FILM"]:
+		return {}
 	# If the actor is continuing a reservation, keep its exact location.
 	var prior := int(actor.get("station_slot",-1))
 	if str(actor.get("station_room_id","")) == room["id"] and prior >= 0 and prior < points.size() and not used.has(prior):
@@ -345,7 +357,7 @@ func reconcile(world) -> int:
 				actor["station_slot"]=slot
 		var key: String = "%s:%d" % [room_id,slot]
 		var invalid: bool = not bool(actor.get("active",false)) or room.is_empty() or (
-			not world.is_accessible(room,str(id))) or slot < 0 or slot >= capacity(room) or (
+			not world.is_accessible(room,str(id))) or slot < 0 or slot >= authored.size() or (
 			not ["travel","perform"].has(str(actor.get("phase","idle")))) or claimed.has(key)
 		if not invalid and str(actor.get("phase",""))=="travel":
 			var route: Array=actor.get("waypoints",[])

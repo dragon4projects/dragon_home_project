@@ -11,6 +11,7 @@ const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
 const OwnerDecorBankScript = preload("res://scripts/owner_decor_bank.gd")
 const TEEA008ReviewScript = preload("res://scripts/teea008_review_bank.gd")
+const TEEA008NavigationScript = preload("res://scripts/teea008_navigation.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
@@ -29,6 +30,7 @@ var interior_skin = InteriorSkinScript.new()
 var room_visual_layout = RoomVisualLayoutScript.new()
 var owner_decor_bank = OwnerDecorBankScript.new()
 var teea008_review = TEEA008ReviewScript.new()
+var teea008_live:=false
 var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
 var candidate_content = CandidateContentRuntimeScript.new()
@@ -181,6 +183,9 @@ func _ready() -> void:
 		if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1":
 			if teea008_review.initialize():
 				world.save_path="user://dragon_house_teea008_review.json"
+				teea008_live=OS.get_environment("DRAGON_TEEA008_LIVE")=="1"
+				if teea008_live:
+					world.save_path="user://dragon_house_teea008_live_review.json"
 			else:
 				push_warning("TEEA008 review unavailable: "+teea008_review.error)
 	world.load_or_seed()
@@ -200,6 +205,12 @@ func _ready() -> void:
 	if not asset_banks.manifest.is_empty():
 		catalog_metadata_added = world.merge_reference_book_metadata(
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
+	if teea008_live:
+		life.candidate_navigation=TEEA008NavigationScript.new()
+		life.candidate_navigation.configure(teea008_review.layouts)
+		for actor in world.residents.values():
+			if str(actor.get("entity_type",""))=="guest":
+				actor["autonomy_enabled"]=true
 	life.setup(world)
 	interior_skin.initialize()
 	if not room_visual_layout.initialize():
@@ -257,7 +268,8 @@ func _ready() -> void:
 	zoom_current = zoom
 	apply_camera(0.1)
 	update_render_lod()
-	notice.text = ("TEEA008 GEOMETRY REVIEW · life paused · approved=false" if teea008_review.enabled else
+	notice.text = ("TEEA008 LIVE REVIEW · provisional body clearance · approved=false" if teea008_live else
+		"TEEA008 GEOMETRY REVIEW · life paused · approved=false" if teea008_review.enabled else
 		"ITER1 OWNER REVIEW · candidate art/guests/fauna · approved=false"
 		if iter1_owner_review else
 		"Независимый прототип: камера, постройка, автономная жизнь")
@@ -2961,7 +2973,7 @@ func _process(delta: float) -> void:
 	# The camera never chooses activities. Life is a separate simulation clock.
 	# Candidate layouts are deliberately visual-only until measured stations and
 	# actor footprint paths are bound. Do not simulate against stale furniture.
-	if not teea008_review.enabled:
+	if not teea008_review.enabled or teea008_live:
 		life.tick(delta)
 	update_residents(delta)
 	update_creatures(delta)

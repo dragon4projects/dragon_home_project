@@ -17,6 +17,7 @@ const STATIONS := {
 const AISLE_Z := 0.95
 const PUBLIC_FRONTAGE_Z := 1.54
 const STATION_OFFSET := 0.66
+var candidate_navigation=null
 
 func station(intent: String, actor_id: String) -> Vector2:
 	var base: Vector2 = STATIONS.get(intent, Vector2(0.0, 0.0))
@@ -81,6 +82,8 @@ func build_waypoints(world, actor: Dictionary, room_path: Array, intent: String,
 		override_station: Variant = null, override_approach_z: float = AISLE_Z) -> Array:
 	if room_path.is_empty():
 		return []
+	if candidate_navigation!=null:
+		return _candidate_waypoints(world,actor,room_path,intent,override_station)
 	var travel:Array=[]
 	var first:Dictionary=world.room_by_id(str(room_path[0]))
 	if first.is_empty():
@@ -151,3 +154,54 @@ func get_target(actor: Dictionary) -> Vector3:
 		return Vector3(float(actor.get("x",0.0)),float(actor.get("visual_y",0.0)),float(actor.get("z",0.0)))
 	var p: Array = points[i]["position"]
 	return Vector3(float(p[0]),float(p[1]),float(p[2]))
+
+func _candidate_local_route(world,travel:Array,room:Dictionary,target:Vector3,kind:String)->bool:
+	var start:=_last_position(travel)
+	if not candidate_navigation.has_layout(room):
+		_route_manhattan(travel,str(room["id"]),target,true,"local_aisle_entry",kind)
+		return true
+	var a:Vector2=world.room_space.world_to_local(room,start)
+	var b:Vector2=world.room_space.world_to_local(room,target)
+	var path:Array=candidate_navigation.path(room,a,b)
+	if path.is_empty():
+		return false
+	for i in range(path.size()):
+		var p:Vector3=world.room_local_to_world(room,path[i])
+		_append_if_distinct(travel,waypoint(p.x,p.y,p.z,str(room["id"]),kind if i==path.size()-1 else "candidate_path"))
+	return true
+
+func _candidate_waypoints(world,actor:Dictionary,room_path:Array,intent:String,override_station:Variant)->Array:
+	var travel:Array=[]
+	var previous:Dictionary=world.room_by_id(str(room_path[0]))
+	if previous.is_empty():
+		return []
+	var center:Vector3=world.room_center_pos(previous)
+	_append_if_distinct(travel,waypoint(float(actor.get("x",center.x)),center.y,float(actor.get("z",0.0)),str(previous["id"]),"candidate_path"))
+	for i in range(1,room_path.size()):
+		var room:Dictionary=world.room_by_id(str(room_path[i]))
+		if room.is_empty() or not world.allows_transit(room):
+			return []
+		var conn:Dictionary=world.connection_between(previous,room)
+		if conn.is_empty():
+			return []
+		var from:Vector3=conn["from"]
+		var to:Vector3=conn["to"]
+		var lift:bool=str(conn.get("kind",""))=="lift"
+		if lift:
+			_route_manhattan(travel,str(previous["id"]),from,false,"lift_align","lift_core")
+		elif not _candidate_local_route(world,travel,previous,from,"candidate_path"):
+			return []
+		_append_if_distinct(travel,waypoint(to.x,to.y,to.z,str(room["id"]),"lift" if lift else "connector_in"))
+		previous=room
+	if not world.is_accessible(previous,str(actor.get("id",""))):
+		return []
+	var anchor:Vector2=override_station if override_station is Vector2 else station(intent,str(actor.get("id","")))
+	if candidate_navigation.has_layout(previous) and not (override_station is Vector2):
+		anchor=candidate_navigation.nearest_clear(previous,anchor)
+	var target:Vector3=world.room_local_to_world(previous,anchor)
+	if not _candidate_local_route(world,travel,previous,target,"station"):
+		return []
+	# A same-position destination is still a station, not an endless idle path.
+	if not travel.is_empty():
+		travel[-1]["kind"]="station"
+	return travel
