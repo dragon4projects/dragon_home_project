@@ -3338,11 +3338,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_2728.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Ричард Келли",
-      "runtime_seconds": 0,
-      "preview_sha256": "9a52c8a3592a11b2fa88dc3e06f2293f7ef8fcb49ace76d307c375a78e13f3b6"
+      "runtime_seconds": 6780,
+      "preview_sha256": "9a52c8a3592a11b2fa88dc3e06f2293f7ef8fcb49ace76d307c375a78e13f3b6",
+      "imdb_id": "tt0246578",
+      "duration_source": "https://www.imdb.com/title/tt0246578/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt0246578/",
+        "runtime_minutes": 113,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established; reference theatrical runtime, not director's cut."
+      }
     },
     {
       "id": "FILMIX_159130",
@@ -3358,11 +3368,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_159130.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Брайан Гудман",
-      "runtime_seconds": 0,
-      "preview_sha256": "fad53fe663dec85c2a72fa14ad28899ac5bad0d85097cb5452e37c9cdfa9bd9c"
+      "runtime_seconds": 5700,
+      "preview_sha256": "fad53fe663dec85c2a72fa14ad28899ac5bad0d85097cb5452e37c9cdfa9bd9c",
+      "imdb_id": "tt10242388",
+      "duration_source": "https://www.imdb.com/title/tt10242388/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt10242388/",
+        "runtime_minutes": 95,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_158850",
@@ -3378,11 +3398,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_158850.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джон Пог",
-      "runtime_seconds": 0,
-      "preview_sha256": "bbd146bd2e30a75651799e1e953c24d13f6047886cbd7dda658ee4639f314fa4"
+      "runtime_seconds": 6120,
+      "preview_sha256": "bbd146bd2e30a75651799e1e953c24d13f6047886cbd7dda658ee4639f314fa4",
+      "imdb_id": "tt15422240",
+      "duration_source": "https://www.imdb.com/title/tt15422240/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt15422240/",
+        "runtime_minutes": 102,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_142599",
@@ -3445,11 +3475,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_159376.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джозеф Косински",
-      "runtime_seconds": 0,
-      "preview_sha256": "7b31f50d87856b10ec334a2763c8a47c3539b35a37ffd276d17f416625c77424"
+      "runtime_seconds": 6360,
+      "preview_sha256": "7b31f50d87856b10ec334a2763c8a47c3539b35a37ffd276d17f416625c77424",
+      "imdb_id": "tt9783600",
+      "duration_source": "https://www.imdb.com/title/tt9783600/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt9783600/",
+        "runtime_minutes": 106,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_14089",
@@ -3465,11 +3505,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_14089.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Херберт Росс",
-      "runtime_seconds": 0,
-      "preview_sha256": "4eab087e7659ec423ef59a0059cf54b6588589af2c7bb04bf81d4672b37ab231"
+      "runtime_seconds": 6660,
+      "preview_sha256": "4eab087e7659ec423ef59a0059cf54b6588589af2c7bb04bf81d4672b37ab231",
+      "imdb_id": "tt0093936",
+      "duration_source": "https://www.imdb.com/title/tt0093936/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt0093936/",
+        "runtime_minutes": 111,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_158535",
@@ -3531,11 +3581,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_59403.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Крэйг Вивейрос",
-      "runtime_seconds": 0,
-      "preview_sha256": "4114cfa84a2d89a109fcd4cdcab64d79176882eb93c165f5e99f066d7a058938"
+      "runtime_seconds": 4920,
+      "preview_sha256": "4114cfa84a2d89a109fcd4cdcab64d79176882eb93c165f5e99f066d7a058938",
+      "imdb_id": "tt2081437",
+      "duration_source": "https://www.imdb.com/title/tt2081437/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt2081437/",
+        "runtime_minutes": 82,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_144819",
@@ -3621,11 +3681,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_157330.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Марк Уильямс",
-      "runtime_seconds": 0,
-      "preview_sha256": "12cec1254b3da5a8cce7304f0a4753d5353ce42bd57f47f350e88cb4d3f7c284"
+      "runtime_seconds": 6240,
+      "preview_sha256": "12cec1254b3da5a8cce7304f0a4753d5353ce42bd57f47f350e88cb4d3f7c284",
+      "imdb_id": "tt14060094",
+      "duration_source": "https://www.imdb.com/title/tt14060094/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt14060094/",
+        "runtime_minutes": 104,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_99054",
@@ -3665,11 +3735,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_152751.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Таня Уэкслер",
-      "runtime_seconds": 0,
-      "preview_sha256": "bc7ab93d797c1282469f7e00f7b234b247429fbf6be921edc8dc1b176130aa42"
+      "runtime_seconds": 5460,
+      "preview_sha256": "bc7ab93d797c1282469f7e00f7b234b247429fbf6be921edc8dc1b176130aa42",
+      "imdb_id": "tt10228134",
+      "duration_source": "https://www.imdb.com/title/tt10228134/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt10228134/technical/",
+        "runtime_minutes": 91,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_103435",
@@ -3709,11 +3789,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_149360.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Доминик Кук",
-      "runtime_seconds": 0,
-      "preview_sha256": "fbcf59be7994025e75a3d3e8eaadb60cf3b292184df6e6963ab3e472028ae8ed"
+      "runtime_seconds": 6720,
+      "preview_sha256": "fbcf59be7994025e75a3d3e8eaadb60cf3b292184df6e6963ab3e472028ae8ed",
+      "imdb_id": "tt8368512",
+      "duration_source": "https://www.imdb.com/title/tt8368512/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt8368512/",
+        "runtime_minutes": 112,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_100830",
@@ -3851,11 +3941,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_146915.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Димитри Логотетис",
-      "runtime_seconds": 0,
-      "preview_sha256": "c0126d661a656164a0e04d2edccffa648bf77746ab47c28848582da5580b6e8c"
+      "runtime_seconds": 6120,
+      "preview_sha256": "c0126d661a656164a0e04d2edccffa648bf77746ab47c28848582da5580b6e8c",
+      "imdb_id": "tt9624766",
+      "duration_source": "https://www.imdb.com/title/tt9624766/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt9624766/",
+        "runtime_minutes": 102,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_146084",
@@ -3923,11 +4023,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_146547.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Питер Сигал",
-      "runtime_seconds": 0,
-      "preview_sha256": "b27ef82b64e39b6583eee52204462122bd7bde4dea0eca724b8d52bafc28577d"
+      "runtime_seconds": 6600,
+      "preview_sha256": "b27ef82b64e39b6583eee52204462122bd7bde4dea0eca724b8d52bafc28577d",
+      "imdb_id": "tt0425061",
+      "duration_source": "https://www.imdb.com/title/tt0425061/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt0425061/",
+        "runtime_minutes": 110,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_7250",
@@ -3990,11 +4100,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_138075.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Закари Адлер",
-      "runtime_seconds": 0,
-      "preview_sha256": "2e947003091e7028516ba15209ce5c1f018ab78bd49f82bfbc8997d55e8a523b"
+      "runtime_seconds": 5940,
+      "preview_sha256": "2e947003091e7028516ba15209ce5c1f018ab78bd49f82bfbc8997d55e8a523b",
+      "imdb_id": "tt8075016",
+      "duration_source": "https://www.imdb.com/title/tt8075016/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt8075016/",
+        "runtime_minutes": 99,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year; distinct director/release for The Courier titles",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_139027",
