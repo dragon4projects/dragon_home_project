@@ -226,7 +226,10 @@ func _timed_arrival_valid(actor:Dictionary,now:float,intent:String)->bool:
 func begin_watch(actor:Dictionary,now:float)->bool:
 	if not _timed_arrival_valid(actor,now,"WATCH_FILM"):return false
 	# Duplicate arrival/reconciliation must not restart an active commitment.
-	if actor.has("watch_session"):return timed_session_valid(actor,now)
+	if actor.has("watch_session"):
+		if not timed_session_valid(actor,now):return false
+		actor["until"]=float(actor["watch_session"]["ends_at"])
+		return true
 	var item:Dictionary=_lookup("films",str(actor.get("activity_media_id","")))
 	var unit:Dictionary=next_watch_unit(str(actor["id"]),item)
 	if unit.is_empty():return false
@@ -313,7 +316,10 @@ func choose_listen_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Di
 
 func begin_listen(actor:Dictionary,now:float)->bool:
 	if not _timed_arrival_valid(actor,now,"LISTEN_MUSIC"):return false
-	if actor.has("listen_session"):return timed_session_valid(actor,now)
+	if actor.has("listen_session"):
+		if not timed_session_valid(actor,now):return false
+		actor["until"]=float(actor["listen_session"]["ends_at"])
+		return true
 	var item_id:String=str(actor.get("activity_media_id",""))
 	var duration:float=track_duration(_lookup("tracks",item_id))
 	if duration<=0:return false
