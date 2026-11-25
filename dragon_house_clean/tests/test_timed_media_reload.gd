@@ -27,6 +27,16 @@ func run()->void:
 	assert(life.media_runtime.listen_history("RES_01","QA_TRACK").is_empty())
 	life.clock=180.0
 	w.sim_clock=180.0
+	var b:Dictionary=w.residents["RES_02"]
+	life._assign(b,{"intent":"LISTEN_MUSIC","room":room})
+	assert(b.get("activity_media_id","")=="QA_TRACK")
+	b["room_id"]=room["id"]
+	b["phase"]="perform"
+	b["waypoint_index"]=b.get("waypoints",[]).size()
+	assert(life.media_runtime.begin_listen(b,180.0))
+	assert(b["listen_session"]["session_id"]==a["listen_session"]["session_id"])
+	assert(not b["listen_session"]["full_credit"])
+	assert(b["until"]==295.0)
 	assert(w.save_world())
 	var copy=W.new()
 	copy.save_path=w.save_path
@@ -37,11 +47,21 @@ func run()->void:
 	assert(restored["listen_session"]["started_at"]==100.0)
 	assert(restored["until"]==295.0)
 	assert(resumed.life_scheduler.peek_due_at("RES_01")==295.0)
+	var late:Dictionary=copy.residents["RES_02"]
+	assert(late["listen_session"]["joined_at"]==180.0)
+	assert(late["listen_session"]["ends_at"]==295.0)
+	assert(not late["listen_session"]["full_credit"])
+	assert(resumed.life_scheduler.peek_due_at("RES_02")==295.0)
 	resumed.clock=295.0
 	copy.sim_clock=295.0
 	resumed._process_due_actor("RES_01","QA_COMPLETION")
 	assert(resumed.media_runtime.listen_history("RES_01","QA_TRACK")["completed_count"]==1)
 	assert(not restored.has("listen_session"))
+	resumed._process_due_actor("RES_02","QA_PARTIAL_COMPLETION")
+	assert(resumed.media_runtime.listen_history("RES_02","QA_TRACK").is_empty())
+	assert(copy.runtime_state["media_attendance"]["RES_02"]["tracks|QA_TRACK"]["attended_seconds"]==115.0)
+	assert(copy.runtime_state["media_attendance"]["RES_02"]["tracks|QA_TRACK"]["partial_sessions"]==1)
+	assert(copy.runtime_state["media_device_sessions"].is_empty())
 	resumed._process_due_actor("RES_01","QA_DUPLICATE_WAKE")
 	assert(resumed.media_runtime.listen_history("RES_01","QA_TRACK")["completed_count"]==1)
 	print("TIMED_MEDIA_RELOAD_PASS")

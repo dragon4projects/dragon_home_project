@@ -7,7 +7,9 @@ var candidate_navigation=null
 func setup(model) -> void:
 	world = model
 	_normalize_catalogue()
+	_migrate_legacy_series_progress()
 	_restore_device_sessions()
+	prune_device_sessions()
 	if candidate_navigation!=null:
 		reconcile_book_slots()
 
@@ -197,9 +199,28 @@ func _at_catalog_end(row:Dictionary,item:Dictionary)->bool:
 func _unit_repeat_eligible(row:Dictionary,season:int,episode:int,now:float)->bool:
 	var stamps:Dictionary=row.get("unit_completed_at",{})
 	var key:String=_episode_key(season,episode)
-	if not stamps.has(key):return true
+	if not stamps.has(key):
+		# Legacy histories do not timestamp every episode. For already
+		# completed units use the last known completion conservatively.
+		var s:int=int(row.get("last_completed_season",-1))
+		var e:int=int(row.get("last_completed_episode",-1))
+		if int(row.get("completed_units",0))<=0 or season>s or (season==s and episode>e):return true
+		return now-float(row.get("last_completed_at",0))>=world.GAME_DAY_SECONDS
 	var last:float=float(stamps[key])
 	return is_finite(now) and is_finite(last) and now-last>=world.GAME_DAY_SECONDS
+
+func _migrate_legacy_series_progress()->void:
+	var all:Dictionary=world.runtime_state.get("cinema_progress",{})
+	for actor_id in all:
+		var progress:Dictionary=all[actor_id]
+		for id in progress:
+			var row:Dictionary=progress[id]
+			var item:Dictionary=_lookup("films",str(id))
+			if str(item.get("media_type",""))=="series" and _at_catalog_end(row,item):
+				row["complete"]=true
+				row["completed_count"]=maxi(1,int(row.get("completed_count",0)))
+				row["next_season"]=int(row["last_completed_season"])
+				row["next_episode"]=int(row["last_completed_episode"])+1
 
 func next_watch_unit(actor_id:String,item:Dictionary,now:float=-1.0)->Dictionary:
 	if not bool(item.get("simulation_only",false)):return {}
@@ -247,15 +268,23 @@ func watch_candidates(actor_id:String,now:float=-1.0)->Array:
 func choose_watch_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Dictionary:
 	var options:Array=watch_candidates(actor_id,now)
 	if options.is_empty():return {}
+	# Prefer eligible continuations as a class, rather than allowing a large
+	# catalog of new titles to dilute the active-series priority.
+	var continuation:Dictionary={}
+	var latest:float=-1.0
+	for item in options:
+		var row:Dictionary=_cinema_history(actor_id,str(item["id"]))
+		var unit:Dictionary=next_watch_unit(actor_id,item,now)
+		if str(item.get("media_type",""))=="series" and not row.is_empty() and not bool(unit.get("restart_cycle",false)):
+			var last:float=float(row.get("last_completed_at",0))
+			if last>latest:
+				latest=last
+				continuation=item
+	if not continuation.is_empty():return continuation
 	var weights:=PackedFloat32Array()
 	for item in options:
 		var id:String=str(item["id"])
 		var row:Dictionary=_cinema_history(actor_id,id)
-		var unit:Dictionary=next_watch_unit(actor_id,item,now)
-		if str(item.get("media_type",""))=="series" and not row.is_empty() and not bool(unit.get("restart_cycle",false)):
-			# An unfinished series or newly added episode is a continuation.
-			weights.append(6.0)
-			continue
 		var n:int=int(row.get("completed_count",1 if not row.is_empty() else 0))
 		var age:float=now-float(row.get("last_completed_at",0))
 		var recovery:float=clampf((age-world.GAME_DAY_SECONDS)/(7.0*world.GAME_DAY_SECONDS),0.0,1.0)
@@ -401,6 +430,21 @@ func _restore_device_sessions()->void:
 		var start:float=float(program["started_at"])
 		_attach_member(actor,key,program,start,_full_credit_eligible(str(id),category,program,start))
 
+func prune_device_sessions()->void:
+	# Discard only invalid/stale references during reconciliation. A valid
+	# ended session is retained until its due members settle normally.
+	var devices:Dictionary=_devices()
+	for device in devices.keys():
+		var program:Dictionary=devices[device]
+		var category:String=str(program.get("category",""))
+		var members:Dictionary=program.get("members",{})
+		if not category in ["films","tracks"] or not _program_valid(program,category,world.sim_clock):
+			devices.erase(device)
+			continue
+		for id in members.keys():
+			if not _member_matches(world.residents.get(id,{}),_category_key(category),program):members.erase(id)
+		if members.is_empty():devices.erase(device)
+
 func _new_session_id()->String:
 	var serial:int=int(world.runtime_state.get("media_device_serial",0))+1
 	world.runtime_state["media_device_serial"]=serial
@@ -469,7 +513,12 @@ func _settle_attendance(actor:Dictionary,key:String,now:float,full:bool,reason:S
 	var members:Dictionary=program.get("members",{})
 	var member:Dictionary=members.get(id,{})
 	if member.is_empty():return
-	var elapsed:float=clampf(minf(now,float(program["ends_at"]))-float(member["joined_at"]),0.0,float(program["seconds"]))
+	var joined:float=float(member.get("joined_at",-1))
+	if not _program_valid(program,category,now) or not is_finite(joined) or joined<float(program["started_at"]) or joined>now or joined>=float(program["ends_at"]):
+		members.erase(id)
+		if members.is_empty():_devices().erase(device)
+		return
+	var elapsed:float=clampf(minf(now,float(program["ends_at"]))-joined,0.0,float(program["seconds"]))
 	var all:Dictionary=world.runtime_state.get("media_attendance",{})
 	var per_actor:Dictionary=all.get(id,{})
 	var item_key:String=category+"|"+str(program["item_id"])

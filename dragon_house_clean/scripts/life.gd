@@ -522,6 +522,7 @@ func reconcile_concrete_media() -> int:
 	for id in world.residents:
 		var actor:Dictionary=world.residents[id]
 		if not bool(actor.get("active",false)):
+			media_runtime.cancel_timed_media(actor,clock)
 			continue
 		var active_id:String=str(actor.get("activity_media_id",""))
 		var held_book:String=str(actor.get("held_book",""))
@@ -577,6 +578,7 @@ func reconcile_concrete_media() -> int:
 			actor["waypoint_index"]=0
 			actor["until"]=clock
 		fixed+=1
+	media_runtime.prune_device_sessions()
 	return fixed
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
