@@ -10,6 +10,9 @@ func setup(model,navigation)->void:
 
 func register_review_mugs()->int:
 	var room:Dictionary=world.get_room(-2,0)
+	if world.canonical_house_seed:
+		var common_rooms:Array=world.matching_rooms(["common"])
+		room=common_rooms[0] if not common_rooms.is_empty() else {}
 	if str(room.get("type",""))!="common" or int(room.get("size_modules",1))!=3:
 		return 0
 	var row:Dictionary=nav.layouts.get(nav.key(room),{})

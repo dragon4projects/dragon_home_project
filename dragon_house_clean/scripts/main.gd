@@ -37,6 +37,8 @@ var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
 var candidate_content = CandidateContentRuntimeScript.new()
 var iter1_owner_review := false
+const ARCHITECTURE_MARKER := "res://data/integration_candidates/CANONICAL_HOUSE_ARCHITECTURE.enabled"
+var architecture_review := false
 var art_layer_count := 0
 var detailed_room_groups: Dictionary = {}
 var art_loaded_groups: Dictionary = {}
@@ -183,20 +185,27 @@ func _ensure_canonical_wall_displays() -> int:
 
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
-	iter1_owner_review = FileAccess.file_exists(ITER1_REVIEW_MARKER)
+	architecture_review = FileAccess.file_exists(ARCHITECTURE_MARKER) or OS.get_environment("DRAGON_HOUSE_ARCHITECTURE")=="1"
+	iter1_owner_review = architecture_review or FileAccess.file_exists(ITER1_REVIEW_MARKER)
+	world.canonical_house_seed=architecture_review
 	# Owner-review is explicitly allowed to show delivered candidate resident
 	# banks without changing their approval state. Production stays strict.
 	qa_visual_preview = iter1_owner_review
 	if iter1_owner_review:
 		world.save_path = "user://dragon_house_iter1_owner_review.json"
-		if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1" or FileAccess.file_exists(teea008_review.LIVE_EXPORT_MARKER):
-			if teea008_review.initialize():
+		if architecture_review or OS.get_environment("DRAGON_TEEA008_REVIEW")=="1" or FileAccess.file_exists(teea008_review.LIVE_EXPORT_MARKER):
+			if teea008_review.initialize(architecture_review):
+				if architecture_review:
+					teea008_review.apply_architecture_layouts()
 				world.save_path="user://dragon_house_teea008_review.json"
-				teea008_live=OS.get_environment("DRAGON_TEEA008_LIVE")=="1" or FileAccess.file_exists(teea008_review.LIVE_EXPORT_MARKER)
+				teea008_live=architecture_review or OS.get_environment("DRAGON_TEEA008_LIVE")=="1" or FileAccess.file_exists(teea008_review.LIVE_EXPORT_MARKER)
 				if teea008_live:
 					world.save_path="user://dragon_house_teea008_live_review.json"
 			else:
 				push_warning("TEEA008 review unavailable: "+teea008_review.error)
+	if architecture_review:
+		# Do not reinterpret or overwrite the legacy world or its event stores.
+		world.save_path="user://dragon_house_canonical_architecture_20261125.json"
 	world.load_or_seed()
 	if iter1_owner_review:
 		if candidate_content.initialize():
@@ -206,6 +215,7 @@ func _ready() -> void:
 		else:
 			push_warning("Iteration-1 candidate contract could not be initialized: "+candidate_content.last_error)
 	semantic_view.install(world,"HOUSE")
+	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
 	_ensure_canonical_wall_displays()
 	if iter1_owner_review:
@@ -329,6 +339,8 @@ func _register_iter1_review_creatures() -> void:
 			push_warning("Iteration-1 creature bank failed validation: "+bank_id)
 			continue
 		var room_id := _first_public_room_id(str(spec["room"]))
+		if architecture_review and room_id=="" and str(spec["room"])=="arrival":
+			room_id=_first_public_room_id("rest")
 		if room_id == "":
 			continue
 		if world.register_creature(creature_id,str(spec["name"]),room_id,bank_id,
@@ -342,7 +354,7 @@ func _review_room_art_type(group: Dictionary) -> String:
 	if not iter1_owner_review or room_type != "guest":
 		return room_type
 	var cells: Array = group.get("cells",[])
-	if cells.size() != 1:
+	if cells.is_empty():
 		return room_type
 	match str(cells[0].get("candidate_room_id","")):
 		"guest_centaur_01":
@@ -512,7 +524,8 @@ func make_mountain() -> void:
 	var shell := Node3D.new()
 	shell.name = "MountainMassBehindRooms"
 	add_child(shell)
-	var rock := box(shell, Vector3(-0.5, -1.0, -5.6), Vector3(83, 26, 0.8), Color("#6f696a"))
+	var bounds:Rect2=camera_world_bounds()
+	var rock := box(shell, Vector3(bounds.get_center().x,bounds.get_center().y,-5.6), Vector3(maxf(83.0,bounds.size.x+12.0),maxf(26.0,bounds.size.y+8.0),0.8), Color("#6f696a"))
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Color("#655d5e")
 	material.albedo_texture = _texture_from_source("res://assets/textures/basalt.jpg")
@@ -1471,6 +1484,8 @@ func make_room(group: Dictionary) -> void:
 		var owner_id:String=str(private_room.get("owner_id",""))
 		var sign:String=str(private_room.get("display_name","Гостевая")) if t=="guest" else \
 			door_registry.sign_text(owner_id,world.read_resident_profiles())
+		if architecture_review and t=="private" and owner_id=="":
+			sign="Резерв"
 		var door_label := label3(n,sign,Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
 		door_label.name = "RoomRoofLabel"
 		if t=="private" and door_registry.has_public_note(owner_id):
@@ -1487,6 +1502,9 @@ func make_room(group: Dictionary) -> void:
 		decoration_layer.name = "LocalFurniture"
 		n.add_child(decoration_layer)
 		var title: String = room_names.get(t,t)
+		var titled_room:Dictionary=world.room_by_id(str(group["primary_id"]))
+		if architecture_review and str(titled_room.get("display_name",""))!="":
+			title=str(titled_room["display_name"])
 		if int(group["width"]) > 1:
 			title += " · %d" % int(group["width"])
 		var roof_label := label3(n,title,Vector3(0,3.35,0.40),24,Color("#f4d9b9"))
@@ -2504,15 +2522,15 @@ func camera_world_bounds() -> Rect2:
 		var span: float = float(world.room_size_modules(room))*W
 		var pos := Vector2(center_x, float(room["level"]) * H)
 		lo.x = minf(lo.x,pos.x - span * 0.5)
-		lo.y = minf(lo.y,pos.y - H * 0.5)
+		lo.y = minf(lo.y,pos.y - (0.15 if architecture_review else H*0.5))
 		hi.x = maxf(hi.x,pos.x + span * 0.5)
-		hi.y = maxf(hi.y,pos.y + H * 0.5)
+		hi.y = maxf(hi.y,pos.y + (3.65 if architecture_review else H*0.5))
 	return Rect2(lo,hi-lo)
 
 func fit_house_camera() -> void:
 	var bounds: Rect2 = camera_world_bounds()
 	var size: Vector2 = get_viewport().get_visible_rect().size
-	var aspect: float = maxf(1.0, size.x / maxf(1.0,size.y))
+	var aspect: float = maxf(0.25 if architecture_review else 1.0, size.x / maxf(1.0,size.y))
 	var angle: float = deg_to_rad(BASE_FOV * 0.5)
 	# HOUSE is an overview, but it should feel like a Shelter cutaway filling
 	# the viewport rather than a tiny diagram floating in rock.
@@ -2520,7 +2538,9 @@ func fit_house_camera() -> void:
 	var horizontal_dist: float = (bounds.size.x + 0.8) / maxf(0.1, 2.0 * aspect * tan(angle))
 	# HOUSE is a navigable overview, not a mandatory fit-all blueprint.
 	# A modest crop keeps rooms legible; mouse pan still reaches every edge.
-	zoom = clampf(maxf(horizontal_dist,vertical_dist)*0.87, 12.0, 110.0)
+	zoom = clampf(maxf(horizontal_dist,vertical_dist)*(1.10 if architecture_review else 0.87),12.0,160.0 if architecture_review else 110.0)
+	if architecture_review:
+		yaw=0.0
 	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
 
 func update_selection_outline() -> void:
@@ -2576,7 +2596,7 @@ func fit_level_camera(level: int) -> bool:
 	var angle := deg_to_rad(BASE_FOV*0.5)
 	var vertical_dist := (bounds.size.y+1.4)/maxf(0.1,2.0*tan(angle))
 	var horizontal_dist := (bounds.size.x+3.0)/maxf(0.1,2.0*aspect*tan(angle))
-	zoom = clampf(maxf(vertical_dist,horizontal_dist)*1.08,12.0,82.0)
+	zoom = clampf(maxf(vertical_dist,horizontal_dist)*1.08,12.0,160.0 if architecture_review else 82.0)
 	desired_focus = Vector3(bounds.get_center().x,bounds.get_center().y,0.0)
 	return true
 
@@ -2759,7 +2779,7 @@ func zoom_around_pointer(mouse: Vector2, multiplier: float) -> void:
 	# Shelter-style anchoring: keep the world point under the cursor stable
 	# while zooming the camera. Following a resident takes precedence.
 	var old_zoom: float = zoom
-	var new_zoom: float = clampf(old_zoom*multiplier,4.5,110.0)
+	var new_zoom: float = clampf(old_zoom*multiplier,4.5,160.0 if architecture_review else 110.0)
 	if is_equal_approx(new_zoom,old_zoom):
 		return
 	if follow_id == "":

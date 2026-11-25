@@ -3,6 +3,8 @@ extends RefCounted
 const SAVE_PATH := "user://dragon_house_world_v01.json"
 const ObjectEventRuntime = preload("res://scripts/object_event_runtime.gd")
 const RoomSpaceV2 = preload("res://scripts/room_space_v2.gd")
+const CanonicalHouseSeed = preload("res://scripts/canonical_house_seed.gd")
+var canonical_house_seed := false
 var room_space = RoomSpaceV2.new()
 var save_path: String = SAVE_PATH
 var sim_clock: float = 0.0
@@ -593,25 +595,29 @@ func seed_world() -> void:
 	sim_clock = 0.0
 	# Physical seed topology. These rooms are immutable after creation:
 	# runtime may add rooms, but it must never merge, resize, move or rebuild seed rooms.
-	for record in [
-		[-5,0,"arrival",1],[-4,0,"corridor",1],[-3,0,"study",1],
-		[-2,0,"common",3],
-		[1,0,"rest",1],[2,0,"library",1],[3,0,"music",1],
-		[4,0,"cinema",1],[5,0,"lift",1],
-		[5,1,"lift",1],[4,1,"corridor",1],[3,1,"private",1],
-		[2,1,"private",1],[1,1,"rest",1],
-		[5,-1,"lift",1],[4,-1,"corridor",1],[3,-1,"private",1],
-		[2,-1,"private",1],[1,-1,"artifact",1]
-	]:
-		make_room(record[0],record[1],record[2],record[3],true)
+	if canonical_house_seed:
+		CanonicalHouseSeed.build(self)
+	else:
+		for record in [
+			[-5,0,"arrival",1],[-4,0,"corridor",1],[-3,0,"study",1],
+			[-2,0,"common",3],
+			[1,0,"rest",1],[2,0,"library",1],[3,0,"music",1],
+			[4,0,"cinema",1],[5,0,"lift",1],
+			[5,1,"lift",1],[4,1,"corridor",1],[3,1,"private",1],
+			[2,1,"private",1],[1,1,"rest",1],
+			[5,-1,"lift",1],[4,-1,"corridor",1],[3,-1,"private",1],
+			[2,-1,"private",1],[1,-1,"artifact",1]
+		]:
+			make_room(record[0],record[1],record[2],record[3],true)
 	# All 24 canonical names/profile IDs come from 2026-11-12 approved map.
 	# Only the original eight QA silhouettes are active pending actual sprite banks.
 	var profiles: Array = read_resident_profiles()
+	var public_start_rooms: Array = matching_rooms(["common","rest","library","study","music","cinema","workshop","artifact"]) if canonical_house_seed else []
 	for i in range(profiles.size()):
 		var profile: Dictionary = profiles[i]
 		var id: String = profile["id"]
 		if i < 8:
-			var r: Dictionary = get_room(-3 + i, 0)
+			var r: Dictionary = public_start_rooms[i % public_start_rooms.size()] if canonical_house_seed else get_room(-3 + i, 0)
 			if r.is_empty() or not is_accessible(r):
 				r = get_room(1, 0)
 			residents[id] = {
@@ -633,9 +639,12 @@ func seed_world() -> void:
 				"production_visual_ready": false,
 				"visual_status": "ASSET_GATED"
 			}
+	if canonical_house_seed:
+		CanonicalHouseSeed.assign_homes(self,profiles)
 	# Manka is not a generic human resident.
+	var manka_room:Dictionary=get_room(-3,1) if canonical_house_seed else get_room(0,0)
 	residents["MANJKA"] = {"id": "MANJKA", "name": "Манька", "active": true,
-		"room_id": get_room(0, 0)["id"], "x": 0.0, "level": 0, "z": 0.7,
+		"room_id": manka_room["id"], "x": room_center_pos(manka_room).x if canonical_house_seed else 0.0, "level": int(manka_room["level"]), "z": 0.7,
 		"intent": "EXPLORE", "phase": "idle", "until": 0.0,
 		"needs": {"rest": 0.4, "social": 0.15, "curiosity": 0.9},
 		"traits": {"reading": 0.0, "music": 0.0}, "habits": {}, "last_location": "",
@@ -644,7 +653,7 @@ func seed_world() -> void:
 	objects = {}
 	creatures = {}
 	journal = []
-	runtime_state = {}
+	runtime_state = {"architecture_revision":CanonicalHouseSeed.REVISION} if canonical_house_seed else {}
 
 func _initial_seed_cell(room: Dictionary) -> bool:
 	var key: String = cell_key(int(room.get("x",0)),int(room.get("level",0)))

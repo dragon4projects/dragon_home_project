@@ -8,6 +8,8 @@ var mode := "HOUSE"
 var level := 0
 var active_room := ""
 var revision := 0
+# Visibility of the building is independent from semantic camera focus.
+var all_levels_visible := false
 
 func install(world, initial_mode: String = "HOUSE") -> void:
 	mode = initial_mode if initial_mode in MODES else "HOUSE"
@@ -71,7 +73,7 @@ func set_view(world, view_mode: String, room_id: String = "",
 		revision += 1
 
 func group_visible(group: Dictionary) -> bool:
-	if mode == "HOUSE":
+	if all_levels_visible or mode == "HOUSE":
 		return true
 	var group_level := int(group.get("level",0))
 	if group_level == level:
@@ -81,7 +83,7 @@ func group_visible(group: Dictionary) -> bool:
 	return str(group.get("type","")) == "lift" and abs(group_level-level) == 1
 
 func actor_visible(actor: Dictionary) -> bool:
-	if mode == "HOUSE":
+	if all_levels_visible or mode == "HOUSE":
 		return true
 	return int(actor.get("level",0)) == level
 

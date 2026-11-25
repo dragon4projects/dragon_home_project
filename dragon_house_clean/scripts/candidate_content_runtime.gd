@@ -75,13 +75,23 @@ func guest_preflight(world) -> Dictionary:
 		seen_actors[actor_id] = true
 		var x := int(cell[0])
 		var level := int(cell[1])
+		if world.canonical_house_seed:
+			var reserved_room:Dictionary={}
+			for room in world.rooms:
+				if str(room.get("candidate_room_id",""))==proposed_id and str(room.get("type",""))=="guest":
+					reserved_room=room
+					break
+			if reserved_room.is_empty():
+				return _fail("Missing canonical guest slot: "+proposed_id)
+			x=int(reserved_room["x"])
+			level=int(reserved_room["level"])
 		var cell_key := "%d:%d" % [x,level]
 		if seen_cells.has(cell_key):
 			return _fail("Guest contract duplicates a build cell")
 		seen_cells[cell_key] = true
 		var left: Dictionary = world.get_room(x-1,level)
 		var right: Dictionary = world.get_room(x+1,level)
-		if str(left.get("type","")) != "lift" and str(right.get("type","")) != "lift":
+		if not world.canonical_house_seed and str(left.get("type","")) != "lift" and str(right.get("type","")) != "lift":
 			return _fail("Guest candidate cell is not adjacent to the lift: "+cell_key)
 		var existing: Dictionary = world.get_room(x,level)
 		var mapped_id := str(mapping.get(proposed_id,""))
@@ -92,6 +102,9 @@ func guest_preflight(world) -> Dictionary:
 				return _fail("Guest actor already exists without its mapped room: "+actor_id)
 			if not world.can_build(x,level,"guest"):
 				return _fail("Guest candidate cell cannot be built: "+cell_key)
+		elif world.canonical_house_seed and mapped_id=="" and str(existing.get("candidate_room_id",""))==proposed_id and str(existing.get("type",""))=="guest" and str(existing.get("owner_id",""))=="" and not world.residents.has(actor_id):
+			# This is a preallocated immutable guest room, not a construction request.
+			pass
 		else:
 			if mapped_id == "" or str(existing.get("id","")) != mapped_id or 					str(existing.get("type","")) != "guest":
 				return _fail("Occupied guest cell is not the recorded candidate mapping: "+cell_key)
@@ -138,6 +151,7 @@ func apply_guest_candidate(world) -> Dictionary:
 				_restore_snapshot(world,snapshot)
 				return _fail("Failed to create guest candidate room: "+proposed_id)
 			mapping[proposed_id] = str(room["id"])
+		mapping[proposed_id]=str(room["id"])
 		room["candidate_source"] = "TEEA_INT_20261123_007"
 		room["candidate_room_id"] = proposed_id
 		room["candidate_owner_approved"] = false

@@ -12,13 +12,13 @@ var enabled:=false
 var sketchfab_common_enabled:=false
 var live_physical_objects:=false
 var error:=""
-func initialize() -> bool:
+func initialize(force_review:bool=false) -> bool:
 	layouts.clear()
 	surfaces.clear()
 	enabled=false
 	sketchfab_common_enabled=false
 	error=""
-	if OS.get_environment("DRAGON_TEEA008_REVIEW")!="1" and not FileAccess.file_exists(LIVE_EXPORT_MARKER):
+	if not force_review and OS.get_environment("DRAGON_TEEA008_REVIEW")!="1" and not FileAccess.file_exists(LIVE_EXPORT_MARKER):
 		return false
 	var f:=FileAccess.open(LAYOUT,FileAccess.READ)
 	if f==null:
@@ -206,6 +206,8 @@ func _review_layout_delta(raw:Dictionary)->Dictionary:
 	return row
 
 func _asset_path(asset:String)->String:
+	if asset=="owner_sleeping_dragon":
+		return "res://assets/decor_bank/owner_sleeping_dragon/model.gltf"
 	var base:String=SKETCHFAB_ROOT if asset.begins_with("sketchfab_") else ROOT
 	return base+asset+"/model.gltf"
 
@@ -228,3 +230,56 @@ func _apply_sketchfab_common_delta()->void:
 	row["runtime_review_geometry_revision"]="SKETCHFAB_COMMON_R3_20261125_V1"
 	layouts["common/R3"]=row
 	sketchfab_common_enabled=true
+
+
+func apply_architecture_layouts()->void:
+	# Reuse measured R1 furniture without scaling up the entire guest room.
+	# R2 is a single 9.6 m physical room; the remainder is unoccupied space.
+	var centaur:Dictionary=layouts.get("guest_centaur/R1",{}).duplicate(true)
+	if not centaur.is_empty():
+		centaur["variant_id"]="guest_centaur/R2"
+		centaur["size"]="R2"
+		centaur["width_m"]=9.6
+		centaur["station_cap"]=8
+		centaur["shell_reference"]="R2"
+		layouts["guest_centaur/R2"]=centaur
+	var hearth:Dictionary=layouts.get("common/R3",{}).duplicate(true)
+	if hearth.is_empty() or not ResourceLoader.exists(_asset_path("owner_sleeping_dragon"),"PackedScene"):
+		push_warning("Canonical hearth: sleeping dragon asset not imported")
+		return
+	var items:Array=[]
+	for raw in hearth.get("instances",[]):
+		var item:Dictionary=raw.duplicate(true)
+		if str(item["instance_id"])=="common_r3_p3_plant":
+			continue
+		if str(item["instance_id"])=="common_r3_p3_fur_right":
+			# Translate the rug AND the physical contact point; keep aisle open.
+			var delta:=Vector3(5.36,0.0,0.62)
+			for field in ["room_local_xyz","bounds_min_m","bounds_max_m"]:
+				var p:Array=item[field]
+				item[field]=[float(p[0])+delta.x,float(p[1]),float(p[2])+delta.z]
+			for p in item.get("physical_footprint_xz",[]):
+				p[0]=float(p[0])+delta.x
+				p[1]=float(p[1])+delta.z
+			for station in item.get("station_candidates",[]):
+				var p:Array=station["room_local_xyz"]
+				station["room_local_xyz"]=[float(p[0])+delta.x,float(p[1]),float(p[2])+delta.z]
+		items.append(item)
+	# Teea normalized to 0.35 x 0.045161 x 0.274673 m at floor pivot.
+	# Provisional 3x scale makes the sleeping animal legible beside the sofa.
+	# Exact AABB, no pickup, no AI, no animation, no sleeping timer.
+	items.append({
+		"instance_id":"canonical_hearth_sleeping_dragon",
+		"asset_id":"owner_sleeping_dragon",
+		"room_local_xyz":[6.45,0.0,-1.40],
+		"rotation_deg_xyz":[0,0,0],
+		"uniform_scale":3.0,
+		"bounds_min_m":[5.925,0.0,-1.812008],
+		"bounds_max_m":[6.975,0.135483,-0.987992],
+		"physical_footprint_xz":[[5.925,-1.812008],[6.975,-1.812008],[6.975,-0.987992],[5.925,-0.987992]],
+		"placement_policy":"floor_fixed","station_candidates":[],"support_slots":[],
+		"support_ref":null,"owner_approved":false
+	})
+	hearth["instances"]=items
+	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_DRAGON_20261125_V1"
+	layouts["common/R3"]=hearth
