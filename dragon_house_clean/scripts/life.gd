@@ -645,6 +645,12 @@ func _try_group_departures(sid:String,row:Dictionary,departures:Array,reason:Str
 	proposed["members"]=survivors
 	proposed["stations"]=claims
 	if not _pair_members_valid(sid,proposed):return false
+	# Account the last valid interval against the original member claims.
+	var departure_room:Dictionary=world.room_by_id(str(row.get("room_id","")))
+	for raw_id in original:
+		var id:String=str(raw_id)
+		if departures.has(id) and not departure_room.is_empty() and _social_member_valid(sid,row,id,departure_room):
+			_account_social_attendance(row,world.residents[id])
 	# Keep the shared timeline unchanged. Leaving is not full completion.
 	row["members"]=survivors
 	row["stations"]=claims
@@ -655,9 +661,6 @@ func _try_group_departures(sid:String,row:Dictionary,departures:Array,reason:Str
 		if not departures.has(id):continue
 		var actor:Dictionary=world.residents.get(id,{})
 		if not actor.is_empty() and str(actor.get("social_session_id",""))==sid:
-			var departure_room:Dictionary=world.room_by_id(str(row.get("room_id","")))
-			if not departure_room.is_empty() and _social_member_valid(sid,row,id,departure_room):
-				_account_social_attendance(row,actor)
 			_apply_social_cooldown(row,actor)
 			actor.erase("social_session_id")
 			actor.erase("partner_id")
@@ -707,6 +710,13 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 		return
 	var row:Dictionary=raw
 	if row.is_empty():return
+	# Account a final valid interval before removing the authoritative session.
+	var closing_room:Dictionary=world.room_by_id(str(row.get("room_id","")))
+	var closing_members=row.get("members",[])
+	if typeof(closing_members)==TYPE_ARRAY and typeof(row.get("stations",null))==TYPE_DICTIONARY and not closing_room.is_empty():
+		for raw_id in closing_members:
+			var id:String=str(raw_id)
+			if _social_member_valid(sid,row,id,closing_room):_account_social_attendance(row,world.residents[id])
 	# Erase first: subsequent wakes cannot complete or train twice.
 	sessions.erase(sid)
 	var pending=row.get("pending_join",{})
@@ -718,7 +728,6 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 	for raw_id in members:
 		var actor:Dictionary=world.residents.get(str(raw_id),{})
 		if actor.is_empty() or str(actor.get("social_session_id",""))!=sid:continue
-		if completed:_account_social_attendance(row,actor)
 		_apply_social_cooldown(row,actor)
 		actor.erase("social_session_id")
 		actor.erase("partner_id")
