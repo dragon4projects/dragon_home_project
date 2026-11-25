@@ -266,22 +266,23 @@ func apply_architecture_layouts()->void:
 				station["room_local_xyz"]=[float(p[0])+delta.x,float(p[1]),float(p[2])+delta.z]
 		items.append(item)
 	# Teea normalized to 0.35 x 0.045161 x 0.274673 m at floor pivot.
-	# Provisional 3x scale makes the sleeping animal legible beside the sofa.
+	# Provisional 4.5x scale (1.575 m long) makes the sleeping animal legible beside the sofa.
 	# Exact AABB, no pickup, no AI, no animation, no sleeping timer.
 	items.append({
 		"instance_id":"canonical_hearth_sleeping_dragon",
 		"asset_id":"owner_sleeping_dragon",
-		"room_local_xyz":[6.45,0.0,-1.40],
+		"room_local_xyz":[6.30,0.0,-1.30],
 		"rotation_deg_xyz":[0,0,0],
-		"uniform_scale":3.0,
-		"bounds_min_m":[5.925,0.0,-1.812008],
-		"bounds_max_m":[6.975,0.135483,-0.987992],
-		"physical_footprint_xz":[[5.925,-1.812008],[6.975,-1.812008],[6.975,-0.987992],[5.925,-0.987992]],
+		"uniform_scale":4.5,
+		"bounds_min_m":[5.5125,0.0,-1.91801425],
+		"bounds_max_m":[7.0875,0.2032245,-0.68198575],
+		"physical_footprint_xz":[[5.5125,-1.91801425],[7.0875,-1.91801425],[7.0875,-0.68198575],[5.5125,-0.68198575]],
 		"placement_policy":"floor_fixed","station_candidates":[],"support_slots":[],
 		"support_ref":null,"owner_approved":false
 	})
 	hearth["instances"]=items
-	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_DRAGON_20261125_V1"
+	_apply_hearth_interior_v1(hearth)
+	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_INTERIOR_20261125_V1"
 	layouts["common/R3"]=hearth
 
 func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->int:
@@ -304,3 +305,62 @@ func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->i
 			mesh.lod_bias=0.5
 		count+=1
 	return count
+
+func _translate_hearth_item(item:Dictionary,x:float,z:float)->void:
+	# Move physical bounds, rendered pivot and every world-space contact together.
+	# Local measured seat data stays unchanged; cups/chess/table supports are pinned.
+	var origin:Array=item["room_local_xyz"]
+	var dx:float=x-float(origin[0])
+	var dz:float=z-float(origin[2])
+	for field in ["room_local_xyz","bounds_min_m","bounds_max_m"]:
+		var p:Array=item[field]
+		p[0]=float(p[0])+dx
+		p[2]=float(p[2])+dz
+	for p in item.get("physical_footprint_xz",[]):
+		p[0]=float(p[0])+dx
+		p[1]=float(p[1])+dz
+	for station in item.get("station_candidates",[]):
+		for field in ["room_local_xyz","room_pelvis_contact_xyz","room_feet_contact_xyz"]:
+			if station.has(field):
+				var p:Array=station[field]
+				p[0]=float(p[0])+dx
+				p[2]=float(p[2])+dz
+		if station.has("room_approach_xz"):
+			var p:Array=station["room_approach_xz"]
+			p[0]=float(p[0])+dx
+			p[1]=float(p[1])+dz
+
+func _apply_hearth_interior_v1(hearth:Dictionary)->void:
+	# Keep permanent shell and existing object homes intact.
+	# Three islands: coffee/conversation, hearth, sleeping-dragon nook.
+	var positions:Dictionary={
+		"common_r3_p3_fur_left":Vector2(-1.64,0.23),
+		"common_r3_p3_fur_right":Vector2(6.45,0.65),
+		"common_r3_p3_chair_center":Vector2(-2.85,-0.08),
+		"common_r3_p3_sofa_right":Vector2(3.95,-1.37),
+		"common_r3_p3_chair_right":Vector2(5.80,-0.04),
+		"common_r3_p3_rug_right":Vector2(4.45,0.08)
+	}
+	var extra:Dictionary={}
+	for item in hearth["instances"]:
+		var id:String=str(item["instance_id"])
+		if id=="common_r3_p3_chair_center":
+			extra=item.duplicate(true)
+		if positions.has(id):
+			var p:Vector2=positions[id]
+			_translate_hearth_item(item,p.x,p.y)
+	if not extra.is_empty():
+		extra["instance_id"]="canonical_hearth_extra_chair"
+		for station in extra.get("station_candidates",[]):
+			station["station_candidate_id"]="canonical_hearth_extra_chair."+str(station["id"])
+		_translate_hearth_item(extra,1.50,-0.62)
+		hearth["instances"].append(extra)
+	var count:=0
+	for item in hearth["instances"]:
+		count+=item.get("station_candidates",[]).size()
+	hearth["station_count"]=count
+	hearth["interior_zones"]=[
+		{"id":"coffee_conversation","x_range":[-7.2,-2.3]},
+		{"id":"hearth_rest","x_range":[-2.3,2.4]},
+		{"id":"dragon_nook","x_range":[2.4,7.2]}
+	]

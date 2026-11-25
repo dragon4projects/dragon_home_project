@@ -1014,7 +1014,7 @@ func add_backwall_stage(parent: Node3D, group: Dictionary) -> void:
 		Vector3(0.18,2.76,0.24),palette["rock_light"])
 	box(rear,Vector3(0,2.83,-1.58),Vector3(span-0.36,0.15,0.25),palette["border"])
 	box(rear,Vector3(0,0.19,-1.55),Vector3(span-0.48,0.31,0.27),palette["border"])
-	if ["common","rest","study","library","arrival"].has(kind):
+	if ["common","rest","study","library","arrival"].has(kind) and not (architecture_review and kind=="common" and bool(group.get("teea008_review",false))):
 		var lamp_count:int=1 if int(group["width"])==1 else int(group["width"])
 		for i in range(lamp_count):
 			var px:float=0.0 if lamp_count==1 else lerpf(
@@ -1348,6 +1348,9 @@ func _populate_furniture(group_node: Node3D) -> void:
 				var old_hearth:Node3D=dressing.get_node_or_null("Dressing_Fireplace")
 				if old_hearth!=null:
 					old_hearth.free()
+				if architecture_review:
+					_add_warm_room_light(dressing,Vector3(-4.65,1.85,-0.35),0.24)
+					_add_warm_room_light(dressing,Vector3(5.55,1.55,-0.75),0.30)
 	else:
 		_add_physical_room_dressing(decoration_layer,group)
 	detailed_room_groups[group_node.name]=true

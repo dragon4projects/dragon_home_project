@@ -1,0 +1,63 @@
+name: Canonical hearth interior QA
+on:
+  push:
+    branches: [integration/canonical-hearth-interior-20261125]
+    paths:
+      - 'dragon_house_clean/scripts/**'
+      - 'dragon_house_clean/tests/**'
+      - '.github/workflows/canonical-hearth-interior.yml'
+permissions:
+  contents: read
+jobs:
+  hearth-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Restore existing review resources
+        run: |
+          set -euo pipefail
+          bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
+          find dragon_house_clean/assets/props -maxdepth 1 -type f -name '*.blend' -delete
+          python3 -m pip install --disable-pip-version-check --quiet pillow scipy
+          python3 dragon_house_clean/tools/build_room_visual_components_review.py
+      - name: Install Godot 4.7.2
+        run: |
+          curl -fLsS --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
+      - name: Import and hearth runtime gates
+        working-directory: dragon_house_clean
+        run: |
+          set -euo pipefail
+          godot=/tmp/Godot_v4.7.2-stable_linux.x86_64
+          timeout 600 "$godot" --headless --path . --import > hearth_import.log 2>&1
+          ! grep -Eq 'SCRIPT ERROR|Parse Error' hearth_import.log
+          for t in test_canonical_hearth_interior test_canonical_house_scene test_canonical_lift_capacity test_canonical_house_life; do
+            XDG_DATA_HOME="$RUNNER_TEMP/$t" timeout 240 "$godot" --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
+            grep -q '_PASS' "$t.log"
+            ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' "$t.log"
+          done
+      - name: Capture updated interior
+        working-directory: dragon_house_clean
+        run: |
+          set -euo pipefail
+          if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq xvfb; fi
+          XDG_DATA_HOME="$RUNNER_TEMP/hearth-render" timeout 150 xvfb-run -a -s '-screen 0 1600x1000x24' /tmp/Godot_v4.7.2-stable_linux.x86_64 --path . --rendering-method gl_compatibility --script res://tests/capture_canonical_house.gd | tee hearth_render.log
+          grep -q CANONICAL_RENDER_CAPTURE_PASS hearth_render.log
+          ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' hearth_render.log
+      - name: Upload logs and renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-hearth-interior-evidence
+          path: |
+            dragon_house_clean/hearth_import.log
+            dragon_house_clean/test_canonical*.log
+            dragon_house_clean/hearth_render.log
+            dragon_house_clean/private_review/canonical_*.png
+          retention-days: 7
