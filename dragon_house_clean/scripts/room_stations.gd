@@ -421,6 +421,26 @@ func group_claims(world,actors:Array,room:Dictionary)->Dictionary:
 				return claims
 	return {}
 
+# Extend an existing circle without moving any of its members.
+func group_join_claim(world,actor:Dictionary,room:Dictionary,positions:Array)->Dictionary:
+	if positions.size()<3 or positions.size()>=6 or not world.is_accessible(room,str(actor.get("id",""))):return {}
+	var used:Dictionary=used_slots(world,str(room["id"]),[str(actor["id"])])
+	var points:Array=layout_for_world(world,room)
+	var at:Vector2=world.room_world_to_local(room,Vector3(float(actor.get("x",0)),float(actor.get("visual_y",0)),float(actor.get("z",0))))
+	var best:Dictionary={}
+	var nearest:float=INF
+	for i in range(mini(points.size(),capacity(room))):
+		var spot:Dictionary=points[i]
+		if used.has(i) or str(spot.get("kind",""))!="standing" or str(spot.get("furniture_id",""))!="":continue
+		var trial:Array=positions.duplicate()
+		trial.append(spot["offset"])
+		if not group_geometry(room,trial):continue
+		var distance:float=at.distance_to(spot["offset"])
+		if distance<nearest:
+			best=_claim(room,i,spot)
+			nearest=distance
+	return best
+
 func can_reserve(world, room: Dictionary, pair_needed: bool = false) -> bool:
 	if available_count(world,room)<(2 if pair_needed else 1):
 		return false
