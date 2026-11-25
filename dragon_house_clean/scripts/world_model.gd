@@ -614,7 +614,7 @@ func merge_zna_media_previews() -> int:
 	if typeof(manifest)!=TYPE_DICTIONARY:return 0
 	var added:=0
 	var changed:=false
-	for pair in [["audio","tracks","audio"],["film","films","film"],["unclassified","films","unclassified"]]:
+	for pair in [["audio","tracks","audio"]]:
 		var source_key:String=pair[0]
 		var category:String=pair[1]
 		var folder:String=pair[2]
@@ -652,6 +652,60 @@ func merge_zna_media_previews() -> int:
 		media[category]=records
 	if changed:save_world()
 	return added
+
+func load_private_cinema_catalog()->int:
+	# The real cinema bookmarks are private local content. Never ship the
+	# user's list or poster bytes in the public project repository.
+	var changed:=false
+	var kept:Array=[]
+	var archived:Dictionary=runtime_state.get("superseded_zna_film_records",{})
+	for entry in media.get("films",[]):
+		if str(entry.get("classification_authority",""))=="OWNER_20261125_ALL_UNCLASSIFIED_ARE_FILMS":
+			archived[str(entry["id"])]=entry
+			changed=true
+		else:
+			kept.append(entry)
+	media["films"]=kept
+	if changed:
+		runtime_state["superseded_zna_film_records"]=archived
+		save_world()
+	var path:="user://filmix_catalog.json"
+	if not FileAccess.file_exists(path):return 0
+	var file:=FileAccess.open(path,FileAccess.READ)
+	if file==null:return 0
+	var parsed=JSON.parse_string(file.get_as_text())
+	if typeof(parsed)!=TYPE_DICTIONARY or typeof(parsed.get("films",null))!=TYPE_ARRAY:return 0
+	var incoming:Array=[]
+	var seen:Dictionary={}
+	for raw in parsed["films"]:
+		if typeof(raw)!=TYPE_DICTIONARY:return 0
+		var id:String=str(raw.get("id",""))
+		var image:String=str(raw.get("preview",""))
+		if not id.begins_with("FILMIX_") or id.contains("/") or id.contains("\\") or seen.has(id) or str(raw.get("title",""))=="":return 0
+		if image!="user://filmix_previews/"+id+".webp" or not FileAccess.file_exists(image):return 0
+		var row:Dictionary=raw.duplicate(true)
+		row["simulation_only"]=true
+		row["file_path"]=""
+		row.erase("source_url")
+		incoming.append(row)
+		seen[id]=true
+	var records:Array=media.get("films",[])
+	var index:Dictionary={}
+	for i in range(records.size()):index[str(records[i].get("id",""))]=i
+	var count:=0
+	for row in incoming:
+		var id:String=row["id"]
+		if not index.has(id):
+			index[id]=records.size()
+			records.append(row)
+			count+=1
+			changed=true
+		elif records[int(index[id])]!=row:
+			records[int(index[id])]=row
+			changed=true
+	media["films"]=records
+	if changed:save_world()
+	return count
 
 func read_resident_profiles() -> Array:
 	var f := FileAccess.open("res://data/resident_profiles.json", FileAccess.READ)

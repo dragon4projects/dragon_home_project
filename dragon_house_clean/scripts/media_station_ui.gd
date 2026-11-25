@@ -167,7 +167,9 @@ func _on_selected(index: int) -> void:
 	var path: String = str(item.get("file_path",""))
 	if path != "":
 		details.text += "\nФайл: " + path.get_file()
-	if category in ["films","tracks"] and not media_runtime.playable(category).any(func(it): return it.get("id","") == item_ids[index]):
+	if category=="films":
+		details.text+="\nСимуляция просмотра · "+str(item.get("duration_status","Продолжительность не установлена"))
+	elif category=="tracks" and not media_runtime.playable(category).any(func(it): return it.get("id","") == item_ids[index]):
 		details.text += "\nНет совместимого локального файла для воспроизведения"
 	var image_path: String = str(item.get("preview",item.get("preview_path","")))
 	preview.texture = null
@@ -193,7 +195,7 @@ func stop_playback() -> void:
 		preview.visible = true
 
 func play_selected() -> void:
-	if list.get_selected_items().is_empty() or not category in ["films","tracks"]:
+	if list.get_selected_items().is_empty() or category!="tracks":
 		return
 	var index: int = list.get_selected_items()[0]
 	var id: String = item_ids[index]

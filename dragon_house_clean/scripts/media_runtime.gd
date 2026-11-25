@@ -151,8 +151,88 @@ func playable(kind: String) -> Array:
 			out.append(item)
 	return out
 
+func next_watch_unit(actor_id:String,item:Dictionary)->Dictionary:
+	if not bool(item.get("simulation_only",false)):return {}
+	var id:String=str(item.get("id",""))
+	if id=="":return {}
+	var progress:Dictionary=world.runtime_state.get("cinema_progress",{}).get(actor_id,{}).get(id,{})
+	if bool(progress.get("complete",false)):return {}
+	if str(item.get("media_type",""))=="film":
+		var duration:float=float(item.get("runtime_seconds",0))
+		if duration<=0 or not is_finite(duration):return {}
+		return {"item_id":id,"season":0,"episode":0,"seconds":duration}
+	if str(item.get("media_type",""))!="series":return {}
+	var season:int=int(progress.get("next_season",1))
+	var episode:int=int(progress.get("next_episode",1))
+	var latest_season:int=int(item.get("latest_season",0))
+	var latest_episode:int=int(item.get("latest_episode",0))
+	if season>latest_season or (season==latest_season and episode>latest_episode):return {}
+	var runtimes:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
+	if episode<1 or episode>runtimes.size():return {}
+	var duration:float=float(runtimes[episode-1])
+	if duration<=0 or not is_finite(duration):return {}
+	return {"item_id":id,"season":season,"episode":episode,"seconds":duration}
+
+func watch_candidates(actor_id:String)->Array:
+	var result:Array=[]
+	for item in world.media.get("films",[]):
+		if not next_watch_unit(actor_id,item).is_empty():result.append(item)
+	return result
+
+func begin_watch(actor:Dictionary,now:float)->bool:
+	var item:Dictionary=_lookup("films",str(actor.get("activity_media_id","")))
+	var unit:Dictionary=next_watch_unit(str(actor["id"]),item)
+	if unit.is_empty():return false
+	unit["started_at"]=now
+	unit["ends_at"]=now+float(unit["seconds"])
+	unit["room_id"]=str(actor.get("room_id",""))
+	actor["watch_session"]=unit
+	actor["until"]=unit["ends_at"]
+	return true
+
+func finish_watch(actor:Dictionary,now:float)->bool:
+	var unit:Dictionary=actor.get("watch_session",{})
+	if unit.is_empty() or now<float(unit.get("ends_at",INF)):return false
+	if str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="WATCH_FILM" or str(actor.get("room_id",""))!=str(unit.get("room_id","")):return false
+	var id:String=str(unit["item_id"])
+	var item:Dictionary=_lookup("films",id)
+	var expected:Dictionary=next_watch_unit(str(actor["id"]),item)
+	if expected.is_empty() or int(expected["season"])!=int(unit["season"]) or int(expected["episode"])!=int(unit["episode"]):return false
+	var all:Dictionary=world.runtime_state.get("cinema_progress",{})
+	var actor_id:String=str(actor["id"])
+	var progress:Dictionary=all.get(actor_id,{})
+	var season:int=int(unit["season"])
+	var episode:int=int(unit["episode"])
+	var row:Dictionary={"last_completed_season":season,"last_completed_episode":episode,"last_completed_at":now,"complete":false}
+	if season==0:
+		row["complete"]=true
+	else:
+		var latest_season:int=int(item.get("latest_season",0))
+		var latest_episode:int=int(item.get("latest_episode",0))
+		var runtimes:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
+		if season==latest_season and episode>=latest_episode:
+			# Caught up to the source snapshot, not necessarily series finale.
+			row["next_season"]=season
+			row["next_episode"]=episode+1
+		elif episode==runtimes.size() and season<latest_season:
+			# A season array contains only a verified COMPLETE earlier season.
+			row["next_season"]=season+1
+			row["next_episode"]=1
+		else:
+			row["next_season"]=season
+			row["next_episode"]=episode+1
+	progress[id]=row
+	all[actor_id]=progress
+	world.runtime_state["cinema_progress"]=all
+	actor["last_watch_id"]=id
+	actor.erase("watch_session")
+	world._append_journal("CINEMA_UNIT_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"season":season,"episode":episode,"seconds":unit["seconds"]})
+	return true
+
 func can_watch(actor_id: String, item_id: String, room_id: String) -> bool:
-	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "") == "cinema" and not _lookup("films", item_id).is_empty() and playable("films").any(func(item): return item["id"] == item_id)
+	if not world.residents.get(actor_id, {}).get("active", false) or world.room_by_id(room_id).get("type", "")!="cinema":return false
+	var item:Dictionary=_lookup("films",item_id)
+	return not next_watch_unit(actor_id,item).is_empty()
 
 func can_listen(actor_id: String, item_id: String, room_id: String) -> bool:
 	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "") == "music" and not _lookup("tracks", item_id).is_empty() and playable("tracks").any(func(item): return item["id"] == item_id)

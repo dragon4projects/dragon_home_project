@@ -94,7 +94,11 @@ func status(actor: Dictionary) -> String:
 	if active_title!="":
 		match intent:
 			"READ_BOOK": return "читает "+active_title
-			"WATCH_FILM": return "смотрит "+active_title
+			"WATCH_FILM":
+				var session:Dictionary=actor.get("watch_session",{})
+				if int(session.get("season",0))>0:
+					return "смотрит "+active_title+" · сезон %d, серия %d" % [int(session["season"]),int(session["episode"])]
+				return "смотрит "+active_title
 			"LISTEN_MUSIC": return "слушает "+active_title
 	if intent=="VIEW_ART":
 		var viewing_id:String=str(actor.get("viewing_object_id",""))
@@ -308,7 +312,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("BROWSE_FILMS")
 	if world.media.get("tracks",[]).is_empty():
 		scores.erase("BROWSE_AUDIO")
-	if media_runtime.playable("films").is_empty():
+	if media_runtime.watch_candidates(str(actor["id"])).is_empty():
 		scores.erase("WATCH_FILM")
 	if media_runtime.playable("tracks").is_empty():
 		scores.erase("LISTEN_MUSIC")
@@ -468,6 +472,7 @@ func end_concrete_media(actor: Dictionary) -> void:
 	actor.erase("activity_media_category")
 	actor.erase("activity_media_id")
 	actor.erase("activity_media_title")
+	actor.erase("watch_session")
 
 func _set_concrete_media(actor: Dictionary, category: String,
 		item: Dictionary) -> void:
@@ -654,14 +659,23 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	# Watching/listening is allowed only after choosing one concrete playable
 	# entry. A room visit alone is not evidence that a film or track was used.
 	if intent=="WATCH_FILM":
-		var playable_films:Array=media_runtime.playable("films")
+		var playable_films:Array=media_runtime.watch_candidates(str(actor["id"]))
 		if playable_films.is_empty():
 			actor["until"]=clock+12.0
 			return
 		if candidate_media_bindings!=null:
+			# One uninterrupted simulated screening per cinema. Never credit a
+			# late arrival with watching an episode from its beginning.
+			if not candidate_media_bindings.active_film(str(room["id"]),str(actor["id"])).is_empty():
+				actor["until"]=clock+30.0
+				return
 			concrete_item=candidate_media_bindings.choose_film(str(room["id"]),str(actor["id"]))
 		if concrete_item.is_empty():
-			concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]
+			var previous:Dictionary=media_runtime._lookup("films",str(actor.get("last_watch_id","")))
+			if not media_runtime.next_watch_unit(str(actor["id"]),previous).is_empty():
+				concrete_item=previous
+			else:
+				concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]
 		if not media_runtime.can_watch(str(actor["id"]),
 				str(concrete_item.get("id","")),str(room["id"])):
 			actor["until"]=clock+12.0
@@ -807,6 +821,8 @@ func _move(actor: Dictionary, delta: float) -> void:
 	var idx: int = int(actor.get("waypoint_index", 0))
 	if idx >= waypoints.size():
 		actor["phase"] = "perform"
+		if str(actor.get("intent",""))=="WATCH_FILM":
+			_start_cinema_commitment(actor)
 		return
 	var point: Dictionary = waypoints[idx]
 	if candidate_navigation!=null and str(point.get("kind",""))=="station":
@@ -911,9 +927,22 @@ func _move(actor: Dictionary, delta: float) -> void:
 				return
 			if candidate_navigation!=null and str(actor.get("book_task_stage",""))=="read":
 				actor["book_read_started"]=clock
+			if str(actor.get("intent",""))=="WATCH_FILM":
+				_start_cinema_commitment(actor)
+				return
 			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
 			moving_ids.erase(actor_id)
 			life_scheduler.schedule_at(actor_id,float(actor["until"]),"ACTION_COMMITMENT")
+
+func _start_cinema_commitment(actor:Dictionary)->void:
+	var id:String=str(actor["id"])
+	moving_ids.erase(id)
+	if not media_runtime.begin_watch(actor,clock):
+		stations.release(actor)
+		end_concrete_media(actor)
+		actor["phase"]="idle"
+		actor["until"]=clock+12.0
+	life_scheduler.schedule_at(id,float(actor["until"]),"CINEMA_COMMITMENT")
 
 func _process_due_actor(id: String, wake_reason: String) -> void:
 	var actor: Dictionary = world.residents.get(id,{})
@@ -930,6 +959,14 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	if float(actor.get("until",0.0)) > clock:
 		life_scheduler.schedule_at(id,float(actor["until"]),"COMMITMENT_ACTIVE")
+		return
+	if str(actor.get("intent",""))=="WATCH_FILM" and actor.has("watch_session"):
+		media_runtime.finish_watch(actor,clock)
+		stations.release(actor)
+		end_concrete_media(actor)
+		actor["phase"]="idle"
+		actor["until"]=clock+30.0
+		_schedule_actor(actor,"CINEMA_INTERMISSION")
 		return
 	if actor.get("partner_id","") != "":
 		var partner_id := str(actor["partner_id"])

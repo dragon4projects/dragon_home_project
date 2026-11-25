@@ -51,7 +51,8 @@ func assign(room_id:String,surface_id:String,category:String,item_id:String)->bo
 			# A source-backed film may be shown as a static catalog preview.
 			# This does not grant WATCH_FILM eligibility or local playback.
 			var preview_path:String=str(item.get("preview",item.get("preview_path","")))
-			if not preview_path.begins_with("res://assets/media/previews/") or not (ResourceLoader.exists(preview_path,"Texture2D") or FileAccess.file_exists(preview_path)):
+			var approved_path:bool=preview_path.begins_with("res://assets/media/previews/") or preview_path.begins_with("user://filmix_previews/")
+			if not approved_path or not (ResourceLoader.exists(preview_path,"Texture2D") or FileAccess.file_exists(preview_path)):
 				return false
 	var bindings:Dictionary=world.runtime_state.get("teea008_room_media_bindings",{})
 	var key:String=_key(room_id,surface_id)
@@ -91,6 +92,7 @@ func active_film(room_id:String,ignore_actor:String="",perform_only:bool=false)-
 			continue
 		if not str(actor.get("phase","")) in (["perform"] if perform_only else ["travel","perform"]):
 			continue
+		if perform_only and (str(actor.get("room_id",""))!=room_id or not actor.has("watch_session")):continue
 		var item_id:String=str(actor.get("activity_media_id",""))
 		if media.can_watch(str(id),item_id,room_id):
 			return media._lookup("films",item_id)
