@@ -344,6 +344,16 @@ func preview_count(profiles: Array) -> int:
 			count += 1
 	return count
 
+# Billboard facing is camera-relative, not a change to world simulation.
+# Convention: +Z faces the viewer (S), +X is screen right (E) at yaw zero.
+static func social_idle_state(facing:Vector2,view_yaw:float)->String:
+	if not facing.is_finite() or facing.length_squared()<0.0001:return "IDLE_S"
+	var right:=Vector2(cos(view_yaw),-sin(view_yaw))
+	var front:=Vector2(sin(view_yaw),cos(view_yaw))
+	var angle:float=atan2(facing.dot(right),facing.dot(front))
+	var sector:int=posmod(roundi(angle/(PI/4.0)),8)
+	return ["IDLE_S","IDLE_SE","IDLE_E","IDLE_NE","IDLE_N","IDLE_NW","IDLE_W","IDLE_SW"][sector]
+
 func frame_count(resident_id: String, wardrobe: String, state: String) -> int:
 	var entry: Dictionary = _entry(resident_id,wardrobe,state)
 	if str(entry.get("status","")) != "PASS":
