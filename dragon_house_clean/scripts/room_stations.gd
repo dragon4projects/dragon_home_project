@@ -465,7 +465,16 @@ func can_reserve(world, room: Dictionary, pair_needed: bool = false) -> bool:
 		return false
 	if not pair_needed:
 		return true
-	return not _paired_spots(layout_for_world(world,room),used_slots(world,str(room["id"]))).is_empty()
+	var points:Array=layout_for_world(world,room)
+	var used:Dictionary=used_slots(world,str(room["id"]))
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		for i in range(points.size()-1):
+			if used.has(i) or str(points[i].get("kind",""))!="standing" or str(points[i].get("furniture_id",""))!="":continue
+			for j in range(i+1,points.size()):
+				if used.has(j) or str(points[j].get("kind",""))!="standing" or str(points[j].get("furniture_id",""))!="":continue
+				if social_pair_geometry(room,[points[i]["offset"],points[j]["offset"]]):return true
+		return false
+	return not _paired_spots(points,used).is_empty()
 
 func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 	if claim.is_empty():
