@@ -13,7 +13,11 @@ func run()->void:
 	var b:Dictionary=w.make_room(7,0,"cinema",1,false)
 	var f:=FileAccess.open("user://qa_media.ogv",FileAccess.WRITE)
 	f.store_8(0);f.close()
-	w.media["films"]=[{"id":"QA_A","title":"QA A","file_path":"user://qa_media.ogv"},{"id":"QA_B","title":"QA B","file_path":"user://qa_media.ogv"},{"id":"QA_META","title":"metadata only"}]
+	var preview:=Image.create(64,64,false,Image.FORMAT_RGB8)
+	preview.fill(Color("#6d253b"))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://filmix_previews"))
+	assert(preview.save_webp("user://filmix_previews/QA.webp")==OK)
+	w.media["films"]=[{"id":"QA_A","title":"QA A","simulation_only":true,"media_type":"film","runtime_seconds":3600,"preview":"user://filmix_previews/QA.webp"},{"id":"QA_B","title":"QA B","simulation_only":true,"media_type":"film","runtime_seconds":2400,"preview":"user://filmix_previews/QA.webp"},{"id":"QA_META","title":"metadata only"}]
 	var bank=B.new()
 	assert(bank.initialize(),bank.error)
 	var media=M.new()
@@ -33,6 +37,8 @@ func run()->void:
 	actor["station_room_id"]=a["id"]
 	actor["phase"]="perform"
 	actor["activity_media_id"]="QA_B"
+	actor["room_id"]=a["id"]
+	assert(media.begin_watch(actor,0))
 	assert(binding.resolve(a["id"],id)["id"]=="QA_B")
 	assert(binding.choose_film(a["id"],"RES_02")["id"]=="QA_B")
 	actor["phase"]="idle"
@@ -70,23 +76,15 @@ func run()->void:
 	# ZNA preview records must be additive and never masquerade as playable.
 	var original_films:int=copy.media["films"].size()
 	var original_tracks:int=copy.media["tracks"].size()
-	assert(copy.merge_zna_media_previews()==698)
+	assert(copy.merge_zna_media_previews()==203)
 	assert(copy.media["tracks"].size()==original_tracks+203)
-	assert(copy.media["films"].size()==original_films+495)
-	var film:Dictionary=media._lookup("films","YT_dpUIOPQgJpQ")
-	assert(not film.is_empty())
-	assert(film["classification_authority"]=="OWNER_20261125_ALL_UNCLASSIFIED_ARE_FILMS")
-	assert(str(film["preview"]).begins_with("res://assets/media/previews/unclassified/"))
-	assert(ResourceLoader.exists(str(film["preview"]),"Texture2D"))
-	assert(binding.assign(a["id"],id,"films",film["id"]))
-	assert(binding.resolve(a["id"],id)["id"]==film["id"])
-	assert(not media.can_watch("RES_01",film["id"],a["id"]))
-	assert(not media.playable("films").any(func(item):return item["id"]==film["id"]))
+	assert(copy.media["films"].size()==original_films)
+	assert(media._lookup("films","YT_dpUIOPQgJpQ").is_empty())
 	var source:Dictionary=media._lookup("tracks","YT_KJ6ogPmYjLI")
 	assert(not source.is_empty() and str(source["preview"]).begins_with("res://assets/media/previews/audio/"))
 	assert(ResourceLoader.exists(str(source["preview"]),"Texture2D"))
 	assert(not media.playable("tracks").any(func(item):return item["id"]==source["id"]))
 	assert(copy.merge_zna_media_previews()==0)
 	assert(media._lookup("tracks","QA_TRACK_A")["file_path"]=="user://qa_track.ogg")
-	print("TEEA008_MEDIA_BINDINGS_PASS zna_audio=203 zna_films=495 no_fake_playback=true  isolated_instances=true active_shared_film=true saved=true")
+	print("TEEA008_MEDIA_BINDINGS_PASS zna_audio=203 private_cinema_separate=true no_fake_playback=true  isolated_instances=true active_shared_film=true saved=true")
 	quit(0)

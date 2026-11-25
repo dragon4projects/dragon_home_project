@@ -380,6 +380,14 @@ func _apply_canonical_device_bindings()->void:
 			source["aperture"]["height_m"]=(float(hi[1])-float(lo[1]))/scale_value
 			source["aperture"]["measurement"]="Measured device envelope; hit target only"
 			source["carrier_hit_only"]=true
+			if surface_id=="cinema.r3.film.tv":
+				# Candidate inset on the measured device envelope. Actual CRT
+				# aperture is not independently verified; keep bezel visible.
+				source["aperture"]["width_m"]*=0.66
+				source["aperture"]["height_m"]*=0.60
+				source["aperture"]["center_xyz"][1]+=0.025
+				source["aperture"]["measurement"]="Candidate inset within measured TV front envelope; visual QA required"
+				source["carrier_hit_only"]=false
 			surfaces[surface_id]=source
 			break
 

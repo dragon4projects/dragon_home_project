@@ -534,6 +534,11 @@ func reconcile_concrete_media() -> int:
 				fixed+=1
 				continue
 		if active_id!="" and _concrete_media_is_valid(actor):
+			if str(actor.get("intent",""))=="WATCH_FILM" and str(actor.get("phase",""))=="perform" and not actor.has("watch_session"):
+				# An old save has no trustworthy start time; start a full
+				# timed unit now instead of crediting fictional past viewing.
+				media_runtime.begin_watch(actor,clock)
+				fixed+=1
 			continue
 		var intent:String=str(actor.get("intent",""))
 		var needs_concrete:bool=intent in ["READ_BOOK","WATCH_FILM","LISTEN_MUSIC"]

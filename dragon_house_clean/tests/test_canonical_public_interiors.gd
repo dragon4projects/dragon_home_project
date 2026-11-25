@@ -93,27 +93,32 @@ func run()->void:
 			var id:String=str(anchor.get_meta("surface_id",""))
 			if not expected.has(id):continue
 			assert(str(anchor.get_parent().name)==str(expected[id]),id)
-			assert(bool(anchor.get_meta("carrier_hit_only",false)),id)
+			assert(bool(anchor.get_meta("carrier_hit_only",false))==(kind=="music"),id)
 			assert(anchor.get_node_or_null("BoundPreview")==null)
 			checked[id]=true
 		assert(checked.size()==(4 if kind=="music" else 1),str(checked))
 		if kind=="cinema":
-			var film:Dictionary=scene.life.media_runtime._lookup("films","YT_dpUIOPQgJpQ")
-			assert(not film.is_empty())
+			DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://filmix_previews"))
+			var image:=Image.create(96,128,false,Image.FORMAT_RGB8)
+			image.fill(Color("#6d253b"))
+			assert(image.save_webp("user://filmix_previews/QA_CINEMA.webp")==OK)
+			var film:Dictionary={"id":"QA_CINEMA","title":"QA","simulation_only":true,"media_type":"film","runtime_seconds":3600,"preview":"user://filmix_previews/QA_CINEMA.webp"}
+			world.media["films"].append(film)
 			var rid:String=str(room["id"])
 			assert(scene.teea008_media_bindings.assign(rid,"cinema.r3.film.screen","films",film["id"]))
 			assert(scene.teea008_media_bindings.assign(rid,"cinema.r3.film.tv","films",film["id"]))
 			assert(scene.teea008_media_bindings.resolve(rid,"cinema.r3.film.tv")["id"]==film["id"])
 			scene._update_teea008_media_previews()
-			var found:=false
+			var found:=0
 			for anchor in get_nodes_in_group("teea008_media_surface"):
-				if str(anchor.get_meta("room_id",""))!=rid or str(anchor.get_meta("surface_id",""))!="cinema.r3.film.screen":continue
+				if str(anchor.get_meta("room_id",""))!=rid or not str(anchor.get_meta("surface_id","")) in ["cinema.r3.film.screen","cinema.r3.film.tv"]:continue
 				assert(anchor.get_node_or_null("BoundPreview")!=null)
-				found=true
-			assert(found)
+				found+=1
+			assert(found==2)
 			assert(scene.content_viewer.open_record("films",film))
 			assert(scene.content_viewer.preview.texture!=null)
-			assert(scene.content_viewer.source_button.visible)
+			assert(not scene.content_viewer.source_button.visible)
+			assert(not scene.content_viewer.play_button.visible)
 			scene.content_viewer.close_viewer()
 	print("CANONICAL_PUBLIC_INTERIORS_PASS rooms=",tested," route_checks=",approaches," physical_media_carriers=5 supported_projection=",supported)
 	quit(0)

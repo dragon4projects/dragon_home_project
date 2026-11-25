@@ -8,6 +8,8 @@ var item_ids: Array = []
 var title: Label
 var list: ItemList
 var search_box: LineEdit
+var play_button: Button
+var stop_button: Button
 var details: Label
 var preview: TextureRect
 var video: VideoStreamPlayer
@@ -59,14 +61,14 @@ func _ready() -> void:
 	col.add_child(details)
 	var button_row := HBoxContainer.new()
 	col.add_child(button_row)
-	var play := Button.new()
-	play.text = "▶ Воспроизвести"
-	play.pressed.connect(play_selected)
-	button_row.add_child(play)
-	var stop := Button.new()
-	stop.text = "■ Стоп"
-	stop.pressed.connect(stop_playback)
-	button_row.add_child(stop)
+	play_button = Button.new()
+	play_button.text = "▶ Воспроизвести"
+	play_button.pressed.connect(play_selected)
+	button_row.add_child(play_button)
+	stop_button = Button.new()
+	stop_button.text = "■ Стоп"
+	stop_button.pressed.connect(stop_playback)
+	button_row.add_child(stop_button)
 	var close := Button.new()
 	close.text = "Закрыть"
 	close.pressed.connect(close_panel)
@@ -131,6 +133,8 @@ func switch_category(k: String) -> void:
 func refresh() -> void:
 	if model == null or list == null:
 		return
+	play_button.visible=category=="tracks"
+	stop_button.visible=category=="tracks"
 	list.clear()
 	item_ids.clear()
 	var records:Array=model.media.get(category,[])
