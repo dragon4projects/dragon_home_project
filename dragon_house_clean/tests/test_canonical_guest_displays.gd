@@ -29,7 +29,7 @@ func run()->void:
 		if str(item["asset_id"]).begins_with("artifact_glass_cube_"):
 			assert(item["station_candidates"].is_empty())
 			cubes+=1
-	assert(cubes==3)
+	assert(cubes==0) # RC2: actual artifact objects own cubes; no empty display duplicates.
 	var library:Dictionary=world.get_room(-6,0)
 	assert(not nav.book_slots(library).is_empty())
 	assert(not nav.artifact_slots(gallery).is_empty())

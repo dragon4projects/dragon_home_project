@@ -440,6 +440,10 @@ func _apply_social_interiors()->void:
 	_apply_media_work_dressing()
 	_apply_guest_display_dressing()
 	_apply_conditional_shelf_dressing()
+	# Old decorative empty cube and miniature are not physical artifact identities.
+	if layouts.has("artifact/R3"):
+		var gallery:Dictionary=layouts["artifact/R3"]
+		gallery["instances"]=gallery["instances"].filter(func(item):return not str(item["instance_id"]) in ["artifact_r3_p2_neutral_cube","artifact_r3_toy_elephant_candidate"])
 
 func _apply_library_gallery_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)

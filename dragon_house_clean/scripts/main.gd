@@ -64,6 +64,8 @@ var object_nodes: Dictionary = {}
 var actor_sprites: Dictionary = {}
 var actor_labels: Dictionary = {}
 var door_note_anchors: Dictionary = {}
+const CanonicalArtifactCubes=preload("res://scripts/canonical_artifact_cubes.gd")
+var artifact_cubes=CanonicalArtifactCubes.new()
 var material_cache: Dictionary = {}
 var mesh_cache: Dictionary = {}
 var desired_focus := Vector3.ZERO
@@ -236,6 +238,9 @@ func _ready() -> void:
 		life.candidate_cups.setup(world,life.candidate_navigation)
 		life.candidate_cups.register_review_mugs()
 		life.candidate_navigation.prepare_rooms(world.rooms)
+		if architecture_review:
+			artifact_cubes.setup(world,life.candidate_navigation)
+			if artifact_cubes.install_initial(_artifact_room())>0:world.save_world()
 		print("TEEA008_LIVE_START roster")
 		_activate_teea008_roster()
 		for actor in world.residents.values():
@@ -1743,6 +1748,31 @@ func make_physical_objects() -> void:
 		anchor.name = "Object_" + str(object_id)
 		object_root.add_child(anchor)
 		var asset_id := str(object.get("asset_id",""))
+		if architecture_review and artifact_cubes.is_cube(str(object_id)):
+			var cube_size:float=artifact_cubes.provisional_size_m
+			var packed:PackedScene=ResourceLoader.load("res://assets/decor_bank/artifact_glass_cube_s/model.gltf","PackedScene") as PackedScene
+			if packed!=null:
+				anchor.add_child(packed.instantiate())
+				for mesh_node in anchor.find_children("*","MeshInstance3D",true,false):
+					for index in range(mesh_node.mesh.get_surface_count() if mesh_node.mesh!=null else 0):
+						var original:Material=mesh_node.get_active_material(index)
+						if original is StandardMaterial3D and original.transparency!=BaseMaterial3D.TRANSPARENCY_DISABLED:
+							var opaque:StandardMaterial3D=original.duplicate()
+							opaque.transparency=BaseMaterial3D.TRANSPARENCY_DISABLED
+							opaque.albedo_color=Color("#829298")
+							opaque.roughness=0.20
+							mesh_node.set_surface_override_material(index,opaque)
+			else:
+				var fallback:=box(anchor,Vector3(0,cube_size*0.5,0),Vector3.ONE*cube_size,Color("#829298"))
+				fallback.remove_from_group("low_end_micro_detail")
+			var short_name:String=artifact_cubes.title(str(object_id))
+			if short_name.length()>24:short_name=short_name.substr(0,21)+"…"
+			var cube_label:=label3(anchor,short_name,Vector3(0,cube_size+0.055,0.03),13,Color("#eadfc8"))
+			cube_label.name="ArtifactShortLabel"
+			cube_label.pixel_size=0.0025
+			object_nodes[str(object_id)]=anchor
+			register_content_hotspot(anchor,"artifacts",str(object_id),artifact_cubes.title(str(object_id)))
+			continue
 		if teea008_live and asset_id in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:
 			var model:PackedScene=ResourceLoader.load(teea008_review.ROOT+asset_id+"/model.gltf","PackedScene") as PackedScene
 			if model!=null:
@@ -1861,6 +1891,19 @@ func update_physical_objects() -> void:
 		if not anchor.visible:
 			continue
 		var room_center:Vector3=world.room_center_pos(room)
+		if architecture_review and artifact_cubes.is_cube(str(object_id)):
+			var cube_slot:Dictionary=life.candidate_navigation.artifact_support(room,str(object.get("current_support_id","")))
+			if cube_slot.is_empty():
+				anchor.visible=false
+				continue
+			var p:Array=cube_slot["xyz"]
+			var carrier:Array=cube_slot["instance_xyz"]
+			var factor:float=depth_visual_scale(float(carrier[2]))
+			anchor.position=Vector3(room_center.x+float(p[0])*factor,room_center.y+float(carrier[1])+(float(p[1])-float(carrier[1]))*factor,float(carrier[2])+(float(p[2])-float(carrier[2]))*factor)
+			anchor.scale=Vector3.ONE*factor
+			var cube_label:Label3D=anchor.get_node_or_null("ArtifactShortLabel")
+			if cube_label!=null:cube_label.visible=zoom_current<28.0
+			continue
 		var home_anchor=object.get("display_anchor",object.get("home_anchor",[]))
 		if str(object.get("display_mode",""))=="wall" and (
 				typeof(home_anchor)==TYPE_ARRAY and home_anchor.size()>=3):
@@ -2450,6 +2493,15 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 			return false
 	if record.is_empty():
 		return false
+	if architecture_review and category=="artifacts" and artifact_cubes.is_cube(item_id):
+		var master:String=artifact_cubes.master_path(item_id)
+		var image_record:Dictionary=record.duplicate(true)
+		image_record["title"]=artifact_cubes.title(item_id)
+		image_record["preview_path"]=master
+		image_record.erase("preview")
+		image_record["canonical_cube_master"]=true
+		if master=="":image_record["description"]="Оригинал не установлен или не прошёл проверку SHA-256."
+		return content_viewer.open_record(category,image_record)
 	return content_viewer.open_record(category,record)
 
 func update_content_hover(point: Vector2) -> void:
@@ -2924,7 +2976,17 @@ func _input(event: InputEvent) -> void:
 			var moved_anchor:Vector2=object_home_drag_anchor
 			object_home_drag_id=""
 			object_home_drag_room_id=""
-			if world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true):
+			var moved:=false
+			if architecture_review and artifact_cubes.is_cube(moved_id):
+				var target:Dictionary=world.room_by_id(moved_room)
+				var slot:Dictionary=artifact_cubes.pick_slot(target,moved_id,moved_anchor)
+				if not slot.is_empty():
+					var p:Array=slot["xyz"]
+					if moved_anchor.distance_to(Vector2(p[0],p[2]))<0.65:
+						moved=artifact_cubes.assign_at(moved_id,target,slot)
+			else:
+				moved=world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true)
+			if moved:
 				life.refresh_changed_station_claims()
 				notice.text="Новое место назначено домом: %s" % str(
 					world.physical_object(moved_id).get("display_name",moved_id))
@@ -3522,6 +3584,14 @@ func _place_teea008_artifact(room_id:String,surface_id:String,item_id:String)->v
 	var node:Node3D=object_nodes.get(item_id)
 	if obj.is_empty() or not is_instance_valid(node):
 		notice.text="Предмет не доступен"
+		return
+	if architecture_review and artifact_cubes.is_cube(item_id):
+		var size:float=artifact_cubes.provisional_size_m
+		if not teea008_media_bindings.place_artifact(room_id,surface_id,item_id,life.candidate_navigation,size,size,size):
+			notice.text="Нет свободной полки для куба"
+			return
+		world.save_world()
+		update_physical_objects()
 		return
 	var sprite:Sprite3D=node.get_node_or_null("Visual")
 	# Do not infer physical size from missing images or invent a support fit.
