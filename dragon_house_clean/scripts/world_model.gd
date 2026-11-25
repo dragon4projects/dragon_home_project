@@ -42,8 +42,14 @@ var object_events = ObjectEventRuntime.new()
 var object_events_initialized := false
 var object_events_save_path := ""
 var next_room_id := 1
+# Startup recovery is deliberately separate from ordinary simulation state.
+# An unreadable established world is never interpreted as a first launch.
+var recovery_blocked:bool=false
+var load_status:String="NOT_LOADED"
+var load_error:String=""
 
 func _ensure_object_events() -> bool:
+	if recovery_blocked:return false
 	if object_events_initialized and object_events_save_path == save_path:
 		return bool(object_events.ready)
 	object_events_initialized = true
@@ -1265,21 +1271,78 @@ func _read_snapshot(path: String) -> Dictionary:
 	var parsed = parser.data
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {}
-	if int(parsed.get("schema",0)) not in [1,2] or typeof(parsed.get("rooms",null)) != TYPE_ARRAY:
-		return {}
-	if typeof(parsed.get("residents",null)) != TYPE_DICTIONARY:
-		return {}
+	var schema=parsed.get("schema",0)
+	if typeof(schema) not in [TYPE_INT,TYPE_FLOAT] or float(schema) not in [1.0,2.0]:return {}
+	if typeof(parsed.get("rooms",null))!=TYPE_ARRAY or typeof(parsed.get("residents",null))!=TYPE_DICTIONARY:return {}
+	# Validate containers before typed assignment or migration. Legacy schema 1
+	# may omit newer optional containers; schema 2 writes all of them.
+	for key in ["media","objects","creatures","runtime_state"]:
+		if (int(schema)==2 or parsed.has(key)) and typeof(parsed.get(key,null))!=TYPE_DICTIONARY:return {}
+	if (int(schema)==2 or parsed.has("journal")) and typeof(parsed.get("journal",null))!=TYPE_ARRAY:return {}
+	var saved_clock=parsed.get("sim_clock",0.0)
+	if typeof(saved_clock) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(saved_clock)) or float(saved_clock)<0.0:return {}
+	if int(schema)==2 and not parsed.has("sim_clock"):return {}
+	var next_id=parsed.get("next_room_id",parsed["rooms"].size()+1)
+	if typeof(next_id) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(next_id)) or float(next_id)<1.0 or floor(float(next_id))!=float(next_id):return {}
+	var room_ids:Dictionary={}
+	if parsed["rooms"].is_empty():return {}
+	for room in parsed["rooms"]:
+		if typeof(room)!=TYPE_DICTIONARY:return {}
+		var id:String=str(room.get("id",""))
+		if id=="" or room_ids.has(id):return {}
+		room_ids[id]=true
+		for field in ["x","level"]:
+			var coordinate=room.get(field,null)
+			if typeof(coordinate) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(coordinate)):return {}
+		if typeof(room.get("type",null))!=TYPE_STRING:return {}
+	for key in ["residents","objects","creatures"]:
+		for row in parsed.get(key,{}).values():
+			if typeof(row)!=TYPE_DICTIONARY:return {}
+	var catalog:Dictionary=parsed.get("media",{})
+	for key in ["books","films","tracks"]:
+		if catalog.has(key) and typeof(catalog[key])!=TYPE_ARRAY:return {}
 	return parsed
 
-func load_or_seed() -> void:
+func _existing_world_evidence()->bool:
+	# Scratch files and sidecars are evidence too. Never automatically adopt
+	# an uncommitted scratch generation or reseed over orphaned event truth.
+	for suffix in ["",".bak",".tmp",".corrupt",
+			".world_events_v1.json",".world_events_v1.json.bak",
+			".world_events_v1.json.tmp",".world_events_v1.json.corrupt",
+			".world_events_v1.sqlite",".world_events_v1.sqlite.bak",
+			".world_events_v1.sqlite.corrupt",".world_events_v1.sqlite-wal",
+			".world_events_v1.sqlite-shm",".world_events_v1.sqlite.canonical.json",
+			".world_events_v1.sqlite.canonical.json.tmp"]:
+		var candidate:String=save_path+str(suffix)
+		if FileAccess.file_exists(candidate) or DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(candidate)):return true
+	return false
+
+func _block_world_recovery(status:String,message:String)->bool:
+	recovery_blocked=true
+	load_status=status
+	load_error=message
+	push_warning(message)
+	return false
+
+func load_or_seed() -> bool:
+	recovery_blocked=false
+	load_status="LOADING"
+	load_error=""
 	var parsed: Dictionary = _read_snapshot(save_path)
+	var from_backup:bool=false
 	if parsed.is_empty():
 		parsed = _read_snapshot(save_path + ".bak")
+		from_backup=not parsed.is_empty()
 	if parsed.is_empty():
+		if _existing_world_evidence():
+			return _block_world_recovery("SNAPSHOT_RECOVERY_REQUIRED","No valid world snapshot; existing save evidence retained.")
 		seed_world()
-		_ensure_object_events()
-		save_world()
-		return
+		if not _ensure_object_events():
+			return _block_world_recovery("EVENT_RECOVERY_REQUIRED","Cannot initialize object event store; world not started.")
+		if not save_world():
+			return _block_world_recovery("INITIAL_SAVE_FAILED","Cannot commit initial world snapshot; world not started.")
+		load_status="SEEDED"
+		return true
 	rooms.assign(parsed["rooms"])
 	var social_changed:bool=CanonicalHouseSeed.apply_social_purposes(self) if canonical_house_seed else false
 	residents = parsed["residents"]
@@ -1304,11 +1367,16 @@ func load_or_seed() -> void:
 	sync_resident_profiles()
 	object_events_initialized = false
 	object_events_save_path = ""
-	_ensure_object_events()
+	if not _ensure_object_events():
+		return _block_world_recovery("EVENT_RECOVERY_REQUIRED","Object event recovery failed; saved world retained.")
 	if migrated or social_changed:
-		save_world()
+		if not save_world():
+			return _block_world_recovery("MIGRATION_SAVE_FAILED","Cannot commit migrated world; saved world retained.")
+	load_status="RECOVERED_BACKUP" if from_backup else "LOADED"
+	return true
 
 func save_world() -> bool:
+	if recovery_blocked:return false
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
 	var data: Dictionary = {"schema": 2,"rooms": rooms,"residents": residents,
@@ -1319,7 +1387,9 @@ func save_world() -> bool:
 		return false
 	file.store_string(JSON.stringify(data,"\t"))
 	file.flush()
+	var write_error:Error=file.get_error()
 	file.close()
+	if write_error!=OK:return false
 	# Verify before touching the last readable snapshot.
 	if _read_snapshot(scratch).is_empty():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
