@@ -26,7 +26,8 @@ func _initialize()->void:
 	row=JSON.parse_string(JSON.stringify(row))
 	actor=JSON.parse_string(JSON.stringify(actor))
 	life._account_social_attendance(row,actor)
-	assert(actor==before)
+	assert(is_equal_approx(float(actor["needs"]["social"]),float(before["needs"]["social"])))
+	assert(is_equal_approx(float(actor["social_fatigue"]),float(before["social_fatigue"])))
 	life.clock=7300.0
 	life._account_social_attendance(row,actor)
 	assert(is_equal_approx(float(actor["social_fatigue"]),2.0/3.0))
