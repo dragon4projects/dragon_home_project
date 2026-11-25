@@ -24,6 +24,14 @@ var log: Array = []
 var steps := 0
 var candidate_navigation=null
 var candidate_media_bindings=null
+var planning_routes:Dictionary={}
+var planning_pressure:Dictionary={}
+var planning_actor_id:String=""
+var planner_graph_signature:int=0
+var planner_graph:Dictionary={}
+var planner_route_queries:int=0
+var planner_graph_rebuilds:int=0
+var planner_sample_usec:Array=[]
 var candidate_cups=CandidateCupRuntime.new()
 # Deterministic QA may inject a daypart; production uses the system clock.
 var daypart_override: String=""
@@ -293,7 +301,11 @@ func _utilities(actor: Dictionary) -> Dictionary:
 	return scores
 
 func _destination_pressure(actor: Dictionary, room: Dictionary) -> Dictionary:
-	var path:Array=world.find_route(actor["room_id"],room["id"],actor["id"])
+	var room_id:String=str(room["id"])
+	var memo:bool=planning_actor_id!="" and planning_actor_id==str(actor["id"])
+	if memo and planning_pressure.has(room_id):
+		return planning_pressure[room_id]
+	var path:Array=planning_routes.get(room_id,[]) if memo else world.find_route(actor["room_id"],room["id"],actor["id"])
 	if path.is_empty():
 		return {}
 	var room_capacity:int=maxi(1,stations.capacity(room))
@@ -312,7 +324,10 @@ func _destination_pressure(actor: Dictionary, room: Dictionary) -> Dictionary:
 	# prevents one visual room from becoming a crowd magnet when another room
 	# of the same purpose is available. Route cost remains deliberately weak.
 	var pressure:float=room_ratio*0.95+group_ratio*0.30+float(path.size()-1)*0.035
-	return {"room":room,"path":path,"pressure":pressure}
+	var result:Dictionary={"room":room,"path":path,"pressure":pressure}
+	if memo:
+		planning_pressure[room_id]=result
+	return result
 
 func best_destination(actor: Dictionary, candidates: Array) -> Dictionary:
 	var best:Dictionary={}
@@ -333,6 +348,8 @@ func best_destination(actor: Dictionary, candidates: Array) -> Dictionary:
 	return best
 
 func choose_intent(actor: Dictionary) -> Dictionary:
+	if candidate_navigation!=null:
+		_begin_candidate_plan(actor)
 	var scored: Dictionary = _utilities(actor)
 	var best := ""
 	var best_score := -999.0
@@ -374,6 +391,8 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 			best_score = score
 			best = intent
 			best_room = destination
+	if candidate_navigation!=null:
+		_end_candidate_plan()
 	if best == "":
 		return {}
 	return {"intent": best, "room": best_room}
@@ -871,6 +890,9 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 	planner_calls += 1
 	planner_usec_total += spent
 	planner_usec_max = maxi(planner_usec_max,spent)
+	if candidate_navigation!=null:
+		planner_sample_usec.append(spent)
+		if planner_sample_usec.size()>2048:planner_sample_usec.pop_front()
 	_schedule_actor(actor,"PLANNER_RESULT")
 	world._append_journal("LIFE_PLANNER_RAN",id,id,wake_reason,str(actor.get("intent","")),
 		{"planner_usec":spent,"next_due":life_scheduler.peek_due_at(id)})
@@ -1094,3 +1116,59 @@ func _route_cup_return(actor:Dictionary)->bool:
 	moving_ids[str(actor["id"])]=true
 	_schedule_actor(actor,"CUP_RETURN_ROUTE")
 	return true
+
+func _begin_candidate_plan(actor:Dictionary)->void:
+	planning_actor_id=str(actor["id"])
+	planning_routes.clear()
+	planning_pressure.clear()
+	stations.begin_planning_snapshot()
+	# Adjacency contains geometry only. Access/transit is evaluated at each
+	# decision from live room state. Signature includes authored connectors.
+	var shape:Array=[]
+	for room in world.rooms:
+		shape.append([room["id"],room["x"],room["level"],room.get("size_modules",1),room.get("type",""),room.get("connectors",[])])
+	var signature:int=hash(shape)
+	if planner_graph.is_empty() or signature!=planner_graph_signature:
+		planner_graph.clear()
+		for room in world.rooms:
+			var neighbors:Array=[]
+			for other in world.rooms:
+				if str(room["id"])!=str(other["id"]) and not world.connection_between(room,other).is_empty():
+					neighbors.append(str(other["id"]))
+			planner_graph[str(room["id"])]=neighbors
+		planner_graph_signature=signature
+		planner_graph_rebuilds+=1
+	var start:String=str(actor.get("room_id",""))
+	if world.room_by_id(start).is_empty():
+		return
+	var visited:Dictionary={start:[start]}
+	var q:Array=[start]
+	var at:=0
+	while at<q.size():
+		var current:String=str(q[at])
+		at+=1
+		for rid in planner_graph.get(current,[]):
+			if visited.has(rid):continue
+			var room:Dictionary=world.room_by_id(str(rid))
+			if not world.allows_transit(room) and not world.is_accessible(room,planning_actor_id):
+				continue
+			var path:Array=visited[current].duplicate()
+			path.append(rid)
+			visited[rid]=path
+			q.append(rid)
+	for rid in visited:
+		if world.is_accessible(world.room_by_id(str(rid)),planning_actor_id):
+			planning_routes[rid]=visited[rid]
+	planner_route_queries+=1
+
+func _end_candidate_plan()->void:
+	stations.end_planning_snapshot()
+	planning_actor_id=""
+	planning_routes.clear()
+	planning_pressure.clear()
+
+func candidate_planner_percentiles()->Dictionary:
+	var values:Array=planner_sample_usec.duplicate()
+	values.sort()
+	if values.is_empty():return {}
+	return {"samples":values.size(),"p50_us":values[int((values.size()-1)*0.5)],"p95_us":values[int((values.size()-1)*0.95)],"p99_us":values[int((values.size()-1)*0.99)],"max_us":values[-1],"graph_rebuilds":planner_graph_rebuilds,"route_trees":planner_route_queries}

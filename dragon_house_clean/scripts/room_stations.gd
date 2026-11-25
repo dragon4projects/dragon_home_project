@@ -11,6 +11,21 @@ const BACK_Z := -1.95
 const FRONT_Z := 1.65
 var furniture = InteractionAnchors.new()
 var candidate_navigation=null
+# Read-only memoization scoped to exactly one planner decision. Never reused
+# across reservation commits, object moves, door changes or room construction.
+var planning_snapshot:=false
+var planning_layouts:Dictionary={}
+var planning_occupancy:Dictionary={}
+
+func begin_planning_snapshot()->void:
+	planning_snapshot=true
+	planning_layouts.clear()
+	planning_occupancy.clear()
+
+func end_planning_snapshot()->void:
+	planning_snapshot=false
+	planning_layouts.clear()
+	planning_occupancy.clear()
 
 func _init() -> void:
 	var selected := REVIEW_FURNITURE if FileAccess.file_exists(REVIEW_MARKER) else InteractionAnchors.DEFAULT_PATH
@@ -144,11 +159,19 @@ func _display_anchor_data(world, room: Dictionary) -> Array:
 func layout_for_world(world, room: Dictionary) -> Array:
 	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
+	var rid:String=str(room.get("id",""))
+	if planning_snapshot and planning_layouts.has(rid):
+		return planning_layouts[rid]
 	var anchors:Array=_display_anchor_data(world,room)
+	var result:Array=[]
 	if candidate_navigation!=null and candidate_navigation.has_layout(room):
-		return candidate_navigation.candidate_spots(room,anchors)
-	anchors.append_array(_physical_anchor_data(room))
-	return _layout_from_anchors(room,anchors)
+		result=candidate_navigation.candidate_spots(room,anchors)
+	else:
+		anchors.append_array(_physical_anchor_data(room))
+		result=_layout_from_anchors(room,anchors)
+	if planning_snapshot:
+		planning_layouts[rid]=result
+	return result
 
 func display_objects(world, room: Dictionary) -> Array:
 	var result:Array=[]
@@ -195,6 +218,9 @@ func _intent_prefers_station(intent: String, kind: String) -> bool:
 			return kind=="standing"
 
 func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
+	var cache_key:String=room_id+"|"+str(ignore_ids)
+	if planning_snapshot and planning_occupancy.has(cache_key):
+		return planning_occupancy[cache_key]
 	var used: Dictionary = {}
 	for id in world.residents:
 		if ignore_ids.has(id):
@@ -212,6 +238,8 @@ func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
 					for idx in range(spots.size()):
 						if str(spots[idx].get("furniture_id",""))==str(actor.get("station_furniture_id","")):
 							used[idx]=id
+	if planning_snapshot:
+		planning_occupancy[cache_key]=used
 	return used
 
 func available_count(world, room: Dictionary) -> int:
