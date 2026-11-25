@@ -508,7 +508,13 @@ func _pair_members_valid(sid:String,row:Dictionary)->bool:
 		var anchor:String=str(actor.get("station_anchor_id",""))
 		if anchor=="" or anchor!=str(claims.get(id,"")) or anchors.has(anchor):return false
 		anchors.append(anchor)
-		if str(actor.get("phase",""))=="perform" and str(actor.get("room_id",""))!=room_id:return false
+		if str(actor.get("phase",""))=="perform":
+			if str(actor.get("room_id",""))!=room_id:return false
+			var point=actor.get("station_point",[])
+			if typeof(point)!=TYPE_ARRAY or point.size()!=2:return false
+			var expected:Vector3=world.room_local_to_world(room,Vector2(float(point[0]),float(point[1])))
+			var actual:=Vector3(float(actor.get("x",0.0)),float(actor.get("visual_y",expected.y)),float(actor.get("z",0.0)))
+			if actual.distance_to(expected)>0.12:return false
 		if str(row.get("phase",""))=="active" and str(actor.get("phase",""))!="perform":return false
 	return true
 
@@ -566,7 +572,7 @@ func _cancel_pair_for(actor:Dictionary,reason:String)->void:
 		partner.erase("partner_id")
 		if str(partner.get("intent",""))=="TALK_PAIR":_reset_pair_actor(partner)
 
-func _update_pair(actor:Dictionary)->void:
+func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 	var sid:String=str(actor.get("social_session_id",""))
 	var row:Dictionary=_pair_session(actor)
 	if row.is_empty():
@@ -590,6 +596,7 @@ func _update_pair(actor:Dictionary)->void:
 			if str(world.residents[id].get("phase",""))!="perform":arrived=false
 		if arrived:
 			row["phase"]="active"
+			reschedule_all=true
 			row["started_at"]=clock
 			row["ends_at"]=clock+duration
 			world._append_journal("PAIR_STARTED",str(actor["id"]),sid,"",str(row["room_id"]),{"members":row["members"],"ends_at":row["ends_at"]})
@@ -607,6 +614,7 @@ func _update_pair(actor:Dictionary)->void:
 		return
 	for id in row["members"]:
 		var member:Dictionary=world.residents[id]
+		if not reschedule_all and str(id)!=str(actor.get("id","")):continue
 		if str(row["phase"])=="active":
 			member["until"]=float(row["ends_at"])
 			life_scheduler.schedule_at(str(id),minf(float(row["ends_at"]),clock+PAIR_VALIDATE_INTERVAL_SECONDS),"PAIR_ACTIVE")
@@ -623,7 +631,7 @@ func reconcile_pair_sessions()->void:
 		if typeof(row)!=TYPE_DICTIONARY or not _pair_members_valid(sid,row):
 			_finish_pair(sid,false,"RESTORE_INVALID_SESSION")
 			continue
-		_update_pair(world.residents[str(row["members"][0])])
+		_update_pair(world.residents[str(row["members"][0])],true)
 	for actor in world.residents.values():
 		if actor.has("social_session_id") and _pair_session(actor).is_empty():
 			_cancel_pair_for(actor,"RESTORE_ORPHAN_SESSION")
@@ -824,7 +832,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			return
 		partner_route = world.find_route(partner["room_id"],room["id"],str(partner["id"]))
 		var pair_claim: Dictionary = stations.pair(world,actor,partner,room)
-		if pair_claim.is_empty() or partner_route.is_empty():
+		if pair_claim.is_empty() or partner_route.is_empty() or pair_claim.get("actor",{}).is_empty() or pair_claim.get("partner",{}).is_empty():
 			actor["until"] = clock + 10.0
 			return
 		actor_claim = pair_claim["actor"]
