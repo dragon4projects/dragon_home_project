@@ -1298,6 +1298,8 @@ func reconcile_concrete_media() -> int:
 		if actor.has("reading_session") and not media_runtime.reading_session_valid(actor,clock):actor.erase("reading_session")
 		var active_id:String=str(actor.get("activity_media_id",""))
 		var held_book:String=str(actor.get("held_book",""))
+		if candidate_navigation!=null and actor.has("held_book") and (actor.has("social_session_id") or actor.has("social_join_session_id") or actor.has("watch_session") or actor.has("listen_session") or actor.has("cup_task_stage")):
+			continue
 		if candidate_navigation!=null and actor.has("book_task_stage"):
 			var stage:String=str(actor["book_task_stage"])
 			var book:Dictionary=media_runtime._lookup("books",str(actor.get("book_task_id","")))
@@ -1843,7 +1845,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 					_schedule_actor(actor,"CUP_RETURN_RETRY")
 					return
 		_clear_cup_task(actor)
-	if candidate_navigation!=null and actor.has("held_book") and not actor.has("book_task_stage"):
+	if candidate_navigation!=null and actor.has("held_book") and (not actor.has("book_task_stage") or str(actor.get("book_task_id",""))!=str(actor.get("held_book",""))):
 		reconcile_book_possession()
 	if candidate_navigation!=null and actor.has("book_task_stage"):
 		if _continue_book_task(actor):
@@ -1852,7 +1854,18 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 	if actor.get("held_book","") != "":
 		var book_id := str(actor["held_book"])
 		media_runtime.pause_reading(actor,clock)
-		media_runtime.return_book(id,book_id)
+		if candidate_navigation!=null:
+			# No direct catalogue return in measured rooms.
+			_clear_book_task(actor)
+			actor["book_task_id"]=book_id
+			actor["book_task_stage"]="return_wait"
+			if _continue_book_task(actor):
+				_schedule_actor(actor,"BOOK_RECOVERY_RETURN")
+				return
+		if not media_runtime.return_book(id,book_id):
+			actor["until"]=clock+5.0
+			_schedule_actor(actor,"BOOK_RETURN_RETRY")
+			return
 		actor.erase("held_book")
 		_record("%s — вернула книгу" % actor.get("name",id))
 	if str(actor.get("intent",""))=="VIEW_ART" and str(actor.get("phase",""))=="perform":
