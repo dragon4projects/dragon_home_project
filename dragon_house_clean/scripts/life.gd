@@ -22,6 +22,8 @@ var planner_usec_max := 0
 var log: Array = []
 var steps := 0
 var candidate_navigation=null
+# Deterministic QA may inject a daypart; production uses the system clock.
+var daypart_override: String=""
 var last_cleanup_wall_time := 0
 
 const HUMAN_STATUS := {
@@ -127,6 +129,8 @@ func setup(p_world) -> void:
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
 
 func daypart() -> String:
+	if daypart_override in ["night","morning","day","evening"]:
+		return daypart_override
 	var hour: int = Time.get_datetime_dict_from_system().get("hour", 12)
 	if hour < 6:
 		return "night"
