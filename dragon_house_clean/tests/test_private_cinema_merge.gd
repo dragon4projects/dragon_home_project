@@ -46,6 +46,25 @@ func _initialize()->void:
 	assert(expanded["episode_duration_sources"]["2:1"]["source"]=="old verified")
 	assert(expanded["complete_seasons"].is_empty())
 	assert(w._valid_cinema_record(expanded,false))
+	# An older, shorter season assertion cannot mark an expanded table complete.
+	q=p.duplicate(true)
+	q["episode_runtime_seconds"]={"1":[100],"2":[300]}
+	q["complete_seasons"]=[1]
+	var retained:Dictionary=w._merge_cinema_record(expanded,q)
+	assert(retained["episode_runtime_seconds"]["1"]==[100,200,500])
+	assert(retained["complete_seasons"].is_empty())
+	# A bookmark can advance even before the newly available duration is known.
+	q=p.duplicate(true)
+	q["latest_season"]=1
+	q["latest_episode"]=4
+	q["episode_runtime_seconds"]={"1":[100,200]}
+	q["complete_seasons"]=[1]
+	var first:Dictionary=p.duplicate(true)
+	first["latest_season"]=1
+	first["latest_episode"]=2
+	first["episode_runtime_seconds"]={"1":[100,200]}
+	var advanced:Dictionary=w._merge_cinema_record(first,q)
+	assert(advanced["complete_seasons"].is_empty())
 	q=p.duplicate(true)
 	q["episode_duration_sources"]=[]
 	assert(not w._valid_cinema_record(q,false))
