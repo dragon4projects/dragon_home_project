@@ -787,7 +787,8 @@ func merge_zna_media_previews() -> int:
 	if changed:save_world()
 	return added
 
-# Local-only catalog ingestion. A partial recovery must not erase researched
+# Owner-approved repository bundle and optional local catalog ingestion.
+# A partial recovery must not erase researched
 # durations or change the identity of a work with saved resident progress.
 func _positive_catalog_seconds(value)->bool:
 	return typeof(value) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(value)) and float(value)>0.0
@@ -798,7 +799,7 @@ func _valid_cinema_record(raw:Dictionary,verify_preview:bool=true)->bool:
 	var kind:String=str(raw.get("media_type",""))
 	if not kind in ["film","series"]:return false
 	var path:String=str(raw.get("preview",""))
-	if path!="user://filmix_previews/"+id+".webp":return false
+	if path not in ["user://filmix_previews/"+id+".webp","user://filmix_bundle_previews/"+id+".webp"]:return false
 	if verify_preview:
 		if not FileAccess.file_exists(path):return false
 		var digest:String=str(raw.get("preview_sha256",""))
@@ -871,26 +872,108 @@ func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
 			if previous.has(field):row[field]=previous[field]
 	return row
 
-func load_private_cinema_catalog()->int:
-	# No private titles or poster bytes are included in the public project.
-	var path:="user://filmix_catalog.json"
-	var incoming:Array=[]
+const FILMIX_BUNDLE_ROOT:="res://data/filmix_bundle/"
+const FILMIX_BUNDLE_CACHE:="user://filmix_bundle_previews/"
+const FILMIX_BUNDLE_SHA256:="29b7b1c2f59bcc2d01538e9fbbe3382ef2eea7f4214d39e6356b299d70e8185f"
+
+func _read_cinema_batch(path:String,check_preview:bool)->Dictionary:
+	if not FileAccess.file_exists(path):return {"ok":true,"rows":[]}
+	var file:=FileAccess.open(path,FileAccess.READ)
+	if file==null:return {"ok":false,"rows":[]}
+	var parsed=JSON.parse_string(file.get_as_text())
+	if typeof(parsed)!=TYPE_DICTIONARY or typeof(parsed.get("films",null))!=TYPE_ARRAY:return {"ok":false,"rows":[]}
+	var rows:Array=[]
 	var seen:Dictionary={}
-	if FileAccess.file_exists(path):
-		var file:=FileAccess.open(path,FileAccess.READ)
-		if file==null:return 0
-		var parsed=JSON.parse_string(file.get_as_text())
-		if typeof(parsed)!=TYPE_DICTIONARY or typeof(parsed.get("films",null))!=TYPE_ARRAY:return 0
-		for raw in parsed["films"]:
-			if typeof(raw)!=TYPE_DICTIONARY or not _valid_cinema_record(raw):return 0
-			var id:String=str(raw["id"])
-			if seen.has(id):return 0
-			seen[id]=true
-			var row:Dictionary=raw.duplicate(true)
-			row["simulation_only"]=true
-			row["file_path"]=""
-			row.erase("source_url")
-			incoming.append(row)
+	for raw in parsed["films"]:
+		if typeof(raw)!=TYPE_DICTIONARY or not _valid_cinema_record(raw,check_preview):return {"ok":false,"rows":[]}
+		var id:String=str(raw["id"])
+		if seen.has(id):return {"ok":false,"rows":[]}
+		seen[id]=true
+		var row:Dictionary=raw.duplicate(true)
+		row["simulation_only"]=true
+		row["file_path"]=""
+		row.erase("source_url")
+		rows.append(row)
+	return {"ok":true,"rows":rows}
+
+func _ensure_bundled_cinema_previews(rows:Array)->bool:
+	if rows.is_empty():return false
+	var needed:Array=[]
+	for row in rows:
+		var digest:String=str(row.get("preview_sha256",""))
+		var path:String=str(row.get("preview",""))
+		if path!=FILMIX_BUNDLE_CACHE+str(row["id"])+".webp" or digest.length()!=64:return false
+		if not FileAccess.file_exists(path) or FileAccess.get_sha256(path)!=digest:needed.append(row)
+	if needed.is_empty():return true
+	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(FILMIX_BUNDLE_CACHE))!=OK:return false
+	var scratch:="user://filmix_bundle_extract.tmp.zip"
+	var out:=FileAccess.open(scratch,FileAccess.WRITE)
+	if out==null:return false
+	for i in range(8):
+		var part:String=FILMIX_BUNDLE_ROOT+"posters.part%02d.bin"%i
+		var bytes:PackedByteArray=FileAccess.get_file_as_bytes(part)
+		if bytes.size()!=(397600 if i==7 else 537600):
+			out.close()
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+			return false
+		out.store_buffer(bytes)
+	out.flush()
+	out.close()
+	if FileAccess.get_sha256(scratch)!=FILMIX_BUNDLE_SHA256:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+		return false
+	var archive:=ZIPReader.new()
+	if archive.open(scratch)!=OK:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+		return false
+	var ok:=true
+	for row in needed:
+		var path:String=str(row["preview"])
+		var member:String="filmix_previews/"+str(row["id"])+".webp"
+		var bytes:PackedByteArray=archive.read_file(member)
+		if bytes.is_empty():
+			ok=false
+			break
+		var tmp:String=path+".tmp"
+		var file:=FileAccess.open(tmp,FileAccess.WRITE)
+		if file==null:
+			ok=false
+			break
+		file.store_buffer(bytes)
+		file.flush()
+		file.close()
+		if FileAccess.get_sha256(tmp)!=str(row["preview_sha256"]):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp))
+			ok=false
+			break
+		# Only the dedicated reproducible cache is replaced, never local overrides.
+		if FileAccess.file_exists(path) and DirAccess.remove_absolute(ProjectSettings.globalize_path(path))!=OK:
+			ok=false
+			break
+		if DirAccess.rename_absolute(ProjectSettings.globalize_path(tmp),ProjectSettings.globalize_path(path))!=OK:
+			ok=false
+			break
+	archive.close()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
+	return ok
+
+func load_private_cinema_catalog()->int:
+	# Historical function name retained. The owner approved repository
+	# publication of media catalog and posters on 2026-11-25. No viewing
+	# history, credentials, door notes or personal source PDF is bundled.
+	var incoming:Array=[]
+	var bundled:Dictionary=_read_cinema_batch(FILMIX_BUNDLE_ROOT+"filmix_catalog.json",false)
+	if bool(bundled["ok"]) and not bundled["rows"].is_empty():
+		if _ensure_bundled_cinema_previews(bundled["rows"]):
+			var checked:Dictionary=_read_cinema_batch(FILMIX_BUNDLE_ROOT+"filmix_catalog.json",true)
+			if bool(checked["ok"]):incoming.append_array(checked["rows"])
+		else:push_warning("Filmix bundle preview integrity check failed; retaining installed data")
+	elif not bool(bundled["ok"]):push_warning("Filmix bundled catalog rejected")
+	# Optional local research is applied last; zero/missing values cannot
+	# replace known durations. Separate cache prevents poster collisions.
+	var local:Dictionary=_read_cinema_batch("user://filmix_catalog.json",true)
+	if bool(local["ok"]):incoming.append_array(local["rows"])
+	else:push_warning("Filmix local catalog rejected; retaining bundled and installed data")
 	var changed:=false
 	var kept:Array=[]
 	var archived:Dictionary=runtime_state.get("superseded_zna_film_records",{}).duplicate(true)
@@ -918,7 +1001,7 @@ func load_private_cinema_catalog()->int:
 			if previous!=merged:
 				kept[at]=merged
 				changed=true
-	if changed:
+	if kept!=media.get("films",[]) or archived!=runtime_state.get("superseded_zna_film_records",{}):
 		media["films"]=kept
 		runtime_state["superseded_zna_film_records"]=archived
 		save_world()
