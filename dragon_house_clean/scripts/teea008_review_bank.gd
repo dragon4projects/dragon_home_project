@@ -206,8 +206,8 @@ func _review_layout_delta(raw:Dictionary)->Dictionary:
 	return row
 
 func _asset_path(asset:String)->String:
-	if asset=="owner_sleeping_dragon":
-		return "res://assets/decor_bank/owner_sleeping_dragon/model.gltf"
+	if asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
+		return "res://assets/decor_bank/"+asset+"/model.gltf"
 	var base:String=SKETCHFAB_ROOT if asset.begins_with("sketchfab_") else ROOT
 	return base+asset+"/model.gltf"
 
@@ -386,6 +386,7 @@ func _apply_social_interiors()->void:
 	layouts["common/R3"]=hearth
 	_apply_library_gallery_dressing()
 	_apply_media_work_dressing()
+	_apply_guest_display_dressing()
 
 func _apply_library_gallery_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)
@@ -418,3 +419,19 @@ func _apply_media_work_dressing()->void:
 		if valid:
 			layouts[key]["instances"].append_array(doc["additions"][key])
 			layouts[key]["canonical_dressing_revision"]="MEDIA_WORK_V1"
+
+func _apply_guest_display_dressing()->void:
+	var file:=FileAccess.open("res://data/canonical_guest_display_interiors_20261125.json",FileAccess.READ)
+	if file==null:return
+	var doc=JSON.parse_string(file.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)):return
+	for key in doc.get("additions",{}):
+		if not layouts.has(key):continue
+		var valid:=true
+		for item in doc["additions"][key]:
+			if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):
+				valid=false
+				push_error("Guest/display missing model "+str(item["asset_id"]))
+		if valid:
+			layouts[key]["instances"].append_array(doc["additions"][key])
+			layouts[key]["guest_display_revision"]="GUEST_DISPLAY_V1"

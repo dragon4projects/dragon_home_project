@@ -37,7 +37,7 @@ jobs:
           godot=/tmp/Godot_v4.7.2-stable_linux.x86_64
           timeout 600 "$godot" --headless --path . --import > hearth_import.log 2>&1
           ! grep -Eq 'SCRIPT ERROR|Parse Error' hearth_import.log
-          for t in test_canonical_public_interiors test_canonical_social_interiors test_canonical_hearth_interior test_canonical_house_scene test_canonical_lift_capacity test_canonical_house_life; do
+          for t in test_canonical_guest_displays test_canonical_public_interiors test_canonical_social_interiors test_canonical_hearth_interior test_canonical_house_scene test_canonical_lift_capacity test_canonical_house_life; do
             XDG_DATA_HOME="$RUNNER_TEMP/$t" timeout 240 "$godot" --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
             grep -q '_PASS' "$t.log"
             ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' "$t.log"
