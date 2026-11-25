@@ -681,7 +681,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			concrete_item=candidate_media_bindings.choose_film(str(room["id"]),str(actor["id"]))
 		if concrete_item.is_empty():
 			var previous:Dictionary=media_runtime._lookup("films",str(actor.get("last_watch_id","")))
-			if not media_runtime.next_watch_unit(str(actor["id"]),previous).is_empty():
+			if str(previous.get("media_type",""))=="series" and not media_runtime.next_watch_unit(str(actor["id"]),previous).is_empty():
 				concrete_item=previous
 			else:
 				concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]

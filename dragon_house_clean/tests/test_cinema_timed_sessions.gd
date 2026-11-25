@@ -9,7 +9,7 @@ func run()->void:
 	var m=M.new()
 	m.setup(w)
 	var movie:Dictionary={"id":"QA_MOVIE","title":"QA","simulation_only":true,"media_type":"film","runtime_seconds":6000}
-	var series:Dictionary={"id":"QA_SERIES","title":"QA serial","simulation_only":true,"media_type":"series","latest_season":2,"latest_episode":2,"episode_runtime_seconds":{"1":[2400,2700],"2":[1800,1920]}}
+	var series:Dictionary={"id":"QA_SERIES","title":"QA serial","simulation_only":true,"media_type":"series","latest_season":2,"latest_episode":2,"episode_runtime_seconds":{"1":[2400,2700],"2":[1800,1920]},"complete_seasons":[1,2]}
 	w.media["films"]=[movie,series,{"id":"QA_UNKNOWN","simulation_only":true,"media_type":"film"}]
 	var a:Dictionary=w.residents["RES_01"]
 	var b:Dictionary=w.residents["RES_02"]
@@ -34,6 +34,19 @@ func run()->void:
 	assert(m.finish_watch(a,12000))
 	assert(m.next_watch_unit("RES_01",movie).is_empty())
 	assert(m.watch_candidates("RES_01").size()==1)
+	w.sim_clock=12000+w.GAME_DAY_SECONDS
+	assert(m.next_watch_unit("RES_01",movie)["seconds"]==6000)
+	assert(m.begin_watch(a,w.sim_clock))
+	assert(m.finish_watch(a,w.sim_clock+6000))
+	assert(w.runtime_state["cinema_progress"]["RES_01"]["QA_MOVIE"]["completed_count"]==2)
+	var partial:Dictionary={"id":"QA_PARTIAL","title":"Partial","simulation_only":true,"media_type":"series","latest_season":2,"latest_episode":1,"episode_runtime_seconds":{"1":[1200],"2":[1300]},"complete_seasons":[]}
+	w.media["films"].append(partial)
+	a["activity_media_id"]="QA_PARTIAL"
+	assert(m.begin_watch(a,200000))
+	assert(m.finish_watch(a,201200))
+	assert(m.next_watch_unit("RES_01",partial).is_empty())
+	partial["complete_seasons"]=[1]
+	assert(m.next_watch_unit("RES_01",partial)["season"]==2)
 	assert(w.save_world())
 	var copy=W.new()
 	copy.save_path=w.save_path

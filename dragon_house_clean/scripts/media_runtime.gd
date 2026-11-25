@@ -156,14 +156,21 @@ func next_watch_unit(actor_id:String,item:Dictionary)->Dictionary:
 	var id:String=str(item.get("id",""))
 	if id=="":return {}
 	var progress:Dictionary=world.runtime_state.get("cinema_progress",{}).get(actor_id,{}).get(id,{})
-	if bool(progress.get("complete",false)):return {}
 	if str(item.get("media_type",""))=="film":
+		if bool(progress.get("complete",false)) and world.sim_clock-float(progress.get("last_completed_at",0))<world.GAME_DAY_SECONDS:return {}
 		var duration:float=float(item.get("runtime_seconds",0))
 		if duration<=0 or not is_finite(duration):return {}
 		return {"item_id":id,"season":0,"episode":0,"seconds":duration}
 	if str(item.get("media_type",""))!="series":return {}
 	var season:int=int(progress.get("next_season",1))
 	var episode:int=int(progress.get("next_episode",1))
+	# Advance an exhausted season only with explicit evidence of its
+	# completeness. A partial array is NOT a season finale.
+	var completed_seasons:Array=item.get("complete_seasons",[])
+	var current:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
+	if not current.is_empty() and episode>current.size() and completed_seasons.has(season) and season<int(item.get("latest_season",0)):
+		season+=1
+		episode=1
 	var latest_season:int=int(item.get("latest_season",0))
 	var latest_episode:int=int(item.get("latest_episode",0))
 	if season>latest_season or (season==latest_season and episode>latest_episode):return {}
@@ -193,7 +200,7 @@ func begin_watch(actor:Dictionary,now:float)->bool:
 func finish_watch(actor:Dictionary,now:float)->bool:
 	var unit:Dictionary=actor.get("watch_session",{})
 	if unit.is_empty() or now<float(unit.get("ends_at",INF)):return false
-	if str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="WATCH_FILM" or str(actor.get("room_id",""))!=str(unit.get("room_id","")):return false
+	if str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="WATCH_FILM" or str(actor.get("room_id",""))!=str(unit.get("room_id","")) or str(actor.get("activity_media_id",""))!=str(unit.get("item_id","")):return false
 	var id:String=str(unit["item_id"])
 	var item:Dictionary=_lookup("films",id)
 	var expected:Dictionary=next_watch_unit(str(actor["id"]),item)
@@ -203,9 +210,11 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 	var progress:Dictionary=all.get(actor_id,{})
 	var season:int=int(unit["season"])
 	var episode:int=int(unit["episode"])
-	var row:Dictionary={"last_completed_season":season,"last_completed_episode":episode,"last_completed_at":now,"complete":false}
+	var previous:Dictionary=progress.get(id,{})
+	var row:Dictionary={"last_completed_season":season,"last_completed_episode":episode,"last_completed_at":now,"complete":false,"completed_units":int(previous.get("completed_units",0))+1,"total_seconds":float(previous.get("total_seconds",0))+float(unit["seconds"])}
 	if season==0:
 		row["complete"]=true
+		row["completed_count"]=int(previous.get("completed_count",1 if bool(previous.get("complete",false)) else 0))+1
 	else:
 		var latest_season:int=int(item.get("latest_season",0))
 		var latest_episode:int=int(item.get("latest_episode",0))
@@ -214,8 +223,8 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 			# Caught up to the source snapshot, not necessarily series finale.
 			row["next_season"]=season
 			row["next_episode"]=episode+1
-		elif episode==runtimes.size() and season<latest_season:
-			# A season array contains only a verified COMPLETE earlier season.
+		elif episode==runtimes.size() and season<latest_season and item.get("complete_seasons",[]).has(season):
+			# Explicitly verified complete earlier season.
 			row["next_season"]=season+1
 			row["next_episode"]=1
 		else:
