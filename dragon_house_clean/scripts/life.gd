@@ -48,6 +48,13 @@ const PAIR_VALIDATE_INTERVAL_SECONDS:=15.0
 const GROUP_JOIN_TIMEOUT_SECONDS:=60.0
 const GROUP_JOIN_MIN_REMAINING_SECONDS:=300.0
 const GROUP_JOIN_COOLDOWN_SECONDS:=120.0
+# Neutral balancing defaults, in simulation seconds, not wall time.
+const SOCIAL_FATIGUE_RATE:=1.0/10800.0
+const SOCIAL_RECOVERY_RATE:=1.0/7200.0
+const SOCIAL_SATISFACTION_RATE:=1.0/7200.0
+const SOCIAL_START_FATIGUE_LIMIT:=0.65
+const SOCIAL_LEAVE_FATIGUE_LIMIT:=0.90
+const SOCIAL_REST_COOLDOWN_SECONDS:=600.0
 
 const HUMAN_STATUS := {
 	"REST": "отдыхает", "SLEEP": "спит",
@@ -212,13 +219,60 @@ func daypart() -> String:
 		return "day"
 	return "evening"
 
+func _social_start_allowed(actor:Dictionary)->bool:
+	return clock>=float(actor.get("social_rest_until",0.0)) and float(actor.get("social_fatigue",0.0))<SOCIAL_START_FATIGUE_LIMIT
+
+func _social_attendance_start(row:Dictionary,id:String)->float:
+	var start:float=float(row.get("started_at",-1.0))
+	var late=row.get("late_members",{})
+	if typeof(late)==TYPE_DICTIONARY and late.has(id):start=maxf(start,float(late[id]))
+	return start
+
+# Snapshot-persisted per-participant cursor, independent of scheduler wake
+# frequency. No attendance is credited for assembly, waiting or a future tick.
+func _account_social_attendance(row:Dictionary,actor:Dictionary)->void:
+	if str(row.get("phase",""))!="active":return
+	var id:String=str(actor.get("id",""))
+	var start:float=_social_attendance_start(row,id)
+	var end:float=float(row.get("ends_at",-1.0))
+	if not is_finite(start) or not is_finite(end) or start<0.0 or end<=start:return
+	var until:float=minf(clock,end)
+	var ledger=row.get("accounted_at",{})
+	if typeof(ledger)!=TYPE_DICTIONARY:ledger={}
+	# Old active snapshots lack an attendance cursor; migrate conservatively
+	# from the saved clock rather than invent retrospective satisfaction.
+	var previous:float=float(ledger.get(id,maxf(start,minf(clock,end))))
+	if not is_finite(previous) or previous<start or previous>until:return
+	var elapsed:float=until-previous
+	ledger[id]=until
+	row["accounted_at"]=ledger
+	if elapsed<=0.0:return
+	var needs:Dictionary=actor.get("needs",{})
+	needs["social"]=clampf(float(needs.get("social",0.4))-elapsed*SOCIAL_SATISFACTION_RATE,0.0,1.0)
+	actor["needs"]=needs
+	actor["social_fatigue"]=clampf(float(actor.get("social_fatigue",0.0))+elapsed*SOCIAL_FATIGUE_RATE,0.0,1.0)
+
+func _apply_social_cooldown(row:Dictionary,actor:Dictionary)->void:
+	if str(row.get("phase",""))!="active":return
+	var start:float=_social_attendance_start(row,str(actor.get("id","")))
+	if start>=0.0 and clock>start:
+		actor["social_rest_until"]=maxf(float(actor.get("social_rest_until",0.0)),clock+SOCIAL_REST_COOLDOWN_SECONDS)
+
+func _social_should_leave(row:Dictionary,actor:Dictionary)->bool:
+	if str(row.get("phase",""))!="active" or clock>=float(row.get("ends_at",0.0)):return false
+	var start:float=_social_attendance_start(row,str(actor.get("id","")))
+	return start>=0.0 and clock-start>=PAIR_MIN_SECONDS and float(actor.get("social_fatigue",0.0))>=SOCIAL_LEAVE_FATIGUE_LIMIT
+
 func _advance_needs(actor: Dictionary, elapsed: float) -> void:
 	if elapsed <= 0.0:
 		return
 	var needs: Dictionary = actor.get("needs",{})
 	needs["rest"] = clampf(float(needs.get("rest",0.5)) + elapsed*0.00065,0,1)
 	needs["curiosity"] = clampf(float(needs.get("curiosity",0.4)) + elapsed*0.0004,0,1)
-	needs["social"] = clampf(float(needs.get("social",0.4)) + elapsed*0.00025,0,1)
+	var social_row:Dictionary=_pair_session(actor)
+	if str(social_row.get("phase",""))!="active":
+		needs["social"] = clampf(float(needs.get("social",0.4)) + elapsed*0.00025,0,1)
+		actor["social_fatigue"]=clampf(float(actor.get("social_fatigue",0.0))-elapsed*SOCIAL_RECOVERY_RATE,0.0,1.0)
 	if str(actor.get("phase","idle")) == "perform":
 		var intent := str(actor.get("intent",""))
 		if intent in ["REST","SLEEP"]:
@@ -334,6 +388,13 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores["SLEEP"] += 1.0
 		scores["TALK_PAIR"] -= 0.4
 		scores["TALK_GROUP"] -= 0.4
+	if _social_start_allowed(actor):
+		var fatigue:float=clampf(float(actor.get("social_fatigue",0.0)),0.0,1.0)
+		scores["TALK_PAIR"]-=fatigue*0.6
+		scores["TALK_GROUP"]-=fatigue*0.8
+	else:
+		scores.erase("TALK_PAIR")
+		scores.erase("TALK_GROUP")
 	if phase == "morning":
 		scores["GET_COFFEE"] += 0.6
 		scores["WORK_CREATE"] += 0.2
@@ -553,7 +614,14 @@ func _pair_members_valid(sid:String,row:Dictionary)->bool:
 		anchors.append(anchor)
 		var point:Array=actor["station_point"]
 		positions.append(Vector2(float(point[0]),float(point[1])))
-	return kind=="pair" or stations.group_geometry(room,positions)
+	if kind=="group":return stations.group_geometry(room,positions)
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		# Existing calibrated seats face front; do not claim that a sideways
+		# seated pair is facing one another. New pairs use standing claims.
+		for id in ids:
+			if world.residents[str(id)].has("station_contact"):return false
+		return stations.social_pair_geometry(room,positions)
+	return true
 
 # Remove only identified departures. A conflicting surviving geometry is
 # not repaired by teleportation or arbitrarily selecting a different group.
@@ -581,18 +649,24 @@ func _try_group_departures(sid:String,row:Dictionary,departures:Array,reason:Str
 	row["members"]=survivors
 	row["stations"]=claims
 	var late=row.get("late_members",{})
-	if typeof(late)==TYPE_DICTIONARY:
-		for id in departures:late.erase(str(id))
+	# Retain departed attendance metadata until after their final accounting.
 	for raw_id in original:
 		var id:String=str(raw_id)
 		if not departures.has(id):continue
 		var actor:Dictionary=world.residents.get(id,{})
 		if not actor.is_empty() and str(actor.get("social_session_id",""))==sid:
+			var departure_room:Dictionary=world.room_by_id(str(row.get("room_id","")))
+			if not departure_room.is_empty() and _social_member_valid(sid,row,id,departure_room):
+				_account_social_attendance(row,actor)
+			_apply_social_cooldown(row,actor)
 			actor.erase("social_session_id")
 			actor.erase("partner_id")
 			actor.erase("social_facing_xz")
 			if str(actor.get("intent",""))=="TALK_GROUP":_reset_pair_actor(actor)
 		world._append_journal("GROUP_LEFT",id,sid,str(row.get("room_id","")),"",{"reason":reason,"remaining":survivors})
+		if typeof(late)==TYPE_DICTIONARY:late.erase(id)
+		var ledger=row.get("accounted_at",{})
+		if typeof(ledger)==TYPE_DICTIONARY:ledger.erase(id)
 	_update_pair(world.residents[str(survivors[0])],true)
 	return true
 
@@ -644,6 +718,8 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 	for raw_id in members:
 		var actor:Dictionary=world.residents.get(str(raw_id),{})
 		if actor.is_empty() or str(actor.get("social_session_id",""))!=sid:continue
+		if completed:_account_social_attendance(row,actor)
+		_apply_social_cooldown(row,actor)
 		actor.erase("social_session_id")
 		actor.erase("partner_id")
 		actor.erase("social_facing_xz")
@@ -719,6 +795,9 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 			reschedule_all=true
 			row["started_at"]=clock
 			row["ends_at"]=clock+duration
+			var ledger:Dictionary={}
+			for id in row["members"]:ledger[id]=clock
+			row["accounted_at"]=ledger
 			var prefix:String="GROUP" if str(row.get("kind","pair"))=="group" else "PAIR"
 			world._append_journal(prefix+"_STARTED",str(actor["id"]),sid,"",str(row["room_id"]),{"members":row["members"],"ends_at":row["ends_at"]})
 	elif phase=="active":
@@ -734,6 +813,7 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 		_finish_pair(sid,false,"INVALID_PHASE")
 		return
 	if str(row["phase"])=="active":
+		for id in row["members"]:_account_social_attendance(row,world.residents[id])
 		_prune_pending_join(sid,row)
 		var center:=Vector2.ZERO
 		for id in row["members"]:
@@ -788,7 +868,7 @@ func _begin_group_session(actor:Dictionary,room:Dictionary)->bool:
 		if id==str(actor["id"]) or id=="MANJKA" or not bool(other.get("active",false)) or not bool(other.get("autonomy_enabled",true)):continue
 		if str(other.get("phase",""))!="idle" or float(other.get("until",0.0))>clock or other.has("social_session_id") or other.has("social_join_session_id") or other.has("partner_id"):continue
 		if other.has("cup_task_stage") or other.has("book_task_stage") or other.has("held_book") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):continue
-		if float(other.get("needs",{}).get("social",0.0))<0.25:continue
+		if float(other.get("needs",{}).get("social",0.0))<0.25 or not _social_start_allowed(other):continue
 		var route:Array=world.find_route(str(other.get("room_id","")),str(room["id"]),id)
 		if not route.is_empty():candidates.append({"actor":other,"route":route})
 	candidates.sort_custom(func(a,b):
@@ -867,7 +947,7 @@ func _may_join_group(actor:Dictionary)->bool:
 	if str(actor.get("phase",""))!="idle" or float(actor.get("until",0))>clock or float(actor.get("social_join_retry_at",0))>clock:return false
 	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","book_task_stage","held_book","reading_session","watch_session","listen_session"]:
 		if actor.has(key) and str(actor[key])!="":return false
-	return float(actor.get("needs",{}).get("social",0))>=0.35
+	return float(actor.get("needs",{}).get("social",0))>=0.35 and _social_start_allowed(actor)
 
 func _group_positions(row:Dictionary)->Array:
 	var points:Array=[]
@@ -1000,6 +1080,10 @@ func _update_pending_join(actor:Dictionary)->void:
 	if typeof(late)!=TYPE_DICTIONARY:late={}
 	late[id]=clock
 	row["late_members"]=late
+	var ledger=row.get("accounted_at",{})
+	if typeof(ledger)!=TYPE_DICTIONARY:ledger={}
+	ledger[id]=clock
+	row["accounted_at"]=ledger
 	actor.erase("social_join_session_id")
 	actor["social_session_id"]=sid
 	actor.erase("partner_id")
@@ -1022,7 +1106,7 @@ func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 			continue
 		if float(other.get("until", 0.0)) > clock:
 			continue
-		if float(other.get("needs", {}).get("social", 0.0)) < 0.15:
+		if float(other.get("needs", {}).get("social", 0.0)) < 0.15 or not _social_start_allowed(other):
 			continue
 		var route: Array = world.find_route(other.get("room_id", ""), destination["id"], id)
 		if route.is_empty():
@@ -1566,6 +1650,8 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	if actor.has("social_session_id") or str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:
 		_update_pair(actor)
+		var row:Dictionary=_pair_session(actor)
+		if _social_should_leave(row,actor):_cancel_pair_for(actor,"SOCIAL_FATIGUE")
 		return
 	if str(actor.get("phase","idle")) == "travel":
 		moving_ids[id] = true
