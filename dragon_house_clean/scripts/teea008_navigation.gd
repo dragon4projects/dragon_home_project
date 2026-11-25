@@ -378,6 +378,14 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 					if not clear(room,p):continue
 					if out.any(func(spot):return p.distance_to(spot["offset"])<0.73):continue
 					free.append(p)
+		# Hearth has narrow gaps between fixed furniture; sample them more
+		# closely without adding extra stations or encroaching on the aisle.
+		if str(room.get("type",""))=="common" and width==3:
+			for zi in range(-6,4):
+				for xi in range(-13,14):
+					var p:=Vector2(float(xi)*0.5,float(zi)*0.25)
+					if not clear(room,p) or out.any(func(spot):return p.distance_to(spot["offset"])<0.73):continue
+					if not free.has(p):free.append(p)
 		for p in _social_cluster(room,free,mini(6,cap-out.size())):
 			var module:int=clampi(floori((p.x+float(width)*2.4)/4.8),0,width-1)
 			_add_spot(out,{"id":"teea008_stand_%d_%d_%d" % [module,roundi(p.x*100),roundi(p.y*100)],"offset":p,"kind":"standing","furniture_id":"","pose_hint":"IDLE_S","approach_z":p.y},cap,0.73)
