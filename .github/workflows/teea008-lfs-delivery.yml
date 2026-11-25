@@ -1,0 +1,86 @@
+name: TEEA008 verified LFS delivery
+on:
+  push:
+    branches: [integration/teea008-lfs-delivery-20261125]
+    paths: [.github/workflows/teea008-lfs-delivery.yml]
+permissions:
+  contents: write
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+      PROJECT: dragon_house_clean
+      BANK: dragon_house_clean/assets/teea008_review/decor_bank
+      DATA: dragon_house_clean/data/teea008_review
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Verify owner-provided final archive and stage only candidate paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = integration/teea008-lfs-delivery-20261125
+          curl --fail --location --silent --show-error --retry 3 -o "$RUNNER_TEMP/TEEA008.zip" 'https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/15603761-5eb4-45e7-9453-25cbfdb3865f.zip'
+          python3 "$PROJECT/tools/stage_teea008_review.py" "$RUNNER_TEMP/TEEA008.zip" "$PROJECT"
+          test "$(find "$BANK" -name model.gltf | wc -l)" -eq 243
+          python3 - <<'PY'
+          import pathlib, hashlib, json, os
+          roots=[pathlib.Path(os.environ[x]) for x in ("BANK","DATA")]
+          files=sorted(p for root in roots for p in root.rglob("*") if p.is_file())
+          manifest={str(p):{"sha256":hashlib.file_digest(p.open("rb"),"sha256").hexdigest(),"bytes":p.stat().st_size} for p in files}
+          assert files and all(p.stat().st_size>0 for p in files)
+          dest=pathlib.Path(os.environ["PROJECT"])/"data/TEEA008_LFS_DELIVERY_SHA256.json"
+          dest.write_text(json.dumps({"schema":1,"source_archive_sha256":"170fef032089fb82bc25176c0bd61a3368eedda8508962405ea039c3edf428ba","files":manifest},indent=2)+"\n")
+          print("LFS_STAGE_MANIFEST",len(files),sum(x["bytes"] for x in manifest.values()))
+          PY
+      - name: Commit and upload candidate bank
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git lfs track "$BANK/**"
+          git add .gitattributes
+          git add -f "$BANK" "$DATA" "$PROJECT/data/TEEA008_LFS_DELIVERY_SHA256.json"
+          git commit -m 'assets: verified TEEA008 candidate bank via Git LFS'
+          git lfs ls-files --name-only | grep "^$BANK/" > "$RUNNER_TEMP/lfs-bank-paths.txt"
+          test "$(wc -l < "$RUNNER_TEMP/lfs-bank-paths.txt")" -eq "$(find "$BANK" -type f | wc -l)"
+          echo "LFS_BANK_POINTERS=$(wc -l < "$RUNNER_TEMP/lfs-bank-paths.txt")"
+          git lfs push origin HEAD
+          git push origin HEAD:"refs/heads/$GITHUB_REF_NAME"
+          echo "DELIVERY_COMMIT=$(git rev-parse HEAD)"
+      - name: Independent clean checkout and LFS download
+        uses: actions/checkout@v4
+        with:
+          ref: integration/teea008-lfs-delivery-20261125
+          path: lfs-verify
+          lfs: false
+          fetch-depth: 1
+          sparse-checkout: |
+            dragon_house_clean/assets/teea008_review
+            dragon_house_clean/data
+      - name: Verify every downloaded byte
+        shell: bash
+        working-directory: lfs-verify
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git config lfs.storage "$RUNNER_TEMP/teea008-independent-lfs"
+          git lfs fetch --include="$BANK/**" --exclude="" origin HEAD
+          git lfs checkout "$BANK"
+          python3 - <<'PY'
+          import pathlib,hashlib,json,os
+          m=json.loads((pathlib.Path(os.environ["PROJECT"])/"data/TEEA008_LFS_DELIVERY_SHA256.json").read_text())["files"]
+          for name,v in m.items():
+              p=pathlib.Path(name)
+              assert p.is_file() and p.stat().st_size==v["bytes"],name
+              assert hashlib.file_digest(p.open("rb"),"sha256").hexdigest()==v["sha256"],name
+          actual={str(p) for k in ("BANK","DATA") for p in pathlib.Path(os.environ[k]).rglob("*") if p.is_file()}
+          assert actual==set(m), (len(actual),len(m))
+          print("TEEA008_LFS_CLEAN_CHECKOUT_PASS",len(m),"files",sum(x["bytes"] for x in m.values()),"bytes")
+          PY
