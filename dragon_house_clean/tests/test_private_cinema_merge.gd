@@ -26,5 +26,28 @@ func _initialize()->void:
 	assert(not w._valid_cinema_record(r,false))
 	r["preview"]="user://unrelated.webp"
 	assert(not w._valid_cinema_record(r,false))
+	# A stale zero-duration record cannot change the identity or source of an existing timing.
+	var p:Dictionary=s.duplicate(true)
+	p["imdb_id"]="tt1000000"
+	p["episode_imdb_ids"]={"1:1":"tt1000001","1:2":"tt1000002","2:1":"tt1000003"}
+	p["episode_duration_sources"]={"2:1":{"source":"old verified"}}
+	var q:Dictionary=p.duplicate(true)
+	q["episode_imdb_ids"]["2:1"]="tt1000004"
+	assert(w._merge_cinema_record(p,q).is_empty())
+	q=p.duplicate(true)
+	q["imdb_id"]="tt9999999"
+	assert(w._merge_cinema_record(p,q).is_empty())
+	q=p.duplicate(true)
+	q["episode_runtime_seconds"]={"1":[100,200,500],"2":[0,400]}
+	q["complete_seasons"]=[]
+	q["episode_duration_sources"]={"2:1":{"source":"unverified incoming"}}
+	var expanded:Dictionary=w._merge_cinema_record(p,q)
+	assert(expanded["episode_runtime_seconds"]["2"]==[300,400])
+	assert(expanded["episode_duration_sources"]["2:1"]["source"]=="old verified")
+	assert(expanded["complete_seasons"].is_empty())
+	assert(w._valid_cinema_record(expanded,false))
+	q=p.duplicate(true)
+	q["episode_duration_sources"]=[]
+	assert(not w._valid_cinema_record(q,false))
 	print("PRIVATE_CINEMA_MERGE_PASS")
 	quit(0)
