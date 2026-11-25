@@ -42,6 +42,7 @@ var daypart_override: String=""
 var last_cleanup_wall_time := 0
 const PAIR_MIN_SECONDS:=3600.0
 const PAIR_MAX_SECONDS:=10800.0
+const GROUP_MAX_SECONDS:=14400.0
 const PAIR_TRAVEL_TIMEOUT_SECONDS:=300.0
 const PAIR_VALIDATE_INTERVAL_SECONDS:=15.0
 
@@ -93,10 +94,10 @@ func status(actor: Dictionary) -> String:
 		return "свободна" if not actor.has("cup_task_stage") else "ожидает чашку"
 	if actor.get("phase","idle") == "travel":
 		return str(TRAVEL_STATUS.get(intent, "идёт по делу"))
-	if intent=="TALK_PAIR":
+	if intent in ["TALK_PAIR","TALK_GROUP"]:
 		var pair_session:Dictionary=_pair_session(actor)
-		if str(pair_session.get("phase",""))=="active":return "разговаривает"
-		if str(pair_session.get("phase",""))=="assembling":return "ожидает собеседницу"
+		if str(pair_session.get("phase",""))=="active":return "общается в группе" if intent=="TALK_GROUP" else "разговаривает"
+		if str(pair_session.get("phase",""))=="assembling":return "ожидает остальных" if intent=="TALK_GROUP" else "ожидает собеседницу"
 		return "свободна"
 	var active_title:=_quoted_media_title(
 		actor,"activity_media_category","activity_media_id")
@@ -130,7 +131,7 @@ const INTENTS := {
 	"BROWSE_BOOK_CATALOG": ["library"],
 	"BROWSE_FILMS": ["cinema"], "BROWSE_AUDIO": ["music"],
 	"GET_COFFEE": ["common"], "WATCH_FIRE": ["common"],
-	"TALK_PAIR": ["common", "rest"], "LISTEN_MUSIC": ["music"],
+	"TALK_PAIR": ["common", "rest"], "TALK_GROUP": ["common", "rest"], "LISTEN_MUSIC": ["music"],
 	"WATCH_FILM": ["cinema"], "VIEW_ART": ["artifact"],
 	"PURPOSEFUL_EXPLORE": ["arrival", "corridor", "study", "library", "artifact", "rest"]
 }
@@ -312,6 +313,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		"GET_COFFEE": 0.65,
 		"WATCH_FIRE": 0.4 + (0.35 if phase == "evening" else 0.0),
 		"TALK_PAIR": 0.2 + social * 1.0,
+		"TALK_GROUP": 0.1 + social * 1.1,
 		"READ_BOOK": 0.3 + float(traits.get("reading", 0.3)) + curiosity * 0.3,
 		"BROWSE_BOOK_CATALOG": 0.28 + float(traits.get("reading",0.3))*0.65 + curiosity*0.40,
 		"BROWSE_FILMS": 0.25 + curiosity*0.35,
@@ -324,6 +326,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 	if phase == "night":
 		scores["SLEEP"] += 1.0
 		scores["TALK_PAIR"] -= 0.4
+		scores["TALK_GROUP"] -= 0.4
 	if phase == "morning":
 		scores["GET_COFFEE"] += 0.6
 		scores["WORK_CREATE"] += 0.2
@@ -408,7 +411,7 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 	var best_room: Dictionary = {}
 	for intent in scored:
 		var types: Array = INTENTS[intent]
-		if world.canonical_house_seed and intent in ["GET_COFFEE","TALK_PAIR","PURPOSEFUL_EXPLORE"]:
+		if world.canonical_house_seed and intent in ["GET_COFFEE","TALK_PAIR","TALK_GROUP","PURPOSEFUL_EXPLORE"]:
 			types=types.duplicate()
 			if not types.has("kitchen"):types.append("kitchen")
 			if intent=="GET_COFFEE" and not types.has("rest"):types.append("rest")
@@ -422,11 +425,12 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 					and intent in ["REST","SLEEP"]
 					and str(room.get("owner_id","")) != str(actor.get("id",""))):
 				continue
-			if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent!="TALK_PAIR":
+			if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent not in ["TALK_PAIR","TALK_GROUP"]:
 				if intent=="GET_COFFEE" and candidate_cups.candidates(actor,room).is_empty():
 					continue
 				if stations.single(world,actor,room,intent).is_empty():
 					continue
+			if intent=="TALK_GROUP" and stations.available_count(world,room)<3:continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
 				if str(room.get("type",""))=="private" and stations.single(world,actor,room,intent).is_empty():continue
 				candidates.append(room)
@@ -446,7 +450,7 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 		var repeat_bonus := minf(float(habits.get(intent, 0.0)), 0.3)
 		var path_cost: float = maxf(0.0, float(path.size() - 1) * 0.045)
 		var score: float = float(scored[intent]) + repeat_bonus - path_cost + rng.randf_range(-0.2, 0.2)
-		if intent == "TALK_PAIR" and rng.randf() > 0.15:
+		if intent in ["TALK_PAIR","TALK_GROUP"] and rng.randf() > (0.10 if intent=="TALK_GROUP" else 0.15):
 			# Reserve actual social sessions later; do not fake dialogue.
 			continue
 		if score > best_score:
@@ -494,22 +498,34 @@ func _create_pair_session(actor:Dictionary,partner:Dictionary,room:Dictionary,de
 
 func _pair_members_valid(sid:String,row:Dictionary)->bool:
 	var ids=row.get("members",[])
-	if typeof(ids)!=TYPE_ARRAY or ids.size()!=2 or str(ids[0])==str(ids[1]):return false
+	var kind:String=str(row.get("kind","pair"))
+	if kind not in ["pair","group"] or typeof(ids)!=TYPE_ARRAY:return false
+	if (kind=="pair" and ids.size()!=2) or (kind=="group" and (ids.size()<3 or ids.size()>6)):return false
+	var expected_intent:String="TALK_GROUP" if kind=="group" else "TALK_PAIR"
+	var seen:Dictionary={}
 	var claims=row.get("stations",{})
 	if typeof(claims)!=TYPE_DICTIONARY:return false
 	var room_id:String=str(row.get("room_id",""))
 	var room:Dictionary=world.room_by_id(room_id)
 	if room.is_empty() or str(room.get("privacy","public"))!="public":return false
 	var anchors:Array=[]
-	for i in range(2):
+	var positions:Array=[]
+	for i in range(ids.size()):
 		var id:String=str(ids[i])
+		if id=="" or seen.has(id):return false
+		seen[id]=true
 		var actor:Dictionary=world.residents.get(id,{})
 		if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or not world.is_accessible(room,id):return false
-		if str(actor.get("social_session_id",""))!=sid or str(actor.get("partner_id",""))!=str(ids[1-i]) or str(actor.get("intent",""))!="TALK_PAIR":return false
+		if str(actor.get("social_session_id",""))!=sid or str(actor.get("intent",""))!=expected_intent:return false
+		if kind=="pair" and str(actor.get("partner_id",""))!=str(ids[1-i]):return false
+		if kind=="group" and str(actor.get("partner_id",""))!="":return false
 		if str(actor.get("phase","")) not in ["travel","perform"] or str(actor.get("station_room_id",""))!=room_id:return false
 		var anchor:String=str(actor.get("station_anchor_id",""))
 		if anchor=="" or anchor!=str(claims.get(id,"")) or anchors.has(anchor):return false
 		anchors.append(anchor)
+		var station_point=actor.get("station_point",[])
+		if typeof(station_point)!=TYPE_ARRAY or station_point.size()!=2:return false
+		positions.append(Vector2(float(station_point[0]),float(station_point[1])))
 		if str(actor.get("phase",""))=="perform":
 			if str(actor.get("room_id",""))!=room_id:return false
 			var point=actor.get("station_point",[])
@@ -518,9 +534,10 @@ func _pair_members_valid(sid:String,row:Dictionary)->bool:
 			var actual:=Vector3(float(actor.get("x",0.0)),float(actor.get("visual_y",expected.y)),float(actor.get("z",0.0)))
 			if actual.distance_to(expected)>0.12:return false
 		if str(row.get("phase",""))=="active" and str(actor.get("phase",""))!="perform":return false
-	return true
+	return kind=="pair" or stations.group_geometry(room,positions)
 
 func _reset_pair_actor(actor:Dictionary)->void:
+	actor.erase("social_facing_xz")
 	stations.release(actor)
 	if world.canonical_house_seed and canonical_lifts._vertical(actor) and canonical_lifts._in_air(actor):
 		actor["social_cancelled_lift"]=true
@@ -556,10 +573,12 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 		actor.erase("partner_id")
 		if completed:
 			var habits:Dictionary=actor.get("habits",{})
-			habits["TALK_PAIR"]=minf(0.3,float(habits.get("TALK_PAIR",0.0))+0.012)
+			var habit:String="TALK_GROUP" if str(row.get("kind","pair"))=="group" else "TALK_PAIR"
+			habits[habit]=minf(0.3,float(habits.get(habit,0.0))+0.012)
 			actor["habits"]=habits
-		if str(actor.get("intent",""))=="TALK_PAIR":_reset_pair_actor(actor)
-	world._append_journal("PAIR_COMPLETED" if completed else "PAIR_CANCELLED","",sid,"",str(row.get("room_id","")),{"reason":reason,"members":members})
+		if str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:_reset_pair_actor(actor)
+	var prefix:String="GROUP" if str(row.get("kind","pair"))=="group" else "PAIR"
+	world._append_journal(prefix+("_COMPLETED" if completed else "_CANCELLED"),"",sid,"",str(row.get("room_id","")),{"reason":reason,"members":members})
 
 func _cancel_pair_for(actor:Dictionary,reason:String)->void:
 	var sid:String=str(actor.get("social_session_id",""))
@@ -568,7 +587,7 @@ func _cancel_pair_for(actor:Dictionary,reason:String)->void:
 	var partner_id:String=str(actor.get("partner_id",""))
 	actor.erase("social_session_id")
 	actor.erase("partner_id")
-	if str(actor.get("intent",""))=="TALK_PAIR":_reset_pair_actor(actor)
+	if str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:_reset_pair_actor(actor)
 	var partner:Dictionary=world.residents.get(partner_id,{})
 	if not partner.is_empty() and not partner.has("social_session_id") and str(partner.get("partner_id",""))==str(actor.get("id","")):
 		partner.erase("partner_id")
@@ -585,7 +604,8 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 		return
 	var phase:String=str(row.get("phase",""))
 	var duration:float=float(row.get("duration_seconds",0.0))
-	if not is_finite(duration) or duration<PAIR_MIN_SECONDS or duration>PAIR_MAX_SECONDS:
+	var max_duration:float=GROUP_MAX_SECONDS if str(row.get("kind","pair"))=="group" else PAIR_MAX_SECONDS
+	if not is_finite(duration) or duration<PAIR_MIN_SECONDS or duration>max_duration:
 		_finish_pair(sid,false,"INVALID_DURATION")
 		return
 	if phase=="assembling":
@@ -601,7 +621,8 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 			reschedule_all=true
 			row["started_at"]=clock
 			row["ends_at"]=clock+duration
-			world._append_journal("PAIR_STARTED",str(actor["id"]),sid,"",str(row["room_id"]),{"members":row["members"],"ends_at":row["ends_at"]})
+			var prefix:String="GROUP" if str(row.get("kind","pair"))=="group" else "PAIR"
+			world._append_journal(prefix+"_STARTED",str(actor["id"]),sid,"",str(row["room_id"]),{"members":row["members"],"ends_at":row["ends_at"]})
 	elif phase=="active":
 		var start:float=float(row.get("started_at",-1.0))
 		var end:float=float(row.get("ends_at",-1.0))
@@ -614,6 +635,16 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 	else:
 		_finish_pair(sid,false,"INVALID_PHASE")
 		return
+	if str(row["phase"])=="active":
+		var center:=Vector2.ZERO
+		for id in row["members"]:
+			var p:Array=world.residents[id]["station_point"]
+			center+=Vector2(float(p[0]),float(p[1]))
+		center/=float(row["members"].size())
+		for id in row["members"]:
+			var p:Array=world.residents[id]["station_point"]
+			var facing:Vector2=(center-Vector2(float(p[0]),float(p[1]))).normalized()
+			world.residents[id]["social_facing_xz"]=[facing.x,facing.y]
 	for id in row["members"]:
 		var member:Dictionary=world.residents[id]
 		if not reschedule_all and str(id)!=str(actor.get("id","")):continue
@@ -637,8 +668,91 @@ func reconcile_pair_sessions()->void:
 	for actor in world.residents.values():
 		if actor.has("social_session_id") and _pair_session(actor).is_empty():
 			_cancel_pair_for(actor,"RESTORE_ORPHAN_SESSION")
-		elif not actor.has("social_session_id") and (actor.has("partner_id") or str(actor.get("intent",""))=="TALK_PAIR"):
+		elif not actor.has("social_session_id") and (actor.has("partner_id") or str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]):
 			_cancel_pair_for(actor,"RESTORE_LEGACY_PAIR")
+
+# The same persistent table drives pair and group sessions; its legacy name
+# is retained so existing saved pair IDs and test fixtures remain compatible.
+func _begin_group_session(actor:Dictionary,room:Dictionary)->bool:
+	if actor.has("social_session_id") or room.is_empty() or str(room.get("privacy",""))!="public":return false
+	var candidates:Array=[]
+	for raw_id in world.residents:
+		var id:String=str(raw_id)
+		var other:Dictionary=world.residents[id]
+		if id==str(actor["id"]) or id=="MANJKA" or not bool(other.get("active",false)) or not bool(other.get("autonomy_enabled",true)):continue
+		if str(other.get("phase",""))!="idle" or float(other.get("until",0.0))>clock or other.has("social_session_id") or other.has("partner_id"):continue
+		if other.has("cup_task_stage") or other.has("book_task_stage") or other.has("held_book") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):continue
+		if float(other.get("needs",{}).get("social",0.0))<0.25:continue
+		var route:Array=world.find_route(str(other.get("room_id","")),str(room["id"]),id)
+		if not route.is_empty():candidates.append({"actor":other,"route":route})
+	candidates.sort_custom(func(a,b):
+		if a["route"].size()==b["route"].size():return str(a["actor"]["id"])<str(b["actor"]["id"])
+		return a["route"].size()<b["route"].size())
+	var own_route:Array=world.find_route(str(actor.get("room_id","")),str(room["id"]),str(actor["id"]))
+	if own_route.is_empty():return false
+	var limit:int=mini(6,candidates.size()+1)
+	for count in range(limit,2,-1):
+		var members:Array=[actor]
+		var routes:Dictionary={str(actor["id"]):own_route}
+		for i in range(count-1):
+			var other:Dictionary=candidates[i]["actor"]
+			members.append(other)
+			routes[str(other["id"])]=candidates[i]["route"]
+		var claims:Dictionary=stations.group_claims(world,members,room)
+		if claims.size()!=count:continue
+		var plans:Dictionary={}
+		var longest:int=0
+		for member in members:
+			var id:String=str(member["id"])
+			var claim:Dictionary=claims[id]
+			var route:Array=routes[id]
+			var points:Array=locomotion.build_waypoints(world,member,route,"TALK_GROUP",claim["offset"],float(claim.get("approach_z",0.95)))
+			if points.is_empty():break
+			plans[id]=points
+			longest=maxi(longest,route.size())
+		if plans.size()!=count:continue
+		# All claims and routes validated before any participant is changed.
+		var deadline:float=clock+PAIR_TRAVEL_TIMEOUT_SECONDS+float(longest)*15.0
+		for member in members:
+			var id:String=str(member["id"])
+			stations.release(member)
+			end_catalog_browse(member)
+			end_concrete_media(member)
+			member.erase("viewing_object_id")
+			stations.commit_claim(member,claims[id])
+			member["intent"]="TALK_GROUP"
+			member["phase"]="travel"
+			member["route"]=routes[id]
+			member["waypoints"]=plans[id]
+			member["waypoint_index"]=0
+			member["path_index"]=1
+			member["until"]=deadline
+			moving_ids[id]=true
+		_create_group_record(members,room,deadline)
+		steps+=1
+		return true
+	return false
+
+func _create_group_record(members:Array,room:Dictionary,deadline:float)->String:
+	var sessions:Dictionary=_pair_sessions()
+	var serial:int=int(world.runtime_state.get("pair_session_serial",0))+1
+	var sid:String="GROUP_%d"%serial
+	while sessions.has(sid):
+		serial+=1
+		sid="GROUP_%d"%serial
+	world.runtime_state["pair_session_serial"]=serial
+	var ids:Array=[]
+	var claims:Dictionary={}
+	for member in members:
+		var id:String=str(member["id"])
+		ids.append(id)
+		claims[id]=str(member.get("station_anchor_id",""))
+		member["social_session_id"]=sid
+		member.erase("partner_id")
+	sessions[sid]={"id":sid,"kind":"group","members":ids,"room_id":str(room["id"]),"phase":"assembling","arrival_deadline":deadline,"duration_seconds":rng.randf_range(PAIR_MIN_SECONDS,GROUP_MAX_SECONDS),"started_at":-1.0,"ends_at":-1.0,"stations":claims}
+	for member in members:_schedule_actor(member,"GROUP_ASSEMBLING")
+	world._append_journal("GROUP_RESERVED",str(ids[0]),sid,"",str(room["id"]),{"members":ids})
+	return sid
 
 func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 	var best: Dictionary = {}
@@ -807,6 +921,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		return
 	var room: Dictionary = task["room"]
 	var intent: String = str(task["intent"])
+	if intent=="TALK_GROUP":
+		if not _begin_group_session(actor,room):actor["until"]=clock+15.0
+		return
 	if candidate_navigation!=null and intent=="READ_BOOK":
 		_begin_book_task(actor,room)
 		return
@@ -1117,7 +1234,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 			var actor_id := str(actor.get("id",""))
 			_advance_needs(actor,life_scheduler.consume_elapsed(actor_id,clock))
 			actor["phase"] = "perform"
-			if str(actor.get("intent",""))=="TALK_PAIR":
+			if str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:
 				moving_ids.erase(actor_id)
 				_update_pair(actor)
 				return
@@ -1183,7 +1300,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	var elapsed := life_scheduler.consume_elapsed(id,clock)
 	_advance_needs(actor,elapsed)
-	if actor.has("social_session_id") or str(actor.get("intent",""))=="TALK_PAIR":
+	if actor.has("social_session_id") or str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:
 		_update_pair(actor)
 		return
 	if str(actor.get("phase","idle")) == "travel":
