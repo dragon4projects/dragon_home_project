@@ -835,10 +835,11 @@ func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
 	# Only identical stable IDs and types enter this function. Preserve
 	# positive old timings against unknown/zero fields in recovered input.
 	var row:Dictionary=incoming.duplicate(true)
+	if not row.has("imdb_id") and previous.has("imdb_id"):row["imdb_id"]=previous["imdb_id"]
 	if str(row.get("media_type",""))=="film":
 		if _positive_catalog_seconds(previous.get("runtime_seconds",0)) and not _positive_catalog_seconds(row.get("runtime_seconds",0)):
 			row["runtime_seconds"]=previous["runtime_seconds"]
-			for field in ["duration_status","duration_source","duration_evidence","runtime_edition"]:
+			for field in ["duration_status","duration_source","duration_evidence","runtime_edition","imdb_id","imdb_release_year"]:
 				if previous.has(field):row[field]=previous[field]
 		return row
 	var ps:int=int(previous.get("latest_season",0))
@@ -863,6 +864,9 @@ func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
 	for s in previous.get("complete_seasons",[]):
 		if not complete.has(s):complete.append(s)
 	row["complete_seasons"]=complete
+	var old_ids:Dictionary=previous.get("episode_imdb_ids",{}).duplicate(true)
+	old_ids.merge(row.get("episode_imdb_ids",{}),true)
+	if not old_ids.is_empty():row["episode_imdb_ids"]=old_ids
 	var old_sources:Dictionary=previous.get("episode_duration_sources",{}).duplicate(true)
 	old_sources.merge(row.get("episode_duration_sources",{}),true)
 	if not old_sources.is_empty():row["episode_duration_sources"]=old_sources

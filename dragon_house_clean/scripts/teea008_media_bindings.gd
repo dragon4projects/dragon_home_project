@@ -51,7 +51,7 @@ func assign(room_id:String,surface_id:String,category:String,item_id:String)->bo
 			# A source-backed film may be shown as a static catalog preview.
 			# This does not grant WATCH_FILM eligibility or local playback.
 			var preview_path:String=str(item.get("preview",item.get("preview_path","")))
-			var approved_path:bool=preview_path.begins_with("res://assets/media/previews/") or preview_path.begins_with("user://filmix_previews/")
+			var approved_path:bool=preview_path.begins_with("res://assets/media/previews/") or preview_path.begins_with("user://filmix_previews/") or preview_path.begins_with("user://filmix_bundle_previews/")
 			if not approved_path or not (ResourceLoader.exists(preview_path,"Texture2D") or FileAccess.file_exists(preview_path)):
 				return false
 	var bindings:Dictionary=world.runtime_state.get("teea008_room_media_bindings",{})
