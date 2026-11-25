@@ -67,22 +67,22 @@ func _parse_document(raw: String, source: String) -> Dictionary:
 		last_error = source + ": events must be an array"
 		return {}
 	var seen: Dictionary = {}
-	var max_seq: int = 0
+	var expected_seq: int = 0
 	for raw_event in doc.get("events",[]):
 		if typeof(raw_event) != TYPE_DICTIONARY:
 			last_error = source + ": invalid event row"
 			return {}
 		var event: Dictionary = raw_event
 		var event_id: String = str(event.get("event_id",""))
-		var seq: int = int(event.get("seq",0))
-		if event_id == "" or seq <= 0 or seen.has(event_id):
-			last_error = source + ": duplicate/invalid event identity"
+		var raw_seq = event.get("seq",0)
+		expected_seq += 1
+		if event_id == "" or seen.has(event_id) or typeof(raw_seq) not in [TYPE_INT,TYPE_FLOAT] or float(raw_seq) != float(expected_seq):
+			last_error = source + ": duplicate/invalid event identity or non-contiguous revision"
 			return {}
 		seen[event_id] = true
-		max_seq = maxi(max_seq,seq)
-	var declared: int = int(doc.get("sequence",max_seq))
-	if declared < max_seq:
-		last_error = source + ": sequence behind event stream"
+	var declared = doc.get("sequence",-1)
+	if typeof(declared) not in [TYPE_INT,TYPE_FLOAT] or float(declared) != float(expected_seq):
+		last_error = source + ": declared revision does not match event stream"
 		return {}
 	return doc
 
@@ -149,19 +149,36 @@ func _persist(candidate_events: Array, candidate_sequence: int) -> bool:
 	var scratch_abs: String = ProjectSettings.globalize_path(scratch)
 	var backup: String = path + ".bak"
 	var backup_abs: String = ProjectSettings.globalize_path(backup)
-	# If primary exists and was readable at setup, rotate it. If setup recovered
-	# from backup, primary was already quarantined as .corrupt.
+	# Revalidate at commit time: a second torn write or external damage
+	# after setup must not replace the last good backup with corrupt data.
 	if FileAccess.file_exists(path):
-		if FileAccess.file_exists(backup):
-			DirAccess.remove_absolute(backup_abs)
-		if DirAccess.rename_absolute(primary_abs,backup_abs) != OK:
-			DirAccess.remove_absolute(scratch_abs)
-			last_error = "Cannot rotate event-store backup"
-			status = "WRITE_FAILED"
-			return false
+		var previous := _parse_document(FileAccess.get_file_as_string(path),path)
+		if not previous.is_empty():
+			if int(previous["sequence"]) != sequence:
+				last_error = "Event-store primary changed since load"
+				status = "WRITE_FAILED"
+				return false
+			if FileAccess.file_exists(backup) and DirAccess.remove_absolute(backup_abs) != OK:
+				last_error = "Cannot remove old event-store backup"
+				status = "WRITE_FAILED"
+				return false
+			if DirAccess.rename_absolute(primary_abs,backup_abs) != OK:
+				last_error = "Cannot rotate event-store backup"
+				status = "WRITE_FAILED"
+				return false
+		else:
+			# Preserve the backup and quarantine the unreadable generation.
+			var corrupt_abs := ProjectSettings.globalize_path(path+".corrupt")
+			if FileAccess.file_exists(path+".corrupt") and DirAccess.remove_absolute(corrupt_abs) != OK:
+				last_error = "Cannot replace corrupt event-store evidence"
+				status = "WRITE_FAILED"
+				return false
+			if DirAccess.rename_absolute(primary_abs,corrupt_abs) != OK:
+				last_error = "Cannot quarantine corrupt event-store primary"
+				status = "WRITE_FAILED"
+				return false
 	if DirAccess.rename_absolute(scratch_abs,primary_abs) != OK:
-		if FileAccess.file_exists(backup) and not FileAccess.file_exists(path):
-			DirAccess.rename_absolute(backup_abs,primary_abs)
+		# Leave the backup independent and readable; setup can recover it.
 		last_error = "Cannot commit event store"
 		status = "WRITE_FAILED"
 		return false
