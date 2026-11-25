@@ -45,6 +45,9 @@ const PAIR_MAX_SECONDS:=10800.0
 const GROUP_MAX_SECONDS:=14400.0
 const PAIR_TRAVEL_TIMEOUT_SECONDS:=300.0
 const PAIR_VALIDATE_INTERVAL_SECONDS:=15.0
+const GROUP_JOIN_TIMEOUT_SECONDS:=60.0
+const GROUP_JOIN_MIN_REMAINING_SECONDS:=300.0
+const GROUP_JOIN_COOLDOWN_SECONDS:=120.0
 
 const HUMAN_STATUS := {
 	"REST": "отдыхает", "SLEEP": "спит",
@@ -92,6 +95,7 @@ func status(actor: Dictionary) -> String:
 				return "пьёт "+str(content["display_name"])
 			return "держит "+str(cup.get("display_name","чашку"))
 		return "свободна" if not actor.has("cup_task_stage") else "ожидает чашку"
+	if actor.has("social_join_session_id"):return "подходит к разговору"
 	if actor.get("phase","idle") == "travel":
 		return str(TRAVEL_STATUS.get(intent, "идёт по делу"))
 	if intent in ["TALK_PAIR","TALK_GROUP"]:
@@ -576,6 +580,9 @@ func _try_group_departures(sid:String,row:Dictionary,departures:Array,reason:Str
 	# Keep the shared timeline unchanged. Leaving is not full completion.
 	row["members"]=survivors
 	row["stations"]=claims
+	var late=row.get("late_members",{})
+	if typeof(late)==TYPE_DICTIONARY:
+		for id in departures:late.erase(str(id))
 	for raw_id in original:
 		var id:String=str(raw_id)
 		if not departures.has(id):continue
@@ -628,6 +635,10 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 	if row.is_empty():return
 	# Erase first: subsequent wakes cannot complete or train twice.
 	sessions.erase(sid)
+	var pending=row.get("pending_join",{})
+	if typeof(pending)==TYPE_DICTIONARY and not pending.is_empty():
+		var approaching:Dictionary=world.residents.get(str(pending.get("actor_id","")),{})
+		if not approaching.is_empty() and str(approaching.get("social_join_session_id",""))==sid:_cancel_pending_join(approaching,"SESSION_ENDED")
 	var members=row.get("members",[])
 	if typeof(members)!=TYPE_ARRAY:return
 	for raw_id in members:
@@ -636,16 +647,24 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 		actor.erase("social_session_id")
 		actor.erase("partner_id")
 		actor.erase("social_facing_xz")
-		if completed:
+		var late=row.get("late_members",{})
+		if completed and typeof(late)==TYPE_DICTIONARY and not late.has(str(raw_id)):
 			var habits:Dictionary=actor.get("habits",{})
 			var habit:String="TALK_GROUP" if str(row.get("kind","pair"))=="group" else "TALK_PAIR"
 			habits[habit]=minf(0.3,float(habits.get(habit,0.0))+0.012)
 			actor["habits"]=habits
+		elif completed and typeof(late)==TYPE_DICTIONARY and late.has(str(raw_id)):
+			var joined:float=float(late[str(raw_id)])
+			var attended:float=maxf(0.0,float(row.get("ends_at",clock))-joined)
+			world._append_journal("GROUP_PARTIAL_ATTENDANCE",str(raw_id),sid,"",str(row.get("room_id","")),{"seconds":attended})
 		if str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:_reset_pair_actor(actor)
 	var prefix:String="GROUP" if str(row.get("kind","pair"))=="group" else "PAIR"
 	world._append_journal(prefix+("_COMPLETED" if completed else "_CANCELLED"),"",sid,"",str(row.get("room_id","")),{"reason":reason,"members":members})
 
 func _cancel_pair_for(actor:Dictionary,reason:String)->void:
+	if actor.has("social_join_session_id"):
+		_cancel_pending_join(actor,reason)
+		return
 	var sid:String=str(actor.get("social_session_id",""))
 	var row:Dictionary=_pair_session(actor)
 	if not row.is_empty():
@@ -748,7 +767,15 @@ func reconcile_pair_sessions()->void:
 				_finish_pair(sid,false,"RESTORE_INVALID_SESSION")
 			continue
 		_update_pair(world.residents[str(row["members"][0])],true)
+		if sessions.has(sid):
+			var pending=row.get("pending_join",{})
+			if typeof(pending)==TYPE_DICTIONARY and not pending.is_empty():
+				var approaching:Dictionary=world.residents.get(str(pending.get("actor_id","")),{})
+				if approaching.is_empty() or str(approaching.get("social_join_session_id",""))!=sid:row.erase("pending_join")
 	for actor in world.residents.values():
+		if actor.has("social_join_session_id"):
+			_update_pending_join(actor)
+			continue
 		if actor.has("social_session_id") and _pair_session(actor).is_empty():
 			_cancel_pair_for(actor,"RESTORE_ORPHAN_SESSION")
 		elif not actor.has("social_session_id") and (actor.has("partner_id") or str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]):
@@ -763,7 +790,7 @@ func _begin_group_session(actor:Dictionary,room:Dictionary)->bool:
 		var id:String=str(raw_id)
 		var other:Dictionary=world.residents[id]
 		if id==str(actor["id"]) or id=="MANJKA" or not bool(other.get("active",false)) or not bool(other.get("autonomy_enabled",true)):continue
-		if str(other.get("phase",""))!="idle" or float(other.get("until",0.0))>clock or other.has("social_session_id") or other.has("partner_id"):continue
+		if str(other.get("phase",""))!="idle" or float(other.get("until",0.0))>clock or other.has("social_session_id") or other.has("social_join_session_id") or other.has("partner_id"):continue
 		if other.has("cup_task_stage") or other.has("book_task_stage") or other.has("held_book") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):continue
 		if float(other.get("needs",{}).get("social",0.0))<0.25:continue
 		var route:Array=world.find_route(str(other.get("room_id","")),str(room["id"]),id)
@@ -837,6 +864,134 @@ func _create_group_record(members:Array,room:Dictionary,deadline:float)->String:
 	world._append_journal("GROUP_RESERVED",str(ids[0]),sid,"",str(room["id"]),{"members":ids})
 	return sid
 
+# Late admission is a separate pending claim, not an active member. A group
+# remains active while the newcomer walks, and its original end is immutable.
+func _may_join_group(actor:Dictionary)->bool:
+	if str(actor.get("id","")) in ["","MANJKA"] or not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):return false
+	if str(actor.get("phase",""))!="idle" or float(actor.get("until",0))>clock or float(actor.get("social_join_retry_at",0))>clock:return false
+	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","book_task_stage","held_book","reading_session","watch_session","listen_session"]:
+		if actor.has(key) and str(actor[key])!="":return false
+	return float(actor.get("needs",{}).get("social",0))>=0.35
+
+func _group_positions(row:Dictionary)->Array:
+	var points:Array=[]
+	for id in row["members"]:
+		var p:Array=world.residents[id]["station_point"]
+		points.append(Vector2(float(p[0]),float(p[1])))
+	return points
+
+func _try_nearby_group(actor:Dictionary)->bool:
+	if not _may_join_group(actor):return false
+	for sid in _pair_sessions().keys():
+		var row=_pair_sessions()[sid]
+		if typeof(row)!=TYPE_DICTIONARY or str(row.get("room_id",""))!=str(actor.get("room_id","")):continue
+		if request_group_join(str(actor["id"]),str(sid)):return true
+	actor["social_join_retry_at"]=clock+GROUP_JOIN_COOLDOWN_SECONDS
+	return false
+
+func request_group_join(actor_id:String,sid:String)->bool:
+	var actor:Dictionary=world.residents.get(actor_id,{})
+	if not _may_join_group(actor):return false
+	var raw=_pair_sessions().get(sid,{})
+	if typeof(raw)!=TYPE_DICTIONARY:return false
+	var row:Dictionary=raw
+	if str(row.get("kind",""))!="group" or str(row.get("phase",""))!="active" or float(row.get("ends_at",0))-clock<GROUP_JOIN_MIN_REMAINING_SECONDS:return false
+	if not _pair_members_valid(sid,row) or row["members"].size()>=6 or row.has("pending_join"):return false
+	var room:Dictionary=world.room_by_id(str(row["room_id"]))
+	if str(actor.get("room_id",""))!=str(room["id"]):return false
+	var claim:Dictionary=stations.group_join_claim(world,actor,room,_group_positions(row))
+	if claim.is_empty():return false
+	var route:Array=world.find_route(str(actor["room_id"]),str(room["id"]),actor_id)
+	if route.is_empty():return false
+	var points:Array=locomotion.build_waypoints(world,actor,route,"TALK_GROUP",claim["offset"],float(claim.get("approach_z",0.95)))
+	if points.is_empty():return false
+	var deadline:float=minf(clock+GROUP_JOIN_TIMEOUT_SECONDS,float(row["ends_at"]))
+	# Only now commit the pending claim; existing members are untouched.
+	stations.release(actor)
+	end_catalog_browse(actor)
+	end_concrete_media(actor)
+	actor.erase("viewing_object_id")
+	stations.commit_claim(actor,claim)
+	row["pending_join"]={"actor_id":actor_id,"anchor":str(claim["anchor_id"]),"deadline":deadline}
+	actor["social_join_session_id"]=sid
+	actor["intent"]="TALK_GROUP"
+	actor["phase"]="travel"
+	actor["route"]=route
+	actor["waypoints"]=points
+	actor["waypoint_index"]=0
+	actor["path_index"]=1
+	actor["until"]=deadline
+	moving_ids[actor_id]=true
+	_schedule_actor(actor,"GROUP_JOIN_APPROACH")
+	world._append_journal("GROUP_JOIN_RESERVED",actor_id,sid,"",str(room["id"]))
+	return true
+
+func _cancel_pending_join(actor:Dictionary,reason:String)->void:
+	var sid:String=str(actor.get("social_join_session_id",""))
+	var id:String=str(actor.get("id",""))
+	var raw=_pair_sessions().get(sid,{})
+	if typeof(raw)==TYPE_DICTIONARY:
+		var pending=raw.get("pending_join",{})
+		if typeof(pending)==TYPE_DICTIONARY and str(pending.get("actor_id",""))==id:raw.erase("pending_join")
+	actor.erase("social_join_session_id")
+	actor["social_join_retry_at"]=clock+GROUP_JOIN_COOLDOWN_SECONDS
+	if not actor.has("social_session_id") and str(actor.get("intent",""))=="TALK_GROUP":_reset_pair_actor(actor)
+	world._append_journal("GROUP_JOIN_CANCELLED",id,sid,"","",{"reason":reason})
+
+func _update_pending_join(actor:Dictionary)->void:
+	var sid:String=str(actor.get("social_join_session_id",""))
+	var id:String=str(actor.get("id",""))
+	var row=_pair_sessions().get(sid,{})
+	if typeof(row)!=TYPE_DICTIONARY or str(row.get("kind",""))!="group" or str(row.get("phase",""))!="active" or not _pair_members_valid(sid,row):
+		_cancel_pending_join(actor,"SESSION_UNAVAILABLE")
+		return
+	var pending=row.get("pending_join",{})
+	if typeof(pending)!=TYPE_DICTIONARY or str(pending.get("actor_id",""))!=id or actor.has("social_session_id") or row["members"].size()>=6 or not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or clock>=float(pending.get("deadline",0)) or clock>=float(row.get("ends_at",0)):
+		_cancel_pending_join(actor,"JOIN_EXPIRED_OR_INVALID")
+		return
+	var room:Dictionary=world.room_by_id(str(row["room_id"]))
+	var point=actor.get("station_point",[])
+	var anchor:String=str(actor.get("station_anchor_id",""))
+	var slot:int=int(actor.get("station_slot",-1))
+	var spots:Array=stations.layout_for_world(world,room)
+	var used:Dictionary=stations.used_slots(world,str(room["id"]),[id])
+	if not world.is_accessible(room,id) or str(actor.get("room_id",""))!=str(room["id"]) or str(actor.get("station_room_id",""))!=str(room["id"]) or anchor=="" or anchor!=str(pending.get("anchor","")) or slot<0 or slot>=spots.size() or used.has(slot) or str(spots[slot].get("id",""))!=anchor or typeof(point)!=TYPE_ARRAY or point.size()!=2:
+		_cancel_pending_join(actor,"JOIN_STATION_INVALID")
+		return
+	var p:=Vector2(float(point[0]),float(point[1]))
+	var positions:Array=_group_positions(row)
+	positions.append(p)
+	if not p.is_finite() or p.distance_to(spots[slot]["offset"])>0.01 or not stations.group_geometry(room,positions):
+		_cancel_pending_join(actor,"JOIN_GEOMETRY_INVALID")
+		return
+	if str(actor.get("phase",""))=="travel":
+		var route:Array=actor.get("waypoints",[])
+		if route.is_empty() or int(actor.get("waypoint_index",0))>=route.size():
+			_cancel_pending_join(actor,"JOIN_ROUTE_INVALID")
+			return
+		moving_ids[id]=true
+		life_scheduler.schedule_at(id,minf(clock+2.0,float(pending["deadline"])),"GROUP_JOIN_APPROACH")
+		return
+	var expected:Vector3=world.room_local_to_world(room,p)
+	var actual:=Vector3(float(actor.get("x",0)),float(actor.get("visual_y",expected.y)),float(actor.get("z",0)))
+	if str(actor.get("phase",""))!="perform" or not actual.is_finite() or actual.distance_to(expected)>0.12:
+		_cancel_pending_join(actor,"JOIN_NOT_ARRIVED")
+		return
+	row.erase("pending_join")
+	row["members"].append(id)
+	row["stations"][id]=anchor
+	var late=row.get("late_members",{})
+	if typeof(late)!=TYPE_DICTIONARY:late={}
+	late[id]=clock
+	row["late_members"]=late
+	actor.erase("social_join_session_id")
+	actor["social_session_id"]=sid
+	actor.erase("partner_id")
+	actor["until"]=float(row["ends_at"])
+	moving_ids.erase(id)
+	world._append_journal("GROUP_JOINED",id,sid,"",str(room["id"]),{"joined_at":clock})
+	_update_pair(actor,true)
+
 func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 	var best: Dictionary = {}
 	var best_cost := 99999
@@ -845,7 +1000,7 @@ func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 		if id == actor["id"] or id == "MANJKA" or not other.get("active", false) or \
 				not bool(other.get("autonomy_enabled",true)):
 			continue
-		if other.get("partner_id", "") != "" or other.has("social_session_id") or other.get("phase", "idle") != "idle":
+		if other.get("partner_id", "") != "" or other.has("social_session_id") or other.has("social_join_session_id") or other.get("phase", "idle") != "idle":
 			continue
 		if other.get("held_book","") != "" or other.has("book_task_stage") or other.has("cup_task_stage") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):
 			continue
@@ -979,7 +1134,7 @@ func reconcile_concrete_media() -> int:
 	return fixed
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
-	if actor.has("social_session_id"):return
+	if actor.has("social_session_id") or actor.has("social_join_session_id"):return
 	if candidate_navigation!=null:
 		if str(actor.get("cup_task_stage","")) in ["hold","serve"] and str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==str(actor["id"]):
 			return
@@ -1233,7 +1388,9 @@ func _move(actor: Dictionary, delta: float) -> void:
 	var idx: int = int(actor.get("waypoint_index", 0))
 	if idx >= waypoints.size():
 		actor["phase"] = "perform"
-		if str(actor.get("intent","")) in ["WATCH_FILM","LISTEN_MUSIC"]:
+		if actor.has("social_join_session_id"):
+			_update_pending_join(actor)
+		elif str(actor.get("intent","")) in ["WATCH_FILM","LISTEN_MUSIC"]:
 			_start_cinema_commitment(actor)
 		return
 	var point: Dictionary = waypoints[idx]
@@ -1318,6 +1475,10 @@ func _move(actor: Dictionary, delta: float) -> void:
 			var actor_id := str(actor.get("id",""))
 			_advance_needs(actor,life_scheduler.consume_elapsed(actor_id,clock))
 			actor["phase"] = "perform"
+			if actor.has("social_join_session_id"):
+				moving_ids.erase(actor_id)
+				_update_pending_join(actor)
+				return
 			if str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:
 				moving_ids.erase(actor_id)
 				_update_pair(actor)
@@ -1384,6 +1545,9 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	var elapsed := life_scheduler.consume_elapsed(id,clock)
 	_advance_needs(actor,elapsed)
+	if actor.has("social_join_session_id"):
+		_update_pending_join(actor)
+		return
 	if actor.has("social_session_id") or str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:
 		_update_pair(actor)
 		return
@@ -1465,6 +1629,10 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 	if str(actor.get("intent",""))=="VIEW_ART" and str(actor.get("phase",""))=="perform":
 		var viewing_id:String=str(actor.get("viewing_object_id",""))
 		if viewing_id!="":world.record_object_view(viewing_id,id)
+	# Only a due, uncommitted resident in the same room may opt in.
+	# No per-frame all-pairs encounter scan and no interrupted media.
+	if _may_join_group(actor) and rng.randf()<0.18:
+		if _try_nearby_group(actor):return
 	var started := Time.get_ticks_usec()
 	var task := choose_intent(actor)
 	_assign(actor,task)
