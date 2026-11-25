@@ -1809,11 +1809,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_174984.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Ричард Блейк",
-      "runtime_seconds": 0,
-      "preview_sha256": "f88808c983706565c4089e81f9eff35045e13616b4bf2f5f6ceeaf2aab6a9e76"
+      "runtime_seconds": 7680,
+      "preview_sha256": "f88808c983706565c4089e81f9eff35045e13616b4bf2f5f6ceeaf2aab6a9e76",
+      "imdb_id": "tt4847946",
+      "duration_source": "https://www.imdb.com/title/tt4847946/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt4847946/",
+        "runtime_minutes": 128,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_174561",
@@ -1907,11 +1917,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_174644.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Питер Салливан",
-      "runtime_seconds": 0,
-      "preview_sha256": "e637d3031e8ef2f6a3287953cf05f883400c2d8061da53cef0ee20342db1b107"
+      "runtime_seconds": 5220,
+      "preview_sha256": "e637d3031e8ef2f6a3287953cf05f883400c2d8061da53cef0ee20342db1b107",
+      "imdb_id": "tt32368345",
+      "duration_source": "https://www.imdb.com/title/tt32368345/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt32368345/",
+        "runtime_minutes": 87,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_174441",
@@ -1927,11 +1947,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_174441.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Расти Кандифф",
-      "runtime_seconds": 0,
-      "preview_sha256": "3872197e3cc23442fd5260954f99d002a849d7d77b9b7b4323458f6155659ee6"
+      "runtime_seconds": 6000,
+      "preview_sha256": "3872197e3cc23442fd5260954f99d002a849d7d77b9b7b4323458f6155659ee6",
+      "imdb_id": "tt20502488",
+      "duration_source": "https://www.imdb.com/title/tt20502488/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt20502488/",
+        "runtime_minutes": 100,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established; BBFC lists 105m53s, alternate reference not substituted for IMDb 100 min."
+      }
     },
     {
       "id": "FILMIX_121502",
@@ -2131,11 +2161,22 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_172629.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Лиз В. Гарсиа",
-      "runtime_seconds": 0,
-      "preview_sha256": "ea084bb6a984cef6e74b6c21cc8ce5f30ee252776edb554556fe78183806831a"
+      "runtime_seconds": 6600,
+      "preview_sha256": "ea084bb6a984cef6e74b6c21cc8ce5f30ee252776edb554556fe78183806831a",
+      "imdb_id": "tt21469794",
+      "duration_source": "https://www.imdb.com/title/tt21469794/",
+      "duration_evidence": {
+        "source": "IMDb search listing corroborated by Box Office Mojo (IMDb)",
+        "source_url": "https://www.boxofficemojo.com/title/tt21469794/credits/",
+        "runtime_minutes": 110,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established",
+        "additional_source": "https://www.imdb.com/find/?q=Space+Cadet+2024"
+      }
     },
     {
       "id": "FILMIX_167915",
@@ -2272,11 +2313,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_165455.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Шэйн Дэкс Тейлор",
-      "runtime_seconds": 0,
-      "preview_sha256": "fc8cfed2bc4b197fb671b1a4aa592c67fa0b866c108654a19c18599a6371631f"
+      "runtime_seconds": 5580,
+      "preview_sha256": "fc8cfed2bc4b197fb671b1a4aa592c67fa0b866c108654a19c18599a6371631f",
+      "imdb_id": "tt13400336",
+      "duration_source": "https://www.imdb.com/title/tt13400336/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt13400336/",
+        "runtime_minutes": 93,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_170685",
@@ -2339,11 +2390,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_24824.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Томас Миньоне",
-      "runtime_seconds": 0,
-      "preview_sha256": "f6ca9a6162dcee943faf4466d33964e8026d3fa4683b09b3cfba706dbd1b6db2"
+      "runtime_seconds": 6120,
+      "preview_sha256": "f6ca9a6162dcee943faf4466d33964e8026d3fa4683b09b3cfba706dbd1b6db2",
+      "imdb_id": "tt0493439",
+      "duration_source": "https://www.imdb.com/title/tt0493439/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt0493439/",
+        "runtime_minutes": 102,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_164230",
@@ -2359,11 +2420,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_164230.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Тони Шина",
-      "runtime_seconds": 0,
-      "preview_sha256": "4b7e60944b14a312010a964b3bd13427e07f24b70b436cc245e3aa52c401e94a"
+      "runtime_seconds": 5100,
+      "preview_sha256": "4b7e60944b14a312010a964b3bd13427e07f24b70b436cc245e3aa52c401e94a",
+      "imdb_id": "tt18228142",
+      "duration_source": "https://www.imdb.com/title/tt18228142/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt18228142/",
+        "runtime_minutes": 85,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_21238",
@@ -2433,11 +2504,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_169702.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Сэм Эсмейл",
-      "runtime_seconds": 0,
-      "preview_sha256": "87fa54ba578f096cbf331c57286cd2f8ab1b60c00603d31ee7d105a3f1f6b61e"
+      "runtime_seconds": 8280,
+      "preview_sha256": "87fa54ba578f096cbf331c57286cd2f8ab1b60c00603d31ee7d105a3f1f6b61e",
+      "imdb_id": "tt12747748",
+      "duration_source": "https://www.imdb.com/title/tt12747748/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt12747748/",
+        "runtime_minutes": 138,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_169937",
@@ -2453,11 +2534,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_169937.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Марианна Дин",
-      "runtime_seconds": 0,
-      "preview_sha256": "d95175dbb6c6034d624e744767a5a44fa562d2f212561429b04eae4f558c6c49"
+      "runtime_seconds": 5160,
+      "preview_sha256": "d95175dbb6c6034d624e744767a5a44fa562d2f212561429b04eae4f558c6c49",
+      "imdb_id": "tt14204244",
+      "duration_source": "https://www.imdb.com/title/tt14204244/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt14204244/",
+        "runtime_minutes": 86,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_169154",
@@ -2473,11 +2564,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_169154.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Дэвид Финчер",
-      "runtime_seconds": 0,
-      "preview_sha256": "e52b5766f066b769ad278256d2137b5de678b9eea72dfe8c83bc0c54d2332b5f"
+      "runtime_seconds": 7080,
+      "preview_sha256": "e52b5766f066b769ad278256d2137b5de678b9eea72dfe8c83bc0c54d2332b5f",
+      "imdb_id": "tt1136617",
+      "duration_source": "https://www.imdb.com/title/tt1136617/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt1136617/",
+        "runtime_minutes": 118,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_107622",
@@ -2493,11 +2594,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_107622.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Кристиан Диттер",
-      "runtime_seconds": 0,
-      "preview_sha256": "fdea56ca2c27c7d290d06c56409e3113d47c9ea2a1754d1ed1e73f21f24a9df1"
+      "runtime_seconds": 6600,
+      "preview_sha256": "fdea56ca2c27c7d290d06c56409e3113d47c9ea2a1754d1ed1e73f21f24a9df1",
+      "imdb_id": "tt1292566",
+      "duration_source": "https://www.imdb.com/title/tt1292566/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt1292566/",
+        "runtime_minutes": 110,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_168087",
@@ -2536,11 +2647,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_165093.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Брюс Уэмпл",
-      "runtime_seconds": 0,
-      "preview_sha256": "6a43b4ef0c0b1a91d687ae8788504d81705837dc85458d4a61276b8d6aa24490"
+      "runtime_seconds": 6300,
+      "preview_sha256": "6a43b4ef0c0b1a91d687ae8788504d81705837dc85458d4a61276b8d6aa24490",
+      "imdb_id": "tt14672882",
+      "duration_source": "https://www.imdb.com/title/tt14672882/",
+      "duration_evidence": {
+        "source": "IMDbPro title metadata",
+        "source_url": "https://pro.imdb.com/title/tt14672882/",
+        "runtime_minutes": 105,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_124139",
@@ -2604,11 +2725,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_167952.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джаред Лэп",
-      "runtime_seconds": 0,
-      "preview_sha256": "129c1858d31f5117e790a62e60caef389a5d93574a137f6da88d2df669961f09"
+      "runtime_seconds": 4860,
+      "preview_sha256": "129c1858d31f5117e790a62e60caef389a5d93574a137f6da88d2df669961f09",
+      "imdb_id": "tt28554102",
+      "duration_source": "https://www.imdb.com/title/tt28554102/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt28554102/",
+        "runtime_minutes": 81,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_47158",
@@ -2644,11 +2775,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_167487.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Скотт Смит",
-      "runtime_seconds": 0,
-      "preview_sha256": "afaa3810617b0bbf931e5d1d1f2d146fc1108a5a1b220cf6c165819a026ffc4a"
+      "runtime_seconds": 4980,
+      "preview_sha256": "afaa3810617b0bbf931e5d1d1f2d146fc1108a5a1b220cf6c165819a026ffc4a",
+      "imdb_id": "tt13174750",
+      "duration_source": "https://www.imdb.com/title/tt13174750/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt13174750/",
+        "runtime_minutes": 83,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_296",
@@ -2664,11 +2805,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_296.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джон Франкенхаймер",
-      "runtime_seconds": 0,
-      "preview_sha256": "5c8c11b7c33036447c22230d5caf0d21b2416b85f37a1a4e46d71e5a648f4c73"
+      "runtime_seconds": 7320,
+      "preview_sha256": "5c8c11b7c33036447c22230d5caf0d21b2416b85f37a1a4e46d71e5a648f4c73",
+      "imdb_id": "tt0122690",
+      "duration_source": "https://www.imdb.com/title/tt0122690/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt0122690/",
+        "runtime_minutes": 122,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_166072",
@@ -2728,11 +2879,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_160441.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джеймс Бёрд",
-      "runtime_seconds": 0,
-      "preview_sha256": "ddbdfb1c50e03c451443d694b92482ea568ebd574f4ad2b7de38568bd5aec9cb"
+      "runtime_seconds": 6300,
+      "preview_sha256": "ddbdfb1c50e03c451443d694b92482ea568ebd574f4ad2b7de38568bd5aec9cb",
+      "imdb_id": "tt15978956",
+      "duration_source": "https://www.imdb.com/title/tt15978956/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt15978956/",
+        "runtime_minutes": 105,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_124913",
@@ -2819,11 +2980,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_164650.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Скотт Бек",
-      "runtime_seconds": 0,
-      "preview_sha256": "7208d2abbc504955e7419bb46c0c4b1bfbec471a10feb4d92e4fb38e037cbb24"
+      "runtime_seconds": 5580,
+      "preview_sha256": "7208d2abbc504955e7419bb46c0c4b1bfbec471a10feb4d92e4fb38e037cbb24",
+      "imdb_id": "tt12261776",
+      "duration_source": "https://www.imdb.com/title/tt12261776/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt12261776/",
+        "runtime_minutes": 93,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_165505",
@@ -2862,11 +3033,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_164875.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Том ДеНуччи",
-      "runtime_seconds": 0,
-      "preview_sha256": "5847c260506be57038d4dd73be8afcebfc249e0794e0449528e9403ed288e846"
+      "runtime_seconds": 6000,
+      "preview_sha256": "5847c260506be57038d4dd73be8afcebfc249e0794e0449528e9403ed288e846",
+      "imdb_id": "tt14875820",
+      "duration_source": "https://www.imdb.com/title/tt14875820/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt14875820/",
+        "runtime_minutes": 100,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_140074",
@@ -3044,11 +3225,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_160973.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Ричард Хьюз",
-      "runtime_seconds": 0,
-      "preview_sha256": "7ef4cc047282d787380e1bbfff25e068f0a7cc70cb4fd26c57391add20ae0c24"
+      "runtime_seconds": 5400,
+      "preview_sha256": "7ef4cc047282d787380e1bbfff25e068f0a7cc70cb4fd26c57391add20ae0c24",
+      "imdb_id": "tt14857730",
+      "duration_source": "https://www.imdb.com/title/tt14857730/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt14857730/",
+        "runtime_minutes": 90,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_161072",
@@ -3087,11 +3278,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_159134.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джесси Джонсон",
-      "runtime_seconds": 0,
-      "preview_sha256": "a911897891d9f885ef6027c664723a9b3070f927be4d8eca2fcd7f672d6dccf5"
+      "runtime_seconds": 5520,
+      "preview_sha256": "a911897891d9f885ef6027c664723a9b3070f927be4d8eca2fcd7f672d6dccf5",
+      "imdb_id": "tt14686544",
+      "duration_source": "https://www.imdb.com/title/tt14686544/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt14686544/",
+        "runtime_minutes": 92,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_159661",
@@ -3107,11 +3308,21 @@
       "simulation_only": true,
       "file_path": "",
       "preview": "user://filmix_bundle_previews/FILMIX_159661.webp",
-      "duration_status": "UNVERIFIED",
+      "duration_status": "VERIFIED_IMDB_REFERENCE_RUNTIME",
       "source_catalog": "FILMIX_BOOKMARKS",
       "director": "Джон Кейес",
-      "runtime_seconds": 0,
-      "preview_sha256": "c273841ddc80db9ba8f6df807413ece667b36a1d105cbef6c6aa9faf2147d1d3"
+      "runtime_seconds": 5280,
+      "preview_sha256": "c273841ddc80db9ba8f6df807413ece667b36a1d105cbef6c6aa9faf2147d1d3",
+      "imdb_id": "tt15438542",
+      "duration_source": "https://www.imdb.com/title/tt15438542/",
+      "duration_evidence": {
+        "source": "IMDb title metadata",
+        "source_url": "https://www.imdb.com/title/tt15438542/",
+        "runtime_minutes": 88,
+        "checked_on": "2026-11-25",
+        "match": "Original title and release year",
+        "edition": "IMDb listed release; exact Filmix cut not independently established"
+      }
     },
     {
       "id": "FILMIX_2728",
