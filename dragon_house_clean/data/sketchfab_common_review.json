@@ -1,0 +1,183 @@
+{
+  "owner_approved": false,
+  "variant_id": "common/R3",
+  "remove_geometry_ids": [
+    "EXISTING_HEARTH_RESERVATION_NOT_NEW_MESH"
+  ],
+  "instances": [
+    {
+      "instance_id": "common_r3_animated_hearth_review",
+      "asset_id": "sketchfab_fireplace_animated",
+      "room_local_xyz": [
+        -0.35,
+        0.0,
+        -1.41
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0,
+        0
+      ],
+      "uniform_scale": 1.0,
+      "bounds_min_m": [
+        -1.25,
+        0.0,
+        -1.937232
+      ],
+      "bounds_max_m": [
+        0.55,
+        1.711648,
+        -0.882768
+      ],
+      "physical_footprint_xz": [
+        [
+          -1.25,
+          -1.937232
+        ],
+        [
+          0.55,
+          -1.937232
+        ],
+        [
+          0.55,
+          -0.882768
+        ],
+        [
+          -1.25,
+          -0.882768
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "support_ref": null,
+      "station_candidates": [],
+      "support_slots": [],
+      "status": "INTEGRATOR_REVIEW_NOT_OWNER_APPROVED",
+      "owner_approved": false
+    },
+    {
+      "instance_id": "common_r3_service_table_review",
+      "asset_id": "wooden_table_02",
+      "room_local_xyz": [
+        -6.4,
+        0.025,
+        -0.48
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0,
+        0
+      ],
+      "uniform_scale": 1.0,
+      "physical_footprint_xz": [
+        [
+          -6.967208,
+          -0.833012
+        ],
+        [
+          -5.832792,
+          -0.833012
+        ],
+        [
+          -5.832792,
+          -0.126988
+        ],
+        [
+          -6.967208,
+          -0.126988
+        ]
+      ],
+      "bounds_min_m": [
+        -6.967208,
+        0.025,
+        -0.833012
+      ],
+      "bounds_max_m": [
+        -5.832792,
+        0.824543,
+        -0.126988
+      ],
+      "placement_policy": "floor_fixed",
+      "support_ref": null,
+      "station_candidates": [
+        {
+          "station_candidate_id": "common_r3_service_table_review.approach",
+          "kind": "standing",
+          "room_approach_xz": [
+            -6.4,
+            0.24
+          ],
+          "status": "INTEGRATOR_REVIEW_NOT_OWNER_APPROVED"
+        }
+      ],
+      "support_slots": [
+        {
+          "id": "machine_top",
+          "room_slot_id": "common_r3_service_table_review.machine_top",
+          "room_xyz": [
+            -6.4,
+            0.824543,
+            -0.48
+          ],
+          "max_dimensions_m": [
+            1.1,
+            0.7,
+            0.68
+          ],
+          "status": "INTEGRATOR_MEASURED_TABLE_ENVELOPE_REVIEW"
+        }
+      ],
+      "status": "PROPOSED_NOT_OWNER_APPROVED",
+      "owner_approved": false
+    },
+    {
+      "instance_id": "common_r3_steampunk_machine_review",
+      "asset_id": "sketchfab_steampunk_coffee_machine",
+      "room_local_xyz": [
+        -6.4,
+        0.824543,
+        -0.48
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0,
+        0
+      ],
+      "uniform_scale": 1.0,
+      "bounds_min_m": [
+        -6.723138,
+        0.824543,
+        -0.755944
+      ],
+      "bounds_max_m": [
+        -6.076862,
+        1.446827,
+        -0.204057
+      ],
+      "physical_footprint_xz": [
+        [
+          -6.723138,
+          -0.755944
+        ],
+        [
+          -6.076862,
+          -0.755944
+        ],
+        [
+          -6.076862,
+          -0.204057
+        ],
+        [
+          -6.723138,
+          -0.204057
+        ]
+      ],
+      "placement_policy": "supported",
+      "support_ref": "common_r3_service_table_review.machine_top",
+      "station_candidates": [],
+      "support_slots": [],
+      "status": "INTEGRATOR_REVIEW_NOT_OWNER_APPROVED",
+      "owner_approved": false
+    }
+  ],
+  "source_commit": "96779342d6fba0b2c82f19dfe9faf697ab7a4672"
+}

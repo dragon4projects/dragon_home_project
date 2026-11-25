@@ -1331,6 +1331,10 @@ func _populate_furniture(group_node: Node3D) -> void:
 			var rug:Node3D=dressing.get_node_or_null("Dressing_Rug")
 			if rug!=null:
 				rug.free()
+			if teea008_review.sketchfab_common_enabled and int(group["width"])==3:
+				var old_hearth:Node3D=dressing.get_node_or_null("Dressing_Fireplace")
+				if old_hearth!=null:
+					old_hearth.free()
 	else:
 		_add_physical_room_dressing(decoration_layer,group)
 	detailed_room_groups[group_node.name]=true

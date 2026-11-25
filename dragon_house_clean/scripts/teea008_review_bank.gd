@@ -1,5 +1,7 @@
 extends RefCounted
 ## Explicit, opt-in TEEA008 review. Never changes canonical world or approval.
+const SKETCHFAB_ROOT := "res://assets/sketchfab_review/decor_bank/"
+const SKETCHFAB_DELTA := "res://data/sketchfab_common_review.json"
 const ROOT := "res://assets/teea008_review/decor_bank/"
 const LAYOUT := "res://data/teea008_review/room_layouts_xz.json"
 const MEDIA := "res://data/teea008_review/media_surface_delta.json"
@@ -7,12 +9,14 @@ const LIVE_EXPORT_MARKER := "res://data/integration_candidates/TEEA008_LIVE_REVI
 var surfaces:Dictionary={}
 var layouts:Dictionary={}
 var enabled:=false
+var sketchfab_common_enabled:=false
 var live_physical_objects:=false
 var error:=""
 func initialize() -> bool:
 	layouts.clear()
 	surfaces.clear()
 	enabled=false
+	sketchfab_common_enabled=false
 	error=""
 	if OS.get_environment("DRAGON_TEEA008_REVIEW")!="1" and not FileAccess.file_exists(LIVE_EXPORT_MARKER):
 		return false
@@ -44,6 +48,7 @@ func initialize() -> bool:
 	if layouts.size()!=33:
 		error="expected 33 room variants"
 		return false
+	_apply_sketchfab_common_delta()
 	var media_file:=FileAccess.open(MEDIA,FileAccess.READ)
 	if media_file==null:
 		error="missing media aperture manifest"
@@ -80,7 +85,7 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable)->Node3D:
 	var asset:String=str(item["asset_id"])
 	var position:Array=item["room_local_xyz"]
 	var rotation:Array=item["rotation_deg_xyz"]
-	var scene:=ResourceLoader.load(ROOT+asset+"/model.gltf","PackedScene") as PackedScene
+	var scene:=ResourceLoader.load(_asset_path(asset),"PackedScene") as PackedScene
 	if scene==null:
 		return null
 	var wrapper:=Node3D.new()
@@ -98,6 +103,14 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable)->Node3D:
 	wrapper.set_meta("owner_approved",false)
 	parent.add_child(wrapper)
 	wrapper.add_child(scene.instantiate())
+	if asset=="sketchfab_fireplace_animated":
+		for player in wrapper.find_children("*","AnimationPlayer",true,false):
+			if player.has_animation("Fire"):
+				var clip:Animation=player.get_animation("Fire")
+				clip.loop_mode=Animation.LOOP_LINEAR
+				player.play("Fire")
+				wrapper.set_meta("fire_playing",true)
+				break
 	return wrapper
 
 func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
@@ -191,3 +204,26 @@ func _review_layout_delta(raw:Dictionary)->Dictionary:
 			"pose_hint":"LIE_SIDE_CURLED","status":"INTEGRATOR_VISUAL_FIT_CANDIDATE"}]
 		row["runtime_review_delta"]="CENTAU_RUG_SCALE_1_35_NOT_OWNER_APPROVED"
 	return row
+
+func _asset_path(asset:String)->String:
+	var base:String=SKETCHFAB_ROOT if asset.begins_with("sketchfab_") else ROOT
+	return base+asset+"/model.gltf"
+
+func _apply_sketchfab_common_delta()->void:
+	var f:=FileAccess.open(SKETCHFAB_DELTA,FileAccess.READ)
+	if f==null:return
+	var doc=JSON.parse_string(f.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)) or str(doc.get("variant_id",""))!="common/R3":return
+	var row:Dictionary=layouts.get("common/R3",{}).duplicate(true)
+	if row.is_empty():return
+	for item in doc.get("instances",[]):
+		if not ResourceLoader.exists(_asset_path(str(item.get("asset_id",""))),"PackedScene"):
+			return
+	var preserved:Array=[]
+	for item in row.get("preserve_existing_runtime_geometry",[]):
+		if not str(item.get("instance_id","")) in doc.get("remove_geometry_ids",[]):
+			preserved.append(item)
+	row["preserve_existing_runtime_geometry"]=preserved
+	row["instances"].append_array(doc["instances"])
+	layouts["common/R3"]=row
+	sketchfab_common_enabled=true
