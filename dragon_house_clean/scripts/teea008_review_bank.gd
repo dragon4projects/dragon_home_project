@@ -375,7 +375,9 @@ func _apply_hearth_interior_v1(hearth:Dictionary)->void:
 		"common_r3_p3_chair_center":Vector2(-2.60,-0.08),
 		"common_r3_p3_sofa_right":Vector2(3.95,-1.37),
 		"common_r3_p3_chair_right":Vector2(5.90,0.72),
-		"common_r3_p3_rug_right":Vector2(4.45,0.08)
+		"common_r3_p3_rug_right":Vector2(4.45,0.08),
+		"common_r3_p3_right_coffee_table":Vector2(4.20,0.28),
+		"common_r3_p3_chess_set":Vector2(4.20,0.28)
 	}
 	var extra:Dictionary={}
 	for item in hearth["instances"]:
