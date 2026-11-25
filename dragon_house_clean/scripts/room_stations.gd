@@ -206,6 +206,12 @@ func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
 			var slot := int(actor.get("station_slot",-1))
 			if slot >= 0 and str(actor.get("phase","idle")) in ["travel","perform"]:
 				used[slot] = id
+				if bool(actor.get("station_exclusive_furniture",false)):
+					var room:Dictionary=world.room_by_id(room_id)
+					var spots:Array=layout_for_world(world,room)
+					for idx in range(spots.size()):
+						if str(spots[idx].get("furniture_id",""))==str(actor.get("station_furniture_id","")):
+							used[idx]=id
 	return used
 
 func available_count(world, room: Dictionary) -> int:
@@ -232,8 +238,8 @@ func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> 
 	var points: Array = layout_for_world(world,room)
 	if points.is_empty():
 		return {}
-	if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent in ["REST","SLEEP","WATCH_FILM"]:
-		return {}
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		return _candidate_single(world,actor,room,intent,points,used)
 	# If the actor is continuing a reservation, keep its exact location.
 	var prior := int(actor.get("station_slot",-1))
 	if str(actor.get("station_room_id","")) == room["id"] and prior >= 0 and prior < points.size() and not used.has(prior):
@@ -297,6 +303,15 @@ func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Di
 		indexes=_paired_spots(points,used,false)
 	if indexes.size()!=2:
 		return {}
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		var first:Dictionary=_candidate_claim(actor,room,int(indexes[0]),points[int(indexes[0])],"TALK_PAIR")
+		var second:Dictionary=_candidate_claim(partner,room,int(indexes[1]),points[int(indexes[1])],"TALK_PAIR")
+		if first.has("contact")!=second.has("contact"):
+			first=_claim(room,int(indexes[0]),points[int(indexes[0])])
+			second=_claim(room,int(indexes[1]),points[int(indexes[1])])
+			first["kind"]="standing"
+			second["kind"]="standing"
+		return {"actor":first,"partner":second}
 	return {"actor":_claim(room,int(indexes[0]),points[int(indexes[0])]),
 		"partner":_claim(room,int(indexes[1]),points[int(indexes[1])])}
 
@@ -319,6 +334,11 @@ func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 	actor["station_anchor_id"] = str(claim.get("anchor_id",""))
 	actor["station_pose_hint"] = str(claim.get("pose_hint","IDLE_S"))
 	actor["station_approach_z"] = float(claim.get("approach_z",0.95))
+	actor.erase("station_contact")
+	actor.erase("station_exclusive_furniture")
+	if claim.has("contact"):
+		actor["station_contact"]=claim["contact"].duplicate(true)
+		actor["station_exclusive_furniture"]=bool(claim["contact"].get("exclusive",false))
 
 func release(actor: Dictionary) -> void:
 	actor.erase("station_room_id")
@@ -329,6 +349,8 @@ func release(actor: Dictionary) -> void:
 	actor.erase("station_anchor_id")
 	actor.erase("station_pose_hint")
 	actor.erase("station_approach_z")
+	actor.erase("station_contact")
+	actor.erase("station_exclusive_furniture")
 
 func reconcile(world) -> int:
 	# Restore station invariants after loading a snapshot, without new life.
@@ -364,6 +386,13 @@ func reconcile(world) -> int:
 			invalid = route.is_empty() or typeof(route[-1])!=TYPE_DICTIONARY or (
 				str(route[-1].get("kind",""))!="station") or (
 				str(route[-1].get("room_id",""))!=room_id)
+		var restored_claim:Dictionary={}
+		if not invalid and candidate_navigation!=null and candidate_navigation.has_layout(room):
+			var prior:Array=actor.get("station_point",[])
+			var spot:Dictionary=authored[slot]
+			var offset:Vector2=spot["offset"]
+			restored_claim=_candidate_claim(actor,room,slot,spot,str(actor.get("intent","")))
+			invalid=restored_claim.is_empty() or prior.size()!=2 or offset.distance_to(Vector2(float(prior[0]),float(prior[1])))>0.01
 		if invalid:
 			release(actor)
 			# Old/corrupt reservations cannot continue a phantom activity
@@ -375,6 +404,9 @@ func reconcile(world) -> int:
 			fixed += 1
 		else:
 			claimed[key] = true
+			if not restored_claim.is_empty():
+				commit_claim(actor,restored_claim)
+				continue
 			# v0.7 stored generic coordinates and the SAME slot IDs. Rewrite
 			# the actor's true body location/terminal waypoint, not just the
 			# station metadata, or old saves still visually stack on furniture.
@@ -455,3 +487,60 @@ func migrate_legacy_positions(world) -> int:
 			actor["visual_y"]=center.y
 		changed+=1
 	return changed
+
+func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary,intent:String)->Dictionary:
+	var claim:Dictionary=_claim(room,index,spot)
+	var kind:String=str(spot.get("kind","standing"))
+	if intent in ["REST","SLEEP","READ_BOOK","TALK_PAIR","LISTEN_MUSIC"]:
+		var contact:Dictionary={}
+		if intent=="SLEEP" or kind=="seat" or (intent=="REST" and kind=="floor_rest"):
+			contact=candidate_navigation.pose_contact(actor,spot,intent)
+		if not contact.is_empty():
+			claim["contact"]=contact
+			claim["kind"]="floor_rest" if str(contact["state"])=="LIE_SIDE_CURLED" else "seat"
+			claim["pose_hint"]=str(contact["state"])
+			return claim
+		if intent in ["REST","SLEEP","READ_BOOK"]:
+			return {}
+	if intent=="WATCH_FILM":
+		if str(spot.get("candidate_kind",""))!="seat":
+			return {}
+		claim["pose_hint"]="IDLE_N"
+	elif intent=="WORK_CREATE" and kind!="work":
+		return {}
+	elif intent=="GET_COFFEE":
+		# No physical cup/service station binding is approved in this bank yet.
+		return {}
+	elif intent=="VIEW_ART" and str(spot.get("furniture_id",""))=="":
+		return {}
+	if kind in ["seat","floor_rest"]:
+		claim["kind"]="standing"
+		claim["pose_hint"]="IDLE_S"
+	return claim
+
+func _candidate_single(world,actor:Dictionary,room:Dictionary,intent:String,points:Array,used:Dictionary)->Dictionary:
+	var start:=0
+	for ch in str(actor.get("id","")):
+		start=posmod(start*31+ch.unicode_at(0),997)
+	var fallback:Dictionary={}
+	for step in range(points.size()):
+		var idx:int=(start+step)%points.size()
+		if used.has(idx):
+			continue
+		var spot:Dictionary=points[idx]
+		var claim:=_candidate_claim(actor,room,idx,spot,intent)
+		if claim.is_empty():
+			continue
+		if bool(claim.get("contact",{}).get("exclusive",false)):
+			var blocked:=false
+			for other in used:
+				if int(other)<points.size() and str(points[int(other)].get("furniture_id",""))==str(spot.get("furniture_id","")):
+					blocked=true
+					break
+			if blocked:
+				continue
+		if claim.has("contact") or intent in ["WORK_CREATE","WATCH_FILM"]:
+			return claim
+		if fallback.is_empty():
+			fallback=claim
+	return fallback

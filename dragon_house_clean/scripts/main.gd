@@ -141,6 +141,11 @@ func _ensure_canonical_wall_displays() -> int:
 		{"id":"PORTRAIT_SHURS","anchor":[1.65,1.45,-1.52],
 			"station":"WALL_GALLERY_RIGHT","point":[0.85,-1.22]}
 	]
+	if teea008_review.enabled:
+		# Default candidate gallery above the actual shelving, not in front
+		# of its contents. Existing owner-assigned records are not rewritten.
+		for spec in specs:
+			spec["anchor"][1]=2.23
 	var added:=0
 	for spec in specs:
 		var object_id:String=str(spec["id"])
@@ -162,7 +167,7 @@ func _ensure_canonical_wall_displays() -> int:
 			"interaction_station_id":str(spec["station"]),
 			"interaction_point":spec["point"],
 			"interaction_approach_z":0.95,
-			"display_world_height":1.18
+			"display_world_height":0.68 if teea008_review.enabled else 1.18
 		}
 		if world.register_physical_object(
 				object_id,display_name,"",str(room["id"]),
@@ -206,11 +211,19 @@ func _ready() -> void:
 		catalog_metadata_added = world.merge_reference_book_metadata(
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
 	if teea008_live:
+		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
+		life.candidate_navigation.prepare_rooms(world.rooms)
+		print("TEEA008_LIVE_START roster")
+		_activate_teea008_roster()
 		for actor in world.residents.values():
 			if str(actor.get("entity_type",""))=="guest":
 				actor["autonomy_enabled"]=true
+			actor["teea008_pose_wardrobe"]=asset_banks.preferred_wardrobe(str(actor["id"]),str(actor.get("appearance_profile","")),true)
+	if teea008_live:
+		asset_banks.cache_capacity=96
+		print("TEEA008_LIVE_START life")
 	life.setup(world)
 	interior_skin.initialize()
 	if not room_visual_layout.initialize():
@@ -258,6 +271,8 @@ func _ready() -> void:
 	object_root = Node3D.new()
 	object_root.name = "PhysicalObjects"
 	add_child(object_root)
+	if teea008_live:
+		print("TEEA008_LIVE_START scene")
 	make_rooms()
 	make_residents()
 	build_interface()
@@ -268,6 +283,8 @@ func _ready() -> void:
 	zoom_current = zoom
 	apply_camera(0.1)
 	update_render_lod()
+	if teea008_live:
+		print("TEEA008_LIVE_START ready")
 	notice.text = ("TEEA008 LIVE REVIEW · provisional body clearance · approved=false" if teea008_live else
 		"TEEA008 GEOMETRY REVIEW · life paused · approved=false" if teea008_review.enabled else
 		"ITER1 OWNER REVIEW · candidate art/guests/fauna · approved=false"
@@ -1714,6 +1731,10 @@ func update_physical_objects() -> void:
 			var local_x:float=float(home_anchor[0])
 			var local_y:float=float(home_anchor[1])
 			var local_z:float=float(home_anchor[2])
+			if teea008_review.enabled and bool(visual_room_groups.get(room_id,{}).get("teea008_review",false)):
+				# Canonical wall lane remains compatible with v0.22 events.
+				# Map it onto the measured rear wall plane for this renderer.
+				local_z=-1.98
 			var physical_x:float=room_center.x+local_x
 			anchor.position=Vector3(
 				depth_visual_x(room_id,physical_x,local_z),
@@ -1811,6 +1832,16 @@ func update_residents(delta: float = 0.0) -> void:
 			str(actor.get("room_id","")),float(actor.get("x",0.0)),actor_z)
 		actor_sprites[id].position = Vector3(actor_x,y,actor_z)
 		var actor_scale:=depth_visual_scale(actor_z)
+		var contact:Dictionary=actor.get("station_contact",{}) if teea008_live and str(actor.get("phase",""))=="perform" else {}
+		if not contact.is_empty() and bool(actor.get("runtime_visual_bound",false)):
+			var room:Dictionary=world.room_by_id(str(actor.get("station_room_id","")))
+			if not room.is_empty():
+				var c:Vector3=world.room_center_pos(room)
+				var pos:Array=contact["local_xyz"]
+				var inst:Array=contact["instance_xyz"]
+				# Same transform as the real model wrapper, not the approach point.
+				actor_scale=depth_visual_scale(float(inst[2]))
+				actor_sprites[id].position=Vector3(c.x+float(pos[0])*actor_scale,c.y+float(inst[1])+(float(pos[1])-float(inst[1]))*actor_scale,float(inst[2])+(float(pos[2])-float(inst[2]))*actor_scale)
 		actor_sprites[id].scale=Vector3.ONE*actor_scale
 		var actor_room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
 		# An accessible private owner room is still not a public cutaway.
@@ -1858,6 +1889,11 @@ func desired_actor_animation(actor: Dictionary) -> String:
 	# Pure pose selection. A sofa station is an actual authored seat, not
 	# simply two actors standing at the same arbitrary position in a room.
 	var requested := "IDLE_S"
+	if teea008_live and str(actor.get("phase",""))=="perform":
+		if not actor.get("station_contact",{}).is_empty():
+			return str(actor["station_contact"]["state"])
+		if str(actor.get("intent",""))=="WATCH_FILM":
+			return "IDLE_N"
 	if zoom_current < 55.0 and actor.get("phase","idle") == "travel":
 		var direction: String = str(actor.get("moving_axis",""))
 		if direction == "left":
@@ -1894,6 +1930,8 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 	if asset_banks.frame_count(id,wardrobe,requested) < 1:
 		requested = "IDLE_S"
 	var state: Dictionary = actor_animations.get(id,{"state":"","frame":0,"elapsed":0.0})
+	var old_state:String=str(state["state"])
+	var old_frame:int=int(state["frame"])
 	if state["state"] != requested:
 		state["state"] = requested
 		state["elapsed"] = 0.0
@@ -1906,13 +1944,21 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 			state["elapsed"] = fmod(float(state["elapsed"]),period)
 	actor_animations[id] = state
 	var sprite: Sprite3D = actor_sprites[id].get_node("Body")
-	var texture: Texture2D = asset_banks.texture_for(id,wardrobe,requested,int(state["frame"]))
-	if texture != null and sprite.texture != texture:
-		sprite.texture = texture
-		sprite.pixel_size = 1.9 / maxf(1.0,float(texture.get_height()))
-		sprite.position.y = maxf(0.15,
-			(asset_banks.feet_anchor(id,wardrobe,texture.get_height())
-			 - float(texture.get_height())*0.5)*sprite.pixel_size)
+	var texture:Texture2D=sprite.texture
+	if old_state!=requested or old_frame!=int(state["frame"]) or texture==null:
+		texture=asset_banks.texture_for(id,wardrobe,requested,int(state["frame"]))
+	if texture != null and (texture != sprite.texture or teea008_live):
+		if texture!=sprite.texture:
+			sprite.texture=texture
+		var height_m:float=2.45 if teea008_live else 1.9
+		sprite.pixel_size=height_m/maxf(1.0,float(texture.get_height()))
+		var contact:Dictionary=actor.get("station_contact",{}) if teea008_live and str(actor.get("phase",""))=="perform" else {}
+		if not contact.is_empty() and requested==str(contact.get("state","")):
+			var px:Array=contact["contact_px"]
+			sprite.position=Vector3((float(texture.get_width())*0.5-float(px[0]))*sprite.pixel_size,(float(px[1])-float(texture.get_height())*0.5)*sprite.pixel_size,0.0)
+		else:
+			var feet:float=float(texture.get_height())*480.0/512.0 if teea008_live else asset_banks.feet_anchor(id,wardrobe,texture.get_height())
+			sprite.position=Vector3(0,maxf(0.15,(feet-float(texture.get_height())*0.5)*sprite.pixel_size),0)
 
 func build_interface() -> void:
 	var layer := CanvasLayer.new()
@@ -2571,11 +2617,18 @@ func update_hud() -> void:
 	if hud_status == null:
 		return
 	var tracked: Dictionary = world.residents.get(follow_id, {})
-	hud_status.text = "Режим: %s | уровень: %d | комнат: %d | видимых: %d / 24" % [
-		current_mode, semantic_view.level, world.rooms.size(), actor_sprites.size()-1]
+	var sisters:=0
+	var guests:=0
+	for id in actor_sprites:
+		if str(world.residents.get(id,{}).get("entity_type",""))=="guest":
+			guests+=1
+		elif str(id).begins_with("RES_"):
+			sisters+=1
+	hud_status.text = "Режим: %s | уровень: %d | комнат: %d | сёстры: %d / 24 | гости: %d" % [
+		current_mode, semantic_view.level, world.rooms.size(), sisters,guests]
 	if hud_brief != null:
-		hud_brief.text = "%s · L%d · %d комнат · %d/24" % [
-			current_mode,semantic_view.level,world.rooms.size(),maxi(0,actor_sprites.size()-1)]
+		hud_brief.text = "%s · L%d · %d комнат · %d/24 + %d гост." % [
+			current_mode,semantic_view.level,world.rooms.size(),sisters,guests]
 	hud_status.text += "\nУтверждено: %d / 24 | технически: %d" % [validated_visual_banks,preview_visual_banks]
 	if qa_visual_preview:
 		hud_status.text += "\nВИД: QA-ПРОСМОТР (не утверждено)"
@@ -2994,3 +3047,67 @@ func _notification(what: int) -> void:
 		world.save_world()
 		get_tree().quit()
 
+
+func _activate_teea008_roster()->void:
+	# Separate live-review save only. A validated technical sprite bank is
+	# sufficient for a QA actor, not for production autonomy approval.
+	if bool(world.runtime_state.get("teea008_full_roster_initialized",false)):
+		return
+	var nav=life.candidate_navigation
+	var active:Dictionary={}
+	for actor in world.residents.values():
+		if not bool(actor.get("active",false)):
+			continue
+		var rid:String=str(actor.get("room_id",""))
+		var room:Dictionary=world.room_by_id(rid)
+		if room.is_empty():
+			continue
+		var center:Vector3=world.room_center_pos(room)
+		if not active.has(rid):
+			active[rid]=[]
+		active[rid].append(Vector2(float(actor.get("x",center.x))-center.x,float(actor.get("z",0.0))))
+	for profile in world.read_resident_profiles():
+		var id:String=str(profile["id"])
+		var actor:Dictionary=world.residents.get(id,{})
+		if actor.is_empty() or bool(actor.get("active",false)):
+			continue
+		var wardrobe:String=asset_banks.preferred_wardrobe(id,str(actor.get("appearance_profile","")),true)
+		if wardrobe=="":
+			continue
+		var best_room:Dictionary={}
+		var best_point:=Vector2.ZERO
+		var best_score:=INF
+		for room in world.rooms:
+			var kind:String=str(room.get("type",""))
+			if not world.public_cutaway_allowed(room) or kind in ["guest","corridor","lift"] or not nav.has_layout(room):
+				continue
+			var rid:String=str(room["id"])
+			var used:Array=active.get(rid,[])
+			var points:Array=nav.candidate_spots(room)
+			var score:float=float(used.size())/float(maxi(1,points.size()))
+			if score>=best_score:
+				continue
+			for spot in points:
+				var point:Vector2=spot["offset"]
+				if used.any(func(p):return point.distance_to(p)<0.65):
+					continue
+				best_room=room
+				best_point=point
+				best_score=score
+				break
+		if best_room.is_empty():
+			continue
+		var rid:String=str(best_room["id"])
+		var center:Vector3=world.room_center_pos(best_room)
+		if not active.has(rid):
+			active[rid]=[]
+		active[rid].append(best_point)
+		actor.merge({"active":true,"room_id":rid,"x":center.x+best_point.x,
+			"level":int(best_room["level"]),"visual_y":center.y,"z":best_point.y,
+			"intent":"PURPOSEFUL_EXPLORE","phase":"idle","until":world.sim_clock,
+			"needs":{"rest":0.5,"social":0.4,"curiosity":0.5},
+			"traits":{"reading":0.45,"music":0.35},"habits":{},"last_location":"",
+			"route":[],"path_index":0,"autonomy_enabled":true,
+			"production_visual_ready":false,"visual_status":"CANDIDATE_LIVE_REVIEW"},true)
+		world._append_journal("TEEA008_REVIEW_ACTOR_ACTIVATED",id,id,"",rid,{"wardrobe":wardrobe,"owner_approved":false})
+	world.runtime_state["teea008_full_roster_initialized"]=true

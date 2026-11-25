@@ -38,7 +38,7 @@ func initialize() -> bool:
 				error="missing candidate asset "+asset
 				layouts.clear()
 				return false
-		layouts[id]=raw
+		layouts[id]=_review_layout_delta(raw)
 	if layouts.size()!=33:
 		error="expected 33 room variants"
 		return false
@@ -160,3 +160,30 @@ func aperture_hit(camera:Camera3D, point:Vector2)->Dictionary:
 		nearest=distance
 		result={"anchor":node,"category":"teea008_surface","item_id":str(node.get_meta("surface_id","")),"display_name":str(node.get_meta("surface_id","")),"room_id":str(node.get_meta("room_id",""))}
 	return result
+
+func _review_layout_delta(raw:Dictionary)->Dictionary:
+	# TEEA008 source stays immutable. The centaur's visual lying width is
+	# ~1.99 m at the live-review canvas scale; 1.56 m textile was too short.
+	var row:Dictionary=raw.duplicate(true)
+	if str(row.get("variant_id",""))!="guest_centaur/R1":
+		return row
+	for item in row.get("instances",[]):
+		if str(item.get("instance_id",""))!="guest_centaur_01_rest_mat":
+			continue
+		var factor:=1.35
+		var position:Array=item["room_local_xyz"]
+		var lo:Array=item["bounds_min_m"]
+		var hi:Array=item["bounds_max_m"]
+		for axis in range(3):
+			lo[axis]=float(position[axis])+(float(lo[axis])-float(position[axis]))*factor
+			hi[axis]=float(position[axis])+(float(hi[axis])-float(position[axis]))*factor
+		item["uniform_scale"]=float(item.get("uniform_scale",1.0))*factor
+		item["bounds_min_m"]=lo
+		item["bounds_max_m"]=hi
+		item["physical_footprint_xz"]=[[lo[0],lo[2]],[hi[0],lo[2]],[hi[0],hi[2]],[lo[0],hi[2]]]
+		item["station_candidates"]=[{"id":"floor_rest","kind":"floor_rest",
+			"station_candidate_id":"guest_centaur_01_rest_mat.floor_rest",
+			"room_local_xyz":[position[0],hi[1],position[2]],
+			"pose_hint":"LIE_SIDE_CURLED","status":"INTEGRATOR_VISUAL_FIT_CANDIDATE"}]
+		row["runtime_review_delta"]="CENTAU_RUG_SCALE_1_35_NOT_OWNER_APPROVED"
+	return row

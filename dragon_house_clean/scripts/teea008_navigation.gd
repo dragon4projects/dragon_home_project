@@ -11,11 +11,31 @@ var grids:Dictionary={}
 var blockers:Dictionary={}
 var path_calls:=0
 var path_failures:=0
+const POSE_PATH:="res://data/teea008_pose_contacts_review.json"
+const CANVAS_HEIGHT:=2.45
+var pose_profiles:Dictionary={}
+var static_spots:Dictionary={}
+var display_cache:Dictionary={}
 
 func configure(rows:Dictionary)->void:
 	layouts=rows
 	grids.clear()
 	blockers.clear()
+	static_spots.clear()
+	display_cache.clear()
+	pose_profiles.clear()
+	if FileAccess.file_exists(POSE_PATH):
+		var f:=FileAccess.open(POSE_PATH,FileAccess.READ)
+		var doc=JSON.parse_string(f.get_as_text())
+		if typeof(doc)==TYPE_DICTIONARY and not bool(doc.get("owner_approved",true)):
+			for id in doc.get("profiles",{}):
+				var profile:Dictionary=doc["profiles"][id].duplicate(true)
+				for state in profile.get("states",{}).keys():
+					var entry:Dictionary=profile["states"][state]
+					var path:String="res://"+str(entry.get("path",""))
+					if not FileAccess.file_exists(path) or FileAccess.get_sha256(path)!=str(entry.get("sha256","")):
+						profile["states"].erase(state)
+				pose_profiles[id]=profile
 
 func key(room:Dictionary)->String:
 	var kind:String=str(room.get("type",""))
@@ -162,7 +182,10 @@ func path(room:Dictionary,a:Vector2,b:Vector2)->Array:
 	return out
 
 func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
-	var row:Dictionary=layouts.get(key(room),{})
+	var variant_key:=key(room)
+	if display_anchors.is_empty() and static_spots.has(variant_key):
+		return static_spots[variant_key]
+	var row:Dictionary=layouts.get(variant_key,{})
 	if row.is_empty():
 		return []
 	var cap:int=[0,4,8,16][clampi(int(room.get("size_modules",1)),1,3)]
@@ -171,7 +194,14 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 	# moving the actual object or changing its canonical home.
 	for d in display_anchors:
 		var p:=Vector2(float(d["x"]),float(d["z"]))
-		p=nearest_clear(room,p)
+		var cache_key:String="%s:%s:%.3f:%.3f" % [variant_key,str(d["id"]),p.x,p.y]
+		if display_cache.has(cache_key):
+			p=display_cache[cache_key]
+		else:
+			p=nearest_clear(room,p)
+			if display_cache.size()>256:
+				display_cache.clear()
+			display_cache[cache_key]=p
 		if segment_clear(room,p,p) and absf(p.x)<float(room["size_modules"])*2.4-0.18:
 			_add_spot(out,{"id":d["id"],"offset":p,"kind":"standing","furniture_id":"DISPLAY_WALL","pose_hint":"VIEW","approach_z":p.y},cap,0.60)
 	for item in row.get("instances",[]):
@@ -195,10 +225,23 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 					spot["kind"]="work"
 					spot["pose_hint"]="USE"
 			elif kind=="seat":
-				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[])}
-				# Still a standing approach until a particular actor pose is calibrated.
+				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0)}
+				var facing:Array=spot["candidate_contact"]["facing"]
+				if facing.size()==3 and float(facing[2])>0.5:
+					spot["kind"]="seat"
+					spot["pose_hint"]="RELAXED_SIT"
+				if str(item.get("asset_id",""))=="vintage_day_bed":
+					var lo:Array=item["bounds_min_m"]
+					var hi:Array=item["bounds_max_m"]
+					var pelvis:Array=spot["candidate_contact"]["pelvis"]
+					spot["candidate_contact"]["lie_surface"]=[(float(lo[0])+float(hi[0]))*0.5,float(pelvis[1]),float(pelvis[2])]
+					spot["candidate_contact"]["lie_width_m"]=float(hi[0])-float(lo[0])
 			elif kind=="floor_rest":
-				spot["candidate_contact"]={"floor":station.get("room_local_xyz",[])}
+				var lo:Array=item["bounds_min_m"]
+				var hi:Array=item["bounds_max_m"]
+				spot["candidate_contact"]={"floor":station.get("room_local_xyz",[]),"instance_xyz":item["room_local_xyz"],"lie_width_m":float(hi[0])-float(lo[0])}
+				spot["kind"]="floor_rest"
+				spot["pose_hint"]="LIE_SIDE_CURLED"
 			_add_spot(out,spot,cap,0.60)
 	# Standing positions must themselves be clear and reachable from the aisle.
 	var width:int=int(room.get("size_modules",1))
@@ -209,6 +252,8 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 				if not clear(room,p):
 					continue
 				_add_spot(out,{"id":"teea008_stand_%d_%d_%d" % [module,roundi(p.x*100),roundi(p.y*100)],"offset":p,"kind":"standing","furniture_id":"","pose_hint":"IDLE_S","approach_z":p.y},cap,0.73)
+	if display_anchors.is_empty():
+		static_spots[variant_key]=out
 	return out
 
 func _add_spot(out:Array,spot:Dictionary,cap:int,gap:float)->void:
@@ -218,3 +263,57 @@ func _add_spot(out:Array,spot:Dictionary,cap:int,gap:float)->void:
 		if (previous["offset"] as Vector2).distance_to(spot["offset"])<gap:
 			return
 	out.append(spot)
+
+func pose_profile(actor:Dictionary,state:String)->Dictionary:
+	var profile:Dictionary=pose_profiles.get(str(actor.get("id","")),{})
+	if str(profile.get("appearance_profile",""))!=str(actor.get("appearance_profile","")) or str(profile.get("wardrobe",""))!=str(actor.get("teea008_pose_wardrobe","")):
+		return {}
+	return profile.get("states",{}).get(state,{})
+
+func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
+	var raw:Dictionary=spot.get("candidate_contact",{})
+	if raw.is_empty():
+		return {}
+	var state: String="RELAXED_SIT"
+	var anchor:Array=[]
+	var exclusive:=false
+	var kind:String=str(spot.get("kind",""))
+	if intent=="SLEEP" or (intent=="REST" and kind=="floor_rest"):
+		state="LIE_SIDE_CURLED"
+		anchor=raw.get("floor",raw.get("lie_surface",[]))
+		exclusive=raw.has("lie_surface") and not raw.has("floor")
+	elif intent=="READ_BOOK":
+		state="READ"
+		anchor=raw.get("pelvis",[])
+	else:
+		anchor=raw.get("pelvis",[])
+	if anchor.size()!=3:
+		return {}
+	var profile:Dictionary=pose_profile(actor,state)
+	if profile.is_empty():
+		return {}
+	var canvas:Array=profile["canvas"]
+	var px:Array=profile["contact_px"]
+	var bbox:Array=profile["alpha_bbox"]
+	var ratio:float=CANVAS_HEIGHT/float(canvas[1])
+	if state=="LIE_SIDE_CURLED":
+		if (float(bbox[2])-float(bbox[0]))*ratio>float(raw.get("lie_width_m",0.0))-0.04:
+			return {}
+	else:
+		var facing:Array=raw.get("facing",[])
+		if facing.size()!=3 or float(facing[2])<0.5:
+			return {}
+		var feet:Array=raw.get("feet",[])
+		if feet.size()!=3:
+			return {}
+		var foot_gap:float=float(anchor[1])-float(feet[1])-(float(bbox[3])-float(px[1]))*ratio
+		if absf(foot_gap)>0.15 or float(profile["contact_span_px"])*ratio>float(raw.get("width_m",0.0))+0.06:
+			return {}
+	return {"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":exclusive,"book_baked":bool(profile.get("book_baked",false)),"evidence":"VISUAL_ESTIMATE_REVIEW_ONLY"}
+
+func prepare_rooms(rooms:Array)->void:
+	# Build each existing variant once, off the live planner's hot path.
+	for room in rooms:
+		if has_layout(room):
+			_grid(room)
+			candidate_spots(room)

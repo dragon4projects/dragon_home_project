@@ -317,14 +317,19 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 	var best_room: Dictionary = {}
 	for intent in scored:
 		var types: Array = INTENTS[intent]
+		if candidate_navigation!=null and intent in ["REST","SLEEP"]:
+			types=types.duplicate()
+			if not types.has("common"):
+				types.append("common")
 		var candidates: Array = []
 		for room in world.matching_rooms(types, actor["id"]):
 			if (str(room.get("type","")) == "guest"
 					and intent in ["REST","SLEEP"]
 					and str(room.get("owner_id","")) != str(actor.get("id",""))):
 				continue
-			if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent in ["REST","SLEEP","WATCH_FILM"]:
-				continue
+			if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent!="TALK_PAIR":
+				if stations.single(world,actor,room,intent).is_empty():
+					continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
 				candidates.append(room)
 		if candidates.is_empty():

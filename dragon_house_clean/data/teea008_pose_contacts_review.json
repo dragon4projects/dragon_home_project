@@ -1,0 +1,2335 @@
+{
+  "schema": 1,
+  "owner_approved": false,
+  "status": "VISUAL_ESTIMATE_REVIEW_ONLY",
+  "canvas_height_m": 2.45,
+  "alpha_threshold": 16,
+  "max_foot_gap_m": 0.15,
+  "profiles": {
+    "RES_01": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_01",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_01/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "9cc23413770fd687d3dcfba41996ba745ea91aad81d8fd5264cc99e267cd3701",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            192,
+            243,
+            320,
+            479
+          ],
+          "contact_px": [
+            252,
+            394
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 67,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_01/wardrobes/SHORT/READ/0001.png",
+          "sha256": "e0159fc67245a69521e32d357825579bc80f3cd4b57ce5e6b7fcfe1fdc42e6a6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            217,
+            230,
+            295,
+            479
+          ],
+          "contact_px": [
+            256,
+            394
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 74,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_01/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "acee408ef332fca2b87ec29d34279a41c91b1aba9d62d58869a8680c440882c6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            389,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_01/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "f0bf3d63e215b86937bf1925805aa0ceb982c61a0887d7865c05b76b6965a7fe",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            138,
+            306,
+            479
+          ],
+          "contact_px": [
+            257.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 98,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_02": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_01",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_02/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "8cef972d0a5ca67e6dfc2d3336e84ec325e89bb8e4e600648d9635d15fb02756",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            196,
+            242,
+            317,
+            479
+          ],
+          "contact_px": [
+            253,
+            398
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 66,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_02/wardrobes/SHORT/READ/0001.png",
+          "sha256": "1565c99d53b1b80eaf40c3c7244340e9983b9036be41b119bd7f64e6da53f0f5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            230,
+            292,
+            479
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 62,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_02/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "ae863ac6b340fceb905a8c41c39ea7b19968552da5defa072dc28559feabf39d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            365,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_02/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "5b24947ba1dc398be10306d0c5b5fc3de50e22d4509d3a7c461796479870940c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            137,
+            301,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 90,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_03": {
+      "wardrobe": "CITY",
+      "appearance_profile": "VALENTA_07",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/RELAXED_SIT/0001.png",
+          "sha256": "63773d46dde32da692eb5aced1b29f93695b56585a671876dddc47e3be26acaa",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            199,
+            243,
+            314,
+            479
+          ],
+          "contact_px": [
+            250,
+            387
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 64,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/READ/0001.png",
+          "sha256": "1aa063c71a00b16dc1be4f0a662cd7facc48affffbe70be400cda4cccfbcbed3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            219,
+            230,
+            294,
+            479
+          ],
+          "contact_px": [
+            256,
+            385
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 65,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/LIE_SIDE_CURLED/0001.png",
+          "sha256": "bd332b3f557410e231ccc07b0dedfa5482b0cca526f1258b99e92cc67bbaa369",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            382,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/IDLE_S/0001.png",
+          "sha256": "62f7c44cd2aa1d0f17050278013e68865af67f384aada88057596d04162bb5da",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            137,
+            301,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 89,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_04": {
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_02",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "59201bf9445befea84b4c982154c709bd3f337261648bc043a0d381eaddc0bb1",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            202,
+            243,
+            311,
+            479
+          ],
+          "contact_px": [
+            247,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 83,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/READ/0001.png",
+          "sha256": "74736eff2b8839babe6d63179cc5e437db981bcb74a11eca07a0794cacfa169e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            213,
+            230,
+            300,
+            479
+          ],
+          "contact_px": [
+            256,
+            394
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 79,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "9640709f8dcf9ba2e02ff68f878861246e522da2fba5f1f89c8b08309bc2e4ad",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            387,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "63bedb500e73ac45436fd4b1f228e14bf227daacae86e8ce03a669152e5e3bad",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            137,
+            306,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 99,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_05": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_08",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_05/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "bae56b74a9bdea472798df6e82ecdc4d211aeae7f36a75af6fc8e291642dce85",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            191,
+            243,
+            322,
+            479
+          ],
+          "contact_px": [
+            250,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 69,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_05/wardrobes/SHORT/READ/0001.png",
+          "sha256": "a1c40ba4fbc1b4cf0574662fc4d5e883fac40376d45b20729085d62820673690",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            218,
+            230,
+            294,
+            479
+          ],
+          "contact_px": [
+            256,
+            393
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 69,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_05/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "6d3a054df065a90ec70b4daffac2eb275a5f6ecbfac0061cadf63c660fa230e6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            397,
+            379,
+            480
+          ],
+          "contact_px": [
+            256.5,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 245,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_05/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "a2cda152a6e0ec7aabf7c0b35f89ab364003e42a1f3c0a22803fc45eafb06d1b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            137,
+            306,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 99,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_06": {
+      "wardrobe": "CITY",
+      "appearance_profile": "HELGA_02",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/RELAXED_SIT/0001.png",
+          "sha256": "b8d1b8cac83f05aa644901c42bd2c0336a5cccefaacabe84d04bf1034227fbfa",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            198,
+            242,
+            314,
+            479
+          ],
+          "contact_px": [
+            246,
+            399
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 104,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/READ/0001.png",
+          "sha256": "f622dc7b31e74372e361b9b1fe8d5cae90752bb8227c876b8d5c98cba11c013b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            195,
+            229,
+            317,
+            479
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 92,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/LIE_SIDE_CURLED/0001.png",
+          "sha256": "6bfa64fa986784b18dca8f5d96d084ec28b67c39de245632bf3f2df9e8a8d7a2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            386,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/IDLE_S/0001.png",
+          "sha256": "c620d40cdd72d917378174a7d734a384f5e4e13829832ec02c70530125153b8d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            138,
+            303,
+            478
+          ],
+          "contact_px": [
+            256.0,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 94,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_07": {
+      "wardrobe": "HOME",
+      "appearance_profile": "EXISTING_EVMOCHKA",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "e4bc8802baa1ed91099d9836fc598b730972a091dbd5b2a74551b67b851c7e3b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            194,
+            233,
+            270,
+            480
+          ],
+          "contact_px": [
+            250,
+            387
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 73,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "61883999c1c2f8102a27bbf09fb07b896c0a368459a8b4e2752849e664500e32",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            121,
+            348,
+            391,
+            480
+          ],
+          "contact_px": [
+            256.0,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 270,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "9e40480031cda36b1499fe9c9f1794348c12ebcf33e8170d8bc756c96b65c538",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            205,
+            136,
+            295,
+            480
+          ],
+          "contact_px": [
+            250.0,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 90,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_08": {
+      "wardrobe": "CITY",
+      "appearance_profile": "HELGA_07",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/RELAXED_SIT/0001.png",
+          "sha256": "85faedddb7c7cdb38b7fc0b278ebf8e1a8f5c4010a058d8a947381caeebe211d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            243,
+            305,
+            479
+          ],
+          "contact_px": [
+            251,
+            397
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 84,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/READ/0001.png",
+          "sha256": "4fc07677df0b3817f55d497752840d7eee7d3ba529b73af04a46f5c1d91cf890",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            218,
+            230,
+            295,
+            479
+          ],
+          "contact_px": [
+            256,
+            390
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 62,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/LIE_SIDE_CURLED/0001.png",
+          "sha256": "e36191190b37d36acaea124495a9ede9ec1f468f60a15654293a1e714dfbf66b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            369,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/IDLE_S/0001.png",
+          "sha256": "97077cdbb815ee05a037cbd96bbb1edae5b37c9838730addcde5947a7a2cd3d7",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            137,
+            302,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 91,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_09": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_03",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_09/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "ab83568f3128985414a8e3cbc4ce655d96bb506658a992b3f2bb6f059f5e3c9f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            210,
+            242,
+            302,
+            479
+          ],
+          "contact_px": [
+            248,
+            405
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 81,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_09/wardrobes/SHORT/READ/0001.png",
+          "sha256": "f12a46092e211297d7fc6b99b21c86b55406642913439da39914c7760173a577",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            229,
+            302,
+            479
+          ],
+          "contact_px": [
+            256,
+            398
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 83,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_09/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "c81f537480b697d3c783d14cb19917e16a912becd86f1686102e6b2e8e7e2683",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            380,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_09/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "eb19ea579cc5d6e94a4dc31407c3a3bf9da5c0cfb1b329a3232103739a420e06",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            136,
+            304,
+            480
+          ],
+          "contact_px": [
+            256.0,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 96,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_10": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_04",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_10/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "086b861cc0822ed1492087158f8537c383090c67b6b6d46462fa29167757269a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            242,
+            304,
+            479
+          ],
+          "contact_px": [
+            245,
+            405
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 90,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_10/wardrobes/SHORT/READ/0001.png",
+          "sha256": "a7ebed4e873b9ae6c1d33882c06ba8699c2392c08f78016c3e75a883e3beeadb",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            202,
+            230,
+            311,
+            479
+          ],
+          "contact_px": [
+            256,
+            398
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 87,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_10/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "2829cb3d41d47380c9bb05ac9ccf0118fa0207cd0e8e950bfdfe8b25a076be7e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            392,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_10/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "091b741363995bd42a197414fd46dca89ee3027c5f60496c70e738f367d1118e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            202,
+            136,
+            311,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 109,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_11": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_02",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_11/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "3a03b53f9b0dc2beaeed9dc3f4023e7b1deaea709bc16b20203f58e95e42fa58",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            194,
+            243,
+            318,
+            479
+          ],
+          "contact_px": [
+            267,
+            400
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 87,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_11/wardrobes/SHORT/READ/0001.png",
+          "sha256": "e73756cc418f2c28c2bcc3e86020a3ed557802ef2aa36a723ff4aa9d7678bb4f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            217,
+            230,
+            296,
+            479
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 76,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_11/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "1947d83fc0b5305b334a4f24da97136b566cc74ba262cf2ee262f7509e339d87",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            390,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_11/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "7695b13e73b4747ddd36360569c12b4a9f0f5a100daeebfb0bf6ccdbe8c0d779",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            138,
+            304,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 95,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_12": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_06",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "156d06d06319f90c101b3e118f1d67ec4d8bbbf02039c68dfbb8003f24f29282",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            197,
+            242,
+            316,
+            479
+          ],
+          "contact_px": [
+            248,
+            404
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 89,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/READ/0001.png",
+          "sha256": "b1027a40565b68c523e53241e7dff439ab7ecac0b6d48d3778e9bd17c7188628",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            210,
+            229,
+            303,
+            479
+          ],
+          "contact_px": [
+            256,
+            397
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 76,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "17315326cef1e6430579b696f704301882e85f0b3639c7d5cfd120cee49378cc",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            396,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "04f5a98b8db294b929b92e1504bb813aec60f080f58f7a17b0f20efaee691de3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            137,
+            305,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 97,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_13": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_05",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_13/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "b1c62b84c0c55722316842858d9fee06b877619b84f1ef2c78bded79f93d1a2f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            206,
+            243,
+            307,
+            479
+          ],
+          "contact_px": [
+            251,
+            401
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 88,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_13/wardrobes/SHORT/READ/0001.png",
+          "sha256": "ed0e7ad6014f63463915ba5fd125f6e22f20f9f950571a6f70084938cf267fbb",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            230,
+            292,
+            479
+          ],
+          "contact_px": [
+            256,
+            390
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 67,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_13/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "b4914445567adf4eeba619dd97e825df2d4754e6e426679c607c4e27102311f6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            358,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_13/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "998c9cd73cb2b3dbcef81e5870104479849f5689a07a71cb1ad4770a6b2b5276",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            136,
+            304,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 95,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_14": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_08",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_14/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "41f781d7fa5c7b64ed13cd7e127eb93356fccb9f26652a137e762d1318be4f84",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            243,
+            305,
+            479
+          ],
+          "contact_px": [
+            252,
+            397
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 95,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_14/wardrobes/SHORT/READ/0001.png",
+          "sha256": "adea062ae3d2b5ebe552c6a22673470bc13fd1fb513aa28ccb4adbcc359294ee",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            216,
+            230,
+            296,
+            479
+          ],
+          "contact_px": [
+            256,
+            394
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 73,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_14/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "3bd86b64319db3fffaa1e93a75f53062fcba6fb8cc1cc6a4deca85e2820ed777",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            368,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_14/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "12dc07e9617146da68d3befdeb46e0528d8750e2f09272e794714a6cb86e7c84",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            210,
+            137,
+            303,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 93,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_15": {
+      "wardrobe": "CITY",
+      "appearance_profile": "VALENTA_04",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_15/wardrobes/CITY/RELAXED_SIT/0001.png",
+          "sha256": "93151c9999cb261aa7a30f7e480ef2476d890ba4bdd20e1783bdd8972c7028bf",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            220,
+            243,
+            292,
+            479
+          ],
+          "contact_px": [
+            252,
+            393
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 63,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_15/wardrobes/CITY/READ/0001.png",
+          "sha256": "9bf5f90c667418f78f973af583534a6887afdca086361363d9f290f7fc10f29b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            220,
+            230,
+            293,
+            479
+          ],
+          "contact_px": [
+            256,
+            391
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 58,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_15/wardrobes/CITY/LIE_SIDE_CURLED/0001.png",
+          "sha256": "c80e03eb3c004f6f44b7dc5843b6e44a924e04b788c70c4bf34efe3e89d45a66",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            380,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_15/wardrobes/CITY/IDLE_S/0001.png",
+          "sha256": "d8387a2fdc5f904f9fe35cfb8e93eecbb7a4cff2c863e7c98305fa3bc7de7ab3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            210,
+            138,
+            302,
+            478
+          ],
+          "contact_px": [
+            256.0,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 92,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_16": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "LISA_07",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_16/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "55e946e45c10d9a34a04568f9ed6ded684cc3b1b0733cf2156ca06d774a5997e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            218,
+            243,
+            294,
+            479
+          ],
+          "contact_px": [
+            254,
+            392
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 71,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_16/wardrobes/SHORT/READ/0001.png",
+          "sha256": "f63ef0cac4030cb7693af4339ba85a5f113338c0df2781704b221590c87f2916",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            219,
+            230,
+            293,
+            479
+          ],
+          "contact_px": [
+            256,
+            391
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 69,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_16/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "5132f8dba23a034a490dd73a25a48eb7b6a48963c9ee070eee99a6d42163b0fe",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            407,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_16/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "fd5a30d5e9b7f1032bf9f6ba2c009376be3b5c02603e5217ab59eb04949adb65",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            138,
+            302,
+            478
+          ],
+          "contact_px": [
+            255.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 93,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_17": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "LISA_04",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_17/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "5d6d727fc573b2ee2b4d459953d8ef2ba51893c8046e43fdce269583f2899855",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            201,
+            243,
+            312,
+            479
+          ],
+          "contact_px": [
+            251,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 67,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_17/wardrobes/SHORT/READ/0001.png",
+          "sha256": "37951995a8c1332eee4d401129b2143b2a796c3dbaf8f531bd5db8360cf677c3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            217,
+            230,
+            295,
+            479
+          ],
+          "contact_px": [
+            256,
+            392
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 67,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_17/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "57ec20145bd104fc19778b652b1cc50777cc580a6e6fa8c856fa451df4872615",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            386,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_17/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "27d6fbc55450ec7abc1425c90bd67d67d6d4f665e861bebb4426d44e58936959",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            138,
+            302,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 91,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_18": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_06",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_18/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "53028fe09d192a998ef8afe44c46fc0da33fe94bcb6e7123ac8a3359dc8d2b29",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            219,
+            243,
+            293,
+            479
+          ],
+          "contact_px": [
+            252,
+            398
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 66,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_18/wardrobes/SHORT/READ/0001.png",
+          "sha256": "ebf2802b3e435536e32abfdfe60a14881011381f0b7c2285a39671e42d636f3b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            217,
+            229,
+            295,
+            479
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 66,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_18/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "e2914a8e324d66303e58785bd28da931ae18607107ef06df85e994a107c5a59f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            401,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_18/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "ea0c7983d0961f73463b5b69079c9f5702a88b41e53e92f9ff0702b85e6dd285",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            137,
+            305,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 97,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_19": {
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_05",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "b12c2eac5254b25c62f84bd44eb972a3d200cbc57bbf4191d014a5fad7a92c9c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            202,
+            243,
+            311,
+            479
+          ],
+          "contact_px": [
+            248,
+            405
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 78,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/READ/0001.png",
+          "sha256": "fe3682da65ba5b1f10219d185be2e22482f6258b7084bd76bb953277022dfeac",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            230,
+            300,
+            479
+          ],
+          "contact_px": [
+            256,
+            397
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 77,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "8705654661cee6d85edb7fc9304d1b72cfeb76ece1c4b28b0a5d31a536f8bb58",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            380,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 243,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "2e4c4699cbf601389720ff1d738567d7bd6760306b3c1233679bd287c0e1a956",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            205,
+            137,
+            306,
+            478
+          ],
+          "contact_px": [
+            255.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 101,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_20": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "LISA_08",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_20/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "2fbe865f67c2258ac903bcc2088b1e05f59738e97ab63b5fd3de07f6c56c895b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            243,
+            300,
+            479
+          ],
+          "contact_px": [
+            253,
+            397
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 83,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_20/wardrobes/SHORT/READ/0001.png",
+          "sha256": "9dc3b16ae129d5169d6fea5bb94ca54cb76960f91b27e5e5940db0c5d4db3229",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            216,
+            230,
+            296,
+            479
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 66,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_20/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "6cb2a9dbf028c7747b573e64a8f5e3562dd3b7eb07334a53e66dbff6e5a7497c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            368,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_20/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "dfd8f9d4aa858e6b364a55c4639aa1c534bfc0b5e73765dedabe2707d27d1733",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            138,
+            305,
+            478
+          ],
+          "contact_px": [
+            257.0,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 96,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_21": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_05",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/RELAXED_SIT/0001.png",
+          "sha256": "89bfa2d3ef5bbf2896fd1ff02e80012b8b4c904ffbe5f6825831773626fec4e5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            243,
+            305,
+            479
+          ],
+          "contact_px": [
+            248,
+            407
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 71,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/READ/0001.png",
+          "sha256": "75fde0fb04489689beb10dda5c40d44eaf78221695b75c9ea8f32d1b90a9178b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            230,
+            305,
+            479
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 78,
+          "book_baked": false
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "3332c90e322858cf032c51bb01a48311df0b425c23647bc725ed90bf13432f0e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            378,
+            378,
+            479
+          ],
+          "contact_px": [
+            256.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "9702864d66cded4951c99c82941d0615db2c7a680498dad221af7070258d5ab6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            204,
+            138,
+            309,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 105,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_22": {
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_03",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "331506aa400d9931eaf18a9f67e1f5976472c82d656665c25a2e918aded55711",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            242,
+            305,
+            479
+          ],
+          "contact_px": [
+            251,
+            400
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 66,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/READ/0001.png",
+          "sha256": "9c0843358e05c66b8b9326fccf14abaf47bcca188f7c9e717e3bbbbdb1c1f2a4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            213,
+            229,
+            299,
+            480
+          ],
+          "contact_px": [
+            256,
+            395
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 73,
+          "book_baked": true
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "e15e780b65d64c840bc6d4a824ffcaccc98bece68b8edb2fe880104c2cd70db6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            394,
+            379,
+            480
+          ],
+          "contact_px": [
+            256.5,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 245,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "3a1e551525d2a281cd639b795427a1d8afc2ca29ca60b0cbf4f0b956b95125cf",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            206,
+            138,
+            305,
+            478
+          ],
+          "contact_px": [
+            255.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 99,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_23": {
+      "wardrobe": "HOME",
+      "appearance_profile": "VALENTA_03",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "071de8dabd263a4cb525b4b3f470321fe3a541dad795f500bdb69e627890c412",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            242,
+            307,
+            479
+          ],
+          "contact_px": [
+            252,
+            403
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 63,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/READ/0001.png",
+          "sha256": "bd2d1930bd4086e67960e9c0e3e3996c15872601520134938425381e9179e502",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            214,
+            229,
+            299,
+            479
+          ],
+          "contact_px": [
+            256,
+            394
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 81,
+          "book_baked": true
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "87eb56d732fbd7910f4ac19a9c5a02c68242047935b8d67605979b47e8296f0e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            395,
+            379,
+            480
+          ],
+          "contact_px": [
+            256.5,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 245,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "5cd177ee97afcf70a0ba5444cfc56304a6b790949a38716a01a89f78e9511280",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            209,
+            137,
+            304,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 95,
+          "book_baked": false
+        }
+      }
+    },
+    "RES_24": {
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_01",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "6201712870efa972b9d15d4ca091c8b03445cc7df58ceb2efc1afaf4934b2ba9",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            206,
+            242,
+            307,
+            480
+          ],
+          "contact_px": [
+            251,
+            398
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 70,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/READ/0001.png",
+          "sha256": "622cdafb5ff561c6c1a65810270322300ac50b08f18937377b261e736e4e7791",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            215,
+            230,
+            297,
+            480
+          ],
+          "contact_px": [
+            256,
+            394
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 73,
+          "book_baked": true
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "01d52f0511af7ef88b36c7c0a7c848c35e9dcd4ed6a1def2836dca64fcc85b2c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            397,
+            379,
+            480
+          ],
+          "contact_px": [
+            256.5,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 245,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "81668a56cab24bc086e1d7e20a4b747169084358f81555360e926819e8c6079a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            137,
+            306,
+            480
+          ],
+          "contact_px": [
+            256.5,
+            480
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 99,
+          "book_baked": false
+        }
+      }
+    },
+    "NPC_VAMPIRE_GIRL": {
+      "wardrobe": "HOME",
+      "appearance_profile": "NPC_VAMPIRE_GIRL",
+      "states": {
+        "RELAXED_SIT": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/HOME/RELAXED_SIT/0001.png",
+          "sha256": "01afbb3d1706c44f3a71422c0b24ba418f031e5c66e72cf426c997781365a26e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            197,
+            243,
+            314,
+            479
+          ],
+          "contact_px": [
+            248,
+            405
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 81,
+          "book_baked": false
+        },
+        "READ": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/HOME/READ/0001.png",
+          "sha256": "120766889733ca4079881455f0e0748325fffbaadd600319ecfd6ce4a20fd24f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            230,
+            304,
+            479
+          ],
+          "contact_px": [
+            256,
+            398
+          ],
+          "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
+          "contact_span_px": 93,
+          "book_baked": true
+        },
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "dc11dbee7a6eec623ecf8e0af3412055be38b9d15d796d35a90428afa43738f1",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            134,
+            402,
+            379,
+            479
+          ],
+          "contact_px": [
+            256.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 245,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "0bda2282b93143aa96e8e7a4f1c1dbcaf7e07be96889195a9fe29a3a77795e61",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            207,
+            138,
+            304,
+            478
+          ],
+          "contact_px": [
+            255.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 97,
+          "book_baked": false
+        }
+      }
+    },
+    "NPC_CENTAUR": {
+      "wardrobe": "HOME",
+      "appearance_profile": "NPC_CENTAUR",
+      "states": {
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/NPC_CENTAUR/wardrobes/HOME/LIE_SIDE_CURLED/0001.png",
+          "sha256": "88f71754ac8d42229f7e5cb99f7bea885e8fd8d0948a885b6e21c7c653d01891",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            48,
+            343,
+            463,
+            479
+          ],
+          "contact_px": [
+            255.5,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 415,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/NPC_CENTAUR/wardrobes/HOME/IDLE_S/0001.png",
+          "sha256": "ffdc00850cc5c266e205ff728f37a5f1a1641dc5a0c801cb0c645702bd0eddf4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            206,
+            149,
+            307,
+            478
+          ],
+          "contact_px": [
+            256.5,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 101,
+          "book_baked": false
+        }
+      }
+    },
+    "NPC_GINGER_CAT_GUEST": {
+      "wardrobe": "SHORT",
+      "appearance_profile": "NPC_GINGER_CAT_GUEST",
+      "states": {
+        "LIE_SIDE_CURLED": {
+          "path": "assets/residents/NPC_GINGER_CAT_GUEST/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png",
+          "sha256": "88ffd102bd1a5d65903e3981ffaa2c424abd56a10988fbd2ac62cacc9ee9056d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            135,
+            398,
+            379,
+            479
+          ],
+          "contact_px": [
+            257.0,
+            479
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 244,
+          "book_baked": false
+        },
+        "IDLE_S": {
+          "path": "assets/residents/NPC_GINGER_CAT_GUEST/wardrobes/SHORT/IDLE_S/0001.png",
+          "sha256": "5f3eb9dc8efef0c14a96de47887a099e9dec90d9cb0f14cb65162b5e66e05804",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            187,
+            138,
+            325,
+            478
+          ],
+          "contact_px": [
+            256.0,
+            478
+          ],
+          "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
+          "contact_span_px": 138,
+          "book_baked": false
+        }
+      }
+    }
+  }
+}
