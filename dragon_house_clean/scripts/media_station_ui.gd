@@ -162,7 +162,11 @@ func _on_selected(index: int) -> void:
 		details.text += "\nНет совместимого локального файла для воспроизведения"
 	var image_path: String = str(item.get("preview",item.get("preview_path","")))
 	preview.texture = null
-	if image_path != "" and FileAccess.file_exists(image_path):
+	if content_viewer!=null:
+		preview.texture=content_viewer._load_preview(image_path)
+	elif image_path.begins_with("res://") and ResourceLoader.exists(image_path,"Texture2D"):
+		preview.texture=ResourceLoader.load(image_path,"Texture2D") as Texture2D
+	elif image_path != "" and FileAccess.file_exists(image_path):
 		var image := Image.new()
 		if image.load(image_path) == OK:
 			preview.texture = ImageTexture.create_from_image(image)

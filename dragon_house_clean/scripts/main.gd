@@ -261,6 +261,7 @@ func _ready() -> void:
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
+	world.merge_zna_media_previews()
 	_ensure_canonical_wall_displays()
 	if iter1_owner_review:
 		_register_iter1_review_creatures()

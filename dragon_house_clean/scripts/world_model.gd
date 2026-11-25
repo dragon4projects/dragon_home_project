@@ -602,6 +602,52 @@ func merge_reference_book_metadata(items: Array) -> int:
 		save_world()
 	return added
 
+func merge_zna_media_previews() -> int:
+	# ZNA004 delivered actual previews and source metadata, not local media
+	# files. Import classified records only; never promote unknown videos to
+	# films or manufacture playback. Run once on load, not in the life loop.
+	var file:=FileAccess.open("res://assets/manifests/media_preview_index.json",FileAccess.READ)
+	if file==null:return 0
+	var manifest=JSON.parse_string(file.get_as_text())
+	if typeof(manifest)!=TYPE_DICTIONARY:return 0
+	var added:=0
+	var changed:=false
+	for pair in [["audio","tracks","audio"],["film","films","film"]]:
+		var source_key:String=pair[0]
+		var category:String=pair[1]
+		var folder:String=pair[2]
+		var incoming=manifest.get(source_key,[])
+		if typeof(incoming)!=TYPE_ARRAY:continue
+		var records:Array=media.get(category,[])
+		var existing:Dictionary={}
+		for entry in records:
+			existing[str(entry.get("id",""))]=entry
+		for entry in incoming:
+			if typeof(entry)!=TYPE_DICTIONARY:continue
+			var id:String=str(entry.get("id",entry.get("content_id","")))
+			var title:String=str(entry.get("title",""))
+			var relative:String=str(entry.get("preview_path",""))
+			if id=="" or title=="" or not relative.begins_with("assets/media/previews/"+folder+"/") or relative.contains("..") or relative.contains("\\"):
+				continue
+			if not relative.get_extension().to_lower() in ["webp","png","jpg","jpeg"]:continue
+			var preview_path:String="res://"+relative
+			if not ResourceLoader.exists(preview_path,"Texture2D") and not FileAccess.file_exists(preview_path):continue
+			if existing.has(id):
+				# Preserve imported local file, user edits and existing artwork.
+				var old:Dictionary=existing[id]
+				if str(old.get("preview",old.get("preview_path","")))=="":
+					old["preview"]=preview_path
+					changed=true
+				continue
+			var record:Dictionary={"id":id,"title":title,"artist":str(entry.get("artist","")),"duration":str(entry.get("duration","")),"preview":preview_path,"file_path":"","catalog_only":true,"provenance":"ZNA004 · source-derived preview","source_url":str(entry.get("source_url","")),"owner_approved":bool(entry.get("owner_approved",false))}
+			records.append(record)
+			existing[id]=record
+			added+=1
+			changed=true
+		media[category]=records
+	if changed:save_world()
+	return added
+
 func read_resident_profiles() -> Array:
 	var f := FileAccess.open("res://data/resident_profiles.json", FileAccess.READ)
 	if f == null:
