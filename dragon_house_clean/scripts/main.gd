@@ -1948,7 +1948,9 @@ func desired_actor_animation(actor: Dictionary) -> String:
 			return str(actor["station_contact"]["state"])
 		if str(actor.get("intent",""))=="WATCH_FILM":
 			return "IDLE_N"
-		if str(actor.get("intent",""))=="GET_COFFEE":
+		if str(actor.get("intent","")) in ["GET_COFFEE","TALK_PAIR","REST","SLEEP","READ_BOOK","WORK_CREATE"]:
+			# Uncalibrated activity art can contain a seated body. Never use it
+			# at a standing approach point or at a stale furniture claim.
 			return "IDLE_S"
 	if zoom_current < 55.0 and actor.get("phase","idle") == "travel":
 		var direction: String = str(actor.get("moving_axis",""))
