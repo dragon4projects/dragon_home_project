@@ -13,6 +13,12 @@ func run()->void:
 	assert(scene.world.save_path=="user://dragon_house_canonical_architecture_20261125.json")
 	assert(scene.room_root.get_child_count()==65)
 	assert(scene.teea008_review.sketchfab_common_enabled)
+	var overview_count:=0
+	for node in scene.room_root.get_children():
+		var overview:Node3D=node.get_node_or_null("Layer_OverviewCues")
+		if overview!=null and int(overview.get_meta("real_model_count",0))>0:
+			overview_count+=1
+	assert(overview_count==15,str(overview_count))
 	assert(scene.world.guest_room_for("NPC_CENTAUR")["size_id"]=="R2")
 	var active:=0
 	for profile in scene.world.read_resident_profiles():
@@ -34,6 +40,9 @@ func run()->void:
 	assert(group.find_child("common_r3_animated_hearth_review",true,false)!=null)
 	var dragon:Node3D=group.find_child("canonical_hearth_sleeping_dragon",true,false)
 	assert(dragon!=null and dragon.get_child_count()==1)
+	var overview:Node3D=group.get_node("Layer_OverviewCues")
+	assert(overview.find_child("canonical_hearth_sleeping_dragon",true,false)!=null)
+	assert(not overview.visible)
 	var nav=scene.life.candidate_navigation
 	assert(not nav.clear(room,Vector2(6.45,-1.40)))
 	assert(nav.clear(room,Vector2(6.45,1.50)))

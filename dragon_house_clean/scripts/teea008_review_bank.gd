@@ -81,7 +81,7 @@ func initialize(force_review:bool=false) -> bool:
 func variant(kind:String, width:int)->Dictionary:
 	return layouts.get("%s/R%d" % [kind,width],{}) if enabled else {}
 
-func _mount(parent:Node3D,item:Dictionary,scale_at:Callable)->Node3D:
+func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->Node3D:
 	var asset:String=str(item["asset_id"])
 	var position:Array=item["room_local_xyz"]
 	var rotation:Array=item["rotation_deg_xyz"]
@@ -103,7 +103,7 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable)->Node3D:
 	wrapper.set_meta("owner_approved",false)
 	parent.add_child(wrapper)
 	wrapper.add_child(scene.instantiate())
-	if asset=="sketchfab_fireplace_animated":
+	if animate and asset=="sketchfab_fireplace_animated":
 		for player in wrapper.find_children("*","AnimationPlayer",true,false):
 			if player.has_animation("Fire"):
 				var clip:Animation=player.get_animation("Fire")
@@ -283,3 +283,24 @@ func apply_architecture_layouts()->void:
 	hearth["instances"]=items
 	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_DRAGON_20261125_V1"
 	layouts["common/R3"]=hearth
+
+func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->int:
+	# Actual normalized model silhouettes, not box proxies. Shared imported
+	# resources can use Godot mesh LOD; no media hotspots or running fire clips.
+	var row:Dictionary=variant(kind,width)
+	var count:=0
+	for item in row.get("instances",[]):
+		var asset:String=str(item["asset_id"])
+		var policy:String=str(item.get("placement_policy",""))
+		if policy not in ["floor_fixed","soft_floor"] and asset not in ["media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
+			continue
+		var wrapper:Node3D=_mount(parent,item,scale_at,false)
+		if wrapper==null:continue
+		for player in wrapper.find_children("*","AnimationPlayer",true,false):
+			player.stop()
+			player.active=false
+		for mesh in wrapper.find_children("*","MeshInstance3D",true,false):
+			mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			mesh.lod_bias=0.5
+		count+=1
+	return count

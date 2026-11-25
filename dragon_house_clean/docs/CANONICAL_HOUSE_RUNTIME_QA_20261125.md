@@ -1,0 +1,7 @@
+# Architecture runtime acceptance — next stage
+
+Baseline ecea3d25d666a5b856ce3a2e8f85f2a35a362b27; clean checkout smoke Actions 45589466563 completed successfully. Logs contain CANONICAL_HOUSE_TOPOLOGY_PASS and CANONICAL_HOUSE_SCENE_PASS. Godot 4.7.2; six floors, 65 physical nodes, 24 bound residents, three guests, sleeping dragon, camera shells and private facades checked.
+
+This change replaces TEEA008 overview boxes with shared normalized model silhouettes (static, no media interaction or animated fire in overview), retains full near furniture, fixes placed physical-object visibility across floors, prevents art load in facade-only rooms, and permits traffic recovery in legal private frontage without granting interior access. Does not claim full guest-door visual rebuild or a new autonomous private-room implementation. No new archive-only assets published.
+
+New gates: repeat smoke, 600 simulation seconds of runtime, actual movement up/down all three shafts in isolation, clearance/privacy sampling, measured traffic/planner statistics, rendered overview/hearth/centaur/cinema/library images. Export candidate Windows and macOS only if mandatory tests succeed; inspect both PCKs from an empty project. No claim of visual approval or real target-hardware performance. Existing three-shaft code has no independent cabin capacity/queue contract; vertical concurrent overlap and existing stalls remain separate issues. Never overwrite previous saves.

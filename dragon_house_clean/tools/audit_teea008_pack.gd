@@ -57,5 +57,10 @@ func run()->void:
 		var path:String="res://"+str(hand["path"])
 		assert(str(proof["frames"].get(path,""))==str(hand["sha256"]),id)
 		assert(hand["hand_px"].size()==2)
+	if FileAccess.file_exists("res://data/integration_candidates/CANONICAL_HOUSE_ARCHITECTURE.enabled"):
+		assert(ResourceLoader.exists("res://scripts/canonical_house_seed.gd"))
+		for asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
+			assert(ResourceLoader.exists("res://assets/decor_bank/"+asset+"/model.gltf","PackedScene"),asset)
+		print("CANONICAL_PACK_ASSETS_PASS dragon=1 cubes=3")
 	print("TEEA008_PACK_AUDIT_PASS assets=",count," sketchfab=",new_models," layouts=33 media=32 pose_frames=",verified," hand_contacts=27 actor_banks=",banks)
 	quit(0)

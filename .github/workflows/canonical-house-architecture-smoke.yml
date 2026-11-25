@@ -1,53 +1,115 @@
-name: Canonical house architecture smoke
+name: Canonical house runtime QA and owner review builds
 on:
   push:
     branches: [integration/canonical-house-architecture-20261125]
     paths:
       - 'dragon_house_clean/scripts/**'
       - 'dragon_house_clean/tests/test_canonical_house*'
+      - 'dragon_house_clean/tests/capture_canonical_house.gd'
       - '.github/workflows/canonical-house-architecture-smoke.yml'
 permissions:
   contents: read
 jobs:
-  architecture-smoke:
+  runtime-and-export:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
           fetch-depth: 1
           persist-credentials: false
-      - name: Restore legacy review resources
+      - name: Verify assets and restore legacy review resources
         run: |
           set -euo pipefail
+          python3 dragon_house_clean/tools/verify_teea008_delivery.py
           bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
           find dragon_house_clean/assets/props -maxdepth 1 -type f -name '*.blend' -delete
           python3 -m pip install --disable-pip-version-check --quiet pillow scipy
           python3 dragon_house_clean/tools/build_room_visual_components_review.py
-      - name: Install Godot
+          python3 dragon_house_clean/tools/prepare_teea008_live_export.py dragon_house_clean
+      - name: Install Godot 4.7.2
         run: |
           set -euo pipefail
           curl -fLsS --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
           unzip -q /tmp/godot.zip -d /tmp
           chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
-      - name: Import and two focused architecture tests
+      - name: Import and canonical architecture runtime gates
         working-directory: dragon_house_clean
         run: |
           set -euo pipefail
-          timeout 600 /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --import > canonical_import.log 2>&1
+          godot=/tmp/Godot_v4.7.2-stable_linux.x86_64
+          timeout 600 "$godot" --headless --path . --import > canonical_import.log 2>&1
           ! grep -Eq 'SCRIPT ERROR|Parse Error' canonical_import.log
-          for t in test_canonical_house_architecture test_canonical_house_scene; do
-            XDG_DATA_HOME="$RUNNER_TEMP/$t" timeout 120 /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
+          for t in test_canonical_house_architecture test_canonical_house_scene test_canonical_house_life; do
+            XDG_DATA_HOME="$RUNNER_TEMP/$t" timeout 240 "$godot" --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
             grep -q '_PASS' "$t.log"
             ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' "$t.log"
           done
-      - name: Upload test logs
+      - name: Capture rendered architecture
+        working-directory: dragon_house_clean
+        run: |
+          set -euo pipefail
+          if ! command -v xvfb-run >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y -qq xvfb; fi
+          XDG_DATA_HOME="$RUNNER_TEMP/canonical-render" timeout 150 xvfb-run -a -s '-screen 0 1600x1000x24' /tmp/Godot_v4.7.2-stable_linux.x86_64 --path . --rendering-method gl_compatibility --script res://tests/capture_canonical_house.gd | tee canonical_render.log
+          grep -q CANONICAL_RENDER_CAPTURE_PASS canonical_render.log
+          ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' canonical_render.log
+      - name: Install Windows and Mac export templates
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/godot_export.tpz https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          dest="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "$dest"
+          unzip -jo /tmp/godot_export.tpz templates/version.txt templates/macos.zip templates/windows_release_x86_64.exe -d "$dest"
+      - name: Export Windows and Mac owner review candidates
+        run: |
+          set -euo pipefail
+          mkdir -p releases/windows
+          godot=/tmp/Godot_v4.7.2-stable_linux.x86_64
+          cd dragon_house_clean
+          "$godot" --headless --path . --export-release "Windows Desktop" ../releases/windows/DragonHouse.exe > ../releases/windows_export.log 2>&1
+          "$godot" --headless --path . --export-release "macOS" ../releases/DragonHouse_Canonical_macOS_Universal.zip > ../releases/mac_export.log 2>&1
+          cd ../releases
+          test -s windows/DragonHouse.exe && test -s windows/DragonHouse.pck
+          unzip -t DragonHouse_Canonical_macOS_Universal.zip | tail -1
+          unzip -l DragonHouse_Canonical_macOS_Universal.zip | grep -qi 'gdsqlite.*macos.*template_release'
+          ! grep -Eq 'SCRIPT ERROR|Parse Error|Export failed' windows_export.log mac_export.log
+          mkdir -p "$RUNNER_TEMP/pack-audit"
+          printf 'config_version=5\n' > "$RUNNER_TEMP/pack-audit/project.godot"
+          cp ../dragon_house_clean/tools/audit_teea008_pack.gd "$RUNNER_TEMP/pack-audit/"
+          unzip -jo DragonHouse_Canonical_macOS_Universal.zip '*.pck' -d "$RUNNER_TEMP/pack-audit"
+          macpack="$(find "$RUNNER_TEMP/pack-audit" -maxdepth 1 -name '*.pck' -print -quit)"
+          test -n "$macpack"
+          for pack in "$PWD/windows/DragonHouse.pck" "$macpack"; do
+            timeout 90 "$godot" --headless --path "$RUNNER_TEMP/pack-audit" --script res://audit_teea008_pack.gd -- "$pack" 2>&1 | tee -a pack_audit.log
+          done
+          test "$(grep -c CANONICAL_PACK_ASSETS_PASS pack_audit.log)" -eq 2
+          test "$(grep -c TEEA008_PACK_AUDIT_PASS pack_audit.log)" -eq 2
+          ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' pack_audit.log
+          printf 'Owner review only. Separate save; no migration. Unsigned macOS Universal.\n' > windows/README.txt
+          (cd windows && zip -qr ../DragonHouse_Canonical_Windows_x64.zip .)
+          sha256sum DragonHouse_Canonical_*.zip > SHA256SUMS.txt
+      - name: Upload review builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-Canonical-Owner-Review
+          path: |
+            releases/DragonHouse_Canonical_*.zip
+            releases/SHA256SUMS.txt
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 3
+      - name: Upload QA evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: canonical-house-smoke-logs
+          name: canonical-house-runtime-evidence
           path: |
             dragon_house_clean/canonical_import.log
             dragon_house_clean/test_canonical_house*.log
+            dragon_house_clean/canonical_render.log
+            dragon_house_clean/private_review/canonical_*.png
+            releases/*_export.log
+            releases/pack_audit.log
+          if-no-files-found: ignore
           retention-days: 3

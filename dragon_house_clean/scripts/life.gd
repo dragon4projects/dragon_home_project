@@ -1212,7 +1212,10 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 	# Replanning is legal only at an actual traversable physical position.
 	# Do not move the actor, rewrite the graph, or lose a held object.
 	var room:Dictionary=world.get_room(roundi(at.x/world.MODULE_W),roundi(at.y/world.FLOOR_H))
-	if room.is_empty() or not world.is_accessible(room,str(actor["id"])):
+	if room.is_empty():
+		return false
+	# A public frontage is legal transit, not private interior access.
+	if not world.is_accessible(room,str(actor["id"])) and not (world.allows_transit(room) and at.z>=1.35):
 		return false
 	if candidate_navigation.has_layout(room) and not candidate_navigation.clear(room,world.room_space.world_to_local(room,at)):
 		return false

@@ -1196,7 +1196,7 @@ func _group_facade_only(group: Dictionary) -> bool:
 	var cells: Array = group.get("cells",[])
 	if cells.is_empty():
 		return false
-	return not world.public_cutaway_allowed(cells[0])
+	return not world.public_cutaway_allowed(world.room_by_id(str(group.get("primary_id",""))))
 
 func _ensure_fallback_anchor_furniture(module: Node3D, anchors: Array) -> void:
 	# Approved furniture_back art carries the visible furniture itself and uses
@@ -1380,7 +1380,7 @@ func make_room(group: Dictionary) -> void:
 	var art_type := _review_room_art_type(group)
 	visual_room_groups[n.name]["art_type"] = art_type
 	var accepted: Array=interior_skin.validated_layers(art_type,int(group["width"]))
-	visual_room_groups[n.name]["has_art"] = not accepted.is_empty()
+	visual_room_groups[n.name]["has_art"] = not facade_only and not accepted.is_empty()
 	var has_authored_furniture:bool=accepted.any(
 		func(item): return str(item.get("role","")) == "furniture_back")
 	# The owner explicitly replaced Artifact pedestals and Workshop workbenches
@@ -1475,7 +1475,13 @@ func make_room(group: Dictionary) -> void:
 		var overview := Node3D.new()
 		overview.name = "Layer_OverviewCues"
 		n.add_child(overview)
-		add_room_overview_cues(overview,group)
+		if architecture_review and teea008_variant:
+			var overview_count:int=teea008_review.populate_overview(overview,art_type,int(group["width"]),Callable(self,"depth_visual_scale"))
+			overview.set_meta("real_model_count",overview_count)
+			if overview_count==0:
+				add_room_overview_cues(overview,group)
+		else:
+			add_room_overview_cues(overview,group)
 	if facade_only:
 		# Private/closed-guest interiors are facade-only; no hidden room is materialized.
 		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
@@ -1774,7 +1780,7 @@ func update_physical_objects() -> void:
 		if not world.public_cutaway_allowed(room):
 			anchor.visible = false
 			continue
-		anchor.visible = current_mode == "HOUSE" or int(room.get("level",0)) == semantic_view.level
+		anchor.visible = semantic_view.group_visible(room)
 		if not anchor.visible:
 			continue
 		var room_center:Vector3=world.room_center_pos(room)
@@ -3089,6 +3095,14 @@ func update_render_lod() -> void:
 			continue
 		var furniture: Node3D = group_node.get_node_or_null("LocalFurniture")
 		var cues: Node3D = group_node.get_node_or_null("Layer_OverviewCues")
+		if architecture_review and _group_facade_only(group):
+			# Access can change after the scene was constructed. Never leave a
+			# guest cutaway or its overview meshes exposed after door closure.
+			_release_room_art(group_node)
+			_release_furniture(group_node)
+			if furniture!=null:furniture.visible=false
+			if cues!=null:cues.visible=false
+			continue
 		# Real room art is part of the Fallout-Shelter cutaway at every zoom.
 		# Camera proximity controls only heavier 3D/furniture detail. Manual FREE
 		# navigation is equivalent to ROOM for detail materialization.
