@@ -3522,6 +3522,10 @@ func _update_teea008_media_previews()->void:
 			continue
 		var room_id:String=str(anchor.get_meta("room_id",""))
 		var surface_id:String=str(anchor.get_meta("surface_id",""))
+		if bool(anchor.get_meta("carrier_hit_only",false)):
+			var obsolete:Node3D=anchor.get_node_or_null("BoundPreview")
+			if obsolete!=null:obsolete.free()
+			continue
 		var item:Dictionary=teea008_media_bindings.resolve(room_id,surface_id)
 		var path:String=str(item.get("preview",item.get("preview_path","")))
 		if str(anchor.get_meta("preview_source",""))==path:

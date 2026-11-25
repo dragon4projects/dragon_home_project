@@ -37,5 +37,33 @@ func run()->void:
 					approaches+=1
 		tested+=1
 	assert(tested==12,str(tested))
-	print("CANONICAL_PUBLIC_INTERIORS_PASS rooms=",tested," route_checks=",approaches)
+	# Saved surface IDs now resolve to actual devices, not separate wall props.
+	var expected:Dictionary={
+		"music.r3.audio.01":"music_r3_p2_boombox",
+		"music.r3.audio.02":"music_r3_p2_cassette",
+		"music.r3.audio.03":"music_cassette_deck",
+		"music.r3.audio.04":"music_shelf_cassette_player",
+		"cinema.r3.film.tv":"cinema_r3_p2_tv"
+	}
+	for kind in ["music","cinema"]:
+		var rooms:Array=world.matching_rooms([kind])
+		assert(not rooms.is_empty())
+		var room:Dictionary=rooms[0]
+		scene.selected_room=room["id"]
+		scene.set_mode("ROOM")
+		scene.zoom_current=scene.zoom
+		scene.smooth_focus=scene.desired_focus
+		scene.apply_camera(1.0)
+		scene.update_render_lod()
+		var checked:Dictionary={}
+		for anchor in get_nodes_in_group("teea008_media_surface"):
+			if str(anchor.get_meta("room_id",""))!=str(room["id"]):continue
+			var id:String=str(anchor.get_meta("surface_id",""))
+			if not expected.has(id):continue
+			assert(str(anchor.get_parent().name)==str(expected[id]),id)
+			assert(bool(anchor.get_meta("carrier_hit_only",false)),id)
+			assert(anchor.get_node_or_null("BoundPreview")==null)
+			checked[id]=true
+		assert(checked.size()==(4 if kind=="music" else 1),str(checked))
+	print("CANONICAL_PUBLIC_INTERIORS_PASS rooms=",tested," route_checks=",approaches," physical_media_carriers=5")
 	quit(0)

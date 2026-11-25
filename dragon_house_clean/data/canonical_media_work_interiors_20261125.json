@@ -734,6 +734,67 @@
         "station_candidates": [],
         "support_slots": [],
         "owner_approved": false
+      },
+      {
+        "instance_id": "music_shelf_cassette_player",
+        "asset_id": "portable_cassette_player",
+        "room_local_xyz": [
+          -0.23330300000000026,
+          0.814706,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.3198800000000004,
+          0.814706,
+          -1.699822
+        ],
+        "bounds_max_m": [
+          -0.14672700000000027,
+          0.945512,
+          -1.6601769999999998
+        ],
+        "placement_policy": "tabletop_candidate",
+        "support_ref": "music_r3_storage_shelf.shelf_4_1",
+        "owner_approved": false,
+        "status": "PROPOSED",
+        "physical_footprint_xz": [
+          [
+            -0.3198800000000004,
+            -1.699822
+          ],
+          [
+            -0.14672700000000027,
+            -1.699822
+          ],
+          [
+            -0.14672700000000027,
+            -1.6601769999999998
+          ],
+          [
+            -0.3198800000000004,
+            -1.6601769999999998
+          ]
+        ],
+        "support_local_transform": {
+          "position_m": [
+            0.38,
+            0.890225,
+            0
+          ],
+          "rotation_deg_xyz": [
+            0,
+            0,
+            0
+          ],
+          "support_instance_id": "music_r3_audio_console",
+          "slot_id": "p2_cassette"
+        }
       }
     ],
     "study/R3": [

@@ -162,6 +162,7 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 		anchor.position=Vector3(float(center[0]),float(center[1]),float(center[2]))
 		anchor.set_meta("surface_id",str(id))
 		anchor.set_meta("surface_category",str(spec["legacy_runtime_category"]))
+		anchor.set_meta("carrier_hit_only",bool(spec.get("carrier_hit_only",false)))
 		anchor.set_meta("surface_size",Vector2(float(aperture["width_m"]),float(aperture["height_m"])))
 		anchor.set_meta("room_id",str(parent.get_meta("room_id","")))
 		anchor.set_meta("owner_approved",false)
@@ -307,6 +308,45 @@ func apply_architecture_layouts()->void:
 	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_INTERIOR_20261125_V1"
 	layouts["common/R3"]=hearth
 	_apply_social_interiors()
+	_apply_canonical_device_bindings()
+
+func _apply_canonical_device_bindings()->void:
+	# Preserve surface IDs (saved room-instance assignments). The canonical
+	# R3 audio surfaces now belong to existing physical media devices instead
+	# of separate wall rectangles. TV has its own independent catalog target.
+	var targets:Dictionary={
+		"music.r3.audio.01":["music/R3","music_r3_p2_boombox"],
+		"music.r3.audio.02":["music/R3","music_r3_p2_cassette"],
+		"music.r3.audio.03":["music/R3","music_cassette_deck"],
+		"music.r3.audio.04":["music/R3","music_shelf_cassette_player"],
+		"cinema.r3.film.tv":["cinema/R3","cinema_r3_p2_tv"]
+	}
+	for surface_id in targets:
+		var key:String=str(targets[surface_id][0])
+		var carrier_id:String=str(targets[surface_id][1])
+		var source_id:String="cinema.r3.film.poster.02" if surface_id=="cinema.r3.film.tv" else str(surface_id)
+		if not surfaces.has(source_id):continue
+		var source:Dictionary=surfaces[source_id].duplicate(true)
+		for item in layouts.get(key,{}).get("instances",[]):
+			if str(item["instance_id"])!=carrier_id:continue
+			var lo:Array=item["bounds_min_m"]
+			var hi:Array=item["bounds_max_m"]
+			var p:Array=item["room_local_xyz"]
+			var scale_value:float=float(item["uniform_scale"])
+			if scale_value<=0.0:continue
+			source["surface_id"]=surface_id
+			source["holder_asset_id"]=str(item["asset_id"])
+			source["carrier_instance_id"]=carrier_id
+			source["holder_instance"]={}
+			# Measured device-front envelope, not a fabricated video-screen
+			# aperture. Do not cover the real device with an album/poster quad.
+			source["aperture"]["center_xyz"]=[((float(lo[0])+float(hi[0]))*0.5-float(p[0]))/scale_value,((float(lo[1])+float(hi[1]))*0.5-float(p[1]))/scale_value,(float(hi[2])-float(p[2]))/scale_value+0.005]
+			source["aperture"]["width_m"]=(float(hi[0])-float(lo[0]))/scale_value
+			source["aperture"]["height_m"]=(float(hi[1])-float(lo[1]))/scale_value
+			source["aperture"]["measurement"]="Measured device envelope; hit target only"
+			source["carrier_hit_only"]=true
+			surfaces[surface_id]=source
+			break
 
 func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->int:
 	# Actual normalized model silhouettes, not box proxies. Shared imported

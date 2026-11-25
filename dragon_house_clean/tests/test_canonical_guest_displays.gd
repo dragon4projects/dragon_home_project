@@ -62,7 +62,7 @@ func run()->void:
 	var node:Node3D=scene.object_nodes[aid]
 	assert(node.visible and node.get_node_or_null("ArtifactGlassCube")!=null)
 	assert(is_equal_approx(float(node.get_meta("artifact_cube_side")),0.18))
-	assert(node.get_node("Visual").position.y==scene.ARTIFACT_CUBE_SIDE*0.5)
+	assert(is_equal_approx(float(node.get_node("Visual").position.y),scene.ARTIFACT_CUBE_SIDE*0.5))
 	var hidden_empty:=false
 	for sample in get_nodes_in_group("canonical_conditional_dressing"):
 		if str(sample.get_meta("room_id",""))==rid and str(sample.get_meta("decor_slot_id",""))==str(slot["id"]):
