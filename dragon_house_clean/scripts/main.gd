@@ -219,6 +219,9 @@ func _ready() -> void:
 		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
+		teea008_review.live_physical_objects=true
+		life.candidate_cups.setup(world,life.candidate_navigation)
+		life.candidate_cups.register_review_mugs()
 		life.candidate_navigation.prepare_rooms(world.rooms)
 		print("TEEA008_LIVE_START roster")
 		_activate_teea008_roster()
@@ -1641,6 +1644,13 @@ func make_physical_objects() -> void:
 		anchor.name = "Object_" + str(object_id)
 		object_root.add_child(anchor)
 		var asset_id := str(object.get("asset_id",""))
+		if teea008_live and asset_id in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:
+			var model:PackedScene=ResourceLoader.load(teea008_review.ROOT+asset_id+"/model.gltf","PackedScene") as PackedScene
+			if model!=null:
+				anchor.add_child(model.instantiate())
+				object_nodes[str(object_id)]=anchor
+				register_content_hotspot(anchor,"cups",str(object_id),str(object.get("display_name",object_id)))
+				continue
 		var texture: Texture2D = asset_banks.prop_display_texture(asset_id) if asset_id != "" else null
 		if texture==null and content_viewer!=null:
 			texture=content_viewer._load_preview(str(object.get("preview_path","")))
@@ -1653,6 +1663,8 @@ func make_physical_objects() -> void:
 			var visual_height:float=float(object.get("display_world_height",0.48))
 			sprite.pixel_size = visual_height / maxf(1.0,float(texture.get_height()))
 			sprite.position.y = 0.0 if wall_display else 0.28
+			if teea008_live and str(object.get("viewer_category",""))=="cups":
+				sprite.position.y=visual_height*0.5
 			if wall_display:
 				# A wall display is a physical mounted object, not a floating
 				# transparent PNG. Build its frame from the actual texture
@@ -1715,6 +1727,9 @@ func update_physical_objects() -> void:
 				holder_z+0.18) + _object_offset(str(object_id))*0.25
 			var held_scale: float = depth_visual_scale(holder_z)
 			anchor.scale=Vector3.ONE*held_scale
+			if teea008_live and str(object.get("viewer_category",""))=="cups":
+				# Actual cup mesh, not the unrelated cup baked into DRINK art.
+				anchor.position=Vector3(holder_x+0.24*held_scale,float(holder.get("visual_y",0.0))+0.92*held_scale,holder_z+0.16)
 			continue
 		if str(object.get("state","")) == "STASHED":
 			# Hidden means hidden: the canonical location remains in world state,
@@ -1756,6 +1771,14 @@ func update_physical_objects() -> void:
 			var room_world:Vector3=world.room_local_to_world(room,local_anchor)
 			anchor.position=Vector3(depth_visual_x(room_id,room_world.x,local_anchor.y),room_world.y+0.22,room_world.z)
 			anchor.scale=Vector3.ONE*depth_visual_scale(local_anchor.y)
+			if teea008_live and str(object.get("viewer_category",""))=="cups":
+				var slot:Dictionary=life.candidate_cups.slot_for_object(object)
+				if not slot.is_empty():
+					var pos:Array=slot["xyz"]
+					var inst:Array=slot["instance_xyz"]
+					var scale_value:float=depth_visual_scale(float(inst[2]))
+					anchor.position=Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
+					anchor.scale=Vector3.ONE*scale_value
 
 func make_residents() -> void:
 	var resident_tex := make_sprite_texture(false)
@@ -1899,6 +1922,8 @@ func desired_actor_animation(actor: Dictionary) -> String:
 			return str(actor["station_contact"]["state"])
 		if str(actor.get("intent",""))=="WATCH_FILM":
 			return "IDLE_N"
+		if str(actor.get("intent",""))=="GET_COFFEE":
+			return "IDLE_S"
 	if zoom_current < 55.0 and actor.get("phase","idle") == "travel":
 		var direction: String = str(actor.get("moving_axis",""))
 		if direction == "left":

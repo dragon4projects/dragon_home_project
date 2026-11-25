@@ -491,6 +491,12 @@ func migrate_legacy_positions(world) -> int:
 func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary,intent:String)->Dictionary:
 	var claim:Dictionary=_claim(room,index,spot)
 	var kind:String=str(spot.get("kind","standing"))
+	if intent=="GET_COFFEE":
+		if str(spot.get("cup_slot_id",""))=="":
+			return {}
+		claim["kind"]="standing"
+		claim["pose_hint"]="IDLE_S"
+		return claim
 	if intent in ["FETCH_BOOK","RETURN_BOOK"]:
 		if str(room.get("type",""))!="library" or kind!="standing" or not str(spot.get("candidate_asset_id","")).contains("shelf") or spot.get("candidate_supports",[]).is_empty():
 			return {}
@@ -513,9 +519,7 @@ func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary
 		claim["pose_hint"]="IDLE_N"
 	elif intent=="WORK_CREATE" and kind!="work":
 		return {}
-	elif intent=="GET_COFFEE":
-		# No physical cup/service station binding is approved in this bank yet.
-		return {}
+
 	elif intent=="VIEW_ART" and str(spot.get("furniture_id",""))=="":
 		return {}
 	if kind in ["seat","floor_rest"]:
@@ -549,3 +553,13 @@ func _candidate_single(world,actor:Dictionary,room:Dictionary,intent:String,poin
 		if fallback.is_empty():
 			fallback=claim
 	return fallback
+
+func cup_claim(world,actor:Dictionary,room:Dictionary,slot_id:String)->Dictionary:
+	if not world.is_accessible(room,str(actor["id"])):
+		return {}
+	var used:Dictionary=used_slots(world,str(room["id"]),[str(actor["id"])])
+	var points:Array=layout_for_world(world,room)
+	for index in range(points.size()):
+		if not used.has(index) and str(points[index].get("cup_slot_id",""))==slot_id:
+			return _candidate_claim(actor,room,index,points[index],"GET_COFFEE")
+	return {}

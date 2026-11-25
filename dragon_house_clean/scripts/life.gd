@@ -1,5 +1,6 @@
 extends RefCounted
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
+const CandidateCupRuntime = preload("res://scripts/teea008_cup_runtime.gd")
 const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 const RoomStations = preload("res://scripts/room_stations.gd")
 const AmbientCreatureRuntime = preload("res://scripts/ambient_creature_runtime.gd")
@@ -23,6 +24,7 @@ var log: Array = []
 var steps := 0
 var candidate_navigation=null
 var candidate_media_bindings=null
+var candidate_cups=CandidateCupRuntime.new()
 # Deterministic QA may inject a daypart; production uses the system clock.
 var daypart_override: String=""
 var last_cleanup_wall_time := 0
@@ -63,6 +65,13 @@ func _quoted_media_title(actor: Dictionary, category_key: String,
 
 func status(actor: Dictionary) -> String:
 	var intent: String = str(actor.get("intent","REST"))
+	if candidate_navigation!=null and intent=="GET_COFFEE":
+		var cup:Dictionary=world.physical_object(str(actor.get("cup_task_id","")))
+		if str(actor.get("phase",""))=="travel":
+			return "идёт за чашкой"
+		if str(cup.get("current_holder_id",""))==str(actor["id"]):
+			return "держит "+str(cup.get("display_name","чашку"))
+		return "свободна" if not actor.has("cup_task_stage") else "ожидает чашку"
 	if actor.get("phase","idle") == "travel":
 		return str(TRAVEL_STATUS.get(intent, "идёт по делу"))
 	var active_title:=_quoted_media_title(
@@ -104,6 +113,7 @@ func setup(p_world) -> void:
 		stations.candidate_navigation=candidate_navigation
 		locomotion.candidate_navigation=candidate_navigation
 		creature_runtime.locomotion.candidate_navigation=candidate_navigation
+		candidate_cups.setup(world,candidate_navigation)
 		_prepare_candidate_positions()
 	media_runtime.setup(world)
 	creature_runtime.setup(world)
@@ -211,6 +221,8 @@ func refresh_changed_station_claims() -> int:
 			actor.erase("held_book")
 		end_concrete_media(actor)
 		_clear_book_task(actor)
+		if str(actor.get("cup_task_stage",""))=="fetch":
+			_clear_cup_task(actor)
 		var partner_id:String=str(actor.get("partner_id",""))
 		actor.erase("partner_id")
 		if partner_id!="" and world.residents.has(partner_id):
@@ -338,6 +350,8 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 					and str(room.get("owner_id","")) != str(actor.get("id",""))):
 				continue
 			if candidate_navigation!=null and candidate_navigation.has_layout(room) and intent!="TALK_PAIR":
+				if intent=="GET_COFFEE" and candidate_cups.candidates(actor,room).is_empty():
+					continue
 				if stations.single(world,actor,room,intent).is_empty():
 					continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
@@ -486,6 +500,15 @@ func reconcile_concrete_media() -> int:
 	return fixed
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
+	if candidate_navigation!=null:
+		if str(actor.get("cup_task_stage",""))=="hold" and str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==str(actor["id"]):
+			return
+		if actor.has("held_book") and actor.has("book_task_stage"):
+			return
+		if actor.has("cup_task_stage"):
+			_clear_cup_task(actor)
+		if actor.has("book_task_stage"):
+			_clear_book_task(actor)
 	# Previous reservation ends before a new activity; actor state owns the
 	# claim, making occupancy recoverable from JSON snapshots.
 	stations.release(actor)
@@ -503,6 +526,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	var intent: String = str(task["intent"])
 	if candidate_navigation!=null and intent=="READ_BOOK":
 		_begin_book_task(actor,room)
+		return
+	if candidate_navigation!=null and intent=="GET_COFFEE":
+		_begin_cup_task(actor,room)
 		return
 	var route: Array = world.find_route(actor["room_id"], room["id"], actor["id"])
 	if route.is_empty():
@@ -777,6 +803,18 @@ func _move(actor: Dictionary, delta: float) -> void:
 			if candidate_navigation!=null and str(actor.get("book_task_stage","")) in ["fetch","return"]:
 				_arrive_book_shelf(actor)
 				return
+			if candidate_navigation!=null and str(actor.get("cup_task_stage",""))=="fetch":
+				if candidate_cups.pickup(actor):
+					actor["cup_task_stage"]="hold"
+					actor["until"]=clock+12.0
+				else:
+					_clear_cup_task(actor)
+					stations.release(actor)
+					actor["phase"]="idle"
+					actor["until"]=clock+3.0
+				moving_ids.erase(actor_id)
+				_schedule_actor(actor,"CUP_ARRIVAL")
+				return
 			if candidate_navigation!=null and str(actor.get("book_task_stage",""))=="read":
 				actor["book_read_started"]=clock
 			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
@@ -806,6 +844,16 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		if partner.get("partner_id","") == id:
 			partner.erase("partner_id")
 			wake_actor(partner_id,"PAIR_RELEASED")
+	if candidate_navigation!=null and actor.has("cup_task_stage"):
+		if str(actor.get("cup_task_stage",""))=="hold":
+			if str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==id:
+				if not candidate_cups.put_back(actor):
+					if _route_cup_return(actor):
+						return
+					actor["until"]=clock+5.0
+					_schedule_actor(actor,"CUP_RETURN_RETRY")
+					return
+		_clear_cup_task(actor)
 	if candidate_navigation!=null and actor.has("book_task_stage"):
 		if _continue_book_task(actor):
 			_schedule_actor(actor,"BOOK_TASK")
@@ -992,3 +1040,57 @@ func _continue_book_task(actor:Dictionary)->bool:
 			return true
 	_clear_book_task(actor)
 	return false
+
+func _clear_cup_task(actor:Dictionary)->void:
+	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage"]:
+		actor.erase(key)
+
+func _begin_cup_task(actor:Dictionary,room:Dictionary)->void:
+	_clear_cup_task(actor)
+	for item in candidate_cups.candidates(actor,room):
+		var slot:Dictionary=item["slot"]
+		var claim:Dictionary=stations.cup_claim(world,actor,room,str(slot["id"]))
+		if claim.is_empty():
+			continue
+		var route:Array=world.find_route(str(actor["room_id"]),str(room["id"]),str(actor["id"]))
+		var points:Array=locomotion.build_waypoints(world,actor,route,"GET_COFFEE",claim["offset"],float(claim.get("approach_z",0.95)))
+		if points.is_empty():
+			continue
+		stations.commit_claim(actor,claim)
+		actor["cup_task_id"]=str(item["object_id"])
+		actor["cup_task_room"]=str(room["id"])
+		actor["cup_task_slot"]=str(slot["id"])
+		actor["cup_task_stage"]="fetch"
+		actor["intent"]="GET_COFFEE"
+		actor["route"]=route
+		actor["waypoints"]=points
+		actor["waypoint_index"]=0
+		actor["phase"]="travel"
+		actor["until"]=clock+30.0
+		moving_ids[str(actor["id"])]=true
+		_schedule_actor(actor,"CUP_ROUTE")
+		return
+	actor["until"]=clock+8.0
+
+func _route_cup_return(actor:Dictionary)->bool:
+	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
+	if room.is_empty() or not world.is_accessible(room,str(actor["id"])):
+		return false
+	var claim:Dictionary=stations.cup_claim(world,actor,room,str(actor.get("cup_task_slot","")))
+	if claim.is_empty():
+		return false
+	var route:Array=world.find_route(str(actor["room_id"]),str(room["id"]),str(actor["id"]))
+	var points:Array=locomotion.build_waypoints(world,actor,route,"GET_COFFEE",claim["offset"],float(claim.get("approach_z",0.95)))
+	if points.is_empty():
+		return false
+	stations.release(actor)
+	stations.commit_claim(actor,claim)
+	actor["intent"]="GET_COFFEE"
+	actor["route"]=route
+	actor["waypoints"]=points
+	actor["waypoint_index"]=0
+	actor["phase"]="travel"
+	actor["until"]=clock+15.0
+	moving_ids[str(actor["id"])]=true
+	_schedule_actor(actor,"CUP_RETURN_ROUTE")
+	return true
