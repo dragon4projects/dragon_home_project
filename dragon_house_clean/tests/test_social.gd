@@ -15,7 +15,11 @@ func _initialize() -> void:
 	assert(partner.get("partner_id", "") == "RES_01", "Reservation must be reciprocal")
 	assert(partner.get("intent", "") == "TALK_PAIR", "Second resident must participate")
 	assert(is_equal_approx(float(partner["until"]), float(actor["until"])))
-	assert(l.log.size() > 0 and str(l.log[-1]).contains("разговора"))
+	var session:Dictionary=l._pair_session(actor)
+	assert(session.get("phase","")=="assembling")
+	assert(session.get("members",[])==["RES_01",partner_id])
+	assert(float(session.get("started_at",0))==-1.0)
+	assert(w.journal.any(func(event):return str(event.get("event",""))=="PAIR_RESERVED"))
 	print("SOCIAL_PAIR_TEST_PASS: ", actor["name"], " + ", partner["name"])
 	quit(0)
 
