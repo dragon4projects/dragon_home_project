@@ -12,7 +12,7 @@ func run()->void:
 	var room:Dictionary=scene.world.get_room(-3,1)
 	var nav=scene.life.candidate_navigation
 	var layout:Dictionary=nav.layouts["common/R3"]
-	assert(str(layout["runtime_review_geometry_revision"])=="CANONICAL_SOCIAL_INTERIOR_20261125_V1")
+	assert(str(layout["runtime_review_geometry_revision"])=="CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH")
 	assert(layout["interior_zones"].size()==3)
 	var by_id:Dictionary={}
 	var blockers:Array=[]
@@ -65,6 +65,9 @@ func run()->void:
 	assert(by_id["common_r3_p3_mug_red"]["room_local_xyz"]==[-4.99,0.49152,0.6])
 	assert(by_id["common_r3_p3_mug_blue"]["room_local_xyz"]==[-4.33,0.49152,0.6])
 	assert(nav.cup_slots(room).size()>=2)
+	assert(is_equal_approx(float(by_id["common_r3_p3_chair_center"]["room_local_xyz"][2]),-1.4))
+	assert(is_equal_approx(float(by_id["canonical_hearth_extra_chair"]["room_local_xyz"][0]),1.8))
+	assert(is_equal_approx(float(by_id["canonical_hearth_extra_chair"]["room_local_xyz"][2]),-0.5))
 	var usable:Dictionary={}
 	for spot in nav.candidate_spots(room):
 		usable[str(spot["id"])]=true
