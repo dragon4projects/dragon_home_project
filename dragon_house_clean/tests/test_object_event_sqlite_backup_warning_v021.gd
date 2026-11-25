@@ -26,6 +26,9 @@ func run() -> void:
 	var world := World.new()
 	world.save_path = path
 	world.seed_world()
+	# Real startup commits the initial snapshot before allowing object events.
+	assert(world.save_world())
+	var initial_snapshot_hash:String=FileAccess.get_sha256(path)
 	var home: Dictionary = world.get_room(1,-1)
 	assert(world.register_physical_object(
 		"BACKUP_WARNING_OBJECT","Backup warning object","RES_01",home["id"],
@@ -50,6 +53,7 @@ func run() -> void:
 	var marker = JSON.parse_string(FileAccess.get_file_as_string(marker_path))
 	assert(typeof(marker)==TYPE_DICTIONARY)
 	assert(int((marker as Dictionary).get("sequence",-1))==2)
+	assert(FileAccess.get_sha256(path)==initial_snapshot_hash)
 	world.object_events.store.close()
 
 	# Remove only the sabotage. Primary SQLite remains canonical and must replay
@@ -58,7 +62,7 @@ func run() -> void:
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	var restarted := World.new()
 	restarted.save_path = path
-	restarted.load_or_seed()
+	assert(restarted.load_or_seed())
 	assert(str(restarted.runtime_state.get("object_event_backend",""))=="sqlite_v021_proof")
 	assert(restarted.object_event_revision()==2)
 	assert(bool(restarted.physical_object("BACKUP_WARNING_OBJECT")["ambient_protected"]))
