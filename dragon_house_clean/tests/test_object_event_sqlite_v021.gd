@@ -49,6 +49,9 @@ func run() -> void:
 	var world := World.new()
 	world.save_path = path
 	world.seed_world()
+	# Real startup commits the initial snapshot before allowing object events.
+	assert(world.save_world())
+	var initial_snapshot_hash:String=FileAccess.get_sha256(path)
 	var home: Dictionary = world.get_room(1,-1)
 	var stash: Dictionary = world.get_room(-2,0)
 	assert(not home.is_empty() and not stash.is_empty())
@@ -87,15 +90,15 @@ func run() -> void:
 	_assert_projection_equivalent(world.objects,
 		world.object_events.store.derived_objects_snapshot())
 
-	# Simulate a renderer crash before the JSON compatibility checkpoint.
-	assert(not FileAccess.file_exists(path))
+	# Simulate a renderer crash before the next compatibility checkpoint.
+	assert(FileAccess.get_sha256(path)==initial_snapshot_hash)
 	world.object_events.store.close()
 	# Canonical backend choice survives without the QA env override.
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 
 	var restarted := World.new()
 	restarted.save_path = path
-	restarted.load_or_seed()
+	assert(restarted.load_or_seed())
 	assert(str(restarted.runtime_state.get("object_event_backend",""))=="sqlite_v021_proof")
 	assert(restarted.object_event_revision()==3)
 	var restored: Dictionary = restarted.physical_object("SQLITE_OBJECT")
