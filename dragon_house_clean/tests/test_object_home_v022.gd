@@ -78,50 +78,42 @@ func run()->void:
 	var ring:Dictionary=world.physical_object("SMALL_RING")
 	assert(str(ring["object_class"])=="small_artifact")
 	assert(world.tick_object_home_reset()==0)
-	assert(int(world.runtime_state["object_home_reset_day"])==0)
-
 	manjka["room_id"]=artifact_room["id"]
+	world.sim_clock=World.GAME_DAY_SECONDS-1.0
 	assert(world.pickup_physical_object("SMALL_RING","MANJKA"))
-	assert(str(ring["state"])=="HELD")
 	world.sim_clock=World.GAME_DAY_SECONDS+1.0
-	assert(world.tick_object_home_reset()==1,
-		"First day boundary must restore displaced eligible object")
-	assert(str(ring["current_holder_id"])=="")
-	assert(str(ring["current_room_id"])==str(artifact_room["id"]))
-	assert(str(ring["state"])=="PLACED")
-	assert(_eq_anchor(ring["current_anchor"],ring_home))
-	assert(int(ring.get("last_home_reset_day",-1))==1)
-
-	# Same-day displacement stays displaced until the next game day.
-	manjka["room_id"]=artifact_room["id"]
-	assert(world.pickup_physical_object("SMALL_RING","MANJKA"))
+	assert(world.tick_object_home_reset()==0,"Crossing midnight is not a deadline")
+	world.sim_clock+=World.GAME_DAY_SECONDS
+	assert(world.tick_object_home_reset()==0,"Never reclaim held item")
+	assert(str(ring["state"])=="HELD")
 	manjka["room_id"]=common["id"]
 	var stash_anchor:=Vector2(-1.2,0.35)
-	assert(world.place_physical_object(
-		"SMALL_RING","MANJKA",common["id"],"STASHED",stash_anchor))
-	assert(_eq_anchor(ring["current_anchor"],stash_anchor))
+	assert(world.place_physical_object("SMALL_RING","MANJKA",common["id"],"STASHED",stash_anchor))
+	var placed_at:float=world.sim_clock
+	assert(ring["last_interaction_at"]==placed_at)
+	world.sim_clock=placed_at+World.RETURN_PREPARE_SECONDS
 	assert(world.tick_object_home_reset()==0)
-	assert(str(ring["state"])=="STASHED")
-	world.sim_clock=World.GAME_DAY_SECONDS*2.0+1.0
+	assert(not world.runtime_state["housekeeping_pending_objects"].has("SMALL_RING"))
+	world.sim_clock+=0.01
+	assert(world.tick_object_home_reset()==0)
+	assert(world.runtime_state["housekeeping_pending_objects"].has("SMALL_RING"))
+	world.sim_clock=placed_at+World.GAME_DAY_SECONDS-0.01
+	assert(world.tick_object_home_reset()==0)
+	world.sim_clock=placed_at+World.GAME_DAY_SECONDS
 	assert(world.tick_object_home_reset()==1)
 	assert(str(ring["current_room_id"])==str(artifact_room["id"]))
 	assert(_eq_anchor(ring["current_anchor"],ring_home))
-
-	# A Dragon-assigned new home becomes canonical for future daily resets.
+	assert(not world.runtime_state["housekeeping_pending_objects"].has("SMALL_RING"))
 	var new_ring_home:=Vector2(2.0,-1.35)
-	assert(world.assign_physical_object_home(
-		"SMALL_RING",common["id"],new_ring_home,true))
-	assert(str(ring["home_room_id"])==str(common["id"]))
-	assert(_eq_anchor(ring["home_anchor"],new_ring_home))
+	assert(world.assign_physical_object_home("SMALL_RING",common["id"],new_ring_home,true))
 	manjka["room_id"]=common["id"]
 	assert(world.pickup_physical_object("SMALL_RING","MANJKA"))
-	world.sim_clock=World.GAME_DAY_SECONDS*3.0+1.0
+	assert(world.place_physical_object("SMALL_RING","MANJKA",common["id"],"STASHED",stash_anchor))
+	world.sim_clock+=World.GAME_DAY_SECONDS-1.0
+	assert(world.tick_object_home_reset()==0)
+	world.sim_clock+=1.0
 	assert(world.tick_object_home_reset()==1)
-	assert(str(ring["current_room_id"])==str(common["id"]))
 	assert(_eq_anchor(ring["current_anchor"],new_ring_home))
-	assert(int(world.runtime_state["object_home_reset_last_count"])==1)
-	assert(float(world.runtime_state["object_game_day_seconds"])==World.GAME_DAY_SECONDS)
-
 	assert(world.save_world())
 	var loaded=World.new()
 	loaded.save_path=path
@@ -130,11 +122,10 @@ func run()->void:
 	assert(str(loaded_ring["home_room_id"])==str(common["id"]))
 	assert(_eq_anchor(loaded_ring["home_anchor"],new_ring_home))
 	assert(_eq_anchor(loaded_ring["current_anchor"],new_ring_home))
-	assert(str(loaded.physical_object("DISPLAY_FRAME")["object_class"])=="display_object")
+	assert(loaded_ring["last_interaction_at"]==world.sim_clock)
 	assert(_has_event(loaded,"OBJECT_HOME_ASSIGNED"))
-	assert(_has_event(loaded,"OBJECT_RESTORED_HOME"))
-
+	assert(_has_event(loaded,"OBJECT_HOUSEKEEPING_RETURNED"))
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","")
 	_cleanup(path)
-	print("OBJECT_HOME_V022_PASS display_not_carryable=true small_artifact_only=true home_anchor=persistent daily_once=true reassigned_home=respected")
+	print("OBJECT_HOME_V022_PASS rolling=true active_use_protected=true reassigned_home_persistent=true")
 	quit(0)

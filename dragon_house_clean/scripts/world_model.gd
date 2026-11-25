@@ -511,8 +511,12 @@ func object_active_use(object:Dictionary)->bool:
 	for actor in residents.values():
 		if not bool(actor.get("active",false)):continue
 		if str(actor.get("cup_task_id",""))==id and str(actor.get("cup_task_stage","")) in ["fetch","serve","hold","return"]:return true
-		if str(actor.get("phase","")) in ["travel","perform"] and str(actor.get("activity_media_id",""))==id:return true
+		if str(actor.get("phase","")) in ["travel","perform"] and (str(actor.get("activity_media_id",""))==id or str(actor.get("viewing_object_id",""))==id):return true
 	return false
+
+func record_object_view(object_id:String,actor_id:String)->bool:
+	if not _ensure_object_events():return false
+	return object_events.record_view(object_id,actor_id)
 
 func object_needs_housekeeping(object:Dictionary)->bool:
 	if object.is_empty() or not bool(object.get("movable",false)) or not bool(object.get("recoverable",false)) or not bool(object.get("reset_eligible",true)):return false
@@ -556,6 +560,7 @@ func housekeeping_target(object:Dictionary)->Dictionary:
 				var p:Array=slot["xyz"]
 				if (support=="" or str(slot["id"])==support) and _anchors_equal(anchor,[p[0],p[2]]) and _housekeeping_slot_fits(object,slot):
 					home_ok=true
+					if category=="artifacts":support=str(slot["id"])
 					break
 		if home_ok:return {"room_id":home,"anchor":anchor,"support_id":support}
 	# Do not invent furniture or a free position if measured supports are absent.
@@ -569,6 +574,9 @@ func housekeeping_target(object:Dictionary)->Dictionary:
 			var pos:Array=slot["xyz"]
 			var a:Array=[pos[0],pos[2]]
 			var sid:String=str(slot["id"])
+			if str(object.get("current_room_id",""))==str(room["id"]) and str(object.get("state",""))=="PLACED" and _anchors_equal(a,object.get("current_anchor",[])) and (str(object.get("current_support_id",""))==sid or category=="cups"):
+				# Already safely on an alternate support; do not repeatedly move it there.
+				if category!="cups" or float(runtime_state.get("beverages",{}).get("cups",{}).get(str(object["id"]),{}).get("remaining_ml",0))<=0:continue
 			if housekeeping_slot_free(object,str(room["id"]),a,sid):
 				return {"room_id":str(room["id"]),"anchor":a,"support_id":sid}
 	return {}

@@ -21,7 +21,7 @@ const REVERSIBILITY := [
 ]
 const OBJECT_EVENTS := [
 	"OBJECT_REGISTERED","OBJECT_MOVED","OBJECT_POLICY_SET","OBJECT_OWNER_CHANGED",
-	"OBJECT_HOME_ASSIGNED"
+	"OBJECT_HOME_ASSIGNED","OBJECT_INTERACTED"
 ]
 const MOVEMENT_KINDS := [
 	"PICKED_UP","PLACED","STASHED","RECOVERED_TO_LOST_FOUND","RESTORED_HOME","HOUSEKEEPING_RETURNED"
@@ -188,6 +188,16 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 	if object_id == "" or not projection.has(object_id):
 		return reject("unknown object")
 	var object: Dictionary = projection[object_id]
+
+	if event_type=="OBJECT_INTERACTED":
+		var actor_id:String=str(payload.get("actor_id",""))
+		var actor:Dictionary=world.residents.get(actor_id,{})
+		var room_id:String=str(object.get("current_room_id",""))
+		if truth!="AMBIENT_SIMULATION" or str(event.get("source_type",""))!="system" or str(event.get("authority",""))!="SYSTEM_RULE":return reject("invalid view authority")
+		if not bool(actor.get("active",false)) or str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="VIEW_ART" or str(actor.get("viewing_object_id",""))!=object_id:return reject("view not performed")
+		if str(actor.get("room_id",""))!=room_id or str(actor.get("station_room_id",""))!=room_id or not world.public_cutaway_allowed(world.room_by_id(room_id)) or str(object.get("state",""))!="PLACED":return reject("view target inaccessible")
+		if float(payload.get("sim_clock",-1.0))!=float(world.sim_clock):return reject("view clock mismatch")
+		return true
 
 	if event_type == "OBJECT_OWNER_CHANGED":
 		if truth == "AMBIENT_SIMULATION":

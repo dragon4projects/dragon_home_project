@@ -135,7 +135,7 @@ func plan_new(cup_id:String,actor_id:String,context:String,daypart:String,availa
 	var serial:int=int(_store()["serial"])+1
 	_store()["serial"]=serial
 	var choice:=selected.duplicate(true)
-	choice.merge({"timestamp":Time.get_datetime_string_from_system(true),"resident_id":actor_id,"event_context":context,"time_bucket":daypart,"cup_id":cup_id,"selected_drink_id":drink["drink_id"],"choice_instance_id":"DRINK_%d"%serial,"top_candidates":_top(options,10),"rng_roll":roll,"first_sip_success":false,"history_count_after":int(selected["history_count_before"]),"source_station":drink["source_station"]},true)
+	choice.merge({"timestamp":Time.get_datetime_string_from_system(true),"sim_clock":float(world.sim_clock),"resident_id":actor_id,"event_context":context,"time_bucket":daypart,"cup_id":cup_id,"selected_drink_id":drink["drink_id"],"choice_instance_id":"DRINK_%d"%serial,"top_candidates":_top(options,10),"rng_roll":roll,"first_sip_success":false,"history_count_after":int(selected["history_count_before"]),"source_station":drink["source_station"]},true)
 	return choice
 
 func fill_planned(cup_id:String,actor_id:String,choice:Dictionary)->bool:

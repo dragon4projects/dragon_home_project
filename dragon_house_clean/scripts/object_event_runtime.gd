@@ -453,6 +453,9 @@ func _journal_accepted(event: Dictionary) -> void:
 			target = "PROTECTED" if bool(payload["ambient_protected"]) else "ELIGIBLE"
 		world._append_journal("OBJECT_AMBIENT_PROTECTION_CHANGED","",object_id,
 			"",target,details)
+	elif event_type=="OBJECT_INTERACTED":
+		world._append_journal("OBJECT_VIEWED",str(payload.get("actor_id","")),object_id,
+			str(event.get("from","")),str(event.get("to","")),details)
 	elif event_type == "OBJECT_MOVED":
 		var movement_kind: String = str(payload.get("movement_kind","MOVED"))
 		world._append_journal("OBJECT_"+movement_kind,
@@ -777,6 +780,16 @@ func restore_home(object_id: String, reset_day: int = -1) -> bool:
 		home_room_id,
 		"DAILY_OBJECT_HOME_RESET_V022" if reset_day>=0 else "EXPLICIT_OBJECT_RESTORE_API_V022",
 		"Daily home reset" if reset_day>=0 else "Explicit restore to canonical home",payload)
+	return bool(submit(event).get("ok",false))
+
+func record_view(object_id:String,actor_id:String)->bool:
+	var obj:Dictionary=world.physical_object(object_id)
+	if obj.is_empty():return false
+	var room_id:String=str(obj.get("current_room_id",""))
+	var event:=_base_event("OBJECT_INTERACTED","AMBIENT_SIMULATION","system","world_model","SYSTEM_RULE",
+		_visibility_for_room(room_id),"AMBIENT_REVERTIBLE",actor_id,object_id,room_id,room_id,room_id,
+		"OBJECT_VIEW_COMPLETED_V023","Resident completed an object view",
+		{"object_id":object_id,"actor_id":actor_id,"sim_clock":float(world.sim_clock)})
 	return bool(submit(event).get("ok",false))
 
 func housekeeping_return(object_id:String,target:Dictionary)->bool:

@@ -1057,6 +1057,9 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		media_runtime.return_book(id,book_id)
 		actor.erase("held_book")
 		_record("%s — вернула книгу" % actor.get("name",id))
+	if str(actor.get("intent",""))=="VIEW_ART" and str(actor.get("phase",""))=="perform":
+		var viewing_id:String=str(actor.get("viewing_object_id",""))
+		if viewing_id!="":world.record_object_view(viewing_id,id)
 	var started := Time.get_ticks_usec()
 	var task := choose_intent(actor)
 	_assign(actor,task)

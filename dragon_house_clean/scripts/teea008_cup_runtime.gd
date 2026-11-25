@@ -100,6 +100,7 @@ func put_back(actor:Dictionary)->bool:
 		if str(slot["id"])==str(actor["cup_task_slot"]):
 			if beverages.enabled and not at_approach(actor,room,slot["approach"]):return false
 			var pos:Array=slot["xyz"]
+			if not world.housekeeping_slot_free(world.physical_object(id),room_id,[pos[0],pos[2]],str(slot["id"])):return false
 			return world.place_physical_object(id,str(actor["id"]),room_id,"PLACED",[float(pos[0]),float(pos[2])])
 	return false
 

@@ -112,6 +112,12 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		return _fail("unknown object")
 	var object: Dictionary = next[object_id]
 
+	if event_type=="OBJECT_INTERACTED":
+		object["last_interaction_at"]=float(payload.get("sim_clock",0.0))
+		object["updated_event_id"]=event_id
+		_append_history(object,_history_entry(event,"VIEWED",str(payload.get("actor_id",""))))
+		return next
+
 	if event_type == "OBJECT_POLICY_SET":
 		for field in ["ambient_pickup_allowed","ambient_hide_allowed","ambient_protected","reset_eligible"]:
 			if payload.has(field):
