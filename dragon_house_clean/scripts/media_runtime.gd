@@ -193,6 +193,7 @@ func timed_session_key(actor:Dictionary)->String:
 	return ""
 
 func timed_session_valid(actor:Dictionary,now:float)->bool:
+	if not is_finite(now):return false
 	var key:String=timed_session_key(actor)
 	if key=="" or not actor.has(key) or str(actor.get("phase",""))!="perform":return false
 	var raw=actor[key]
@@ -212,7 +213,20 @@ func timed_session_valid(actor:Dictionary,now:float)->bool:
 		return int(expected.get("season",-1))==int(unit.get("season",-2)) and int(expected.get("episode",-1))==int(unit.get("episode",-2))
 	return can_listen(str(actor["id"]),item_id,room_id)
 
+func _timed_arrival_valid(actor:Dictionary,now:float,intent:String)->bool:
+	if not is_finite(now) or now<0.0 or str(actor.get("intent",""))!=intent or str(actor.get("phase",""))!="perform":return false
+	var room_id:String=str(actor.get("room_id",""))
+	if room_id=="" or room_id!=str(actor.get("station_room_id","")):return false
+	var actor_id:String=str(actor.get("id",""))
+	var item_id:String=str(actor.get("activity_media_id",""))
+	if intent=="WATCH_FILM":return can_watch(actor_id,item_id,room_id)
+	if intent=="LISTEN_MUSIC":return can_listen(actor_id,item_id,room_id)
+	return false
+
 func begin_watch(actor:Dictionary,now:float)->bool:
+	if not _timed_arrival_valid(actor,now,"WATCH_FILM"):return false
+	# Duplicate arrival/reconciliation must not restart an active commitment.
+	if actor.has("watch_session"):return timed_session_valid(actor,now)
 	var item:Dictionary=_lookup("films",str(actor.get("activity_media_id","")))
 	var unit:Dictionary=next_watch_unit(str(actor["id"]),item)
 	if unit.is_empty():return false
@@ -224,9 +238,9 @@ func begin_watch(actor:Dictionary,now:float)->bool:
 	return true
 
 func finish_watch(actor:Dictionary,now:float)->bool:
-	var unit:Dictionary=actor.get("watch_session",{})
-	if unit.is_empty() or now<float(unit.get("ends_at",INF)):return false
-	if str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="WATCH_FILM" or str(actor.get("room_id",""))!=str(unit.get("room_id","")) or str(actor.get("activity_media_id",""))!=str(unit.get("item_id","")):return false
+	if timed_session_key(actor)!="watch_session" or not timed_session_valid(actor,now):return false
+	var unit:Dictionary=actor["watch_session"]
+	if now<float(unit["ends_at"]):return false
 	var id:String=str(unit["item_id"])
 	var item:Dictionary=_lookup("films",id)
 	var expected:Dictionary=next_watch_unit(str(actor["id"]),item)
@@ -298,6 +312,8 @@ func choose_listen_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Di
 	return options[maxi(0,index)]
 
 func begin_listen(actor:Dictionary,now:float)->bool:
+	if not _timed_arrival_valid(actor,now,"LISTEN_MUSIC"):return false
+	if actor.has("listen_session"):return timed_session_valid(actor,now)
 	var item_id:String=str(actor.get("activity_media_id",""))
 	var duration:float=track_duration(_lookup("tracks",item_id))
 	if duration<=0:return false
@@ -306,9 +322,9 @@ func begin_listen(actor:Dictionary,now:float)->bool:
 	return true
 
 func finish_listen(actor:Dictionary,now:float)->bool:
-	var unit:Dictionary=actor.get("listen_session",{})
-	if unit.is_empty() or now<float(unit.get("ends_at",INF)):return false
-	if str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="LISTEN_MUSIC" or str(actor.get("room_id",""))!=str(unit.get("room_id","")) or str(actor.get("activity_media_id",""))!=str(unit.get("item_id","")):return false
+	if timed_session_key(actor)!="listen_session" or not timed_session_valid(actor,now):return false
+	var unit:Dictionary=actor["listen_session"]
+	if now<float(unit["ends_at"]):return false
 	var id:String=str(unit["item_id"])
 	var actor_id:String=str(actor["id"])
 	var all:Dictionary=world.runtime_state.get("music_progress",{})
