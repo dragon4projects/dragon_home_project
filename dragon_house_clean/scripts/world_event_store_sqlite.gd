@@ -183,7 +183,7 @@ func _load_events() -> bool:
 		var event: Dictionary = _decode_event(raw_row)
 		var event_id: String = str(event.get("event_id",""))
 		var seq: int = int(event.get("seq",0))
-		if event_id == "" or seq <= sequence or seen.has(event_id):
+		if event_id == "" or seq != sequence+1 or seen.has(event_id):
 			last_error = "SQLite event order/identity is invalid"
 			return false
 		seen[event_id] = true
@@ -396,7 +396,7 @@ func import_canonical_events(input_events: Array, projection: Dictionary) -> Arr
 		var event: Dictionary = raw_event
 		var event_id := str(event.get("event_id",""))
 		var source_seq := int(event.get("seq",0))
-		if event_id == "" or seen.has(event_id) or source_seq <= previous_seq:
+		if event_id == "" or seen.has(event_id) or source_seq != previous_seq+1:
 			last_error = "Canonical import identity/order is invalid"
 			return []
 		seen[event_id] = true
