@@ -59,7 +59,7 @@ def research(catalog, basics, episodes, approvals):
             confirmed[rid] = selected
     parent_to_work = defaultdict(list)
     for rid, data in confirmed.items():
-        if by_id[rid]['media_type'] == 'series':
+        if by_id[rid]['media_type'] == 'series' and not str(by_id[rid].get('episode_numbering_status', '')).startswith('REVIEW_REQUIRED'):
             parent_to_work[data['imdb_id']].append(rid)
     episode_map = defaultdict(lambda: defaultdict(list))
     wanted = set()
@@ -86,10 +86,16 @@ def research(catalog, basics, episodes, approvals):
                 proposal['runtime_seconds'] = data['runtime_minutes'] * 60
         else:
             proposal['episodes'] = []
+            if str(row.get('episode_numbering_status', '')).startswith('REVIEW_REQUIRED'):
+                proposal['episode_numbering_review_required'] = True
             for (season, ep), ids in sorted(episode_map[rid].items()):
                 ids = sorted(set(ids))
                 if len(ids) != 1:
                     proposal['episodes'].append({'season': season, 'episode': ep, 'status': 'AMBIGUOUS_EPISODE', 'candidate_ids': ids})
+                    continue
+                existing_id = row.get('episode_imdb_ids', {}).get(f'{season}:{ep}')
+                if existing_id and existing_id != ids[0]:
+                    proposal['episodes'].append({'season': season, 'episode': ep, 'status': 'EPISODE_ID_CONFLICT', 'existing_id': existing_id, 'candidate_ids': ids})
                     continue
                 minutes = timings.get(ids[0], 0)
                 proposal['episodes'].append({'season': season, 'episode': ep, 'imdb_id': ids[0], 'runtime_seconds': max(0, minutes) * 60, 'source': 'https://www.imdb.com/title/'+ids[0]+'/', 'status': 'VERIFIED_ID_AND_RUNTIME' if minutes > 0 else 'RUNTIME_UNKNOWN'})
