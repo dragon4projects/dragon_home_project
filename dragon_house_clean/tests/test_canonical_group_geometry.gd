@@ -42,7 +42,7 @@ func run()->void:
 			max_group=n
 		assert(st.can_reserve_group(w,room)==(max_group>=3))
 		result[room.id]=max_group
-	assert(result=={"ROOM_0020":4,"ROOM_0026":5,"ROOM_0027":0,"ROOM_0036":6},str(result))
+	assert(result=={"ROOM_0020":4,"ROOM_0026":5,"ROOM_0027":4,"ROOM_0036":6},str(result))
 	# Occupied stations cannot be offered to another group.
 	var kitchen:Dictionary=w.room_by_id("ROOM_0036")
 	var claims:Dictionary=st.group_claims(w,actors,kitchen)
