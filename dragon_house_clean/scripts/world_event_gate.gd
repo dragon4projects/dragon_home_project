@@ -24,7 +24,7 @@ const OBJECT_EVENTS := [
 	"OBJECT_HOME_ASSIGNED"
 ]
 const MOVEMENT_KINDS := [
-	"PICKED_UP","PLACED","STASHED","RECOVERED_TO_LOST_FOUND","RESTORED_HOME"
+	"PICKED_UP","PLACED","STASHED","RECOVERED_TO_LOST_FOUND","RESTORED_HOME","HOUSEKEEPING_RETURNED"
 ]
 const OBJECT_STATES := ["PLACED","HELD","STASHED","LOST_FOUND"]
 
@@ -333,6 +333,17 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 			return reject("lost/found projection is invalid")
 		if not _valid_anchor(world,location,payload.get("current_anchor",[])):
 			return reject("lost/found anchor is outside target room")
+		return true
+
+	if movement_kind=="HOUSEKEEPING_RETURNED":
+		if actor_id!="HOUSE_SPIRIT" or truth!="AMBIENT_SIMULATION" or str(event.get("authority",""))!="SYSTEM_RULE" or str(event.get("source_id",""))!="HOUSE_SPIRIT":return reject("invalid housekeeping authority")
+		if previous_holder!="" or world.object_active_use(object) or not world.object_needs_housekeeping(object) or world.housekeeping_age(object)<world.GAME_DAY_SECONDS:return reject("housekeeping not due or object in use")
+		var target:Dictionary=world.housekeeping_target(object)
+		if target.is_empty() or location!=str(target.get("room_id","")) or payload.get("current_anchor",[])!=target.get("anchor",[]) or str(payload.get("current_support_id",""))!=str(target.get("support_id","")):return reject("housekeeping slot unavailable")
+		if holder!="" or state!="PLACED" or not _valid_anchor(world,location,payload.get("current_anchor",[])):return reject("invalid housekeeping location")
+		var cup:Dictionary=world.runtime_state.get("beverages",{}).get("cups",{}).get(object_id,{})
+		if str(payload.get("cleaned_serving_id",""))!=str(cup.get("choice_instance_id","")):return reject("serving changed before cleanup")
+		if float(payload.get("sim_clock",-1.0))!=float(world.sim_clock):return reject("housekeeping clock mismatch")
 		return true
 
 	if movement_kind == "RESTORED_HOME":

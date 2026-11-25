@@ -2057,7 +2057,7 @@ func update_physical_objects() -> void:
 			var room_world:Vector3=world.room_local_to_world(room,local_anchor)
 			anchor.position=Vector3(depth_visual_x(room_id,room_world.x,local_anchor.y),room_world.y+(0.0 if cube else 0.22),room_world.z)
 			anchor.scale=Vector3.ONE*depth_visual_scale(local_anchor.y)
-			if teea008_live and str(object.get("viewer_category",""))=="artifacts" and str(object.get("home_room_id",""))==room_id and world._anchors_equal(object.get("current_anchor",[]),object.get("home_anchor",[])):
+			if teea008_live and str(object.get("viewer_category",""))=="artifacts" and str(object.get("current_support_id",""))!="":
 				var support:Dictionary=life.candidate_navigation.artifact_support(room,str(object.get("current_support_id","")))
 				if not support.is_empty():
 					if not detailed_room_groups.has(room_id):

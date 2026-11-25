@@ -98,6 +98,7 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			"visibility":str(event.get("visibility","house_public")),
 			"persistence_class":str(payload.get("persistence_class",
 				"PERSISTENT_UNTIL_CHANGED")),
+			"last_interaction_at":float(payload.get("sim_clock",0.0)),
 			"updated_event_id":event_id
 		}
 		var initial_support:String=str(payload.get("home_support_id",""))
@@ -152,6 +153,7 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 					object["interaction_station_id"]="WALL_DISPLAY_"+object_id
 		_append_history(object,_history_entry(event,"HOME_ASSIGNED",
 			str(event.get("subject_id",""))))
+		object["last_interaction_at"]=float(payload.get("sim_clock",0.0))
 		object["previous_home_room_id"]=old_home
 		return next
 
@@ -172,8 +174,14 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		# its X/Z matches the home (several tiers can share those coordinates).
 		if movement_kind=="RESTORED_HOME" and str(object.get("home_support_id",""))!="":
 			object["current_support_id"]=str(object["home_support_id"])
+		elif movement_kind=="HOUSEKEEPING_RETURNED" and str(payload.get("current_support_id",""))!="":
+			object["current_support_id"]=str(payload["current_support_id"])
 		else:
 			object.erase("current_support_id")
+		if movement_kind=="HOUSEKEEPING_RETURNED":
+			object["housekeeping_cleaned_serving"]=str(payload.get("cleaned_serving_id",""))
+			object["housekeeping_event_id"]=event_id
+		object["last_interaction_at"]=float(payload.get("sim_clock",0.0))
 		object["state"] = str(payload.get("state",""))
 		object["movement_reason"] = movement_kind
 		object["movement_authority"] = authority

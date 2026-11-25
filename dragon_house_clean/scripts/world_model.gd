@@ -11,6 +11,9 @@ var sim_clock: float = 0.0
 const MODULE_W := RoomSpaceV2.MODULE_W
 const FLOOR_H := RoomSpaceV2.FLOOR_H
 const GAME_DAY_SECONDS := 86400.0
+const RETURN_PREPARE_SECONDS := 82800.0
+var housekeeping_navigation=null
+var next_housekeeping_check:float=0.0
 const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "guest", "lift", "artifact", "kitchen"]
 const MERGEABLE_TYPES := ["common", "study", "rest", "library", "cinema", "music", "workshop", "artifact"]
 const MAX_MERGE := 3
@@ -484,38 +487,130 @@ func _clear_carrier_reference(object_id: String, previous_holder: String) -> voi
 		if str(actor.get("carried_object_id",""))==object_id:
 			actor["carried_object_id"]=""
 
+# A derived deadline, never an independent object location or ownership.
+func object_interaction_at(object:Dictionary)->float:
+	if object.has("last_interaction_at"):
+		return float(object["last_interaction_at"])
+	# Older projections may have been cached before this field existed.
+	var history:Array=object.get("history",[])
+	for i in range(history.size()-1,-1,-1):
+		var entry:Dictionary=history[i]
+		if entry.has("sim_clock") and str(entry.get("event","")) in ["REGISTERED","PICKED_UP","PLACED","STASHED","HOME_ASSIGNED","RESTORED_HOME","RECOVERED_TO_LOST_FOUND","HOUSEKEEPING_RETURNED"]:
+			return float(entry["sim_clock"])
+	# Conservative migration for missing evidence: start the clock once.
+	var migration:Dictionary=runtime_state.get("housekeeping_legacy_clock",{})
+	var id:String=str(object.get("id",""))
+	if not migration.has(id):
+		migration[id]=sim_clock
+		runtime_state["housekeeping_legacy_clock"]=migration
+	return float(migration[id])
+
+func object_active_use(object:Dictionary)->bool:
+	if str(object.get("current_holder_id",""))!="":return true
+	var id:String=str(object.get("id",""))
+	for actor in residents.values():
+		if not bool(actor.get("active",false)):continue
+		if str(actor.get("cup_task_id",""))==id and str(actor.get("cup_task_stage","")) in ["fetch","serve","hold","return"]:return true
+		if str(actor.get("phase","")) in ["travel","perform"] and str(actor.get("activity_media_id",""))==id:return true
+	return false
+
+func object_needs_housekeeping(object:Dictionary)->bool:
+	if object.is_empty() or not bool(object.get("movable",false)) or not bool(object.get("recoverable",false)) or not bool(object.get("reset_eligible",true)):return false
+	if object_is_displaced(object):return true
+	if str(object.get("viewer_category",""))=="cups":
+		return float(runtime_state.get("beverages",{}).get("cups",{}).get(str(object.get("id","")),{}).get("remaining_ml",0))>0
+	return false
+
+func housekeeping_age(object:Dictionary)->float:
+	return sim_clock-object_interaction_at(object)
+
+func housekeeping_slot_free(object:Dictionary,room_id:String,anchor:Array,support_id:String)->bool:
+	if anchor.size()!=2:return false
+	for other in objects.values():
+		if str(other.get("id",""))==str(object.get("id","")):continue
+		# Keep other assigned homes reserved, as well as physical occupants.
+		for prefix in ["home","current"]:
+			if str(other.get(prefix+"_room_id",""))!=room_id:continue
+			var other_support:String=str(other.get(prefix+"_support_id",""))
+			if support_id!="" and other_support!="":
+				if support_id==other_support:return false
+			elif _anchors_equal(anchor,other.get(prefix+"_anchor",[])):return false
+	return true
+
+func housekeeping_target(object:Dictionary)->Dictionary:
+	if not object_needs_housekeeping(object) or object_active_use(object):return {}
+	var current:Dictionary=room_by_id(str(object.get("current_room_id","")))
+	# A closed/private source is not permission for invisible entry.
+	if not public_cutaway_allowed(current):return {}
+	var home:String=str(object.get("home_room_id",""))
+	var home_room:Dictionary=room_by_id(home)
+	var anchor:Array=object.get("home_anchor",[])
+	var support:String=str(object.get("home_support_id",""))
+	var category:String=str(object.get("viewer_category",""))
+	if public_cutaway_allowed(home_room) and anchor.size()==2 and housekeeping_slot_free(object,home,anchor,support):
+		var home_ok:=true
+		if housekeeping_navigation!=null and category in ["artifacts","cups"] and str(object.get("display_mode",""))!="wall":
+			home_ok=false
+			var slots:Array=housekeeping_navigation.cup_slots(home_room) if category=="cups" else housekeeping_navigation.artifact_slots(home_room)
+			for slot in slots:
+				var p:Array=slot["xyz"]
+				if (support=="" or str(slot["id"])==support) and _anchors_equal(anchor,[p[0],p[2]]) and _housekeeping_slot_fits(object,slot):
+					home_ok=true
+					break
+		if home_ok:return {"room_id":home,"anchor":anchor,"support_id":support}
+	# Do not invent furniture or a free position if measured supports are absent.
+	if housekeeping_navigation==null or str(object.get("display_mode",""))=="wall" or not category in ["artifacts","cups"]:return {}
+	var candidates:Array=matching_rooms(["common","rest","kitchen"] if category=="cups" else ["artifact"])
+	for room in candidates:
+		if not public_cutaway_allowed(room):continue
+		var slots:Array=housekeeping_navigation.cup_slots(room) if category=="cups" else housekeeping_navigation.artifact_slots(room)
+		for slot in slots:
+			if not _housekeeping_slot_fits(object,slot):continue
+			var pos:Array=slot["xyz"]
+			var a:Array=[pos[0],pos[2]]
+			var sid:String=str(slot["id"])
+			if housekeeping_slot_free(object,str(room["id"]),a,sid):
+				return {"room_id":str(room["id"]),"anchor":a,"support_id":sid}
+	return {}
+
+func _housekeeping_slot_fits(object:Dictionary,slot:Dictionary)->bool:
+	if str(object.get("viewer_category",""))=="cups":return true
+	var dims:Array=slot.get("dimensions",[])
+	var size:float=float(object.get("display_world_height",0.0))
+	return size>0 and dims.size()==3 and float(dims[0])>=size and float(dims[1])>=size and float(dims[2])>=size
+
 func tick_object_home_reset() -> int:
-	var day:int=game_day_index()
-	if not runtime_state.has("object_home_reset_day"):
-		runtime_state["object_home_reset_day"]=day
-		runtime_state["object_game_day_seconds"]=GAME_DAY_SECONDS
-		return 0
-	var previous_day:int=int(runtime_state.get("object_home_reset_day",day))
-	if day<=previous_day:
-		return 0
+	# Compatibility name; no calendar-day sweep. Each accepted interaction
+	# starts its own rolling deadline. Pending candidates are derived state.
+	var pending:Dictionary={}
 	var restored:=0
-	var failed:=0
 	var ids:Array=objects.keys()
 	ids.sort()
 	for raw_id in ids:
-		var object_id:String=str(raw_id)
-		var object:Dictionary=objects[object_id]
-		if not object_is_displaced(object):
+		var id:String=str(raw_id)
+		var object:Dictionary=objects[id]
+		if not object_needs_housekeeping(object):continue
+		var age:float=housekeeping_age(object)
+		if age<=RETURN_PREPARE_SECONDS:continue
+		pending[id]={"due_at":object_interaction_at(object)+GAME_DAY_SECONDS,"reason":"WAIT_DUE"}
+		if age<GAME_DAY_SECONDS:continue
+		if object_active_use(object):
+			pending[id]["reason"]="ACTIVE_USE"
 			continue
-		var previous_holder:String=str(object.get("current_holder_id",""))
-		if restore_physical_object_home(object_id,day):
-			_clear_carrier_reference(object_id,previous_holder)
+		var target:Dictionary=housekeeping_target(object)
+		if target.is_empty():
+			pending[id]["reason"]="NO_COMPATIBLE_AUTHORIZED_SLOT"
+			continue
+		# Commit synchronously through the event gate, which rechecks the
+		# chosen slot. The next item sees the committed occupancy.
+		if _ensure_object_events() and object_events.housekeeping_return(id,target):
+			pending.erase(id)
 			restored+=1
 		else:
-			failed+=1
-	runtime_state["object_home_reset_day"]=day
+			pending[id]["reason"]="EVENT_REJECTED"
+	runtime_state["housekeeping_pending_objects"]=pending
+	runtime_state.erase("object_home_reset_day")
 	runtime_state["object_home_reset_last_count"]=restored
-	runtime_state["object_home_reset_last_failed"]=failed
-	runtime_state["object_home_reset_last_clock"]=sim_clock
-	runtime_state["object_game_day_seconds"]=GAME_DAY_SECONDS
-	if restored>0 or failed>0:
-		_append_journal("OBJECT_HOME_DAILY_SWEEP","HOUSE_SPIRIT","",
-			str(previous_day),str(day),{"restored":restored,"failed":failed})
 	return restored
 
 func register_creature(creature_id: String, display_name: String,
@@ -1048,7 +1143,7 @@ func import_catalog(path: String) -> bool:
 			var updated:Dictionary=old.duplicate(true)
 			updated.merge(incoming,true)
 			if category=="books":
-				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id"]:
+				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id","last_interaction_at"]:
 					if old.has(field):
 						updated[field]=old[field]
 				if bool(old.get("physical",true)):

@@ -135,6 +135,8 @@ func setup(p_world) -> void:
 		creature_runtime.locomotion.candidate_navigation=candidate_navigation
 		candidate_cups.setup(world,candidate_navigation)
 		_prepare_candidate_positions()
+	world.housekeeping_navigation=candidate_navigation
+	world.next_housekeeping_check=world.sim_clock
 	media_runtime.candidate_navigation=candidate_navigation
 	media_runtime.setup(world)
 	creature_runtime.setup(world)
@@ -146,7 +148,7 @@ func setup(p_world) -> void:
 	stations.reconcile(world)
 	stations.migrate_legacy_positions(world)
 	reconcile_concrete_media()
-	# Daily restoration uses the simulation clock, including after reload.
+	# Rolling restoration uses only simulation time, including after reload.
 	media_runtime.tick_book_home_reset()
 	moving_ids.clear()
 	var active_ids: Array = []
@@ -729,7 +731,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			return
 		concrete_item=books[rng.randi_range(0,books.size()-1)]
 		var book_id: String = str(concrete_item.get("id",""))
-		if not media_runtime.borrow(actor["id"],book_id,int(Time.get_unix_time_from_system())):
+		if not media_runtime.borrow(actor["id"],book_id,int(clock)):
 			actor["until"] = clock + 12.0
 			return
 		actor["held_book"] = book_id
@@ -1072,14 +1074,18 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 func tick(delta: float) -> void:
 	clock += delta
 	world.sim_clock = clock
-	var home_restored:int=world.tick_object_home_reset()
-	if home_restored>0:
-		_record("Дом вернул вещи на назначенные места: %d" % home_restored)
-	var books_restored:int=media_runtime.tick_book_home_reset()
-	if books_restored>0:
-		if candidate_navigation!=null:media_runtime.reconcile_book_slots()
-		reconcile_concrete_media()
-		_record("Дом вернул книги на назначенные места: %d" % books_restored)
+	# Bounded maintenance pass, not a per-frame inventory scan. At most one
+	# simulation-second scheduling latency; direct due checks remain exact.
+	if clock>=world.next_housekeeping_check:
+		world.next_housekeeping_check=clock+1.0
+		var home_restored:int=world.tick_object_home_reset()
+		if home_restored>0:
+			_record("Дом вернул вещи на свободные места: %d" % home_restored)
+		var books_restored:int=media_runtime.tick_book_home_reset()
+		if books_restored>0:
+			if candidate_navigation!=null:media_runtime.reconcile_book_slots()
+			reconcile_concrete_media()
+			_record("Дом вернул книги на свободные места: %d" % books_restored)
 	if world.canonical_house_seed:
 		canonical_lifts.sync()
 	creature_runtime.tick(delta)

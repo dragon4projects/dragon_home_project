@@ -22,6 +22,9 @@ func _normalize_catalogue() -> void:
 				book["location_room_id"] = rooms[0]["id"] if not rooms.is_empty() else ""
 		if not book.has("idle_since"):
 			book["idle_since"] = 0
+		if not book.has("last_interaction_at"):
+			var old:float=float(book.get("idle_since",0))
+			book["last_interaction_at"]=old if old>0 and old<=world.sim_clock else world.sim_clock
 		if not book.has("progress_by_actor"):
 			book["progress_by_actor"] = {}
 		if not book.has("owner_id"):
@@ -54,6 +57,7 @@ func borrow(actor_id: String, book_id: String, now: int = 0) -> bool:
 	book["location_room_id"] = ""
 	book["idle_since"] = 0
 	book["borrowed_at"] = now
+	book["last_interaction_at"]=float(now)
 	return true
 
 func read(actor_id: String, book_id: String, seconds: float) -> bool:
@@ -63,6 +67,7 @@ func read(actor_id: String, book_id: String, seconds: float) -> bool:
 	var progress: Dictionary = book.get("progress_by_actor", {})
 	progress[actor_id] = maxf(0.0, float(progress.get(actor_id, 0.0)) + seconds)
 	book["progress_by_actor"] = progress
+	book["last_interaction_at"]=float(world.sim_clock)
 	return true
 
 func drop_book(actor_id: String, book_id: String, now: int) -> bool:
@@ -71,6 +76,7 @@ func drop_book(actor_id: String, book_id: String, now: int) -> bool:
 		return false
 	book["holder_id"] = ""
 	book["idle_since"] = now
+	book["last_interaction_at"]=float(now)
 	# No shelf location while abandoned. This is not a second copy.
 	return true
 
@@ -88,57 +94,89 @@ func return_book(actor_id: String, book_id: String, destination_id: String = "")
 	book["holder_id"] = ""
 	book["location_room_id"] = room["id"]
 	book["idle_since"] = 0
+	book["last_interaction_at"]=float(world.sim_clock)
 	return true
 
 func cleanup_abandoned(now: int) -> int:
-	var count := 0
-	for book in world.media.get("books", []):
-		if not bool(book.get("physical", true)):
-			continue
-		if book.get("holder_id", "") != "" or book.get("location_room_id", "") != "":
-			continue
-		var abandoned_at: int = int(book.get("idle_since", 0))
-		if abandoned_at <= 0 or now - abandoned_at < 86400:
-			continue
-		var rooms: Array = world.matching_rooms(["library", "rest", "study"])
-		if rooms.is_empty():
-			continue
-		book["location_room_id"] = rooms[0]["id"]
-		book["idle_since"] = 0
-		count += 1
-	return count
+	return _rolling_book_returns(float(now))
 
 func tick_book_home_reset() -> int:
-	var day:int=world.game_day_index()
-	var last:int=int(world.runtime_state.get("book_home_reset_day",day))
-	if not world.runtime_state.has("book_home_reset_day"):
-		world.runtime_state["book_home_reset_day"]=day
-		return 0
-	if day<=last:
-		return 0
-	var count:int=0
+	return _rolling_book_returns(float(world.sim_clock))
+
+func _rolling_book_returns(now:float)->int:
+	var count:=0
+	var pending:Dictionary={}
+	var reserved:Dictionary=reserved_book_ids()
 	for book in world.media.get("books",[]):
-		if not bool(book.get("physical",true)):
-			continue
+		if not bool(book.get("physical",true)):continue
+		var id:String=str(book["id"])
 		var home:String=str(book.get("home_room_id",""))
-		if not world.public_cutaway_allowed(world.room_by_id(home)):
-			continue
-		var holder:String=str(book.get("holder_id",""))
 		var previous:String=str(book.get("location_room_id",""))
-		if holder=="" and previous==home:
+		var holder:String=str(book.get("holder_id",""))
+		if holder=="" and previous==home:continue
+		var last:float=float(book.get("last_interaction_at",now))
+		var age:float=now-last
+		if age<=world.RETURN_PREPARE_SECONDS:continue
+		pending[id]={"due_at":last+world.GAME_DAY_SECONDS,"reason":"WAIT_DUE"}
+		if age<world.GAME_DAY_SECONDS:continue
+		if holder!="" or reserved.has(id):
+			pending[id]["reason"]="ACTIVE_USE"
 			continue
-		book["holder_id"]=""
-		book["location_room_id"]=home
+		if previous!="" and not world.public_cutaway_allowed(world.room_by_id(previous)):
+			pending[id]["reason"]="SOURCE_NOT_AUTHORIZED"
+			continue
+		var room_id:String=home
+		if candidate_navigation!=null:
+			var slot:Dictionary=_book_return_slot(id,home)
+			if slot.is_empty():
+				pending[id]["reason"]="NO_COMPATIBLE_AUTHORIZED_SLOT"
+				continue
+			room_id=str(slot["room_id"])
+			var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
+			assignments[id]={"room_id":room_id,"slot_id":str(slot["id"])}
+			world.runtime_state["teea008_book_slot_assignments"]=assignments
+		elif not world.public_cutaway_allowed(world.room_by_id(home)):
+			pending[id]["reason"]="NO_AUTHORIZED_HOME"
+			continue
+		book["location_room_id"]=room_id
 		book["idle_since"]=0
+		book["last_interaction_at"]=now
 		book.erase("borrowed_at")
-		if holder!="" and world.residents.has(holder):
-			var actor:Dictionary=world.residents[holder]
-			if str(actor.get("held_book",""))==str(book["id"]):
-				actor.erase("held_book")
-		world._append_journal("BOOK_RESTORED_HOME","HOUSE_SPIRIT",str(book["id"]),holder if holder!="" else previous,home,{"game_day":day})
+		world._append_journal("BOOK_RESTORED_HOME","HOUSE_SPIRIT",id,previous,room_id,{"sim_clock":now})
+		pending.erase(id)
 		count+=1
-	world.runtime_state["book_home_reset_day"]=day
+	world.runtime_state["housekeeping_pending_books"]=pending
+	world.runtime_state.erase("book_home_reset_day")
 	return count
+
+func _book_return_slot(id:String,home:String)->Dictionary:
+	var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
+	var used:Dictionary={}
+	for other in assignments:
+		if str(other)==id:continue
+		var entry:Dictionary=assignments[other]
+		used[str(entry.get("room_id",""))+"|"+str(entry.get("slot_id",""))]=true
+	var rooms:Array=world.matching_rooms(["library"])
+	var preferred:Dictionary=world.room_by_id(home)
+	if not preferred.is_empty():
+		rooms.erase(preferred)
+		rooms.push_front(preferred)
+	var prior:Dictionary=assignments.get(id,{})
+	for room in rooms:
+		if not world.public_cutaway_allowed(room):continue
+		var rid:String=str(room["id"])
+		var slots:Array=candidate_navigation.book_slots(room).duplicate()
+		for slot in slots.duplicate():
+			if rid==str(prior.get("room_id","")) and str(slot["id"])==str(prior.get("slot_id","")):
+				slots.erase(slot)
+				slots.push_front(slot)
+				break
+		for slot in slots:
+			if used.has(rid+"|"+str(slot["id"])):continue
+			var result:Dictionary=slot.duplicate(true)
+			result["room_id"]=rid
+			return result
+	return {}
 
 # Legacy API: local bytes never make a work playable. Use duration-based candidates.
 func playable(_kind: String) -> Array:
