@@ -483,6 +483,34 @@ func object_is_displaced(object: Dictionary) -> bool:
 	return not _anchors_equal(
 		object.get("current_anchor",[]),object.get("home_anchor",[]))
 
+# Object events own possession. Actor fields are cached projections, not
+# a second authority. Run once after journal replay, before life starts.
+func reconcile_object_carriers()->bool:
+	var creature_items:Dictionary={}
+	var cup_items:Dictionary={}
+	var issues:Array=[]
+	for id in objects:
+		var item:Dictionary=objects[id]
+		var holder:String=str(item.get("current_holder_id",""))
+		if holder=="":continue
+		if creatures.has(holder):
+			if creature_items.has(holder):
+				issues.append({"reason":"MULTIPLE_CREATURE_ITEMS","actor_id":holder})
+			else:creature_items[holder]=str(id)
+		elif residents.has(holder) and str(item.get("viewer_category",""))=="cups":
+			if cup_items.has(holder):
+				issues.append({"reason":"MULTIPLE_HELD_CUPS","actor_id":holder})
+			else:cup_items[holder]=str(id)
+		elif not residents.has(holder):
+			issues.append({"reason":"UNKNOWN_OBJECT_HOLDER","object_id":str(id)})
+	if not issues.is_empty():
+		runtime_state["object_carrier_recovery_issues"]=issues
+		return false
+	runtime_state.erase("object_carrier_recovery_issues")
+	for id in creatures:
+		creatures[id]["carried_object_id"]=str(creature_items.get(id,""))
+	return true
+
 func _clear_carrier_reference(object_id: String, previous_holder: String) -> void:
 	if previous_holder=="":
 		return
@@ -1369,6 +1397,8 @@ func load_or_seed() -> bool:
 	object_events_save_path = ""
 	if not _ensure_object_events():
 		return _block_world_recovery("EVENT_RECOVERY_REQUIRED","Object event recovery failed; saved world retained.")
+	if not reconcile_object_carriers():
+		return _block_world_recovery("CARRIER_RECOVERY_REQUIRED","Object holder conflicts require recovery; saved world retained.")
 	if migrated or social_changed:
 		if not save_world():
 			return _block_world_recovery("MIGRATION_SAVE_FAILED","Cannot commit migrated world; saved world retained.")
