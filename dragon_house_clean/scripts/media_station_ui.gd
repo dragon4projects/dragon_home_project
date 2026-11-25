@@ -13,6 +13,12 @@ var video: VideoStreamPlayer
 var audio: AudioStreamPlayer
 var opened := false
 var content_viewer
+signal surface_assignment_requested(room_id:String,surface_id:String,category:String,item_id:String)
+var surface_room_id: String=""
+var surface_id: String=""
+var surface_category: String=""
+var surface_controls: HBoxContainer
+var surface_label: Label
 
 func _ready() -> void:
 	name = "MediaLibrary"
@@ -58,6 +64,20 @@ func _ready() -> void:
 	close.text = "Закрыть"
 	close.pressed.connect(close_panel)
 	button_row.add_child(close)
+	surface_label=Label.new()
+	surface_label.visible=false
+	col.add_child(surface_label)
+	surface_controls=HBoxContainer.new()
+	surface_controls.visible=false
+	col.add_child(surface_controls)
+	var assign_button:=Button.new()
+	assign_button.text="Назначить на держатель"
+	assign_button.pressed.connect(_assign_selected_surface)
+	surface_controls.add_child(assign_button)
+	var clear_button:=Button.new()
+	clear_button.text="Очистить держатель"
+	clear_button.pressed.connect(func(): surface_assignment_requested.emit(surface_room_id,surface_id,surface_category,""))
+	surface_controls.add_child(clear_button)
 	preview = TextureRect.new()
 	preview.custom_minimum_size = Vector2(360, 215)
 	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -83,11 +103,14 @@ func open_panel() -> void:
 	refresh()
 
 func close_panel() -> void:
+	clear_surface_context()
 	stop_playback()
 	opened = false
 	visible = false
 
 func switch_category(k: String) -> void:
+	if surface_category!="" and surface_category!=k:
+		clear_surface_context()
 	stop_playback()
 	category = k
 	refresh()
@@ -130,7 +153,7 @@ func _on_selected(index: int) -> void:
 		var image := Image.new()
 		if image.load(image_path) == OK:
 			preview.texture = ImageTexture.create_from_image(image)
-	if content_viewer != null:
+	if content_viewer != null and surface_id=="":
 		content_viewer.open_record(category,item)
 
 func stop_playback() -> void:
@@ -178,3 +201,29 @@ func play_selected() -> void:
 		video.play()
 		details.text = "Смотрим: " + str(item.get("title",""))
 
+
+func open_surface(room_id:String,id:String,k:String)->void:
+	clear_surface_context()
+	surface_room_id=room_id
+	surface_id=id
+	surface_category=k
+	switch_category(k)
+	opened=true
+	visible=true
+	surface_label.text="Держатель: "+id+" · "+room_id
+	surface_label.visible=true
+	surface_controls.visible=true
+
+func clear_surface_context()->void:
+	surface_room_id=""
+	surface_id=""
+	surface_category=""
+	if surface_controls!=null:surface_controls.visible=false
+	if surface_label!=null:surface_label.visible=false
+
+func _assign_selected_surface()->void:
+	if surface_id=="" or category!=surface_category or list.get_selected_items().is_empty():
+		return
+	var index:int=list.get_selected_items()[0]
+	if index>=0 and index<item_ids.size():
+		surface_assignment_requested.emit(surface_room_id,surface_id,category,str(item_ids[index]))

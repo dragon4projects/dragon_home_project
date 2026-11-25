@@ -12,6 +12,7 @@ const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
 const OwnerDecorBankScript = preload("res://scripts/owner_decor_bank.gd")
 const TEEA008ReviewScript = preload("res://scripts/teea008_review_bank.gd")
 const TEEA008NavigationScript = preload("res://scripts/teea008_navigation.gd")
+const TEEA008MediaBindingsScript = preload("res://scripts/teea008_media_bindings.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
 const PrivateDoorRegistryScript = preload("res://scripts/private_door_registry.gd")
 const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
@@ -31,6 +32,7 @@ var room_visual_layout = RoomVisualLayoutScript.new()
 var owner_decor_bank = OwnerDecorBankScript.new()
 var teea008_review = TEEA008ReviewScript.new()
 var teea008_live:=false
+var teea008_media_bindings=TEEA008MediaBindingsScript.new()
 var door_registry = PrivateDoorRegistryScript.new()
 var semantic_view = SemanticViewScript.new()
 var candidate_content = CandidateContentRuntimeScript.new()
@@ -210,6 +212,9 @@ func _ready() -> void:
 	if not asset_banks.manifest.is_empty():
 		catalog_metadata_added = world.merge_reference_book_metadata(
 			asset_banks.manifest.get("media_previews",{}).get("books",[]))
+	if teea008_review.enabled:
+		teea008_media_bindings.setup(world,teea008_review,life.media_runtime)
+		life.candidate_media_bindings=teea008_media_bindings
 	if teea008_live:
 		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
@@ -2032,6 +2037,7 @@ func build_interface() -> void:
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
 	media_panel.bind(world,life.media_runtime,content_viewer)
+	media_panel.surface_assignment_requested.connect(_assign_teea008_media)
 	bank_gallery = BankGalleryScript.new()
 	root.add_child(bank_gallery)
 	bank_gallery.bind(asset_banks,world.read_resident_profiles())
@@ -2190,6 +2196,9 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 	if found.is_empty():
 		var surface:Dictionary=teea008_review.aperture_hit(camera,point)
 		if not surface.is_empty() and world.public_cutaway_allowed(world.room_by_id(str(surface.get("room_id","")))):
+			var item:Dictionary=teea008_media_bindings.resolve(str(surface["room_id"]),str(surface["item_id"]))
+			if not item.is_empty():
+				surface["display_name"]=str(item.get("title",item.get("display_name",surface["item_id"])))
 			found=surface
 	return found
 
@@ -2204,20 +2213,15 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 		if surface.is_empty() or not world.public_cutaway_allowed(world.room_by_id(str(entry.get("room_id","")))):
 			return false
 		var bound_category:String=str(surface.get("legacy_runtime_category",""))
-		var bindings:Dictionary=world.runtime_state.get("media_surface_bindings",{})
-		var binding:Dictionary=bindings.get(item_id,{})
-		var bound_id:String=str(binding.get("item_id",""))
-		if bound_id!="" and bound_category in ["books","films","tracks"]:
-			record=life.media_runtime._lookup(bound_category,bound_id)
-			if not record.is_empty():
-				return content_viewer.open_record(bound_category,record)
-		if bound_id!="" and bound_category=="artifacts":
-			return open_content_hotspot({"category":"artifacts","item_id":bound_id})
-		# An unbound physical carrier opens its real catalogue, not a fake title.
+		var room_id:String=str(entry.get("room_id",""))
+		record=teea008_media_bindings.resolve(room_id,item_id)
 		if bound_category in ["books","films","tracks"]:
-			media_panel.visible=true
-			media_panel.switch_category(bound_category)
-		else:
+			media_panel.open_surface(room_id,item_id,bound_category)
+			if not record.is_empty() and not bool(entry.get("assign_only",false)):
+				return content_viewer.open_record(bound_category,record)
+		elif bound_category=="artifacts":
+			if not record.is_empty():
+				return open_content_hotspot({"category":"artifacts","item_id":str(record["id"])})
 			notice.text="Медиадержатель: "+item_id+" · предмет ещё не назначен"
 		return true
 	if category in ["books","films","tracks"]:
@@ -3039,6 +3043,8 @@ func _process(delta: float) -> void:
 	if Engine.get_process_frames() % 40 == 0:
 		update_hud()
 		update_render_lod()
+		if teea008_review.enabled:
+			_update_teea008_media_previews()
 		if journal_open:
 			update_journal()
 
@@ -3111,3 +3117,44 @@ func _activate_teea008_roster()->void:
 			"production_visual_ready":false,"visual_status":"CANDIDATE_LIVE_REVIEW"},true)
 		world._append_journal("TEEA008_REVIEW_ACTOR_ACTIVATED",id,id,"",rid,{"wardrobe":wardrobe,"owner_approved":false})
 	world.runtime_state["teea008_full_roster_initialized"]=true
+
+func _assign_teea008_media(room_id:String,surface_id:String,category:String,item_id:String)->void:
+	if not teea008_review.enabled or not teea008_media_bindings.assign(room_id,surface_id,category,item_id):
+		notice.text="Назначение не выполнено: несовместимый держатель или недоступный контент"
+		return
+	world.save_world()
+	_update_teea008_media_previews()
+	notice.text="Держатель обновлён: "+surface_id
+
+func _update_teea008_media_previews()->void:
+	if content_viewer==null:
+		return
+	for anchor in get_tree().get_nodes_in_group("teea008_media_surface"):
+		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree():
+			continue
+		var room_id:String=str(anchor.get_meta("room_id",""))
+		var surface_id:String=str(anchor.get_meta("surface_id",""))
+		var item:Dictionary=teea008_media_bindings.resolve(room_id,surface_id)
+		var path:String=str(item.get("preview",item.get("preview_path","")))
+		if str(anchor.get_meta("preview_source",""))==path:
+			continue
+		anchor.set_meta("preview_source",path)
+		var panel:MeshInstance3D=anchor.get_node_or_null("BoundPreview")
+		if panel!=null:
+			panel.free()
+		var texture:Texture2D=content_viewer._load_preview(path)
+		if texture==null:
+			continue
+		var size:Vector2=anchor.get_meta("surface_size",Vector2.ZERO)
+		var fit:float=minf(size.x/float(texture.get_width()),size.y/float(texture.get_height()))
+		var quad:=QuadMesh.new()
+		quad.size=Vector2(texture.get_width(),texture.get_height())*fit*0.98
+		var material:=StandardMaterial3D.new()
+		material.albedo_texture=texture
+		material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+		var mesh:=MeshInstance3D.new()
+		mesh.name="BoundPreview"
+		mesh.mesh=quad
+		mesh.material_override=material
+		mesh.position.z=0.003
+		anchor.add_child(mesh)

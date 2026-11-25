@@ -22,6 +22,7 @@ var planner_usec_max := 0
 var log: Array = []
 var steps := 0
 var candidate_navigation=null
+var candidate_media_bindings=null
 # Deterministic QA may inject a daypart; production uses the system clock.
 var daypart_override: String=""
 var last_cleanup_wall_time := 0
@@ -579,7 +580,10 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		if playable_films.is_empty():
 			actor["until"]=clock+12.0
 			return
-		concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]
+		if candidate_media_bindings!=null:
+			concrete_item=candidate_media_bindings.choose_film(str(room["id"]),str(actor["id"]))
+		if concrete_item.is_empty():
+			concrete_item=playable_films[rng.randi_range(0,playable_films.size()-1)]
 		if not media_runtime.can_watch(str(actor["id"]),
 				str(concrete_item.get("id","")),str(room["id"])):
 			actor["until"]=clock+12.0
