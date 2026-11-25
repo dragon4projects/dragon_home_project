@@ -187,10 +187,10 @@ func _ready() -> void:
 	qa_visual_preview = iter1_owner_review
 	if iter1_owner_review:
 		world.save_path = "user://dragon_house_iter1_owner_review.json"
-		if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1":
+		if OS.get_environment("DRAGON_TEEA008_REVIEW")=="1" or FileAccess.file_exists(teea008_review.LIVE_EXPORT_MARKER):
 			if teea008_review.initialize():
 				world.save_path="user://dragon_house_teea008_review.json"
-				teea008_live=OS.get_environment("DRAGON_TEEA008_LIVE")=="1"
+				teea008_live=OS.get_environment("DRAGON_TEEA008_LIVE")=="1" or FileAccess.file_exists(teea008_review.LIVE_EXPORT_MARKER)
 				if teea008_live:
 					world.save_path="user://dragon_house_teea008_live_review.json"
 			else:
