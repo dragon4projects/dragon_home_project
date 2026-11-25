@@ -57,9 +57,24 @@ func _safe_peer(id:String,a:Vector3,b:Vector3)->bool:
 
 func _safe_room(actor:Dictionary,a:Vector3,b:Vector3)->bool:
 	var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
-	if room.is_empty() or not nav.has_layout(room):return true
+	if room.is_empty():return false
 	var aa:Vector2=world.room_space.world_to_local(room,a)
 	var bb:Vector2=world.room_space.world_to_local(room,b)
+	if world.canonical_house_seed:
+		# The absence of furniture is not permission to leave a room shell.
+		# Side connector crossings are handled separately by step().
+		if not world.room_space.local_contains(room,bb):
+			return false
+		if not world.is_accessible(room,str(actor.get("id",""))):
+			# Closed doors retain a public front passage. A walker may not
+			# use the hidden interior as a shortcut to pass another walker.
+			# If access was revoked while inside, allow monotone egress only.
+			const FRONTAGE_MIN:=1.35
+			if aa.y>=FRONTAGE_MIN-EPS:
+				if bb.y<FRONTAGE_MIN-EPS:return false
+			elif bb.y<=aa.y+EPS or absf(bb.x-aa.x)>EPS:
+				return false
+	if not nav.has_layout(room):return true
 	return nav.segment_clear(room,aa,bb)
 
 func _record(id:String,a:Vector3,b:Vector3)->void:
