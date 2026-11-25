@@ -2,12 +2,23 @@ extends SceneTree
 ## A 49-cell future house must keep semantic LOD bounded.
 ## v0.19 contract: HOUSE/LEVEL never materialize rich furniture merely because
 ## numeric zoom is close; rich detail belongs to ROOM/FOLLOW only.
+# The old procedural LOD fixture must not inherit the later always-mounted
+# legacy owner decor layer. Canonical real-model LOD is tested separately.
+class ProceduralDecor extends "res://scripts/owner_decor_bank.gd":
+	func ready_for(_kind:String)->bool:return false
+
 func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	# Legacy synthetic fixture only; canonical topology has its own LOD test.
+	if FileAccess.file_exists("res://data/integration_candidates/CANONICAL_HOUSE_ARCHITECTURE.enabled") or OS.get_environment("DRAGON_HOUSE_ARCHITECTURE")=="1":
+		print("ROOM_CAPACITY_V06_SKIP canonical mode; run test_canonical_lod_budget.gd")
+		quit(0)
+		return
 	var scene=load("res://scenes/main.tscn").instantiate()
 	scene.world.save_path="user://test_49_room_lod_v06.json"
+	scene.owner_decor_bank=ProceduralDecor.new()
 	root.add_child(scene)
 	current_scene=scene
 	var world=scene.world
@@ -18,7 +29,9 @@ func run() -> void:
 				var choices:=["corridor","library","rest","music","study","cinema","workshop"]
 				world.make_room(x,level,choices[posmod(x+7,choices.size())])
 				added+=1
-	assert(world.rooms.size()==49,"Synthetic 49-cell world")
+	var cells:int=0
+	for room in world.rooms:cells+=int(room.get("size_modules",1))
+	assert(added==28 and world.rooms.size()==47 and cells==49,"Synthetic 49 cells, 47 physical rooms (R3 is one room)")
 	scene.make_rooms()
 	await process_frame
 	await process_frame
