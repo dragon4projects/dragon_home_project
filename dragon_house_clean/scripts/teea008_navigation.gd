@@ -367,6 +367,20 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 		_add_spot(out,{"id":slot["id"],"offset":p,"kind":"standing","furniture_id":slot["furniture_id"],"pose_hint":"IDLE_S","approach_z":p.y,"cup_slot_id":slot["id"]},cap,0.60)
 	# Standing positions must themselves be clear and reachable from the aisle.
 	var width:int=int(room.get("size_modules",1))
+	# Preserve all authored furniture approaches. Fill remaining capacity with
+	# a measured clear conversational cluster before ordinary standing slots.
+	if str(room.get("type","")) in ["common","rest","kitchen"] and cap-out.size()>=3:
+		var free:Array=[]
+		for z in [0.75,0.05,-0.65,-1.35]:
+			for module in range(width):
+				for xx in [-1.55,-0.52,0.52,1.55]:
+					var p:=Vector2((float(module)-(float(width)-1.0)*0.5)*4.8+float(xx),float(z))
+					if not clear(room,p):continue
+					if out.any(func(spot):return p.distance_to(spot["offset"])<0.73):continue
+					free.append(p)
+		for p in _social_cluster(room,free,mini(6,cap-out.size())):
+			var module:int=clampi(floori((p.x+float(width)*2.4)/4.8),0,width-1)
+			_add_spot(out,{"id":"teea008_stand_%d_%d_%d" % [module,roundi(p.x*100),roundi(p.y*100)],"offset":p,"kind":"standing","furniture_id":"","pose_hint":"IDLE_S","approach_z":p.y},cap,0.73)
 	for z in [0.75,0.05,-0.65,-1.35,1.25]:
 		for module in range(width):
 			for xx in [-1.55,-0.52,0.52,1.55]:
@@ -377,6 +391,51 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 	if display_anchors.is_empty():
 		static_spots[variant_key]=out
 	return out
+
+# Build a compact clique from the sampled floor, using the same clearance
+# rules as group_geometry. Bounded grid, at most 48 points in R3.
+func _social_cluster(room:Dictionary,points:Array,limit:int)->Array:
+	var linked:Dictionary={}
+	for i in range(points.size()):
+		linked[i]={}
+		for j in range(i):
+			var d:float=points[i].distance_to(points[j])
+			if d>=0.73 and d<=3.6 and segment_clear(room,points[i],points[j]):
+				linked[i][j]=true
+				linked[j][i]=true
+	var best:Array=[]
+	for a in range(points.size()):
+		for b in linked[a]:
+			if b<=a:continue
+			for c in linked[b]:
+				if c<=b or not linked[a].has(c):continue
+				var chosen:Array=[a,b,c]
+				if not _social_ring(points,chosen):continue
+				for d in range(points.size()):
+					if chosen.size()>=limit:break
+					if chosen.has(d) or not chosen.all(func(i):return linked[d].has(i)):continue
+					var trial:Array=chosen+[d]
+					if _social_ring(points,trial):chosen=trial
+				if chosen.size()>best.size():
+					best=chosen.map(func(i):return points[i])
+					if best.size()>=limit:return best
+	return best
+
+func _social_ring(points:Array,indices:Array)->bool:
+	var center:=Vector2.ZERO
+	for i in indices:center+=points[i]
+	center/=float(indices.size())
+	var angles:Array=[]
+	for i in indices:
+		var v:Vector2=points[i]-center
+		if v.length()<0.25 or v.length()>2.0:return false
+		angles.append(v.angle())
+	angles.sort()
+	for i in range(angles.size()):
+		var gap:float=float(angles[(i+1)%angles.size()])-float(angles[i])
+		if i==angles.size()-1:gap+=TAU
+		if gap>=PI-0.05:return false
+	return true
 
 func _add_spot(out:Array,spot:Dictionary,cap:int,gap:float)->void:
 	if out.size()>=cap:

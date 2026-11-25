@@ -388,6 +388,8 @@ func group_geometry(room:Dictionary,positions:Array)->bool:
 	var angles:Array=[]
 	for i in range(positions.size()):
 		var p:Vector2=positions[i]
+		# Keep the physical front connector aisle at z=1.50 free of gatherings.
+		if candidate_navigation!=null and candidate_navigation.has_layout(room) and p.y>0.75:return false
 		var v:Vector2=p-center
 		if v.length()<0.25 or v.length()>2.0:return false
 		angles.append(v.angle())
@@ -411,13 +413,26 @@ func group_claims(world,actors:Array,room:Dictionary)->Dictionary:
 		ids.append(id)
 	var used:Dictionary=used_slots(world,str(room["id"]),ids)
 	var points:Array=layout_for_world(world,room)
+	var selected:Array=_group_indexes(room,points,used,actors.size())
+	if selected.size()!=actors.size():return {}
+	var claims:Dictionary={}
+	for i in range(ids.size()):
+		var ix:int=int(selected[i])
+		claims[ids[i]]=_claim(room,ix,points[ix])
+	return claims
+
+func can_reserve_group(world,room:Dictionary,actor_id:String="")->bool:
+	if room.is_empty() or str(room.get("privacy",""))!="public":return false
+	var points:Array=layout_for_world(world,room)
+	var used:Dictionary=used_slots(world,str(room["id"]),[actor_id])
+	return _group_indexes(room,points,used,3).size()==3
+
+func _group_indexes(room:Dictionary,points:Array,used:Dictionary,count:int)->Array:
 	var available:Array=[]
 	for i in range(mini(points.size(),capacity(room))):
 		var spot:Dictionary=points[i]
 		if not used.has(i) and str(spot.get("kind",""))=="standing" and str(spot.get("furniture_id",""))=="":available.append(i)
-	if available.size()<actors.size():return {}
-	# Bound work by authored capacity (max 16). A triangle must already
-	# surround its center; larger circles extend it only if still valid.
+	if available.size()<count:return []
 	for a in range(available.size()-2):
 		for b in range(a+1,available.size()-1):
 			for c in range(b+1,available.size()):
@@ -425,20 +440,15 @@ func group_claims(world,actors:Array,room:Dictionary)->Dictionary:
 				var pos:Array=[points[selected[0]]["offset"],points[selected[1]]["offset"],points[selected[2]]["offset"]]
 				if not group_geometry(room,pos):continue
 				for index in available:
-					if selected.size()>=actors.size():break
+					if selected.size()>=count:break
 					if selected.has(index):continue
 					var trial:Array=pos.duplicate()
 					trial.append(points[index]["offset"])
 					if group_geometry(room,trial):
 						selected.append(index)
 						pos=trial
-				if selected.size()!=actors.size():continue
-				var claims:Dictionary={}
-				for i in range(ids.size()):
-					var ix:int=int(selected[i])
-					claims[ids[i]]=_claim(room,ix,points[ix])
-				return claims
-	return {}
+				if selected.size()==count:return selected
+	return []
 
 # Extend an existing circle without moving any of its members.
 func group_join_claim(world,actor:Dictionary,room:Dictionary,positions:Array)->Dictionary:
