@@ -86,7 +86,30 @@ func initialize(force_review:bool=false) -> bool:
 func variant(kind:String, width:int)->Dictionary:
 	return layouts.get("%s/R%d" % [kind,width],{}) if enabled else {}
 
-func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->Node3D:
+func _support_host_id(item:Dictionary)->String:
+	var reference:String=str(item.get("support_ref",""))
+	if reference=="":reference=str(item.get("decor_slot_id",""))
+	if reference=="" or not reference.contains("."):return ""
+	return reference.get_slice(".",0)
+
+func _mount_pose(item:Dictionary,scale_at:Callable,instances:Dictionary)->Dictionary:
+	var p:Array=item["room_local_xyz"]
+	var physical:=Vector3(float(p[0]),float(p[1]),float(p[2]))
+	var depth:float=float(scale_at.call(physical.z))
+	var projected:=Vector3(physical.x*depth,physical.y,physical.z)
+	var host_id:String=_support_host_id(item)
+	var host:Dictionary=instances.get(host_id,{})
+	if not host.is_empty():
+		# A supported object's coordinates are in the measured room space,
+		# not in the carrier's model space. Apply the SAME room-space depth
+		# projection as its carrier, without double-applying model scale/yaw.
+		var hp:Array=host["room_local_xyz"]
+		var h:=Vector3(float(hp[0]),float(hp[1]),float(hp[2]))
+		depth=float(scale_at.call(h.z))
+		projected=Vector3(physical.x*depth,h.y+(physical.y-h.y)*depth,h.z+(physical.z-h.z)*depth)
+	return {"position":projected,"depth":depth,"support_host_id":host_id if not host.is_empty() else ""}
+
+func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true,instances:Dictionary={})->Node3D:
 	var asset:String=str(item["asset_id"])
 	var position:Array=item["room_local_xyz"]
 	var rotation:Array=item["rotation_deg_xyz"]
@@ -103,11 +126,10 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->
 		return null
 	var wrapper:=Node3D.new()
 	wrapper.name=str(item["instance_id"]).validate_node_name()
-	var z:float=float(position[2])
-	# Match existing artistic depth correction, while retaining unwarped
-	# room coordinates as metadata for inspection.
-	var depth:float=float(scale_at.call(z))
-	wrapper.position=Vector3(float(position[0])*depth,float(position[1]),z)
+	var pose:Dictionary=_mount_pose(item,scale_at,instances)
+	var depth:float=float(pose["depth"])
+	wrapper.position=pose["position"]
+	wrapper.set_meta("visual_support_host",str(pose["support_host_id"]))
 	wrapper.rotation_degrees=Vector3(float(rotation[0]),float(rotation[1]),float(rotation[2]))
 	wrapper.scale=Vector3.ONE*float(item.get("uniform_scale",1.0))*depth
 	wrapper.set_meta("candidate_instance_id",str(item["instance_id"]))
@@ -134,10 +156,13 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 	var row:Dictionary=variant(kind,width)
 	var count:=0
 	var nodes:Dictionary={}
+	var instances:Dictionary={}
+	for item in row.get("instances",[]):
+		instances[str(item["instance_id"])]=item
 	for item in row.get("instances",[]):
 		if live_physical_objects and str(item.get("asset_id","")) in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:
 			continue
-		var wrapper:Node3D=_mount(parent,item,scale_at)
+		var wrapper:Node3D=_mount(parent,item,scale_at,true,instances)
 		if wrapper!=null:
 			nodes[str(item["instance_id"])]=wrapper
 			count+=1
@@ -151,7 +176,7 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 			# Three screens already exist in the room layout: never duplicate.
 			carrier=nodes.get(str(spec.get("carrier_instance_id","")))
 		else:
-			carrier=_mount(parent,holder,scale_at)
+			carrier=_mount(parent,holder,scale_at,true,instances)
 		if carrier==null:
 			push_error("TEEA008 missing mounted media holder "+str(id))
 			continue
@@ -353,12 +378,15 @@ func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->i
 	# resources can use Godot mesh LOD; no media hotspots or running fire clips.
 	var row:Dictionary=variant(kind,width)
 	var count:=0
+	var instances:Dictionary={}
+	for item in row.get("instances",[]):
+		instances[str(item["instance_id"])]=item
 	for item in row.get("instances",[]):
 		var asset:String=str(item["asset_id"])
 		var policy:String=str(item.get("placement_policy",""))
 		if policy not in ["floor_fixed","soft_floor"] and asset not in ["media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
 			continue
-		var wrapper:Node3D=_mount(parent,item,scale_at,false)
+		var wrapper:Node3D=_mount(parent,item,scale_at,false,instances)
 		if wrapper==null:continue
 		for player in wrapper.find_children("*","AnimationPlayer",true,false):
 			player.stop()

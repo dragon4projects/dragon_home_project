@@ -12,6 +12,27 @@ func run()->void:
 	var nav=scene.life.candidate_navigation
 	var tested:=0
 	var approaches:=0
+	var supported:=0
+	for key in nav.layouts:
+		var items:Array=nav.layouts[key]["instances"]
+		var by_id:Dictionary={}
+		for item in items:
+			by_id[str(item["instance_id"])]=item
+		for item in items:
+			var host_id:String=scene.teea008_review._support_host_id(item)
+			if host_id=="":continue
+			assert(by_id.has(host_id),str([key,item["instance_id"],host_id]))
+			var host:Dictionary=by_id[host_id]
+			var hp:Array=host["room_local_xyz"]
+			var p:Array=item["room_local_xyz"]
+			var d:float=scene.depth_visual_scale(float(hp[2]))
+			var pose:Dictionary=scene.teea008_review._mount_pose(item,scene.depth_visual_scale,by_id)
+			var expected_position:=Vector3(float(p[0])*d,float(hp[1])+(float(p[1])-float(hp[1]))*d,float(hp[2])+(float(p[2])-float(hp[2]))*d)
+			assert(str(pose["support_host_id"])==host_id)
+			assert(is_equal_approx(float(pose["depth"]),d))
+			assert((pose["position"] as Vector3).distance_to(expected_position)<0.00001)
+			supported+=1
+	assert(supported>=100,str(supported))
 	for room in world.matching_rooms(["common","rest","kitchen","library","artifact","cinema","music","study","workshop"]):
 		var key:String=nav.key(room)
 		assert(nav.has_layout(room),key)
@@ -65,5 +86,5 @@ func run()->void:
 			assert(anchor.get_node_or_null("BoundPreview")==null)
 			checked[id]=true
 		assert(checked.size()==(4 if kind=="music" else 1),str(checked))
-	print("CANONICAL_PUBLIC_INTERIORS_PASS rooms=",tested," route_checks=",approaches," physical_media_carriers=5")
+	print("CANONICAL_PUBLIC_INTERIORS_PASS rooms=",tested," route_checks=",approaches," physical_media_carriers=5 supported_projection=",supported)
 	quit(0)
