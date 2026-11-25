@@ -807,6 +807,8 @@ func _valid_cinema_record(raw:Dictionary,verify_preview:bool=true)->bool:
 	if kind=="film":
 		var value=raw.get("runtime_seconds",0)
 		return typeof(value) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(value)) and float(value)>=0
+	for field in ["episode_imdb_ids","episode_duration_sources"]:
+		if typeof(raw.get(field,{}))!=TYPE_DICTIONARY:return false
 	var season:int=int(raw.get("latest_season",0))
 	var episode:int=int(raw.get("latest_episode",0))
 	if season<0 or episode<0:return false
@@ -834,8 +836,12 @@ func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
 	if previous.is_empty():return incoming.duplicate(true)
 	# Only identical stable IDs and types enter this function. Preserve
 	# positive old timings against unknown/zero fields in recovered input.
+	# A reused card ID cannot silently change the work or episode identity.
+	var previous_imdb:String=str(previous.get("imdb_id",""))
+	var incoming_imdb:String=str(incoming.get("imdb_id",""))
+	if previous_imdb!="" and incoming_imdb!="" and previous_imdb!=incoming_imdb:return {}
 	var row:Dictionary=incoming.duplicate(true)
-	if not row.has("imdb_id") and previous.has("imdb_id"):row["imdb_id"]=previous["imdb_id"]
+	if incoming_imdb=="" and previous_imdb!="":row["imdb_id"]=previous_imdb
 	if str(row.get("media_type",""))=="film":
 		if _positive_catalog_seconds(previous.get("runtime_seconds",0)) and not _positive_catalog_seconds(row.get("runtime_seconds",0)):
 			row["runtime_seconds"]=previous["runtime_seconds"]
@@ -851,25 +857,52 @@ func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
 		row["latest_episode"]=pe
 	var old:Dictionary=previous.get("episode_runtime_seconds",{})
 	var updated:Dictionary=row.get("episode_runtime_seconds",{}).duplicate(true)
+	var old_ids:Dictionary=previous.get("episode_imdb_ids",{}).duplicate(true)
+	var new_ids:Dictionary=row.get("episode_imdb_ids",{})
+	for unit in new_ids:
+		var prior_id:String=str(old_ids.get(unit,""))
+		var next_id:String=str(new_ids[unit])
+		if prior_id!="" and next_id!="" and prior_id!=next_id:return {}
+	var old_sources:Dictionary=previous.get("episode_duration_sources",{}).duplicate(true)
+	var new_sources:Dictionary=row.get("episode_duration_sources",{})
+	var sources:Dictionary=old_sources.duplicate(true)
+	sources.merge(new_sources,true)
+	var ids:Dictionary=old_ids.duplicate(true)
+	for unit in new_ids:
+		if str(new_ids[unit])!="":ids[unit]=new_ids[unit]
+	# Keep evidence attached to the duration that actually survives the merge.
+	for key in updated:
+		var vals:Array=updated[key]
+		for i in range(vals.size()):
+			var unit:String="%s:%d"%[str(key),i+1]
+			if _positive_catalog_seconds(vals[i]) and not new_sources.has(unit):
+				var prior:Array=old.get(str(key),[])
+				if i>=prior.size() or vals[i]!=prior[i]:sources.erase(unit)
 	for key in old:
 		if typeof(old[key])!=TYPE_ARRAY:continue
 		var values:Array=updated.get(str(key),[]).duplicate()
 		var prior:Array=old[key]
 		while values.size()<prior.size():values.append(0)
 		for i in range(prior.size()):
-			if not _positive_catalog_seconds(values[i]) and _positive_catalog_seconds(prior[i]):values[i]=prior[i]
+			if not _positive_catalog_seconds(values[i]) and _positive_catalog_seconds(prior[i]):
+				values[i]=prior[i]
+				var unit:String="%s:%d"%[str(key),i+1]
+				if old_sources.has(unit):sources[unit]=old_sources[unit]
+				else:sources.erase(unit)
+				# Do not attach newly discovered IDs to unidentified old timings.
+				if old_ids.has(unit):ids[unit]=old_ids[unit]
+				else:ids.erase(unit)
 		updated[str(key)]=values
 	row["episode_runtime_seconds"]=updated
 	var complete:Array=row.get("complete_seasons",[]).duplicate()
 	for s in previous.get("complete_seasons",[]):
-		if not complete.has(s):complete.append(s)
+		var key:String=str(int(s))
+		var prior:Array=old.get(key,[])
+		var merged_values:Array=updated.get(key,[])
+		if not complete.has(s) and prior.size()==merged_values.size():complete.append(s)
 	row["complete_seasons"]=complete
-	var old_ids:Dictionary=previous.get("episode_imdb_ids",{}).duplicate(true)
-	old_ids.merge(row.get("episode_imdb_ids",{}),true)
-	if not old_ids.is_empty():row["episode_imdb_ids"]=old_ids
-	var old_sources:Dictionary=previous.get("episode_duration_sources",{}).duplicate(true)
-	old_sources.merge(row.get("episode_duration_sources",{}),true)
-	if not old_sources.is_empty():row["episode_duration_sources"]=old_sources
+	row["episode_imdb_ids"]=ids
+	row["episode_duration_sources"]=sources
 	if not old.is_empty() and str(row.get("duration_status",""))=="UNVERIFIED":
 		row["duration_status"]=str(previous.get("duration_status","PARTIAL"))
 		for field in ["duration_source","duration_evidence"]:
@@ -1001,6 +1034,9 @@ func load_private_cinema_catalog()->int:
 			var previous:Dictionary=kept[at]
 			if str(previous.get("media_type",""))!=str(row.get("media_type","")):return 0
 			var merged:Dictionary=_merge_cinema_record(previous,row)
+			if merged.is_empty():
+				push_warning("Filmix catalog identity conflict; retaining installed record "+id)
+				continue
 			if not _valid_cinema_record(merged,false):return 0
 			if previous!=merged:
 				kept[at]=merged
