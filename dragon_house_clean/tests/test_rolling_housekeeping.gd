@@ -55,6 +55,13 @@ func run()->void:
 	loaded.save_path=w.save_path
 	loaded.load_or_seed()
 	assert(float(loaded.runtime_state["beverages"]["cups"]["CUP_QA"]["remaining_ml"])==0.0)
+	# A later serving may reuse a snapshot serial after crash rollback, but
+	# the durable pickup event is distinct. A replayed cleanup must not empty it.
+	loaded.residents["RES_01"]["room_id"]=cid
+	assert(loaded.pickup_physical_object("CUP_QA","RES_01"))
+	loaded.runtime_state["beverages"]["cups"]["CUP_QA"]={"choice_instance_id":"QA_SERVE_1","serving_pickup_event_id":str(loaded.physical_object("CUP_QA")["updated_event_id"]),"remaining_ml":55.0}
+	assert(loaded.place_physical_object("CUP_QA","RES_01",cid,"PLACED",[1.0,0.8]))
+	assert(float(loaded.runtime_state["beverages"]["cups"]["CUP_QA"]["remaining_ml"])==55.0)
 	# Held book survives deadline; forgotten dropped book preserves progress.
 	var m=M.new()
 	m.setup(loaded)

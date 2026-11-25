@@ -146,7 +146,7 @@ func fill_planned(cup_id:String,actor_id:String,choice:Dictionary)->bool:
 	if str(choice.get("cup_id",""))!=cup_id or str(choice.get("resident_id",""))!=actor_id:return false
 	var drink:Dictionary=by_id.get(str(choice.get("selected_drink_id","")),{})
 	if drink.is_empty():return false
-	_store()["cups"][cup_id]={"cup_id":cup_id,"content_id":drink["drink_id"],"display_name":drink["display_name_ru"],"serving_ml":drink["default_serving_ml"],"remaining_ml":drink["default_serving_ml"],"temperature_class":drink["temperature"],"alcoholic":drink["alcoholic"],"technical_type":drink["technical_type"],"strength_class":drink["strength_class"],"consumer_id":actor_id,"choice_instance_id":choice["choice_instance_id"],"pending_choice":choice.duplicate(true)}
+	_store()["cups"][cup_id]={"cup_id":cup_id,"content_id":drink["drink_id"],"display_name":drink["display_name_ru"],"serving_ml":drink["default_serving_ml"],"remaining_ml":drink["default_serving_ml"],"temperature_class":drink["temperature"],"alcoholic":drink["alcoholic"],"technical_type":drink["technical_type"],"strength_class":drink["strength_class"],"consumer_id":actor_id,"choice_instance_id":choice["choice_instance_id"],"serving_pickup_event_id":str(obj.get("updated_event_id","")),"pending_choice":choice.duplicate(true)}
 	return true
 
 func fail_choice(choice:Dictionary,reason:String)->void:

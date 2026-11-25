@@ -470,7 +470,9 @@ func object_is_displaced(object: Dictionary) -> bool:
 		return true
 	if str(object.get("state","PLACED"))!="PLACED":
 		return true
-	if str(object.get("current_support_id",""))!=str(object.get("home_support_id","")):
+	# Legacy home anchors without a support ID may acquire a measured support.
+	var home_support:String=str(object.get("home_support_id",""))
+	if home_support!="" and str(object.get("current_support_id",""))!=home_support:
 		return true
 	return not _anchors_equal(
 		object.get("current_anchor",[]),object.get("home_anchor",[]))

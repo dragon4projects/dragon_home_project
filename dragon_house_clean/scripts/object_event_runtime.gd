@@ -277,7 +277,7 @@ func _publish_projection(projection: Dictionary) -> void:
 		# and the next beverage snapshot. Never empty a later serving.
 		var cups:Dictionary=world.runtime_state.get("beverages",{}).get("cups",{})
 		var cup:Dictionary=cups.get(object_id,{})
-		if not cup.is_empty() and str(projected.get("housekeeping_event_id",""))!="" and str(projected.get("housekeeping_cleaned_serving",""))==str(cup.get("choice_instance_id","")):
+		if not cup.is_empty() and str(projected.get("housekeeping_event_id",""))!="" and str(projected.get("housekeeping_cleaned_serving",""))==str(cup.get("choice_instance_id","")) and str(projected.get("housekeeping_cleaned_pickup",""))==str(cup.get("serving_pickup_event_id","")):
 			cup["remaining_ml"]=0.0
 			cup.erase("pending_choice")
 
@@ -802,7 +802,7 @@ func housekeeping_return(object_id:String,target:Dictionary)->bool:
 		"previous_holder":str(obj.get("current_holder_id","")),"previous_location":previous,
 		"current_holder":"","current_location":room_id,"current_anchor":target.get("anchor",[]),
 		"current_support_id":str(target.get("support_id","")),"state":"PLACED","canonical_owner":str(obj.get("canonical_owner_id","")),
-		"cleaned_serving_id":str(cup.get("choice_instance_id","")),"sim_clock":float(world.sim_clock)}
+		"cleaned_serving_id":str(cup.get("choice_instance_id","")),"cleaned_serving_pickup":str(cup.get("serving_pickup_event_id","")),"sim_clock":float(world.sim_clock)}
 	var event:=_base_event("OBJECT_MOVED","AMBIENT_SIMULATION","system","HOUSE_SPIRIT","SYSTEM_RULE",
 		_visibility_for_room(room_id),"AMBIENT_REVERTIBLE","HOUSE_SPIRIT",object_id,room_id,previous,room_id,
 		"ROLLING_HOUSEKEEPING_V023","Rolling inactivity return",payload)

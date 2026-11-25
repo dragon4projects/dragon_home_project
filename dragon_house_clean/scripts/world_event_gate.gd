@@ -352,7 +352,7 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 		if target.is_empty() or location!=str(target.get("room_id","")) or payload.get("current_anchor",[])!=target.get("anchor",[]) or str(payload.get("current_support_id",""))!=str(target.get("support_id","")):return reject("housekeeping slot unavailable")
 		if holder!="" or state!="PLACED" or not _valid_anchor(world,location,payload.get("current_anchor",[])):return reject("invalid housekeeping location")
 		var cup:Dictionary=world.runtime_state.get("beverages",{}).get("cups",{}).get(object_id,{})
-		if str(payload.get("cleaned_serving_id",""))!=str(cup.get("choice_instance_id","")):return reject("serving changed before cleanup")
+		if str(payload.get("cleaned_serving_id",""))!=str(cup.get("choice_instance_id","")) or str(payload.get("cleaned_serving_pickup",""))!=str(cup.get("serving_pickup_event_id","")):return reject("serving changed before cleanup")
 		if float(payload.get("sim_clock",-1.0))!=float(world.sim_clock):return reject("housekeeping clock mismatch")
 		return true
 

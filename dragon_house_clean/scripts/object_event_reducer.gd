@@ -186,6 +186,7 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			object.erase("current_support_id")
 		if movement_kind=="HOUSEKEEPING_RETURNED":
 			object["housekeeping_cleaned_serving"]=str(payload.get("cleaned_serving_id",""))
+			object["housekeeping_cleaned_pickup"]=str(payload.get("cleaned_serving_pickup",""))
 			object["housekeeping_event_id"]=event_id
 		object["last_interaction_at"]=float(payload.get("sim_clock",0.0))
 		object["state"] = str(payload.get("state",""))
