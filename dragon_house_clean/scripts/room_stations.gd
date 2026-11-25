@@ -337,11 +337,30 @@ func _paired_spots(points: Array, used: Dictionary, seats_only: bool = false) ->
 				return [left,right]
 	return []
 
+func social_pair_geometry(room:Dictionary,positions:Array)->bool:
+	if positions.size()!=2:return false
+	var a:Vector2=positions[0]
+	var b:Vector2=positions[1]
+	if not a.is_finite() or not b.is_finite():return false
+	var distance:float=a.distance_to(b)
+	if distance<0.65 or distance>2.2:return false
+	return candidate_navigation==null or not candidate_navigation.has_layout(room) or candidate_navigation.segment_clear(room,a,b)
+
 func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Dictionary:
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,str(actor.get("id",""))) or not world.is_accessible(room,str(partner.get("id",""))):
 		return {}
 	var used: Dictionary=used_slots(world,str(room["id"]),[str(actor["id"]),str(partner["id"])])
 	var points: Array=layout_for_world(world,room)
+	if candidate_navigation!=null and candidate_navigation.has_layout(room):
+		# Facing inward with existing directional standing art is physically
+		# honest; do not turn a front-facing calibrated seated sprite.
+		for i in range(points.size()-1):
+			if used.has(i) or str(points[i].get("kind",""))!="standing" or str(points[i].get("furniture_id",""))!="":continue
+			for j in range(i+1,points.size()):
+				if used.has(j) or str(points[j].get("kind",""))!="standing" or str(points[j].get("furniture_id",""))!="":continue
+				if social_pair_geometry(room,[points[i]["offset"],points[j]["offset"]]):
+					return {"actor":_claim(room,i,points[i]),"partner":_claim(room,j,points[j])}
+		return {}
 	var indexes: Array=_paired_spots(points,used,true)
 	if indexes.is_empty():
 		indexes=_paired_spots(points,used,false)
