@@ -1352,6 +1352,10 @@ func reconcile_cup_tasks()->Array:
 	return repaired
 
 func _reset_recovered_cup_route(actor:Dictionary)->void:
+	# Never abandon a physical lift route between floors. Its ordinary
+	# arrival will settle the recovered task; no new cup action is started.
+	if world.canonical_house_seed and canonical_lifts._vertical(actor) and canonical_lifts._in_air(actor):
+		return
 	stations.release(actor)
 	if world.canonical_house_seed:canonical_lifts.release(actor)
 	actor["phase"]="idle"
