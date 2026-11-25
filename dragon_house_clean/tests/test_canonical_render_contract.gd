@@ -98,18 +98,52 @@ func run()->void:
 	scene.smooth_focus=scene.desired_focus
 	scene.apply_camera(1.0)
 	scene.update_render_lod()
-	var decor:Node3D=null
-	for node in get_nodes_in_group("canonical_conditional_dressing"):
-		if str(node.get_meta("room_id",""))==str(library["id"]):
-			decor=node
-			break
-	assert(decor!=null and decor.visible)
+	var rid:String=str(library["id"])
 	var original_assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{}).duplicate(true)
-	world.runtime_state["teea008_book_slot_assignments"]["QA_RESERVED_BOOK"]={"room_id":library["id"],"slot_id":decor.get_meta("decor_slot_id")}
+	var occupied:Node3D=null
+	var occupied_book:String=""
+	var free_decor:Node3D=null
+	for node in get_nodes_in_group("canonical_conditional_dressing"):
+		if str(node.get_meta("room_id",""))!=rid:continue
+		var slot_id:String=str(node.get_meta("decor_slot_id",""))
+		for bid in original_assignments:
+			if str(original_assignments[bid].get("room_id",""))==rid and str(original_assignments[bid].get("slot_id",""))==slot_id:
+				assert(not node.visible,"Assigned book must suppress decorative filler")
+				occupied=node
+				occupied_book=str(bid)
+		if node.visible:free_decor=node
+	assert(occupied!=null and occupied_book!="" and free_decor!=null)
+	# Real measured book support, not an invented free decoration slot.
+	var measured:Dictionary=life.media_runtime.book_slot(occupied_book)
+	assert(not measured.is_empty())
+	var book:Dictionary=life.media_runtime._lookup("books",occupied_book)
+	var original_book:Dictionary=book.duplicate(true)
+	var original_actor:Dictionary=actor.duplicate(true)
+	world.runtime_state["teea008_book_slot_assignments"].erase(occupied_book)
+	book["holder_id"]="RES_01"
+	book["location_room_id"]=""
 	scene._refresh_conditional_dressing()
-	assert(not decor.visible)
+	assert(occupied.visible)
+	actor["active"]=true
+	actor["autonomy_enabled"]=true
+	actor["phase"]="travel"
+	actor["book_task_id"]=occupied_book
+	actor["book_task_stage"]="return"
+	actor["book_return_room"]=rid
+	actor["book_return_slot"]=measured["id"]
+	scene._refresh_conditional_dressing()
+	assert(not occupied.visible and free_decor.visible)
+	scene._update_physical_books()
+	assert(scene.book_nodes.has(occupied_book),"Held book without shelf assignment must remain visible")
+	actor.erase("book_task_stage")
+	scene._refresh_conditional_dressing()
+	assert(occupied.visible)
+	book.clear()
+	book.merge(original_book)
+	actor.clear()
+	actor.merge(original_actor)
 	world.runtime_state["teea008_book_slot_assignments"]=original_assignments
 	scene._refresh_conditional_dressing()
-	assert(decor.visible)
+	assert(not occupied.visible and free_decor.visible)
 	print("CANONICAL_RENDER_CONTRACT_PASS near_far_seat=true missing_pose_floor_fallback=true stale_room_floor_fallback=true depth_test=true guest_facade_roundtrip=true conditional_slot_visibility=true")
 	quit(0)
