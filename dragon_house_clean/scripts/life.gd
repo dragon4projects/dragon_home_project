@@ -40,6 +40,10 @@ var canonical_lifts=CanonicalLiftCapacity.new()
 # Deterministic QA may inject a daypart; production uses the system clock.
 var daypart_override: String=""
 var last_cleanup_wall_time := 0
+const PAIR_MIN_SECONDS:=3600.0
+const PAIR_MAX_SECONDS:=10800.0
+const PAIR_TRAVEL_TIMEOUT_SECONDS:=300.0
+const PAIR_VALIDATE_INTERVAL_SECONDS:=15.0
 
 const HUMAN_STATUS := {
 	"REST": "отдыхает", "SLEEP": "спит",
@@ -89,6 +93,11 @@ func status(actor: Dictionary) -> String:
 		return "свободна" if not actor.has("cup_task_stage") else "ожидает чашку"
 	if actor.get("phase","idle") == "travel":
 		return str(TRAVEL_STATUS.get(intent, "идёт по делу"))
+	if intent=="TALK_PAIR":
+		var pair_session:Dictionary=_pair_session(actor)
+		if str(pair_session.get("phase",""))=="active":return "разговаривает"
+		if str(pair_session.get("phase",""))=="assembling":return "ожидает собеседницу"
+		return "свободна"
 	var active_title:=_quoted_media_title(
 		actor,"activity_media_category","activity_media_id")
 	if active_title!="":
@@ -169,6 +178,7 @@ func setup(p_world) -> void:
 			if active_ids.has(id):
 				var repaired:Dictionary=world.residents[id]
 				life_scheduler.schedule_at(id,maxf(clock,float(repaired.get("until",clock))),"RESTORED_CUP_CARRIER")
+	reconcile_pair_sessions()
 	# The session is the authoritative deadline, not a stale scheduler entry.
 	# Only active timed performers are rearmed, once on load.
 	for id in active_ids:
@@ -269,10 +279,7 @@ func refresh_changed_station_claims() -> int:
 		_clear_book_task(actor)
 		if str(actor.get("cup_task_stage",""))=="fetch":
 			_clear_cup_task(actor)
-		var partner_id:String=str(actor.get("partner_id",""))
-		actor.erase("partner_id")
-		if partner_id!="" and world.residents.has(partner_id):
-			world.residents[partner_id].erase("partner_id")
+		_cancel_pair_for(actor,"STATION_LAYOUT_CHANGED")
 		stations.release(actor)
 		actor["phase"]="idle"
 		actor["waypoints"]=[]
@@ -452,6 +459,177 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 		return {}
 	return {"intent": best, "room": best_room}
 
+# A shared session owns the conversation clock and participants. The actor's
+# station and route remain physical claims, not an independent conversation.
+func _pair_sessions()->Dictionary:
+	var value=world.runtime_state.get("pair_sessions",{})
+	if typeof(value)!=TYPE_DICTIONARY:value={}
+	world.runtime_state["pair_sessions"]=value
+	return value
+
+func _pair_session(actor:Dictionary)->Dictionary:
+	if world==null:return {}
+	var row=_pair_sessions().get(str(actor.get("social_session_id","")),{})
+	return row if typeof(row)==TYPE_DICTIONARY else {}
+
+func _create_pair_session(actor:Dictionary,partner:Dictionary,room:Dictionary,deadline:float)->void:
+	var serial:int=int(world.runtime_state.get("pair_session_serial",0))+1
+	var sessions:Dictionary=_pair_sessions()
+	var sid:String="PAIR_%d"%serial
+	while sessions.has(sid):
+		serial+=1
+		sid="PAIR_%d"%serial
+	world.runtime_state["pair_session_serial"]=serial
+	var a:String=str(actor["id"])
+	var b:String=str(partner["id"])
+	sessions[sid]={"id":sid,"members":[a,b],"room_id":str(room["id"]),"phase":"assembling","arrival_deadline":deadline,"duration_seconds":rng.randf_range(PAIR_MIN_SECONDS,PAIR_MAX_SECONDS),"started_at":-1.0,"ends_at":-1.0,"stations":{a:str(actor.get("station_anchor_id","")),b:str(partner.get("station_anchor_id",""))}}
+	actor["social_session_id"]=sid
+	partner["social_session_id"]=sid
+	actor["partner_id"]=b
+	partner["partner_id"]=a
+	_schedule_actor(partner,"PAIR_ASSEMBLING")
+	world._append_journal("PAIR_RESERVED",a,sid,"",str(room["id"]),{"members":[a,b]})
+
+func _pair_members_valid(sid:String,row:Dictionary)->bool:
+	var ids=row.get("members",[])
+	if typeof(ids)!=TYPE_ARRAY or ids.size()!=2 or str(ids[0])==str(ids[1]):return false
+	var claims=row.get("stations",{})
+	if typeof(claims)!=TYPE_DICTIONARY:return false
+	var room_id:String=str(row.get("room_id",""))
+	var room:Dictionary=world.room_by_id(room_id)
+	if room.is_empty() or str(room.get("privacy","public"))!="public":return false
+	var anchors:Array=[]
+	for i in range(2):
+		var id:String=str(ids[i])
+		var actor:Dictionary=world.residents.get(id,{})
+		if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or not world.is_accessible(room,id):return false
+		if str(actor.get("social_session_id",""))!=sid or str(actor.get("partner_id",""))!=str(ids[1-i]) or str(actor.get("intent",""))!="TALK_PAIR":return false
+		if str(actor.get("phase","")) not in ["travel","perform"] or str(actor.get("station_room_id",""))!=room_id:return false
+		var anchor:String=str(actor.get("station_anchor_id",""))
+		if anchor=="" or anchor!=str(claims.get(id,"")) or anchors.has(anchor):return false
+		anchors.append(anchor)
+		if str(actor.get("phase",""))=="perform" and str(actor.get("room_id",""))!=room_id:return false
+		if str(row.get("phase",""))=="active" and str(actor.get("phase",""))!="perform":return false
+	return true
+
+func _reset_pair_actor(actor:Dictionary)->void:
+	stations.release(actor)
+	if world.canonical_house_seed and canonical_lifts._vertical(actor) and canonical_lifts._in_air(actor):
+		actor["social_cancelled_lift"]=true
+		actor["intent"]="PURPOSEFUL_EXPLORE"
+		_schedule_actor(actor,"PAIR_CANCELLED_LIFT_DRAIN")
+		return
+	if world.canonical_house_seed:canonical_lifts.release(actor)
+	actor["intent"]="REST"
+	actor["phase"]="idle"
+	actor["route"]=[]
+	actor["waypoints"]=[]
+	actor["waypoint_index"]=0
+	actor["until"]=clock
+	moving_ids.erase(str(actor.get("id","")))
+	wake_actor(str(actor.get("id","")),"PAIR_RELEASED")
+
+func _finish_pair(sid:String,completed:bool,reason:String)->void:
+	var sessions:Dictionary=_pair_sessions()
+	var raw=sessions.get(sid,{})
+	if typeof(raw)!=TYPE_DICTIONARY:
+		sessions.erase(sid)
+		return
+	var row:Dictionary=raw
+	if row.is_empty():return
+	# Erase first: subsequent wakes cannot complete or train twice.
+	sessions.erase(sid)
+	var members=row.get("members",[])
+	if typeof(members)!=TYPE_ARRAY:return
+	for raw_id in members:
+		var actor:Dictionary=world.residents.get(str(raw_id),{})
+		if actor.is_empty() or str(actor.get("social_session_id",""))!=sid:continue
+		actor.erase("social_session_id")
+		actor.erase("partner_id")
+		if completed:
+			var habits:Dictionary=actor.get("habits",{})
+			habits["TALK_PAIR"]=minf(0.3,float(habits.get("TALK_PAIR",0.0))+0.012)
+			actor["habits"]=habits
+		if str(actor.get("intent",""))=="TALK_PAIR":_reset_pair_actor(actor)
+	world._append_journal("PAIR_COMPLETED" if completed else "PAIR_CANCELLED","",sid,"",str(row.get("room_id","")),{"reason":reason,"members":members})
+
+func _cancel_pair_for(actor:Dictionary,reason:String)->void:
+	var sid:String=str(actor.get("social_session_id",""))
+	if sid!="":_finish_pair(sid,false,reason)
+	# Legacy links never prove an actual conversation or completion.
+	var partner_id:String=str(actor.get("partner_id",""))
+	actor.erase("social_session_id")
+	actor.erase("partner_id")
+	if str(actor.get("intent",""))=="TALK_PAIR":_reset_pair_actor(actor)
+	var partner:Dictionary=world.residents.get(partner_id,{})
+	if not partner.is_empty() and not partner.has("social_session_id") and str(partner.get("partner_id",""))==str(actor.get("id","")):
+		partner.erase("partner_id")
+		if str(partner.get("intent",""))=="TALK_PAIR":_reset_pair_actor(partner)
+
+func _update_pair(actor:Dictionary)->void:
+	var sid:String=str(actor.get("social_session_id",""))
+	var row:Dictionary=_pair_session(actor)
+	if row.is_empty():
+		_cancel_pair_for(actor,"NO_SESSION")
+		return
+	if not _pair_members_valid(sid,row):
+		_finish_pair(sid,false,"PARTICIPANT_OR_STATION_INVALID")
+		return
+	var phase:String=str(row.get("phase",""))
+	var duration:float=float(row.get("duration_seconds",0.0))
+	if not is_finite(duration) or duration<PAIR_MIN_SECONDS or duration>PAIR_MAX_SECONDS:
+		_finish_pair(sid,false,"INVALID_DURATION")
+		return
+	if phase=="assembling":
+		var deadline:float=float(row.get("arrival_deadline",-1.0))
+		if not is_finite(deadline) or clock>=deadline:
+			_finish_pair(sid,false,"ARRIVAL_TIMEOUT")
+			return
+		var arrived:bool=true
+		for id in row["members"]:
+			if str(world.residents[id].get("phase",""))!="perform":arrived=false
+		if arrived:
+			row["phase"]="active"
+			row["started_at"]=clock
+			row["ends_at"]=clock+duration
+			world._append_journal("PAIR_STARTED",str(actor["id"]),sid,"",str(row["room_id"]),{"members":row["members"],"ends_at":row["ends_at"]})
+	elif phase=="active":
+		var start:float=float(row.get("started_at",-1.0))
+		var end:float=float(row.get("ends_at",-1.0))
+		if not is_finite(start) or not is_finite(end) or start<0.0 or start>clock or not is_equal_approx(end,start+duration):
+			_finish_pair(sid,false,"INVALID_TIMELINE")
+			return
+		if clock>=end:
+			_finish_pair(sid,true,"DURATION_ELAPSED")
+			return
+	else:
+		_finish_pair(sid,false,"INVALID_PHASE")
+		return
+	for id in row["members"]:
+		var member:Dictionary=world.residents[id]
+		if str(row["phase"])=="active":
+			member["until"]=float(row["ends_at"])
+			life_scheduler.schedule_at(str(id),minf(float(row["ends_at"]),clock+PAIR_VALIDATE_INTERVAL_SECONDS),"PAIR_ACTIVE")
+		else:
+			member["until"]=float(row["arrival_deadline"])
+			life_scheduler.schedule_at(str(id),minf(float(row["arrival_deadline"]),clock+2.0),"PAIR_ASSEMBLING")
+			if str(member.get("phase",""))=="travel":moving_ids[str(id)]=true
+
+func reconcile_pair_sessions()->void:
+	var sessions:Dictionary=_pair_sessions()
+	for raw_sid in sessions.keys().duplicate():
+		var sid:String=str(raw_sid)
+		var row=sessions[sid]
+		if typeof(row)!=TYPE_DICTIONARY or not _pair_members_valid(sid,row):
+			_finish_pair(sid,false,"RESTORE_INVALID_SESSION")
+			continue
+		_update_pair(world.residents[str(row["members"][0])])
+	for actor in world.residents.values():
+		if actor.has("social_session_id") and _pair_session(actor).is_empty():
+			_cancel_pair_for(actor,"RESTORE_ORPHAN_SESSION")
+		elif not actor.has("social_session_id") and (actor.has("partner_id") or str(actor.get("intent",""))=="TALK_PAIR"):
+			_cancel_pair_for(actor,"RESTORE_LEGACY_PAIR")
+
 func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 	var best: Dictionary = {}
 	var best_cost := 99999
@@ -460,9 +638,9 @@ func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 		if id == actor["id"] or id == "MANJKA" or not other.get("active", false) or \
 				not bool(other.get("autonomy_enabled",true)):
 			continue
-		if other.get("partner_id", "") != "" or other.get("phase", "idle") == "travel":
+		if other.get("partner_id", "") != "" or other.has("social_session_id") or other.get("phase", "idle") != "idle":
 			continue
-		if other.get("held_book","") != "":
+		if other.get("held_book","") != "" or other.has("book_task_stage") or other.has("cup_task_stage") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):
 			continue
 		if float(other.get("until", 0.0)) > clock:
 			continue
@@ -594,6 +772,7 @@ func reconcile_concrete_media() -> int:
 	return fixed
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
+	if actor.has("social_session_id"):return
 	if candidate_navigation!=null:
 		if str(actor.get("cup_task_stage","")) in ["hold","serve"] and str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==str(actor["id"]):
 			return
@@ -656,7 +835,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		if partner_waypoints.is_empty():
 			actor["until"] = clock + 10.0
 			return
-		end_time = clock + maxf(float(route.size()),float(partner_route.size()))*3.2+34.0
+		end_time = clock + PAIR_TRAVEL_TIMEOUT_SECONDS + maxf(float(route.size()),float(partner_route.size()))*15.0
 	else:
 		if intent=="VIEW_ART":
 			var displays:Array=stations.display_objects(world,room)
@@ -742,11 +921,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		partner["route"] = partner_route
 		partner["path_index"] = 1
 		partner["until"] = end_time
-		partner["partner_id"] = actor["id"]
-		actor["partner_id"] = partner["id"]
-		_schedule_actor(partner,"PAIR_COMMITMENT")
-		_record("%s и %s — договорились встретиться для разговора" %
-			[actor.get("name",""),partner.get("name","")])
+		end_catalog_browse(partner)
+		end_concrete_media(partner)
+		partner.erase("viewing_object_id")
 	stations.commit_claim(actor,actor_claim)
 	if browse_category != "":
 		actor["browsing_category"] = browse_category
@@ -764,9 +941,12 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	actor["path_index"] = 1
 	actor["until"] = end_time if intent == "TALK_PAIR" else (
 		clock + rng.randf_range(20.0,40.0)+float(route.size())*2.0)
-	var habits: Dictionary = actor.get("habits",{})
-	habits[intent] = minf(0.3,float(habits.get(intent,0.0))+0.012)
-	actor["habits"] = habits
+	if intent=="TALK_PAIR":
+		_create_pair_session(actor,partner,room,end_time)
+	else:
+		var habits: Dictionary = actor.get("habits",{})
+		habits[intent] = minf(0.3,float(habits.get(intent,0.0))+0.012)
+		actor["habits"] = habits
 	if intent != "TALK_PAIR":
 		_record("%s — %s" % [actor.get("name",actor["id"]),status(actor)])
 	steps += 1
@@ -915,6 +1095,10 @@ func _move(actor: Dictionary, delta: float) -> void:
 		actor["waypoint_index"] = idx + 1
 		if world.canonical_house_seed and str(point["kind"])=="lift" and (idx+1>=waypoints.size() or str(waypoints[idx+1]["kind"])!="lift"):
 			canonical_lifts.release(actor)
+			if bool(actor.get("social_cancelled_lift",false)):
+				actor.erase("social_cancelled_lift")
+				_reset_pair_actor(actor)
+				return
 		if actor.has("teea008_geometry_replan_pending") and candidate_navigation!=null:
 			if _finish_review_geometry_replan(actor,false):
 				return
@@ -923,6 +1107,10 @@ func _move(actor: Dictionary, delta: float) -> void:
 			var actor_id := str(actor.get("id",""))
 			_advance_needs(actor,life_scheduler.consume_elapsed(actor_id,clock))
 			actor["phase"] = "perform"
+			if str(actor.get("intent",""))=="TALK_PAIR":
+				moving_ids.erase(actor_id)
+				_update_pair(actor)
+				return
 			if candidate_navigation!=null and str(actor.get("book_task_stage","")) in ["fetch","return"]:
 				_arrive_book_shelf(actor)
 				return
@@ -979,11 +1167,15 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 	var actor: Dictionary = world.residents.get(id,{})
 	if actor.is_empty() or not bool(actor.get("active",false)) or \
 			not bool(actor.get("autonomy_enabled",true)):
+		if not actor.is_empty():_cancel_pair_for(actor,"PARTICIPANT_UNAVAILABLE")
 		life_scheduler.cancel(id)
 		moving_ids.erase(id)
 		return
 	var elapsed := life_scheduler.consume_elapsed(id,clock)
 	_advance_needs(actor,elapsed)
+	if actor.has("social_session_id") or str(actor.get("intent",""))=="TALK_PAIR":
+		_update_pair(actor)
+		return
 	if str(actor.get("phase","idle")) == "travel":
 		moving_ids[id] = true
 		life_scheduler.schedule_in(id,clock,2.0,"TRAVEL_ACTIVE")
@@ -1024,12 +1216,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		_schedule_actor(actor,"CINEMA_INTERMISSION")
 		return
 	if actor.get("partner_id","") != "":
-		var partner_id := str(actor["partner_id"])
-		actor.erase("partner_id")
-		var partner: Dictionary = world.residents.get(partner_id,{})
-		if partner.get("partner_id","") == id:
-			partner.erase("partner_id")
-			wake_actor(partner_id,"PAIR_RELEASED")
+		_cancel_pair_for(actor,"STALE_PARTNER_LINK")
 	if candidate_navigation!=null and actor.has("cup_task_stage"):
 		if str(actor.get("cup_task_stage",""))=="serve":
 			# A restored/replanned non-travelling service route cannot pour
@@ -1574,11 +1761,7 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 	end_catalog_browse(actor)
 	end_concrete_media(actor)
 	actor.erase("viewing_object_id")
-	var partner_id:String=str(actor.get("partner_id",""))
-	actor.erase("partner_id")
-	if partner_id!="" and world.residents.has(partner_id):
-		world.residents[partner_id].erase("partner_id")
-		wake_actor(partner_id,"TRAFFIC_PARTNER_REPLAN")
+	_cancel_pair_for(actor,"TRAFFIC_PARTNER_REPLAN")
 	if actor.has("held_book") and actor.has("book_task_stage"):
 		actor["book_task_stage"]="return_wait"
 	else:
