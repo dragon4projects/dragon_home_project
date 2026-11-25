@@ -25,8 +25,8 @@ func run() -> void:
 	var scores: Dictionary=life._utilities(reader)
 	assert(scores.has("BROWSE_BOOK_CATALOG") and scores.has("BROWSE_FILMS") and scores.has("BROWSE_AUDIO"))
 	assert(not scores.has("READ_BOOK"),"Metadata is not a physical volume")
-	assert(not scores.has("WATCH_FILM"),"Movie without playable OGV cannot be watched")
-	assert(not scores.has("LISTEN_MUSIC"),"Track without playable bytes cannot be played")
+	assert(not scores.has("WATCH_FILM"),"Film without duration metadata cannot be watched")
+	assert(not scores.has("LISTEN_MUSIC"),"Track without duration metadata cannot be listened to")
 	for example in [
 		{"id":"RES_01","intent":"BROWSE_BOOK_CATALOG","room":world.get_room(2,0),
 		 "category":"books","entry":"BOOK_REFERENCE_01"},
@@ -57,7 +57,8 @@ func run() -> void:
 	assert(not ui.details.text.contains("Null"),"null author cannot be displayed as a name")
 	ui.switch_category("films")
 	ui._on_selected(0)
-	assert(ui.details.text.contains("Нет совместимого локального файла"))
+	assert(ui.details.text.contains("Симуляция просмотра"))
+	assert(ui.details.text.contains("Продолжительность не установлена"))
 	ui.queue_free()
 	for ext in ["",".bak",".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(world.save_path+ext))

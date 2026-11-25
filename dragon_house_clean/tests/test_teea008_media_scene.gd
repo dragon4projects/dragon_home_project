@@ -11,11 +11,12 @@ func run()->void:
 	var room:Dictionary=scene.world.get_room(4,0)
 	var img:=Image.create(320,180,false,Image.FORMAT_RGB8)
 	img.fill(Color("#68312a"))
-	assert(img.save_png("user://qa_screen_preview.png")==OK)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://filmix_previews"))
+	assert(img.save_webp("user://filmix_previews/QA_SCREEN.webp")==OK)
 	# Real preview bytes; no claim of video decoding in this test.
 	var f:=FileAccess.open("user://qa_screen.ogv",FileAccess.WRITE)
 	f.store_8(0);f.close()
-	scene.world.media["films"]=[{"id":"QA_SCREEN","title":"QA screen","file_path":"user://qa_screen.ogv","preview":"user://qa_screen_preview.png"}]
+	scene.world.media["films"]=[{"id":"QA_SCREEN","title":"QA screen","simulation_only":true,"media_type":"film","runtime_seconds":3600,"preview":"user://filmix_previews/QA_SCREEN.webp"}]
 	scene.selected_room=room["id"]
 	scene.set_mode("ROOM")
 	scene.zoom_current=scene.zoom

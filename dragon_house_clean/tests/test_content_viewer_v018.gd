@@ -32,7 +32,8 @@ func run() -> void:
 	viewer.close_viewer()
 	assert(not viewer.visible)
 	assert(viewer.open_record("films",world.media["films"][0]))
-	assert(viewer.meta_label.text.contains("формат не поддерживается"))
+	assert(viewer.meta_label.text.contains("Симуляция просмотра"))
+	assert(not viewer.play_button.visible)
 	assert(viewer.open_record("tracks",world.media["tracks"][0]))
 	assert(viewer.meta_label.text.contains("формат не поддерживается"))
 	assert(viewer.open_record("artifacts",{

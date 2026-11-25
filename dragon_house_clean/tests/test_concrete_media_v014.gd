@@ -33,11 +33,11 @@ func run()->void:
 		}],
 		"films":[{
 			"id":"FILM_PLAYABLE_01","title":"Проверяемый фильм",
-			"file_path":video_path
+			"file_path":video_path,"simulation_only":true,"media_type":"film","runtime_seconds":6000
 		}],
 		"tracks":[{
 			"id":"TRACK_PLAYABLE_01","title":"Проверяемая запись",
-			"file_path":audio_path
+			"file_path":audio_path,"simulation_only":true,"autonomous_music":true,"runtime_seconds":195
 		}]
 	}
 	var life=Life.new()
@@ -50,6 +50,8 @@ func run()->void:
 	assert(str(watcher.get("activity_media_title",""))=="Проверяемый фильм")
 	assert(life.status(watcher)=="идёт смотреть фильм")
 	_perform(watcher)
+	watcher["room_id"]=world.get_room(4,0)["id"]
+	assert(life.media_runtime.begin_watch(watcher,life.clock))
 	assert(life.status(watcher)=="смотрит «Проверяемый фильм»")
 
 	var listener:Dictionary=world.residents["RES_02"]
@@ -57,6 +59,8 @@ func run()->void:
 	assert(str(listener.get("activity_media_category",""))=="tracks")
 	assert(str(listener.get("activity_media_id",""))=="TRACK_PLAYABLE_01")
 	_perform(listener)
+	listener["room_id"]=world.get_room(3,0)["id"]
+	assert(life.media_runtime.begin_listen(listener,life.clock))
 	assert(life.status(listener)=="слушает «Проверяемая запись»")
 
 	var reader:Dictionary=world.residents["RES_03"]
@@ -89,11 +93,14 @@ func run()->void:
 	assert(not watcher.has("activity_media_id"))
 	assert(not watcher.has("activity_media_category"))
 
-	# Save/load truth: a film selected while bytes exist must be cancelled if
-	# those bytes disappear before the save is restored.
+	# Save/load truth: a simulated film is independent of video bytes but
+	# loses eligibility if its duration metadata is removed.
 	life._assign(watcher,{"intent":"WATCH_FILM","room":world.get_room(4,0)})
 	_perform(watcher)
 	assert(str(watcher.get("activity_media_id",""))=="FILM_PLAYABLE_01")
+	watcher["room_id"]=world.get_room(4,0)["id"]
+	assert(life.media_runtime.begin_watch(watcher,life.clock))
+	world.media["films"][0].erase("runtime_seconds")
 	assert(world.save_world())
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(video_path))
 	var recovered=World.new()
@@ -106,7 +113,7 @@ func run()->void:
 	assert(str(recovered_watcher.get("phase",""))=="idle")
 	assert(str(recovered_watcher.get("station_room_id",""))=="")
 
-	# A catalogue record without actual bytes cannot become a concrete watch.
+	# A catalogue record without known duration cannot become a timed watch.
 	var no_file:Dictionary=world.residents["RES_05"]
 	life._assign(no_file,{"intent":"WATCH_FILM","room":world.get_room(4,0)})
 	assert(not no_file.has("activity_media_id"))
@@ -114,5 +121,5 @@ func run()->void:
 	for p in [audio_path,world.save_path]:
 		for suffix in ["",".bak",".tmp"]:
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(p+suffix))
-	print("CONCRETE_MEDIA_V014_PASS film=id_bound track=id_bound book=physical browse=catalog_only reload_missing_file=cancelled")
+	print("CONCRETE_MEDIA_V014_PASS film=id_bound track=id_bound book=physical browse=catalog_only reload_missing_duration=cancelled")
 	quit(0)

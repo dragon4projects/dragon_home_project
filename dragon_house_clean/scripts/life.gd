@@ -665,8 +665,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 
 	var concrete_category:=""
 	var concrete_item:Dictionary={}
-	# Watching/listening is allowed only after choosing one concrete playable
-	# entry. A room visit alone is not evidence that a film or track was used.
+	# Watching/listening needs a concrete timed simulation record.
+	# A room visit alone is not evidence of completed consumption.
 	if intent=="WATCH_FILM":
 		var playable_films:Array=media_runtime.watch_candidates(str(actor["id"]))
 		if playable_films.is_empty():

@@ -168,7 +168,7 @@ func next_watch_unit(actor_id:String,item:Dictionary)->Dictionary:
 	# completeness. A partial array is NOT a season finale.
 	var completed_seasons:Array=item.get("complete_seasons",[])
 	var current:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
-	if not current.is_empty() and episode>current.size() and completed_seasons.has(season) and season<int(item.get("latest_season",0)):
+	if not current.is_empty() and episode>current.size() and completed_seasons.any(func(value):return int(value)==season) and season<int(item.get("latest_season",0)):
 		season+=1
 		episode=1
 	var latest_season:int=int(item.get("latest_season",0))
@@ -223,7 +223,7 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 			# Caught up to the source snapshot, not necessarily series finale.
 			row["next_season"]=season
 			row["next_episode"]=episode+1
-		elif episode==runtimes.size() and season<latest_season and item.get("complete_seasons",[]).has(season):
+		elif episode==runtimes.size() and season<latest_season and item.get("complete_seasons",[]).any(func(value):return int(value)==season):
 			# Explicitly verified complete earlier season.
 			row["next_season"]=season+1
 			row["next_episode"]=1
