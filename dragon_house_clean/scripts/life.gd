@@ -82,6 +82,9 @@ func status(actor: Dictionary) -> String:
 		if str(actor.get("phase",""))=="travel":
 			return "идёт за чашкой"
 		if str(cup.get("current_holder_id",""))==str(actor["id"]):
+			var content:Dictionary=candidate_cups.beverages.content(str(actor.get("cup_task_id","")))
+			if float(content.get("remaining_ml",0))>0:
+				return "пьёт "+str(content["display_name"])
 			return "держит "+str(cup.get("display_name","чашку"))
 		return "свободна" if not actor.has("cup_task_stage") else "ожидает чашку"
 	if actor.get("phase","idle") == "travel":
@@ -569,6 +572,8 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		_begin_book_task(actor,room)
 		return
 	if candidate_navigation!=null and intent=="GET_COFFEE":
+		if candidate_cups.beverages.enabled:
+			actor["drink_context"]=candidate_cups.beverages.context_for(str(actor.get("intent","")),daypart())
 		_begin_cup_task(actor,room)
 		return
 	var route: Array = world.find_route(actor["room_id"], room["id"], actor["id"])
@@ -878,6 +883,10 @@ func _move(actor: Dictionary, delta: float) -> void:
 				if candidate_cups.pickup(actor):
 					actor["cup_task_stage"]="hold"
 					actor["until"]=clock+12.0
+					if candidate_cups.beverages.enabled:
+						if candidate_cups.beverages.fill_or_resume(str(actor["cup_task_id"]),actor_id,str(actor.get("drink_context","GENERIC")),daypart()):
+							actor["drink_sips_left"]=rng.randi_range(1,4)
+							actor["until"]=clock+3.0
 				else:
 					_clear_cup_task(actor)
 					stations.release(actor)
@@ -918,6 +927,13 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 	if candidate_navigation!=null and actor.has("cup_task_stage"):
 		if str(actor.get("cup_task_stage",""))=="hold":
 			if str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==id:
+				if candidate_cups.beverages.enabled and int(actor.get("drink_sips_left",0))>0:
+					var sipped:bool=candidate_cups.beverages.sip(str(actor["cup_task_id"]),id)
+					actor["drink_sips_left"]=int(actor["drink_sips_left"])-1 if sipped else 0
+					if sipped and int(actor["drink_sips_left"])>0 and float(candidate_cups.beverages.content(str(actor["cup_task_id"])).get("remaining_ml",0))>0:
+						actor["until"]=clock+3.0
+						_schedule_actor(actor,"DRINK_SIP")
+						return
 				if not candidate_cups.put_back(actor):
 					if _route_cup_return(actor):
 						return
@@ -1133,11 +1149,13 @@ func _continue_book_task(actor:Dictionary)->bool:
 	return false
 
 func _clear_cup_task(actor:Dictionary)->void:
-	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage"]:
+	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage","drink_sips_left","drink_context"]:
 		actor.erase(key)
 
 func _begin_cup_task(actor:Dictionary,room:Dictionary)->void:
+	var context:String=str(actor.get("drink_context","GENERIC"))
 	_clear_cup_task(actor)
+	actor["drink_context"]=context
 	for item in candidate_cups.candidates(actor,room):
 		var slot:Dictionary=item["slot"]
 		var claim:Dictionary=stations.cup_claim(world,actor,room,str(slot["id"]))

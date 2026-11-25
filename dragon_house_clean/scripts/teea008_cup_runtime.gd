@@ -3,10 +3,13 @@ extends RefCounted
 ## canonical personal possessions. No beverage/fill state is inferred.
 var world
 var nav
+const Beverages=preload("res://scripts/canonical_beverage_runtime.gd")
+var beverages=Beverages.new()
 
 func setup(model,navigation)->void:
 	world=model
 	nav=navigation
+	beverages.setup(world)
 
 func register_review_mugs()->int:
 	var rooms:Array=[]
@@ -51,9 +54,12 @@ func candidates(actor:Dictionary,room:Dictionary)->Array:
 			continue
 		if owner!="" and owner!=str(actor["id"]):
 			continue
+		if beverages.enabled and not beverages.can_use(str(id),str(actor["id"])):continue
 		var slot:Dictionary=slot_for_object(obj)
 		if not slot.is_empty():
 			result.append({"object_id":str(id),"slot":slot})
+	if beverages.enabled:
+		result.sort_custom(func(a,b):return float(beverages.content(str(a["object_id"])).get("remaining_ml",0))>float(beverages.content(str(b["object_id"])).get("remaining_ml",0)))
 	return result
 
 func slot_for_object(obj:Dictionary)->Dictionary:

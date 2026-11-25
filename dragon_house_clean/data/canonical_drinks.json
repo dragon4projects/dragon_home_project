@@ -1,0 +1,2154 @@
+{
+  "source": "Owner specification sections 22–53; exact source names, family weights and learning formula; proposed serving volumes, classification, tag bonus and streak factor.",
+  "entries": [
+    {
+      "drink_id": "WATER",
+      "source_name": "WATER",
+      "family": "WATER",
+      "display_name_ru": "Вода",
+      "display_name_en": "Water",
+      "technical_type": "water",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": false,
+      "tags": [
+        "COLD"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "JUICE",
+      "source_name": "JUICE",
+      "family": "SOFT",
+      "display_name_ru": "Сок",
+      "display_name_en": "Juice",
+      "technical_type": "soft",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": false,
+      "tags": [
+        "COLD"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "COLA",
+      "source_name": "COLA",
+      "family": "SOFT",
+      "display_name_ru": "Кола",
+      "display_name_en": "Cola",
+      "technical_type": "soft",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "COLD",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "COLD",
+        "CAFFEINATED"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "SPRITE",
+      "source_name": "SPRITE",
+      "family": "SOFT",
+      "display_name_ru": "Спрайт",
+      "display_name_en": "Sprite",
+      "technical_type": "soft",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": false,
+      "tags": [
+        "COLD"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "FANTA",
+      "source_name": "FANTA",
+      "family": "SOFT",
+      "display_name_ru": "Фанта",
+      "display_name_en": "Fanta",
+      "technical_type": "soft",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": false,
+      "tags": [
+        "COLD"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "BLACK_TEA",
+      "source_name": "BLACK_TEA",
+      "family": "TEA",
+      "display_name_ru": "Чай",
+      "display_name_en": "Black tea",
+      "technical_type": "tea",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "GREEN_TEA",
+      "source_name": "GREEN_TEA",
+      "family": "TEA",
+      "display_name_ru": "Зелёный чай",
+      "display_name_en": "Green tea",
+      "technical_type": "tea",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "RED_WINE",
+      "source_name": "RED_WINE",
+      "family": "WINE",
+      "display_name_ru": "Красное вино",
+      "display_name_en": "Red wine",
+      "technical_type": "wine",
+      "strength_class": "WINE",
+      "default_serving_ml": 150,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "WHITE_WINE",
+      "source_name": "WHITE_WINE",
+      "family": "WINE",
+      "display_name_ru": "Белое вино",
+      "display_name_en": "White wine",
+      "technical_type": "wine",
+      "strength_class": "WINE",
+      "default_serving_ml": 150,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "ROSE_WINE",
+      "source_name": "ROSE_WINE",
+      "family": "WINE",
+      "display_name_ru": "Розовое вино",
+      "display_name_en": "Rosé wine",
+      "technical_type": "wine",
+      "strength_class": "WINE",
+      "default_serving_ml": 150,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "ESPRESSO",
+      "source_name": "ESPRESSO",
+      "family": "COFFEE",
+      "display_name_ru": "Эспрессо",
+      "display_name_en": "Espresso",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 35,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "DOPPIO",
+      "source_name": "DOPPIO",
+      "family": "COFFEE",
+      "display_name_ru": "Доппио",
+      "display_name_en": "Doppio",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 65,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "AMERICANO",
+      "source_name": "AMERICANO",
+      "family": "COFFEE",
+      "display_name_ru": "Американо",
+      "display_name_en": "Americano",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "LONG_BLACK",
+      "source_name": "LONG_BLACK",
+      "family": "COFFEE",
+      "display_name_ru": "Лонг блэк",
+      "display_name_en": "Long black",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "CAPPUCCINO",
+      "source_name": "CAPPUCCINO",
+      "family": "COFFEE",
+      "display_name_ru": "Капучино",
+      "display_name_en": "Cappuccino",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "LATTE",
+      "source_name": "LATTE",
+      "family": "COFFEE",
+      "display_name_ru": "Латте",
+      "display_name_en": "Latte",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "FLAT_WHITE",
+      "source_name": "FLAT_WHITE",
+      "family": "COFFEE",
+      "display_name_ru": "Флэт уайт",
+      "display_name_en": "Flat white",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "RAF",
+      "source_name": "RAF",
+      "family": "COFFEE",
+      "display_name_ru": "Раф",
+      "display_name_en": "Raf",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "MOCHA",
+      "source_name": "MOCHA",
+      "family": "COFFEE",
+      "display_name_ru": "Мокка",
+      "display_name_en": "Mocha",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "ESPRESSO_MACCHIATO",
+      "source_name": "ESPRESSO_MACCHIATO",
+      "family": "COFFEE",
+      "display_name_ru": "Эспрессо макиато",
+      "display_name_en": "Espresso macchiato",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 35,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "LATTE_MACCHIATO",
+      "source_name": "LATTE_MACCHIATO",
+      "family": "COFFEE",
+      "display_name_ru": "Латте макиато",
+      "display_name_en": "Latte macchiato",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "CORTADO",
+      "source_name": "CORTADO",
+      "family": "COFFEE",
+      "display_name_ru": "Кортадо",
+      "display_name_en": "Cortado",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "CAFE_AU_LAIT",
+      "source_name": "CAFE_AU_LAIT",
+      "family": "COFFEE",
+      "display_name_ru": "Кофе с молоком",
+      "display_name_en": "Café au lait",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "TURKISH_COFFEE",
+      "source_name": "TURKISH_COFFEE",
+      "family": "COFFEE",
+      "display_name_ru": "Кофе по-турецки",
+      "display_name_en": "Turkish coffee",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "READING",
+        "MORNING"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "COLD_BREW",
+      "source_name": "COLD_BREW",
+      "family": "COFFEE",
+      "display_name_ru": "Колд брю",
+      "display_name_en": "Cold brew",
+      "technical_type": "coffee",
+      "strength_class": "NONE",
+      "default_serving_ml": 220,
+      "temperature": "COLD",
+      "caffeine": true,
+      "alcoholic": false,
+      "tags": [
+        "COLD",
+        "CAFFEINATED",
+        "READING",
+        "MORNING",
+        "HOT_DAY"
+      ],
+      "source_station": "COFFEE_NOOK"
+    },
+    {
+      "drink_id": "VODKA",
+      "source_name": "VODKA",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Водка",
+      "display_name_en": "Vodka",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "WHISKY",
+      "source_name": "WHISKY",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Виски",
+      "display_name_en": "Whisky",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "BOURBON",
+      "source_name": "BOURBON",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Бурбон",
+      "display_name_en": "Bourbon",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "SCOTCH",
+      "source_name": "SCOTCH",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Скотч",
+      "display_name_en": "Scotch",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "RYE_WHISKEY",
+      "source_name": "RYE_WHISKEY",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Ржаной виски",
+      "display_name_en": "Rye whiskey",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "GIN",
+      "source_name": "GIN",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Джин",
+      "display_name_en": "Gin",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "RUM",
+      "source_name": "RUM",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Ром",
+      "display_name_en": "Rum",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "TEQUILA",
+      "source_name": "TEQUILA",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Текила",
+      "display_name_en": "Tequila",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COGNAC",
+      "source_name": "COGNAC",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Коньяк",
+      "display_name_en": "Cognac",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "DIGESTIF",
+        "AFTER_DINNER",
+        "NIGHTCAP"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "BRANDY",
+      "source_name": "BRANDY",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Бренди",
+      "display_name_en": "Brandy",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "DIGESTIF",
+        "AFTER_DINNER",
+        "NIGHTCAP"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "CALVADOS",
+      "source_name": "CALVADOS",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Кальвадос",
+      "display_name_en": "Calvados",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "ARMAGNAC",
+      "source_name": "ARMAGNAC",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Арманьяк",
+      "display_name_en": "Armagnac",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "DIGESTIF",
+        "AFTER_DINNER",
+        "NIGHTCAP"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "GRAPPA",
+      "source_name": "GRAPPA",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Граппа",
+      "display_name_en": "Grappa",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "DIGESTIF",
+        "AFTER_DINNER",
+        "NIGHTCAP"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "ABSINTHE",
+      "source_name": "ABSINTHE",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Абсент",
+      "display_name_en": "Absinthe",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "SAMBUCA",
+      "source_name": "SAMBUCA",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Самбука",
+      "display_name_en": "Sambuca",
+      "technical_type": "liqueur",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "MOONSHINE",
+      "source_name": "MOONSHINE",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Самогон",
+      "display_name_en": "Moonshine",
+      "technical_type": "distilled_spirit",
+      "strength_class": "SPIRIT",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "AMARO",
+      "source_name": "AMARO",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Амаро",
+      "display_name_en": "Amaro",
+      "technical_type": "liqueur",
+      "strength_class": "FORTIFIED_OR_LIQUEUR",
+      "default_serving_ml": 45,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "DIGESTIF",
+        "AFTER_DINNER",
+        "NIGHTCAP"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "VERMOUTH_MARTINI",
+      "source_name": "VERMOUTH_MARTINI",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Вермут Мартини",
+      "display_name_en": "Martini vermouth",
+      "technical_type": "aromatized_fortified_wine",
+      "strength_class": "FORTIFIED_OR_LIQUEUR",
+      "default_serving_ml": 75,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "CHAMPAGNE",
+      "source_name": "CHAMPAGNE",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Шампанское",
+      "display_name_en": "Champagne",
+      "technical_type": "sparkling_wine",
+      "strength_class": "WINE",
+      "default_serving_ml": 150,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "BRUNCH",
+        "SPARKLING",
+        "CELEBRATION"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "PORT",
+      "source_name": "PORT",
+      "family": "STRAIGHT_ALCOHOL",
+      "display_name_ru": "Портвейн",
+      "display_name_en": "Port",
+      "technical_type": "fortified_wine",
+      "strength_class": "FORTIFIED_OR_LIQUEUR",
+      "default_serving_ml": 75,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "DIGESTIF",
+        "AFTER_DINNER",
+        "NIGHTCAP"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_ALEXANDER",
+      "source_name": "Alexander",
+      "family": "COCKTAIL",
+      "display_name_ru": "Alexander",
+      "display_name_en": "Alexander",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_AMERICANO",
+      "source_name": "Americano",
+      "family": "COCKTAIL",
+      "display_name_ru": "Americano",
+      "display_name_en": "Americano",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_AVIATION",
+      "source_name": "Aviation",
+      "family": "COCKTAIL",
+      "display_name_ru": "Aviation",
+      "display_name_en": "Aviation",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_BEE_S_KNEES",
+      "source_name": "Bee's Knees",
+      "family": "COCKTAIL",
+      "display_name_ru": "Bee's Knees",
+      "display_name_en": "Bee's Knees",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_BELLINI",
+      "source_name": "Bellini",
+      "family": "COCKTAIL",
+      "display_name_ru": "Bellini",
+      "display_name_en": "Bellini",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "BRUNCH",
+        "SPARKLING",
+        "CELEBRATION",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_BLACK_RUSSIAN",
+      "source_name": "Black Russian",
+      "family": "COCKTAIL",
+      "display_name_ru": "Black Russian",
+      "display_name_en": "Black Russian",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_BLOODY_MARY",
+      "source_name": "Bloody Mary",
+      "family": "COCKTAIL",
+      "display_name_ru": "Bloody Mary",
+      "display_name_en": "Bloody Mary",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "BRUNCH",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_BOULEVARDIER",
+      "source_name": "Boulevardier",
+      "family": "COCKTAIL",
+      "display_name_ru": "Boulevardier",
+      "display_name_en": "Boulevardier",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_BRAMBLE",
+      "source_name": "Bramble",
+      "family": "COCKTAIL",
+      "display_name_ru": "Bramble",
+      "display_name_en": "Bramble",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_CAIPIRINHA",
+      "source_name": "Caipirinha",
+      "family": "COCKTAIL",
+      "display_name_ru": "Caipirinha",
+      "display_name_en": "Caipirinha",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_CHAMPAGNE_COCKTAIL",
+      "source_name": "Champagne Cocktail",
+      "family": "COCKTAIL",
+      "display_name_ru": "Champagne Cocktail",
+      "display_name_en": "Champagne Cocktail",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "SPARKLING",
+        "CELEBRATION",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_CLOVER_CLUB",
+      "source_name": "Clover Club",
+      "family": "COCKTAIL",
+      "display_name_ru": "Clover Club",
+      "display_name_en": "Clover Club",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_COSMOPOLITAN",
+      "source_name": "Cosmopolitan",
+      "family": "COCKTAIL",
+      "display_name_ru": "Cosmopolitan",
+      "display_name_en": "Cosmopolitan",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_CUBA_LIBRE",
+      "source_name": "Cuba Libre",
+      "family": "COCKTAIL",
+      "display_name_ru": "Cuba Libre",
+      "display_name_en": "Cuba Libre",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": true,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "CAFFEINATED",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_DAIQUIRI",
+      "source_name": "Daiquiri",
+      "family": "COCKTAIL",
+      "display_name_ru": "Daiquiri",
+      "display_name_en": "Daiquiri",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_DARK_N_STORMY",
+      "source_name": "Dark 'N' Stormy",
+      "family": "COCKTAIL",
+      "display_name_ru": "Dark 'N' Stormy",
+      "display_name_en": "Dark 'N' Stormy",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_DRY_MARTINI",
+      "source_name": "Dry Martini",
+      "family": "COCKTAIL",
+      "display_name_ru": "Dry Martini",
+      "display_name_en": "Dry Martini",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_ESPRESSO_MARTINI",
+      "source_name": "Espresso Martini",
+      "family": "COCKTAIL",
+      "display_name_ru": "Espresso Martini",
+      "display_name_en": "Espresso Martini",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": true,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "CAFFEINATED",
+        "SOCIAL",
+        "COFFEE_COCKTAIL",
+        "AFTER_DINNER",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_FRENCH_75",
+      "source_name": "French 75",
+      "family": "COCKTAIL",
+      "display_name_ru": "French 75",
+      "display_name_en": "French 75",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "SPARKLING",
+        "CELEBRATION",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_FRENCH_CONNECTION",
+      "source_name": "French Connection",
+      "family": "COCKTAIL",
+      "display_name_ru": "French Connection",
+      "display_name_en": "French Connection",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_GARIBALDI",
+      "source_name": "Garibaldi",
+      "family": "COCKTAIL",
+      "display_name_ru": "Garibaldi",
+      "display_name_en": "Garibaldi",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_GIN_BASIL_SMASH",
+      "source_name": "Gin Basil Smash",
+      "family": "COCKTAIL",
+      "display_name_ru": "Gin Basil Smash",
+      "display_name_en": "Gin Basil Smash",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_GIN_FIZZ",
+      "source_name": "Gin Fizz",
+      "family": "COCKTAIL",
+      "display_name_ru": "Gin Fizz",
+      "display_name_en": "Gin Fizz",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_GRASSHOPPER",
+      "source_name": "Grasshopper",
+      "family": "COCKTAIL",
+      "display_name_ru": "Grasshopper",
+      "display_name_en": "Grasshopper",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_HEMINGWAY_SPECIAL",
+      "source_name": "Hemingway Special",
+      "family": "COCKTAIL",
+      "display_name_ru": "Hemingway Special",
+      "display_name_en": "Hemingway Special",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_IRISH_COFFEE",
+      "source_name": "Irish Coffee",
+      "family": "COCKTAIL",
+      "display_name_ru": "Irish Coffee",
+      "display_name_en": "Irish Coffee",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "HOT",
+      "caffeine": true,
+      "alcoholic": true,
+      "tags": [
+        "HOT",
+        "CAFFEINATED",
+        "SOCIAL",
+        "COFFEE_COCKTAIL",
+        "AFTER_DINNER"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_JUNGLE_BIRD",
+      "source_name": "Jungle Bird",
+      "family": "COCKTAIL",
+      "display_name_ru": "Jungle Bird",
+      "display_name_en": "Jungle Bird",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_KIR",
+      "source_name": "Kir",
+      "family": "COCKTAIL",
+      "display_name_ru": "Kir",
+      "display_name_en": "Kir",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_LAST_WORD",
+      "source_name": "Last Word",
+      "family": "COCKTAIL",
+      "display_name_ru": "Last Word",
+      "display_name_en": "Last Word",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_LONG_ISLAND_ICED_TEA",
+      "source_name": "Long Island Iced Tea",
+      "family": "COCKTAIL",
+      "display_name_ru": "Long Island Iced Tea",
+      "display_name_en": "Long Island Iced Tea",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": true,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "CAFFEINATED",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MAI_TAI",
+      "source_name": "Mai Tai",
+      "family": "COCKTAIL",
+      "display_name_ru": "Mai Tai",
+      "display_name_en": "Mai Tai",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MANHATTAN",
+      "source_name": "Manhattan",
+      "family": "COCKTAIL",
+      "display_name_ru": "Manhattan",
+      "display_name_en": "Manhattan",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MARGARITA",
+      "source_name": "Margarita",
+      "family": "COCKTAIL",
+      "display_name_ru": "Margarita",
+      "display_name_en": "Margarita",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MIMOSA",
+      "source_name": "Mimosa",
+      "family": "COCKTAIL",
+      "display_name_ru": "Mimosa",
+      "display_name_en": "Mimosa",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "BRUNCH",
+        "SPARKLING",
+        "CELEBRATION",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MINT_JULEP",
+      "source_name": "Mint Julep",
+      "family": "COCKTAIL",
+      "display_name_ru": "Mint Julep",
+      "display_name_en": "Mint Julep",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MOJITO",
+      "source_name": "Mojito",
+      "family": "COCKTAIL",
+      "display_name_ru": "Mojito",
+      "display_name_en": "Mojito",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_MOSCOW_MULE",
+      "source_name": "Moscow Mule",
+      "family": "COCKTAIL",
+      "display_name_ru": "Moscow Mule",
+      "display_name_en": "Moscow Mule",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_NAKED_AND_FAMOUS",
+      "source_name": "Naked and Famous",
+      "family": "COCKTAIL",
+      "display_name_ru": "Naked and Famous",
+      "display_name_en": "Naked and Famous",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_NEGRONI",
+      "source_name": "Negroni",
+      "family": "COCKTAIL",
+      "display_name_ru": "Negroni",
+      "display_name_en": "Negroni",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_NEW_YORK_SOUR",
+      "source_name": "New York Sour",
+      "family": "COCKTAIL",
+      "display_name_ru": "New York Sour",
+      "display_name_en": "New York Sour",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_OLD_CUBAN",
+      "source_name": "Old Cuban",
+      "family": "COCKTAIL",
+      "display_name_ru": "Old Cuban",
+      "display_name_en": "Old Cuban",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "SPARKLING",
+        "CELEBRATION",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_OLD_FASHIONED",
+      "source_name": "Old Fashioned",
+      "family": "COCKTAIL",
+      "display_name_ru": "Old Fashioned",
+      "display_name_en": "Old Fashioned",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PALOMA",
+      "source_name": "Paloma",
+      "family": "COCKTAIL",
+      "display_name_ru": "Paloma",
+      "display_name_en": "Paloma",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PAPER_PLANE",
+      "source_name": "Paper Plane",
+      "family": "COCKTAIL",
+      "display_name_ru": "Paper Plane",
+      "display_name_en": "Paper Plane",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PENICILLIN",
+      "source_name": "Penicillin",
+      "family": "COCKTAIL",
+      "display_name_ru": "Penicillin",
+      "display_name_en": "Penicillin",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PINA_COLADA",
+      "source_name": "Piña Colada",
+      "family": "COCKTAIL",
+      "display_name_ru": "Piña Colada",
+      "display_name_en": "Piña Colada",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PISCO_SOUR",
+      "source_name": "Pisco Sour",
+      "family": "COCKTAIL",
+      "display_name_ru": "Pisco Sour",
+      "display_name_en": "Pisco Sour",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PLANTER_S_PUNCH",
+      "source_name": "Planter's Punch",
+      "family": "COCKTAIL",
+      "display_name_ru": "Planter's Punch",
+      "display_name_en": "Planter's Punch",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_PORN_STAR_MARTINI",
+      "source_name": "Porn Star Martini",
+      "family": "COCKTAIL",
+      "display_name_ru": "Porn Star Martini",
+      "display_name_en": "Porn Star Martini",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_RAMOS_FIZZ",
+      "source_name": "Ramos Fizz",
+      "family": "COCKTAIL",
+      "display_name_ru": "Ramos Fizz",
+      "display_name_en": "Ramos Fizz",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_RUSTY_NAIL",
+      "source_name": "Rusty Nail",
+      "family": "COCKTAIL",
+      "display_name_ru": "Rusty Nail",
+      "display_name_en": "Rusty Nail",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_SAZERAC",
+      "source_name": "Sazerac",
+      "family": "COCKTAIL",
+      "display_name_ru": "Sazerac",
+      "display_name_en": "Sazerac",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_SEA_BREEZE",
+      "source_name": "Sea Breeze",
+      "family": "COCKTAIL",
+      "display_name_ru": "Sea Breeze",
+      "display_name_en": "Sea Breeze",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_SEX_ON_THE_BEACH",
+      "source_name": "Sex on the Beach",
+      "family": "COCKTAIL",
+      "display_name_ru": "Sex on the Beach",
+      "display_name_en": "Sex on the Beach",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_SIDECAR",
+      "source_name": "Sidecar",
+      "family": "COCKTAIL",
+      "display_name_ru": "Sidecar",
+      "display_name_en": "Sidecar",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_SINGAPORE_SLING",
+      "source_name": "Singapore Sling",
+      "family": "COCKTAIL",
+      "display_name_ru": "Singapore Sling",
+      "display_name_en": "Singapore Sling",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_SPRITZ",
+      "source_name": "Spritz",
+      "family": "COCKTAIL",
+      "display_name_ru": "Spritz",
+      "display_name_en": "Spritz",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "SPARKLING",
+        "CELEBRATION",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_TEQUILA_SUNRISE",
+      "source_name": "Tequila Sunrise",
+      "family": "COCKTAIL",
+      "display_name_ru": "Tequila Sunrise",
+      "display_name_en": "Tequila Sunrise",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_VESPER",
+      "source_name": "Vesper",
+      "family": "COCKTAIL",
+      "display_name_ru": "Vesper",
+      "display_name_en": "Vesper",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    },
+    {
+      "drink_id": "COCKTAIL_WHISKEY_SOUR",
+      "source_name": "Whiskey Sour",
+      "family": "COCKTAIL",
+      "display_name_ru": "Whiskey Sour",
+      "display_name_en": "Whiskey Sour",
+      "technical_type": "cocktail",
+      "strength_class": "MIXED",
+      "default_serving_ml": 180,
+      "temperature": "COLD",
+      "caffeine": false,
+      "alcoholic": true,
+      "tags": [
+        "COLD",
+        "SOCIAL",
+        "HOT_DAY"
+      ],
+      "source_station": "BAR"
+    }
+  ],
+  "weights": {
+    "GENERIC": {
+      "WATER": 1,
+      "SOFT": 1,
+      "TEA": 1,
+      "COFFEE": 1,
+      "WINE": 1,
+      "STRAIGHT_ALCOHOL": 1,
+      "COCKTAIL": 1
+    },
+    "READING": {
+      "WATER": 1.2,
+      "SOFT": 0.6,
+      "TEA": 4,
+      "COFFEE": 3.5,
+      "WINE": 1.8,
+      "STRAIGHT_ALCOHOL": 0.25,
+      "COCKTAIL": 0.35
+    },
+    "SISTERS_SOCIAL": {
+      "WATER": 0.8,
+      "SOFT": 0.9,
+      "TEA": 0.7,
+      "COFFEE": 0.6,
+      "WINE": 3,
+      "STRAIGHT_ALCOHOL": 2,
+      "COCKTAIL": 3.2
+    },
+    "MORNING": {
+      "WATER": 1.4,
+      "SOFT": 1.8,
+      "TEA": 2.5,
+      "COFFEE": 4,
+      "WINE": 0.05,
+      "STRAIGHT_ALCOHOL": 0.02,
+      "COCKTAIL": 0.05
+    },
+    "BRUNCH": {
+      "WATER": 1.2,
+      "SOFT": 1.6,
+      "TEA": 1.7,
+      "COFFEE": 2.3,
+      "WINE": 1.7,
+      "STRAIGHT_ALCOHOL": 0.4,
+      "COCKTAIL": 1.8
+    },
+    "WORK_CREATE": {
+      "WATER": 2,
+      "SOFT": 1.4,
+      "TEA": 2.2,
+      "COFFEE": 3.5,
+      "WINE": 0.3,
+      "STRAIGHT_ALCOHOL": 0.1,
+      "COCKTAIL": 0.1
+    },
+    "HEARTH_EVENING": {
+      "WATER": 0.8,
+      "SOFT": 0.6,
+      "TEA": 2,
+      "COFFEE": 1.3,
+      "WINE": 3,
+      "STRAIGHT_ALCOHOL": 2,
+      "COCKTAIL": 1.8
+    },
+    "AFTER_DINNER": {
+      "WATER": 0.8,
+      "SOFT": 0.5,
+      "TEA": 1.4,
+      "COFFEE": 1.7,
+      "WINE": 1.6,
+      "STRAIGHT_ALCOHOL": 2.7,
+      "COCKTAIL": 2.2
+    },
+    "CELEBRATION": {
+      "WATER": 0.7,
+      "SOFT": 1.1,
+      "TEA": 0.5,
+      "COFFEE": 0.5,
+      "WINE": 3.2,
+      "STRAIGHT_ALCOHOL": 1.6,
+      "COCKTAIL": 3.5
+    },
+    "NIGHTCAP": {
+      "WATER": 0.9,
+      "SOFT": 0.4,
+      "TEA": 1.2,
+      "COFFEE": 0.4,
+      "WINE": 1.8,
+      "STRAIGHT_ALCOHOL": 3,
+      "COCKTAIL": 2.8
+    },
+    "HOT_DAY": {
+      "WATER": 4,
+      "SOFT": 2.5,
+      "TEA": 0.6,
+      "COFFEE": 0.7,
+      "WINE": 1.4,
+      "STRAIGHT_ALCOHOL": 0.5,
+      "COCKTAIL": 2.2
+    }
+  },
+  "tag_bonus": {
+    "BRUNCH": [
+      "BRUNCH"
+    ],
+    "AFTER_DINNER": [
+      "DIGESTIF",
+      "COFFEE_COCKTAIL"
+    ],
+    "CELEBRATION": [
+      "SPARKLING"
+    ],
+    "NIGHTCAP": [
+      "NIGHTCAP"
+    ],
+    "HOT_DAY": [
+      "HOT_DAY"
+    ]
+  },
+  "tag_factor": 1.5,
+  "streak_factor": 0.85,
+  "variety_guard": true,
+  "sip_fraction": 0.25
+}

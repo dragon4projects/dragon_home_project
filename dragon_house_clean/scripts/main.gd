@@ -1688,6 +1688,10 @@ func make_physical_objects() -> void:
 			var model:PackedScene=ResourceLoader.load(teea008_review.ROOT+asset_id+"/model.gltf","PackedScene") as PackedScene
 			if model!=null:
 				anchor.add_child(model.instantiate())
+				if architecture_review:
+					var content_label:=label3(anchor,"",Vector3(0,0.23,0.04),18,Color("#f3dfb7"))
+					content_label.name="BeverageContent"
+					content_label.visible=false
 				object_nodes[str(object_id)]=anchor
 				register_content_hotspot(anchor,"cups",str(object_id),str(object.get("display_name",object_id)))
 				continue
@@ -1749,6 +1753,13 @@ func update_physical_objects() -> void:
 		if object.is_empty():
 			anchor.visible = false
 			continue
+		if architecture_review:
+			var beverage_label:Label3D=anchor.get_node_or_null("BeverageContent")
+			if beverage_label!=null:
+				var content:Dictionary=life.candidate_cups.beverages.content(str(object_id))
+				var title:String=str(content.get("display_name",""))
+				if beverage_label.text!=title:beverage_label.text=title
+				beverage_label.visible=float(content.get("remaining_ml",0))>0 and zoom_current<44.0
 		var holder_id := str(object.get("current_holder_id",""))
 		if holder_id != "":
 			var holder: Dictionary = world._physical_actor(holder_id)
@@ -1864,6 +1875,10 @@ func make_residents() -> void:
 		sprite.texture = manka_tex if id == "MANJKA" else resident_tex
 		sprite.pixel_size = 0.009 if id == "MANJKA" else 0.012
 		sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+		# Binary alpha depth avoids transparent-quad sorting cutting actors.
+		if architecture_review:
+			sprite.alpha_cut=SpriteBase3D.ALPHA_CUT_DISCARD
+			sprite.alpha_scissor_threshold=0.12
 		actor["runtime_visual_bound"] = false
 		if id == "MANJKA" and qa_visual_preview:
 			var sprite_manka: Texture2D = asset_banks.manka_texture("IDLE_RIGHT",0)
@@ -1938,7 +1953,7 @@ func update_residents(delta: float = 0.0) -> void:
 				# a deep cushion. Move only its render plane forward, along the
 				# camera ray, and preserve the projected contact and body scale.
 				# Other foreground objects still depth-test normally.
-				if contact.has("seat_front_z") and detailed_room_groups.has(str(room["id"])):
+				if contact.has("seat_front_z"):
 					var front:float=float(inst[2])+(float(contact["seat_front_z"])-float(inst[2]))*actor_scale
 					var projected:Dictionary=_seat_render_projection(physical_contact,front,actor_scale)
 					actor_sprites[id].position=projected["position"]
@@ -2755,6 +2770,18 @@ func update_hud() -> void:
 		hud_status.text += "\nВИД: QA-ПРОСМОТР (не утверждено)"
 	if not tracked.is_empty():
 		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), life.status(tracked)]
+		if architecture_review and life.candidate_cups.beverages.enabled:
+			var beverage=life.candidate_cups.beverages
+			var prefs:Dictionary=beverage.history(follow_id)
+			var counts:Dictionary=prefs["drink_counts"]
+			var keys:Array=counts.keys()
+			keys.sort_custom(func(a,b):return int(counts[a])>int(counts[b]))
+			for i in range(mini(3,keys.size())):
+				var key:String=str(keys[i])
+				hud_status.text+="\n%s: %d" % [beverage.by_id[key]["display_name_ru"],int(counts[key])]
+			var content:Dictionary=beverage.content(str(tracked.get("cup_task_id","")))
+			if float(content.get("remaining_ml",0))>0:
+				hud_status.text+="\n%s · %.0f мл" % [content["display_name"],float(content["remaining_ml"])]
 	if current_mode == "ROOM" and selected_room != "":
 		var r: Dictionary = world.room_by_id(selected_room)
 		if not r.is_empty():
