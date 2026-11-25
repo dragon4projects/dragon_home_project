@@ -20,6 +20,8 @@ const SemanticViewScript = preload("res://scripts/semantic_view_v019.gd")
 const CandidateContentRuntimeScript = preload("res://scripts/candidate_content_runtime.gd")
 const ITER1_REVIEW_MARKER := "res://data/integration_candidates/ITER1_OWNER_REVIEW.enabled"
 const ARTIFACT_CUBE_SIDE:float=0.18
+const CanonicalArtifactCubes=preload("res://scripts/canonical_artifact_cubes.gd")
+var artifact_cubes=CanonicalArtifactCubes.new()
 const ARTIFACT_CUBE_MODEL:="res://assets/decor_bank/artifact_glass_cube_s/model.gltf"
 const W := 4.8
 const H := 4.6
@@ -333,6 +335,9 @@ func _ready() -> void:
 		life.candidate_navigation.configure(teea008_review.layouts)
 		_ensure_canonical_artifact_cube()
 		_restore_zna_artifact_sources()
+		if architecture_review:
+			artifact_cubes.provisional_size_m=ARTIFACT_CUBE_SIDE
+			artifact_cubes.setup(world,life.candidate_navigation)
 		teea008_review.live_physical_objects=true
 		life.candidate_cups.setup(world,life.candidate_navigation)
 		life.candidate_cups.register_review_mugs()
@@ -2641,6 +2646,15 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 			return false
 	if record.is_empty():
 		return false
+	if architecture_review and category=="artifacts" and artifact_cubes.is_cube(item_id):
+		var master:String=artifact_cubes.master_path(item_id)
+		var image_record:Dictionary=record.duplicate(true)
+		image_record["title"]=artifact_cubes.title(item_id)
+		image_record["preview_path"]=master
+		image_record.erase("preview")
+		image_record["canonical_cube_master"]=true
+		if master=="":image_record["description"]="Оригинал не установлен или не прошёл проверку SHA-256."
+		return content_viewer.open_record(category,image_record)
 	if category=="artifacts":
 		var full_path:String=str(record.get("full_image_path",""))
 		if full_path!="":
@@ -3148,9 +3162,21 @@ func _input(event: InputEvent) -> void:
 			if wall_y>=0.0:
 				var object:Dictionary=world.physical_object(moved_id)
 				allowed=WallPlacementScript.valid(world,teea008_review if teea008_review.enabled else null,life.candidate_navigation,world.room_by_id(moved_room),Vector2(moved_anchor.x,wall_y),WallPlacementScript.object_extent(object),moved_id)
-			if allowed and world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true,"",wall_y):
+			var moved:=false
+			if allowed and wall_y<0.0 and architecture_review and life.candidate_navigation!=null and world.physical_object(moved_id).get("viewer_category","")=="artifacts":
+				var target:Dictionary=world.room_by_id(moved_room)
+				if world.public_cutaway_allowed(target):
+					var slot:Dictionary=artifact_cubes.pick_slot(target,moved_id,moved_anchor)
+					if not slot.is_empty():
+						var p:Array=slot["xyz"]
+						if moved_anchor.distance_to(Vector2(p[0],p[2]))<0.65:
+							moved=world.assign_physical_object_home(moved_id,moved_room,Vector2(p[0],p[2]),true,str(slot["id"]))
+			elif allowed:
+				moved=world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true,"",wall_y)
+			if moved:
 				world.save_world()
 				life.refresh_changed_station_claims()
+				_refresh_conditional_dressing()
 				notice.text="Новое место назначено домом: %s" % str(
 					world.physical_object(moved_id).get("display_name",moved_id))
 			else:
@@ -3749,11 +3775,12 @@ func _place_teea008_artifact(room_id:String,surface_id:String,item_id:String)->v
 		return
 	var sprite:Sprite3D=node.get_node_or_null("Visual")
 	# Do not infer physical size from missing images or invent a support fit.
-	if sprite==null or sprite.texture==null:
+	if not node.has_meta("artifact_cube_side") and (sprite==null or sprite.texture==null):
 		notice.text="Нет измеряемого изображения предмета"
 		return
 	var height:float=float(obj.get("display_world_height",0.48))
-	var width:float=height*float(sprite.texture.get_width())/maxf(1.0,float(sprite.texture.get_height()))
+	var width:float=height
+	if sprite!=null and sprite.texture!=null:width=height*float(sprite.texture.get_width())/maxf(1.0,float(sprite.texture.get_height()))
 	var depth:float=0.04
 	if node.has_meta("artifact_cube_side"):
 		width=ARTIFACT_CUBE_SIDE

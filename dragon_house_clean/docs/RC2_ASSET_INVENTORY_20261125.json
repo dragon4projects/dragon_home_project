@@ -1,0 +1,1688 @@
+{
+  "baseline": "714b69c555b8c2d2b87d41ed88967ef2d11651ab",
+  "comparison_repository": "dragon4projects/dragon_home_project",
+  "comparison_tree": "1216e2f1a737008e3d9fea0f5d240d54a78a6ea2",
+  "tracked_asset_files": 5354,
+  "older_tracked_asset_files": 2458,
+  "model_entries": 253,
+  "model_usage_scope": "all authored layout templates + six additive deltas; not runtime use or LFS hydration evidence",
+  "models": {
+    "artifact_glass_cube_l": {
+      "path": "dragon_house_clean/assets/decor_bank/artifact_glass_cube_l/model.gltf",
+      "git_blob": "182c954fd659116547aa1820fd6f366edbdb65bb",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "artifact_glass_cube_m": {
+      "path": "dragon_house_clean/assets/decor_bank/artifact_glass_cube_m/model.gltf",
+      "git_blob": "bd68672ad4e0fadd5361fcfcec2e80f30ad6711f",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "artifact_glass_cube_s": {
+      "path": "dragon_house_clean/assets/decor_bank/artifact_glass_cube_s/model.gltf",
+      "git_blob": "11f5f4a81e879d4d0b64d919fc49f62850b604c5",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "owner_sleeping_dragon": {
+      "path": "dragon_house_clean/assets/decor_bank/owner_sleeping_dragon/model.gltf",
+      "git_blob": "073e74ffd3fe3b20cc72987eaf190f81842c757c",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "sketchfab_coffee_machine_serg0k": {
+      "path": "dragon_house_clean/assets/sketchfab_review/decor_bank/sketchfab_coffee_machine_serg0k/model.gltf",
+      "git_blob": "e406219de3d0b46e3e5a5834094ba8349a0b9a3c",
+      "usage": []
+    },
+    "sketchfab_coffee_machine_vervoortward": {
+      "path": "dragon_house_clean/assets/sketchfab_review/decor_bank/sketchfab_coffee_machine_vervoortward/model.gltf",
+      "git_blob": "ee05eee117ba772d8e4b574ad45ecbf0d1682d99",
+      "usage": []
+    },
+    "sketchfab_fireplace_animated": {
+      "path": "dragon_house_clean/assets/sketchfab_review/decor_bank/sketchfab_fireplace_animated/model.gltf",
+      "git_blob": "99262c9a9cb614c35b8e99217d7f02219a9deee7",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "sketchfab_fireplace_annabelle_fibonacci": {
+      "path": "dragon_house_clean/assets/sketchfab_review/decor_bank/sketchfab_fireplace_annabelle_fibonacci/model.gltf",
+      "git_blob": "b7ce9c2550e537dec789a5f3a15ccbffbb282ccd",
+      "usage": []
+    },
+    "sketchfab_fireplace_mark_bai": {
+      "path": "dragon_house_clean/assets/sketchfab_review/decor_bank/sketchfab_fireplace_mark_bai/model.gltf",
+      "git_blob": "5bc8ff3998c93ce4a7887cd34d8a0b9617970289",
+      "usage": []
+    },
+    "sketchfab_steampunk_coffee_machine": {
+      "path": "dragon_house_clean/assets/sketchfab_review/decor_bank/sketchfab_steampunk_coffee_machine/model.gltf",
+      "git_blob": "ee5b6ac42dcbb1de988f7d70397efd6162d819b7",
+      "usage": [
+        "common/R3",
+        "kitchen/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "ArmChair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ArmChair_01/model.gltf",
+      "git_blob": "5af68b4db1e13df53d4b87624c7ce531eb6bcce3",
+      "usage": [
+        "cinema/R3",
+        "common/R2",
+        "common/R3",
+        "kitchen/R3",
+        "library/R1",
+        "library/R2",
+        "library/R3",
+        "music/R3",
+        "rest/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3",
+        "study/R3"
+      ]
+    },
+    "BarberShopChair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/BarberShopChair_01/model.gltf",
+      "git_blob": "2b2a7f1063a31bed50898af3463bd35dbe091cad",
+      "usage": []
+    },
+    "Chandelier_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Chandelier_01/model.gltf",
+      "git_blob": "2e44464d4080828b663df3b10a47bb6a96381ddb",
+      "usage": []
+    },
+    "Chandelier_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Chandelier_03/model.gltf",
+      "git_blob": "81297106ca1ec46204b14e496c81f16286838532",
+      "usage": []
+    },
+    "ClassicConsole_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ClassicConsole_01/model.gltf",
+      "git_blob": "a4e2b678da0e00570a086a19c83c9e07709adb7c",
+      "usage": [
+        "arrival/R1",
+        "arrival/R2",
+        "arrival/R3",
+        "artifact/R2",
+        "artifact/R3",
+        "library/R1",
+        "library/R2",
+        "library/R3",
+        "music/R1",
+        "music/R2",
+        "music/R3"
+      ]
+    },
+    "CoffeeCart_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/CoffeeCart_01/model.gltf",
+      "git_blob": "421abd95d1eae36988e6aa22f7c5ea3e5fc68893",
+      "usage": []
+    },
+    "GothicBed_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/GothicBed_01/model.gltf",
+      "git_blob": "45c553cbc91abdd48878f2086c708bac2f2e9b61",
+      "usage": []
+    },
+    "GreenChair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/GreenChair_01/model.gltf",
+      "git_blob": "496a6b384ec705dd6782d2c69e511358fed4aafa",
+      "usage": [
+        "common/R3",
+        "guest_vampire/R1"
+      ]
+    },
+    "Ottoman_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Ottoman_01/model.gltf",
+      "git_blob": "0ef8a158b722d5cadcb49f664a76b1c6c9db112c",
+      "usage": [
+        "guest_miu/R1"
+      ]
+    },
+    "Rockingchair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Rockingchair_01/model.gltf",
+      "git_blob": "35bbd79e8a2ad45b78d6545faf5d9b2c20afecf1",
+      "usage": [
+        "rest/R1",
+        "rest/R2",
+        "rest/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "Shelf_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Shelf_01/model.gltf",
+      "git_blob": "2108b2b9b56d4356dd78907f6dc032e54f25b2af",
+      "usage": []
+    },
+    "Sofa_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Sofa_01/model.gltf",
+      "git_blob": "d151b7c322c1756db8141d10323c05b437783c8f",
+      "usage": [
+        "common/R2",
+        "common/R3",
+        "guest_miu/R1",
+        "music/R1",
+        "music/R2",
+        "music/R3",
+        "rest/R2",
+        "rest/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "Television_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Television_01/model.gltf",
+      "git_blob": "ca85a1b35d7895021606089c8697e3fcb05066b4",
+      "usage": [
+        "cinema/R2",
+        "cinema/R3"
+      ]
+    },
+    "Ukulele_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/Ukulele_01/model.gltf",
+      "git_blob": "bca25f03e838e6115a1242a89edd99d83a00e75a",
+      "usage": []
+    },
+    "WoodenTable_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/WoodenTable_01/model.gltf",
+      "git_blob": "bef758574e5c35c8aa151e10af7b2fdf7341948f",
+      "usage": [
+        "artifact/R3",
+        "common/R3"
+      ]
+    },
+    "WoodenTable_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/WoodenTable_03/model.gltf",
+      "git_blob": "766c97fd4e4af746bab8dc63caa8810b67ed2159",
+      "usage": [
+        "artifact/R3",
+        "common/R3",
+        "kitchen/R3",
+        "library/R3",
+        "rest_social_upper/R3",
+        "study/R3"
+      ]
+    },
+    "alarm_clock_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/alarm_clock_01/model.gltf",
+      "git_blob": "dac1595fba15eca6d333f09d926af7edc5e281d4",
+      "usage": [
+        "guest_miu/R1"
+      ]
+    },
+    "antique_ceramic_vase_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/antique_ceramic_vase_01/model.gltf",
+      "git_blob": "21a4aa49d154337c9a6696846b8431fc866e88c0",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "arch_ceiling_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_ceiling_r1/model.gltf",
+      "git_blob": "5a6fc456cb1fb4d3facb78ffc26bc48b652eebc2",
+      "usage": []
+    },
+    "arch_ceiling_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_ceiling_r2/model.gltf",
+      "git_blob": "1377e61a818568e75d6e2162c098313e2597c215",
+      "usage": []
+    },
+    "arch_ceiling_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_ceiling_r3/model.gltf",
+      "git_blob": "eaa0d4eadd65322106435dbdbea65c3a6c2ffb52",
+      "usage": []
+    },
+    "arch_closed_side_return": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_closed_side_return/model.gltf",
+      "git_blob": "11116aa175ea5e76820dceed0a510f23a538262a",
+      "usage": []
+    },
+    "arch_connector_header": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_connector_header/model.gltf",
+      "git_blob": "94b3714dd27398af0d14773b42cb824a26d06f16",
+      "usage": []
+    },
+    "arch_connector_rear_jamb": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_connector_rear_jamb/model.gltf",
+      "git_blob": "4487104cdd19e1bd7eac305c04c54d4df2d076a0",
+      "usage": []
+    },
+    "arch_connector_rear_return": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_connector_rear_return/model.gltf",
+      "git_blob": "b351396e2983c8d1e2f1a3c1484eb0a8fbfa73d8",
+      "usage": []
+    },
+    "arch_floor_stone_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_stone_r1/model.gltf",
+      "git_blob": "f93c608baff34c8a2c1af452b9cf71cb72334f19",
+      "usage": []
+    },
+    "arch_floor_stone_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_stone_r2/model.gltf",
+      "git_blob": "ef8b6db7cbe116acb16f0bbc8344f4717a29b753",
+      "usage": []
+    },
+    "arch_floor_stone_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_stone_r3/model.gltf",
+      "git_blob": "dd7c739f078b1cf63bf38b07a20094e641bad346",
+      "usage": []
+    },
+    "arch_floor_wood_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_wood_r1/model.gltf",
+      "git_blob": "702f16d06a8859d9243e0b132d426f1b6a6f3736",
+      "usage": []
+    },
+    "arch_floor_wood_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_wood_r2/model.gltf",
+      "git_blob": "67e52f76f059bf18b6dd23ca9121886c94511818",
+      "usage": []
+    },
+    "arch_floor_wood_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_wood_r3/model.gltf",
+      "git_blob": "c631d61dafe1822568659077e6e7f37052da85b4",
+      "usage": []
+    },
+    "arch_floor_workshop_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_workshop_r1/model.gltf",
+      "git_blob": "38880f8fd9ed60e61c9e408a4c6788e981b846ad",
+      "usage": []
+    },
+    "arch_floor_workshop_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_workshop_r2/model.gltf",
+      "git_blob": "489262a58e0278d3d46df1e9c30b7025ffad75fa",
+      "usage": []
+    },
+    "arch_floor_workshop_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_floor_workshop_r3/model.gltf",
+      "git_blob": "4ac9a1f193234856a30ddfcf1308d80dc4d5947f",
+      "usage": []
+    },
+    "arch_front_lip_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_front_lip_r1/model.gltf",
+      "git_blob": "9d8e61f8b15a41b782445eba73a8911ff41c9e0e",
+      "usage": []
+    },
+    "arch_front_lip_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_front_lip_r2/model.gltf",
+      "git_blob": "d7256f8089ced6d96e0b91f36f2cafc954790ce6",
+      "usage": []
+    },
+    "arch_front_lip_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_front_lip_r3/model.gltf",
+      "git_blob": "5366c01a768d5b0eb47851d36834bd090d9e994b",
+      "usage": []
+    },
+    "arch_generic_door": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_generic_door/model.gltf",
+      "git_blob": "e92a135dd8226fc1dbe52cbd0b98194978643178",
+      "usage": []
+    },
+    "arch_generic_note_frame": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_generic_note_frame/model.gltf",
+      "git_blob": "89f72f6bd3ed8ceed72f04c44b8eedc879e0e2cd",
+      "usage": []
+    },
+    "arch_generic_plaque": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_generic_plaque/model.gltf",
+      "git_blob": "6419459e5f98cdcc4abbd6266f2d6e13eb46b69c",
+      "usage": []
+    },
+    "arch_header_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_header_r1/model.gltf",
+      "git_blob": "6458751a201d508a661e84a87761b077ebf990b4",
+      "usage": []
+    },
+    "arch_header_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_header_r2/model.gltf",
+      "git_blob": "9fe345c352f88e99ec5159594ca0924b6a28df52",
+      "usage": []
+    },
+    "arch_header_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_header_r3/model.gltf",
+      "git_blob": "e5476dd2798a12124434e4ec62961606ecd0a131",
+      "usage": []
+    },
+    "arch_lift_control": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_lift_control/model.gltf",
+      "git_blob": "89355a66da4825d1d2ff29b9113119e1bdeef5c4",
+      "usage": []
+    },
+    "arch_lift_floor_skin": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_lift_floor_skin/model.gltf",
+      "git_blob": "7d7af02eed6bf6173e848f395847fef86dbd3eec",
+      "usage": []
+    },
+    "arch_lift_rail": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_lift_rail/model.gltf",
+      "git_blob": "aa4afbe31ea0fe8f63ff30a7656eba289daf8a35",
+      "usage": []
+    },
+    "arch_lift_shaft_wall": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_lift_shaft_wall/model.gltf",
+      "git_blob": "da4928f66139f9e9658090249d0a01be7e9708d9",
+      "usage": []
+    },
+    "arch_rear_plaster_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_plaster_r1/model.gltf",
+      "git_blob": "321e3fd1f5fde06f12971f5ed0f7609dfcf5b129",
+      "usage": []
+    },
+    "arch_rear_plaster_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_plaster_r2/model.gltf",
+      "git_blob": "4c8205ea94933ab484b368e2d4f4c2ef34b168ab",
+      "usage": []
+    },
+    "arch_rear_plaster_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_plaster_r3/model.gltf",
+      "git_blob": "7d853c5f2ef224f4121a294d171378b672e5fdf4",
+      "usage": []
+    },
+    "arch_rear_stone_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_stone_r1/model.gltf",
+      "git_blob": "3384e78938aa87abd015741327800cf0f8968989",
+      "usage": []
+    },
+    "arch_rear_stone_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_stone_r2/model.gltf",
+      "git_blob": "c6f7128ff23b7f492e348e8123e0a995bcdb2cf8",
+      "usage": []
+    },
+    "arch_rear_stone_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_stone_r3/model.gltf",
+      "git_blob": "05ac41af53420d90635b2735c0cea26ab1b3faf8",
+      "usage": []
+    },
+    "arch_rear_timber_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_timber_r1/model.gltf",
+      "git_blob": "5ddf63763ebf6ae1c0b80dccd104e9768ad6ae7f",
+      "usage": []
+    },
+    "arch_rear_timber_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_timber_r2/model.gltf",
+      "git_blob": "7cc8552f91c4eafaf87e65c6395f522d248f8871",
+      "usage": []
+    },
+    "arch_rear_timber_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_rear_timber_r3/model.gltf",
+      "git_blob": "cf58a6d9de5de97b7dc398cfb3dd849e2ab7b05d",
+      "usage": []
+    },
+    "arch_skirting_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_skirting_r1/model.gltf",
+      "git_blob": "ebf7014b7cd17832f5e73578875764e83a6124e3",
+      "usage": []
+    },
+    "arch_skirting_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_skirting_r2/model.gltf",
+      "git_blob": "6f74bdd62f7c095bfc598d15f5fc6abc566c0078",
+      "usage": []
+    },
+    "arch_skirting_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/arch_skirting_r3/model.gltf",
+      "git_blob": "78bf45e1a499e1dbe2cd42f1f3b7fb45931f13e6",
+      "usage": []
+    },
+    "bench_vice_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/bench_vice_01/model.gltf",
+      "git_blob": "5060db25b5b496db90487d865784e8653926970f",
+      "usage": [
+        "workshop/R3"
+      ]
+    },
+    "binder_notebook": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/binder_notebook/model.gltf",
+      "git_blob": "134af99b33225c68c899560ffbd90a33f4a8e600",
+      "usage": [
+        "study/R3"
+      ]
+    },
+    "book_encyclopedia_set_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+      "git_blob": "f1cba42f72eee143996c89080902faf172476db1",
+      "usage": [
+        "library/R3",
+        "study/R3"
+      ]
+    },
+    "boombox": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/boombox/model.gltf",
+      "git_blob": "c3d910090cf5e1364ba09c3b1a5919ffe9b12bc7",
+      "usage": [
+        "music/R1",
+        "music/R2",
+        "music/R3"
+      ]
+    },
+    "brass_candleholders": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_candleholders/model.gltf",
+      "git_blob": "22ea05e3015fbc7b77a1d71d9486c73cbba79fbc",
+      "usage": []
+    },
+    "brass_diya_lantern": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_diya_lantern/model.gltf",
+      "git_blob": "9482aa940c8595eeb1cda2bf516b088ec04b6c45",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "brass_goblets": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_goblets/model.gltf",
+      "git_blob": "7b1a16e47b1cec7810ad2177787ef4814bdf3732",
+      "usage": [
+        "common/R3",
+        "kitchen/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "brass_pan_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_pan_01/model.gltf",
+      "git_blob": "dc666100223b2a480db4df936c6d2ef3713cf9ee",
+      "usage": []
+    },
+    "brass_pot_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_pot_01/model.gltf",
+      "git_blob": "e01703bda42e54007b907dcd3bf9e4d7970a9594",
+      "usage": []
+    },
+    "brass_pot_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_pot_02/model.gltf",
+      "git_blob": "6a3dfcca7aee9eb7d8fb91fe14c2261800629e63",
+      "usage": []
+    },
+    "brass_vase_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_vase_01/model.gltf",
+      "git_blob": "bb0ecb28db4a02a66dc960bcb2278b5dc2950ee7",
+      "usage": []
+    },
+    "brass_vase_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_vase_02/model.gltf",
+      "git_blob": "5c3d988dbc52c1edd33e448b0e3951a11549e906",
+      "usage": []
+    },
+    "brass_vase_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/brass_vase_03/model.gltf",
+      "git_blob": "7bcea76182a209249f56a2ecfddcdea7730a466a",
+      "usage": [
+        "artifact/R3",
+        "guest_vampire/R1"
+      ]
+    },
+    "bronze_ray_statue": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/bronze_ray_statue/model.gltf",
+      "git_blob": "fdece70220c27bdd9c4eaf217145678f23a90674",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "bronze_shark_statue": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/bronze_shark_statue/model.gltf",
+      "git_blob": "670649d456fe6729474f1c17a36cfc4ead30f23d",
+      "usage": []
+    },
+    "bronze_whale_statue": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/bronze_whale_statue/model.gltf",
+      "git_blob": "0e2853fec382934f1594cdfbf6e1126171c7d363",
+      "usage": []
+    },
+    "bull_head": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/bull_head/model.gltf",
+      "git_blob": "9f433b3a024f0c5c23cf2e91735814ef64f6db36",
+      "usage": []
+    },
+    "bunsen_burner": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/bunsen_burner/model.gltf",
+      "git_blob": "308488cd27b7cfad9560c3b9181b610d91bf3787",
+      "usage": []
+    },
+    "candidate_dragon_mug_red": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/candidate_dragon_mug_red/model.gltf",
+      "git_blob": "cc3c926fb455706526d5317916b15dd2ddd544f7",
+      "usage": [
+        "common/R1",
+        "common/R2",
+        "common/R3",
+        "kitchen/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "candidate_guest_mug_blue": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/candidate_guest_mug_blue/model.gltf",
+      "git_blob": "620e353cc81e8bb3e67826169a2acf4d9a19733d",
+      "usage": [
+        "common/R1",
+        "common/R2",
+        "common/R3",
+        "kitchen/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "carved_wooden_elephant": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/carved_wooden_elephant/model.gltf",
+      "git_blob": "01674d9ead227e2161ed923ee6b7c3f7dad4d4fe",
+      "usage": []
+    },
+    "carved_wooden_plate": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/carved_wooden_plate/model.gltf",
+      "git_blob": "6050adaad0b6a95f066a1802c3cf89d5c5c069b5",
+      "usage": []
+    },
+    "cassette_player": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cassette_player/model.gltf",
+      "git_blob": "422cc8c82a3e90db89c1d0fdbde80c8ff41fb746",
+      "usage": [
+        "music/R3"
+      ]
+    },
+    "ceramic_pot": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ceramic_pot/model.gltf",
+      "git_blob": "f234e197c4a3d6ee52109c57ae3db235528d931e",
+      "usage": []
+    },
+    "ceramic_vase_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ceramic_vase_01/model.gltf",
+      "git_blob": "93c1e24c51374c2c3d837af06e2ddebeab6ca45f",
+      "usage": []
+    },
+    "ceramic_vase_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ceramic_vase_02/model.gltf",
+      "git_blob": "ea0d74088b6c3eb83e524d45c1f4ced1e1921ccd",
+      "usage": []
+    },
+    "ceramic_vase_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ceramic_vase_03/model.gltf",
+      "git_blob": "6456afb872d00ba59afc72ef6d2ed7811b89a6df",
+      "usage": []
+    },
+    "ceramic_vase_04": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ceramic_vase_04/model.gltf",
+      "git_blob": "9d2a880912f826eaafe637880a8eea2989de8e68",
+      "usage": []
+    },
+    "chemistry_set": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chemistry_set/model.gltf",
+      "git_blob": "f48237143235a936d8d96b16bb86003ef28fda5c",
+      "usage": [
+        "workshop/R3"
+      ]
+    },
+    "chess_set": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chess_set/model.gltf",
+      "git_blob": "e6189a3be51cc4fc614064656933515c5d14b5b7",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "chinese_armchair": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chinese_armchair/model.gltf",
+      "git_blob": "b911e669c08210b17f2b7be8ca7767dda92d27b8",
+      "usage": [
+        "arrival/R1",
+        "arrival/R2",
+        "arrival/R3",
+        "cinema/R2",
+        "cinema/R3",
+        "library/R3",
+        "study/R1",
+        "study/R2",
+        "study/R3"
+      ]
+    },
+    "chinese_cabinet": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chinese_cabinet/model.gltf",
+      "git_blob": "701644f8b9115837c46230a469046a202b3d6642",
+      "usage": []
+    },
+    "chinese_chandelier": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chinese_chandelier/model.gltf",
+      "git_blob": "60b247bf068b930dd9bf49c9d47e4629a7008625",
+      "usage": []
+    },
+    "chinese_commode": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chinese_commode/model.gltf",
+      "git_blob": "adccdfbed60ae92774c1da0cf09b3bce5953cc6a",
+      "usage": [
+        "artifact/R1",
+        "artifact/R2",
+        "artifact/R3",
+        "cinema/R3"
+      ]
+    },
+    "chinese_tea_table": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/chinese_tea_table/model.gltf",
+      "git_blob": "e69ed922fcd8dd22f493cc152d23878e7dce1f0e",
+      "usage": [
+        "rest_social_upper/R3"
+      ]
+    },
+    "cinema_acoustic_wall_panel": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_acoustic_wall_panel/model.gltf",
+      "git_blob": "15b9cd0e79a419e83f012c59ea9a8246a87987da",
+      "usage": []
+    },
+    "cinema_aisle_floor_tile": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_aisle_floor_tile/model.gltf",
+      "git_blob": "380532c5cd642a8fcc242c1b0c5bc80132749fb0",
+      "usage": []
+    },
+    "cinema_aisle_step": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_aisle_step/model.gltf",
+      "git_blob": "e50932e7e4b1ea074b274fdf29219d03e1f26cd8",
+      "usage": []
+    },
+    "cinema_arcade_cabinet": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_arcade_cabinet/model.gltf",
+      "git_blob": "de9994230b640365442baaf528014444864e2de5",
+      "usage": [
+        "cinema/R3"
+      ]
+    },
+    "cinema_cupholder_armrest": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_cupholder_armrest/model.gltf",
+      "git_blob": "3c45bdde29f2728f7c3f6ae389fd0761e4bd0dae",
+      "usage": []
+    },
+    "cinema_dark_carpet_r1": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_dark_carpet_r1/model.gltf",
+      "git_blob": "9ace48e3fd791306296819a73e8add87af35b373",
+      "usage": [
+        "cinema/R1"
+      ]
+    },
+    "cinema_dark_carpet_r2": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_dark_carpet_r2/model.gltf",
+      "git_blob": "aa3d4f3fa5e4e68c9630fd0611c7db11411b4ce9",
+      "usage": [
+        "cinema/R2"
+      ]
+    },
+    "cinema_dark_carpet_r3": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_dark_carpet_r3/model.gltf",
+      "git_blob": "1074f2be768fea3649153296f09b386d42b71443",
+      "usage": [
+        "cinema/R3"
+      ]
+    },
+    "cinema_digital_projector": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_digital_projector/model.gltf",
+      "git_blob": "9cd9318bab387d56f7bec0dea702173de306650e",
+      "usage": []
+    },
+    "cinema_premium_recliner_row": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_premium_recliner_row/model.gltf",
+      "git_blob": "6bcb6f1343d22779918df7b6757ac1ee4b305784",
+      "usage": []
+    },
+    "cinema_screen_masking_frame": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_screen_masking_frame/model.gltf",
+      "git_blob": "bd3613aba544f0ea99052aeb7d0fcd579f833775",
+      "usage": []
+    },
+    "cinema_side_wall_light": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_side_wall_light/model.gltf",
+      "git_blob": "9e118738a9112bff1a1f822e397c8e12b29730a4",
+      "usage": []
+    },
+    "cinema_stage_curtains_open": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_stage_curtains_open/model.gltf",
+      "git_blob": "d512a3b8551c4692cd36903484c88373437d9647",
+      "usage": []
+    },
+    "cinema_surround_speaker": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_surround_speaker/model.gltf",
+      "git_blob": "96671df2d56b2bb447a77246c8f8d5994ccb0ea5",
+      "usage": [
+        "cinema/R1",
+        "cinema/R2",
+        "cinema/R3"
+      ]
+    },
+    "cinema_wall_poster_lightbox": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/cinema_wall_poster_lightbox/model.gltf",
+      "git_blob": "e0ae8e7735e84c360023409e459cd715def59a81",
+      "usage": []
+    },
+    "classic_laptop": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/classic_laptop/model.gltf",
+      "git_blob": "161020ee92db953b47f239489791416b2dcf0a1c",
+      "usage": [
+        "study/R1",
+        "study/R2",
+        "study/R3"
+      ]
+    },
+    "coffee_table_round_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/coffee_table_round_01/model.gltf",
+      "git_blob": "6e092bb4b51254e8280be57c4dc2638b1d8b9134",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "common_woven_rug": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/common_woven_rug/model.gltf",
+      "git_blob": "1549793240b99fb6ea9b7541bfe2bffc8b59f940",
+      "usage": [
+        "common/R3",
+        "guest_centaur/R2",
+        "guest_miu/R1",
+        "guest_vampire/R1",
+        "library/R3",
+        "music/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "concrete_cat_statue": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/concrete_cat_statue/model.gltf",
+      "git_blob": "3d0eb928337d7c27f5459c1dcae7bd4a7f706aa3",
+      "usage": []
+    },
+    "croissant": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/croissant/model.gltf",
+      "git_blob": "02beca634f070128a63f9d7faed8553a7f2aa0b2",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "dartboard": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/dartboard/model.gltf",
+      "git_blob": "d97b84008c6fd77d33f07e8c6982a93bd879669c",
+      "usage": []
+    },
+    "decorative_book_set_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/decorative_book_set_01/model.gltf",
+      "git_blob": "dac43f91c854b4475ba4d2802fa3e7557810c2ba",
+      "usage": []
+    },
+    "desk_lamp_arm_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/desk_lamp_arm_01/model.gltf",
+      "git_blob": "227cafd9b5b8db02df990b3a6bb76d4ef0b6f344",
+      "usage": [
+        "study/R1",
+        "study/R2",
+        "study/R3"
+      ]
+    },
+    "dragon_fur_rest_mat": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/dragon_fur_rest_mat/model.gltf",
+      "git_blob": "c9cc93bde302e95be16bb51e1520f3d167cda9f5",
+      "usage": [
+        "common/R3",
+        "guest_centaur/R1"
+      ]
+    },
+    "dragon_mug_lod0_empty": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/dragon_mug_lod0_empty/model.gltf",
+      "git_blob": "89bd640faeaa601b4560129488a0ea3c9002b14c",
+      "usage": []
+    },
+    "dragon_mug_lod0_filled": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/dragon_mug_lod0_filled/model.gltf",
+      "git_blob": "c244c892a76783161783d2bd25f830eb93498a94",
+      "usage": []
+    },
+    "dragon_mug_lod1_empty": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/dragon_mug_lod1_empty/model.gltf",
+      "git_blob": "ad5f37803e0419a4db6fe5e05cf9373a62fd7674",
+      "usage": []
+    },
+    "electric_stove": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/electric_stove/model.gltf",
+      "git_blob": "e24de1e2f842b46e6d4f719792fd4e2d9fe94f0b",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "fancy_picture_frame_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/fancy_picture_frame_01/model.gltf",
+      "git_blob": "84356bd5cfcde9dda56567cceba1e6fd6225a251",
+      "usage": []
+    },
+    "fancy_picture_frame_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/fancy_picture_frame_02/model.gltf",
+      "git_blob": "9946f8778e2275efa33e433a02847a16f2713fe2",
+      "usage": []
+    },
+    "filmstrip_projector_8mm": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/filmstrip_projector_8mm/model.gltf",
+      "git_blob": "c60870543b37ed4546a6508509d89c9945b38400",
+      "usage": [
+        "cinema/R3"
+      ]
+    },
+    "gallinera_chair": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/gallinera_chair/model.gltf",
+      "git_blob": "4a6dec827cc3a4a9fc5d2084b676af99080ce4cd",
+      "usage": []
+    },
+    "gallinera_table": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/gallinera_table/model.gltf",
+      "git_blob": "4d126f88b1e4231551481de94e37cbde2ebc35ac",
+      "usage": []
+    },
+    "gamepad": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/gamepad/model.gltf",
+      "git_blob": "69f052bd4404b1d4efc5a487b24e652dbef4d2b9",
+      "usage": [
+        "cinema/R2",
+        "cinema/R3"
+      ]
+    },
+    "gaming_console": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/gaming_console/model.gltf",
+      "git_blob": "c52ccc9c1afddb46ae23b9c1b15a2ed223041320",
+      "usage": [
+        "cinema/R2",
+        "cinema/R3"
+      ]
+    },
+    "garden_gnome": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/garden_gnome/model.gltf",
+      "git_blob": "33f4b49b761566f59afdafc89558cdb77eb887c5",
+      "usage": []
+    },
+    "generic_artifact_cube_empty": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_artifact_cube_empty/model.gltf",
+      "git_blob": "b02d8c0b6c30979a993b1977fe31e1be08e2cc05",
+      "usage": [
+        "artifact/R1",
+        "artifact/R2",
+        "artifact/R3"
+      ]
+    },
+    "generic_closed_trinket_case": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_closed_trinket_case/model.gltf",
+      "git_blob": "f630628d32cfabf0f9aa0d52b6dfea449865bff7",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "generic_mini_compass": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_mini_compass/model.gltf",
+      "git_blob": "1daaead086502972d6aee14f34987ea80c220bb5",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "generic_miniature_ray_replica": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_miniature_ray_replica/model.gltf",
+      "git_blob": "550be189c6c0b4acbf924f98161cddcdfd74b400",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "generic_open_stash_crate": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_open_stash_crate/model.gltf",
+      "git_blob": "0311474468e4bebb8ff054505bbd177b2e4025eb",
+      "usage": [
+        "artifact/R1",
+        "artifact/R2",
+        "artifact/R3"
+      ]
+    },
+    "generic_resin_medallion": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_resin_medallion/model.gltf",
+      "git_blob": "22f1985be763bf980dbf7fb6c80f5444e8a19952",
+      "usage": []
+    },
+    "generic_small_wooden_die": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_small_wooden_die/model.gltf",
+      "git_blob": "9650df696cfa4f97ba49b152d37691201286a41c",
+      "usage": []
+    },
+    "generic_small_wooden_elephant": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_small_wooden_elephant/model.gltf",
+      "git_blob": "48ee0a3306dae228acd16a969de09646d97a5073",
+      "usage": [
+        "artifact/R1",
+        "artifact/R2",
+        "artifact/R3"
+      ]
+    },
+    "generic_smooth_worry_stone": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_smooth_worry_stone/model.gltf",
+      "git_blob": "96db9cd4529b22a4179cb766950839aa424c64ac",
+      "usage": []
+    },
+    "generic_thread_spool": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_thread_spool/model.gltf",
+      "git_blob": "23a634af9403d8e114d2abe44cd3f95c2882f284",
+      "usage": []
+    },
+    "generic_toy_ball": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_toy_ball/model.gltf",
+      "git_blob": "cbb82d863dff933acd2e2a8ed1c7521a5641c7b0",
+      "usage": []
+    },
+    "generic_toy_cat": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_toy_cat/model.gltf",
+      "git_blob": "41d8647947485bb1fa078b2fe9f9fc272d4a02dc",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "generic_toy_duck": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_toy_duck/model.gltf",
+      "git_blob": "c9651fe0fb65332a107e321e8f42372d5a000fe9",
+      "usage": []
+    },
+    "generic_toy_gnome": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_toy_gnome/model.gltf",
+      "git_blob": "b25b28f6369f1bd4104a1714f72b08a22ea0369a",
+      "usage": []
+    },
+    "generic_toy_shark": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_toy_shark/model.gltf",
+      "git_blob": "09f1e01f8223274448e251a33eb692d0ab514969",
+      "usage": []
+    },
+    "generic_toy_whale": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_toy_whale/model.gltf",
+      "git_blob": "c0c36f662256d996ee8eabafa5f128492728efaa",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "generic_wooden_game_token": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/generic_wooden_game_token/model.gltf",
+      "git_blob": "34c9549b1fbb87b2ff8017bc12953504fd8f77a0",
+      "usage": []
+    },
+    "gothic_coffee_table": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/gothic_coffee_table/model.gltf",
+      "git_blob": "fb63787ed0729e30be689b3774b0f4d2c1da068a",
+      "usage": [
+        "common/R1",
+        "common/R2"
+      ]
+    },
+    "gothic_statue": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/gothic_statue/model.gltf",
+      "git_blob": "6c43cf6a48958d6f65faad4ef41bc469172b67f2",
+      "usage": []
+    },
+    "hanging_picture_frame_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/hanging_picture_frame_01/model.gltf",
+      "git_blob": "62d96de406071db3878051cb84b43762484a5b21",
+      "usage": []
+    },
+    "hanging_picture_frame_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/hanging_picture_frame_02/model.gltf",
+      "git_blob": "4acc23fc877dc0afdaef2723ff0189a0344b8789",
+      "usage": []
+    },
+    "hanging_picture_frame_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/hanging_picture_frame_03/model.gltf",
+      "git_blob": "e608d653007c2113b9119e10cc4a5036e37987b4",
+      "usage": []
+    },
+    "horse_head": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/horse_head/model.gltf",
+      "git_blob": "abfebd6a91c4903b054da882b71f79b39195901e",
+      "usage": []
+    },
+    "horse_statue_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/horse_statue_01/model.gltf",
+      "git_blob": "afa90b385c548175e459594f0a0b563b5a1ce560",
+      "usage": []
+    },
+    "industrial_coffee_table": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/industrial_coffee_table/model.gltf",
+      "git_blob": "fd3326da3156b30583b227b154612b289dc0e481",
+      "usage": []
+    },
+    "industrial_storage_cart": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/industrial_storage_cart/model.gltf",
+      "git_blob": "0eb23e35e6b915a1d487603fc9a45db565ebca9a",
+      "usage": []
+    },
+    "industrial_wall_lamp": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/industrial_wall_lamp/model.gltf",
+      "git_blob": "a37a5e9a70cebfc23cd5f38029c83cf2127945e3",
+      "usage": []
+    },
+    "industrial_wall_sconce": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/industrial_wall_sconce/model.gltf",
+      "git_blob": "77623f523bbbd3da5ad8ce1e6b3c9f01fc386630",
+      "usage": [
+        "arrival/R1",
+        "arrival/R2",
+        "arrival/R3",
+        "artifact/R1",
+        "artifact/R2",
+        "artifact/R3",
+        "common/R1",
+        "common/R2",
+        "common/R3",
+        "corridor/R1",
+        "corridor/R2",
+        "corridor/R3",
+        "guest_centaur/R1",
+        "guest_miu/R1",
+        "guest_vampire/R1",
+        "library/R1",
+        "library/R2",
+        "library/R3",
+        "music/R1",
+        "music/R2",
+        "music/R3",
+        "rest/R1",
+        "rest/R2",
+        "rest/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3",
+        "study/R1",
+        "study/R2",
+        "study/R3",
+        "workshop/R1",
+        "workshop/R2",
+        "workshop/R3"
+      ]
+    },
+    "jug_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/jug_01/model.gltf",
+      "git_blob": "0298c045baa0eb7195eaf3598b6fe8a56d0a4ae5",
+      "usage": []
+    },
+    "katana_stand_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/katana_stand_01/model.gltf",
+      "git_blob": "1a90645127b2ef8c5354b410c5dbd01cb694cb4c",
+      "usage": []
+    },
+    "korean_public_payphone_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/korean_public_payphone_01/model.gltf",
+      "git_blob": "dc2a316f53eaf6f53624052bd4b84fb2663843f4",
+      "usage": [
+        "arrival/R1",
+        "arrival/R2",
+        "arrival/R3"
+      ]
+    },
+    "lambis_shell": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/lambis_shell/model.gltf",
+      "git_blob": "94bcced7f5934207ec10c55206c28faf49743cba",
+      "usage": []
+    },
+    "lion_head": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/lion_head/model.gltf",
+      "git_blob": "de0dacfca50935758068f15b8c0636659760d737",
+      "usage": []
+    },
+    "lubricant_spray": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/lubricant_spray/model.gltf",
+      "git_blob": "ae32cbc6aef3af1da1ff5b6d72b33d150d2e0e18",
+      "usage": []
+    },
+    "mantel_clock_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/mantel_clock_01/model.gltf",
+      "git_blob": "d82464800f243916e3e7cca78a88a2e922f59b14",
+      "usage": []
+    },
+    "marble_bust_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/marble_bust_01/model.gltf",
+      "git_blob": "670ecd9a1b9ee5d324a98557eccb7c263f7ee580",
+      "usage": [
+        "artifact/R3"
+      ]
+    },
+    "media_holder_artifact": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/media_holder_artifact/model.gltf",
+      "git_blob": "1846301eb059bfc51d4789b37c1fc2f68cf51105",
+      "usage": []
+    },
+    "media_holder_audio": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/media_holder_audio/model.gltf",
+      "git_blob": "aa21c7d465958088998f8bd708164a32b4853c7e",
+      "usage": []
+    },
+    "media_holder_book": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/media_holder_book/model.gltf",
+      "git_blob": "e5cfccac8052dfefdf6216d7ba05e34ba2da4df0",
+      "usage": []
+    },
+    "media_holder_film_poster": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/media_holder_film_poster/model.gltf",
+      "git_blob": "43e9dc1bf3d0a0a32c74ea4fd0e9a71fa1cfa537",
+      "usage": [
+        "corridor/R1",
+        "corridor/R2",
+        "corridor/R3"
+      ]
+    },
+    "media_holder_film_screen": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/media_holder_film_screen/model.gltf",
+      "git_blob": "a2c32051e5765ccfe78cae7c68d6c8c1eefd5491",
+      "usage": [
+        "cinema/R1",
+        "cinema/R2",
+        "cinema/R3"
+      ]
+    },
+    "metal_jug": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/metal_jug/model.gltf",
+      "git_blob": "888148ee861b94aff0271fb040c319b79add3271",
+      "usage": []
+    },
+    "metal_stool_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/metal_stool_01/model.gltf",
+      "git_blob": "9fa72db16bfc4f9d07d587a19d4e8e0ee4f0a058",
+      "usage": []
+    },
+    "metal_stool_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/metal_stool_02/model.gltf",
+      "git_blob": "a3263a4ea4fbf02918f5dbf034d11dd28b39a7c5",
+      "usage": [
+        "workshop/R1",
+        "workshop/R2",
+        "workshop/R3"
+      ]
+    },
+    "metal_stool_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/metal_stool_03/model.gltf",
+      "git_blob": "be05cf49754cd84f9531818d9939eed508469aba",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "metal_tool_chest": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/metal_tool_chest/model.gltf",
+      "git_blob": "b832f6aab24ec5d47e4f759dd577dbb39e7754b2",
+      "usage": [
+        "workshop/R1",
+        "workshop/R2",
+        "workshop/R3"
+      ]
+    },
+    "mid_century_lounge_chair": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/mid_century_lounge_chair/model.gltf",
+      "git_blob": "cf37efeab665e00e1ac7e1c05e0fb67aeda82ca8",
+      "usage": []
+    },
+    "modern_arm_chair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/modern_arm_chair_01/model.gltf",
+      "git_blob": "bad85ca3723c4747596b21895db85f1bc8744ff7",
+      "usage": []
+    },
+    "modern_wooden_cabinet": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/modern_wooden_cabinet/model.gltf",
+      "git_blob": "c2c1fae8a0bf61eef55f1fd0c0fd730c97ade9f0",
+      "usage": []
+    },
+    "modified_thermos": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/modified_thermos/model.gltf",
+      "git_blob": "219e72b933552efaf1b34816589b437ced4a529a",
+      "usage": [
+        "rest_social_lower/R3"
+      ]
+    },
+    "old_drill_press": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/old_drill_press/model.gltf",
+      "git_blob": "f0511c7565d1ad199e2a9fb4e0578e471c69eaa9",
+      "usage": [
+        "workshop/R3"
+      ]
+    },
+    "ornate_mirror_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/ornate_mirror_01/model.gltf",
+      "git_blob": "df44427b8e71966db96b0a394e39aeddcb35e520",
+      "usage": []
+    },
+    "painted_wooden_bench": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_bench/model.gltf",
+      "git_blob": "473bfc78c454284134a1963e06b8371c2aba193d",
+      "usage": []
+    },
+    "painted_wooden_cabinet_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_cabinet_02/model.gltf",
+      "git_blob": "75b31ee72b1fe8024da57ee87e063fa3731bb01b",
+      "usage": []
+    },
+    "painted_wooden_chair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_chair_01/model.gltf",
+      "git_blob": "af5286c1c49ace33e1c963864bea8276399e56e7",
+      "usage": []
+    },
+    "painted_wooden_chair_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_chair_02/model.gltf",
+      "git_blob": "35f18b93b9d3ffca435ebe2cec210f0d92faf8b2",
+      "usage": []
+    },
+    "painted_wooden_nightstand": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_nightstand/model.gltf",
+      "git_blob": "b887d40d81eac85c9b798f0b815dc821ce0de3cd",
+      "usage": [
+        "guest_miu/R1",
+        "guest_vampire/R1"
+      ]
+    },
+    "painted_wooden_stool": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_stool/model.gltf",
+      "git_blob": "83b9cd2b3ce53013159960b66a60a1fb4e9b977d",
+      "usage": []
+    },
+    "painted_wooden_table": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/painted_wooden_table/model.gltf",
+      "git_blob": "f1ce0d04201116ec15f4b83fd0b29ddc0016a07a",
+      "usage": [
+        "rest_social_lower/R3"
+      ]
+    },
+    "planter_box_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/planter_box_01/model.gltf",
+      "git_blob": "f36b655f2fd373e5f33059325a19edd22a767f7d",
+      "usage": [
+        "guest_centaur/R2"
+      ]
+    },
+    "planter_box_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/planter_box_02/model.gltf",
+      "git_blob": "062dddbd9261361ad60a989ac59e0a3000fae06c",
+      "usage": []
+    },
+    "planter_box_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/planter_box_03/model.gltf",
+      "git_blob": "1288ff4ad49729ff879f69f638a18d9f9dcaef8d",
+      "usage": []
+    },
+    "plastic_monobloc_chair_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/plastic_monobloc_chair_01/model.gltf",
+      "git_blob": "a416d1b64db04951618277d6b5eea1305a5e389c",
+      "usage": []
+    },
+    "portable_cassette_player": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/portable_cassette_player/model.gltf",
+      "git_blob": "f1c46ad8e472b9499fdbd0d057e92d71b50f7f30",
+      "usage": [
+        "music/R1",
+        "music/R2",
+        "music/R3"
+      ]
+    },
+    "postcard_set_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/postcard_set_01/model.gltf",
+      "git_blob": "5c0ae9d1ec21b21e64669e85001e7ca669cdfb6b",
+      "usage": []
+    },
+    "pot_enamel_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/pot_enamel_01/model.gltf",
+      "git_blob": "2b1ad70e16ba6a583430d19805ce38003958ee1d",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "potted_plant_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/potted_plant_01/model.gltf",
+      "git_blob": "5e94ab009bab0c9858923e81bea06c7ecdb1aa3a",
+      "usage": [
+        "study/R3"
+      ]
+    },
+    "potted_plant_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/potted_plant_02/model.gltf",
+      "git_blob": "b8fda087c12373957b3e5981ac4c5c9546d57968",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "potted_plant_04": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/potted_plant_04/model.gltf",
+      "git_blob": "b2c7e38beb46dec92c828850cbfe20fa6f6501d8",
+      "usage": [
+        "guest_miu/R1"
+      ]
+    },
+    "projector_screen": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/projector_screen/model.gltf",
+      "git_blob": "05d67818259ed76d2cae49bb7144e6ca597bed2e",
+      "usage": []
+    },
+    "round_wooden_table_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/round_wooden_table_01/model.gltf",
+      "git_blob": "f08507631e9744c3bf9b54b3cfcb57e6666cbc5d",
+      "usage": []
+    },
+    "round_wooden_table_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/round_wooden_table_02/model.gltf",
+      "git_blob": "9d31d401da6e78fa772c87a3edee94b0824672c8",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "rubber_duck_toy": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/rubber_duck_toy/model.gltf",
+      "git_blob": "a6aab07038ad50055f6d78ee87c365ff7a30c11a",
+      "usage": []
+    },
+    "russian_food_cans_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/russian_food_cans_01/model.gltf",
+      "git_blob": "8c145cf9ef1497386999ff47a5e631896f0bee48",
+      "usage": []
+    },
+    "scandinavian_masonry_heater": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/scandinavian_masonry_heater/model.gltf",
+      "git_blob": "e489eb6b1384be917aea823c9854a5444f12a371",
+      "usage": []
+    },
+    "seadogs_compass": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/seadogs_compass/model.gltf",
+      "git_blob": "7b0eba36650312b9dcb3b847656d804b04bf3573",
+      "usage": []
+    },
+    "side_table_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/side_table_01/model.gltf",
+      "git_blob": "8a25a7e162d28ae0a751848f30979c69da13bef5",
+      "usage": [
+        "artifact/R3",
+        "library/R3",
+        "rest_social_lower/R3"
+      ]
+    },
+    "sofa_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/sofa_02/model.gltf",
+      "git_blob": "b3879c45e8aa58809e014981af66457553620b4d",
+      "usage": [
+        "cinema/R1",
+        "cinema/R2",
+        "cinema/R3",
+        "common/R1",
+        "common/R2"
+      ]
+    },
+    "sofa_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/sofa_03/model.gltf",
+      "git_blob": "f915e06e7e5bc680c7f57d54e974767b277a6792",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "standing_chalkboard_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/standing_chalkboard_01/model.gltf",
+      "git_blob": "08344bbad30c324a9656a5d2866bf794e94b0b14",
+      "usage": []
+    },
+    "standing_picture_frame_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/standing_picture_frame_01/model.gltf",
+      "git_blob": "9daac801265023ea800c22baee08c9a321f0562a",
+      "usage": []
+    },
+    "standing_picture_frame_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/standing_picture_frame_02/model.gltf",
+      "git_blob": "6c1bfd2584f6132f6931304d62480dce7503ca6b",
+      "usage": []
+    },
+    "steel_frame_shelves_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/steel_frame_shelves_01/model.gltf",
+      "git_blob": "875d9bd1e8389e8d3a04e1024b241376235e80b5",
+      "usage": [
+        "artifact/R2",
+        "artifact/R3",
+        "library/R3"
+      ]
+    },
+    "steel_frame_shelves_03": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/steel_frame_shelves_03/model.gltf",
+      "git_blob": "be5f6aae3b5e057ff6ad0b360fa3ae19d25de346",
+      "usage": []
+    },
+    "sungka_board": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/sungka_board/model.gltf",
+      "git_blob": "04e8d3795c6110a2f2ff90220c575b49a7797545",
+      "usage": []
+    },
+    "sungka_board_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/sungka_board_02/model.gltf",
+      "git_blob": "7fe0159056231b61c6e2ff41cbdb34c23543f96b",
+      "usage": []
+    },
+    "tea_set_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/tea_set_01/model.gltf",
+      "git_blob": "c765e4537534dfe31cb742e176460b63bbfdc0bf",
+      "usage": [
+        "rest_social_upper/R3"
+      ]
+    },
+    "throw_pillows_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/throw_pillows_01/model.gltf",
+      "git_blob": "912608ea9e232ced5cd1a87f3e9af6a0d30c30a6",
+      "usage": []
+    },
+    "tool_cart": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/tool_cart/model.gltf",
+      "git_blob": "ed3d2fb1623ee414a5427b04996cbed40469be97",
+      "usage": [
+        "workshop/R3"
+      ]
+    },
+    "treasure_chest": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/treasure_chest/model.gltf",
+      "git_blob": "6faceb4ea72d55d8ef6bdaf45fe752a8f0512117",
+      "usage": []
+    },
+    "vintage_cabinet_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_cabinet_01/model.gltf",
+      "git_blob": "9b7592b9494790dc8ce7d96cd3dbe105fa7380e1",
+      "usage": [
+        "guest_centaur/R2",
+        "kitchen/R3"
+      ]
+    },
+    "vintage_day_bed": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_day_bed/model.gltf",
+      "git_blob": "ba6a1334ef874534ea6fb1efce46e072e000d24c",
+      "usage": [
+        "guest_vampire/R1",
+        "rest/R1",
+        "rest/R2",
+        "rest/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "vintage_electric_kettle": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_electric_kettle/model.gltf",
+      "git_blob": "bd3a2a5c3742ce3abf4c068519f5260dccff610a",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "vintage_grandfather_clock_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_grandfather_clock_01/model.gltf",
+      "git_blob": "9ac1bcb93593cd7e1f0ec1e2a027cdf0e678d012",
+      "usage": [
+        "common/R3"
+      ]
+    },
+    "vintage_microwave": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_microwave/model.gltf",
+      "git_blob": "759bf80e255a923cbfd6bdc1c369804dd73bfb7e",
+      "usage": [
+        "kitchen/R3"
+      ]
+    },
+    "vintage_oil_lamp": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_oil_lamp/model.gltf",
+      "git_blob": "b2244db4d9f9e41f1eefccc72a1ecef2152a68d6",
+      "usage": [
+        "library/R3"
+      ]
+    },
+    "vintage_suitcase": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_suitcase/model.gltf",
+      "git_blob": "b27ce71559c3fe5ef580c63c1fbffbc3cdef6b69",
+      "usage": []
+    },
+    "vintage_telephone_wall_clock": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_telephone_wall_clock/model.gltf",
+      "git_blob": "4012c5019165d152f167f1f847d9a42fa1da74d2",
+      "usage": []
+    },
+    "vintage_wooden_drawer_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/vintage_wooden_drawer_01/model.gltf",
+      "git_blob": "343c91b528c58a478db83bcf7f4e57dda40b24d8",
+      "usage": []
+    },
+    "wall_clock": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wall_clock/model.gltf",
+      "git_blob": "aa817ba2e5a66e493626b9b6a4924efc7eb9c6e8",
+      "usage": [
+        "arrival/R1",
+        "arrival/R2",
+        "arrival/R3"
+      ]
+    },
+    "wicker_basket_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wicker_basket_01/model.gltf",
+      "git_blob": "10692161dc3029e9f9f55d95b3197762f09bc9e7",
+      "usage": []
+    },
+    "wicker_basket_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wicker_basket_02/model.gltf",
+      "git_blob": "c610fcc46b5655b4695952b0039ada95b93f60b7",
+      "usage": []
+    },
+    "wine_bottles_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wine_bottles_01/model.gltf",
+      "git_blob": "d658b4630f09163ff786263220ee8c31080510cb",
+      "usage": [
+        "common/R3",
+        "kitchen/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3"
+      ]
+    },
+    "wooden_bookshelf_worn": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+      "git_blob": "e2f607368ea5f0afd7c47576c98a686034abdf8c",
+      "usage": [
+        "artifact/R3",
+        "library/R1",
+        "library/R2",
+        "library/R3",
+        "study/R2",
+        "study/R3"
+      ]
+    },
+    "wooden_bowl_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_bowl_01/model.gltf",
+      "git_blob": "d408351068056938e9977bf921c4e7f01539317a",
+      "usage": [
+        "guest_centaur/R2"
+      ]
+    },
+    "wooden_bowl_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_bowl_02/model.gltf",
+      "git_blob": "31c768c55234821d91d9b2ad1936955cb2bd30a8",
+      "usage": []
+    },
+    "wooden_candlestick": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_candlestick/model.gltf",
+      "git_blob": "44e9837b6ca639e4e7836b7bb3b21519c65b3fb6",
+      "usage": [
+        "guest_vampire/R1"
+      ]
+    },
+    "wooden_display_shelves_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_display_shelves_01/model.gltf",
+      "git_blob": "d9beb127422d3e4544c04645ef19b132413aa5c4",
+      "usage": [
+        "artifact/R1",
+        "artifact/R2",
+        "artifact/R3",
+        "library/R2",
+        "library/R3",
+        "music/R2",
+        "music/R3",
+        "workshop/R3"
+      ]
+    },
+    "wooden_lantern_01": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_lantern_01/model.gltf",
+      "git_blob": "848d66f9573b0f9ef36284860d6c38a564039c92",
+      "usage": [
+        "cinema/R3",
+        "guest_centaur/R2",
+        "music/R3"
+      ]
+    },
+    "wooden_picnic_table": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_picnic_table/model.gltf",
+      "git_blob": "17707fb664fcdbf8f459feb6b50e2544cf234583",
+      "usage": []
+    },
+    "wooden_stool_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_stool_02/model.gltf",
+      "git_blob": "634f7ea9ecd1d3423bc050199e9bda98691f4fb9",
+      "usage": []
+    },
+    "wooden_table_02": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/wooden_table_02/model.gltf",
+      "git_blob": "9db44a171d0c7cdcf1494bae67cc2028f0a0ef3a",
+      "usage": [
+        "artifact/R3",
+        "cinema/R2",
+        "cinema/R3",
+        "common/R2",
+        "common/R3",
+        "guest_centaur/R1",
+        "kitchen/R3",
+        "music/R3",
+        "rest_social_lower/R3",
+        "rest_social_upper/R3",
+        "study/R1",
+        "study/R2",
+        "study/R3",
+        "workshop/R1",
+        "workshop/R2",
+        "workshop/R3"
+      ]
+    },
+    "worn_metal_rack": {
+      "path": "dragon_house_clean/assets/teea008_review/decor_bank/worn_metal_rack/model.gltf",
+      "git_blob": "f4a8dc89ca9b6e3b22d9a9d869f4ff0f6e64ff3b",
+      "usage": [
+        "artifact/R3",
+        "workshop/R1",
+        "workshop/R2",
+        "workshop/R3"
+      ]
+    }
+  },
+  "older_assets_missing_exact_git_blob": [
+    {
+      "path": "dragon_house_clean/assets/manifests/SHA256SUMS.txt",
+      "git_blob": "255479a6a71bfd597088b9773b4a5946a6a87d87",
+      "tracked_bytes": 301419,
+      "path_exists_now": true
+    },
+    {
+      "path": "dragon_house_clean/assets/manifests/asset_index.jsonl",
+      "git_blob": "862f6aa0664252dc1fd8685af1d0ee09a5af7ab0",
+      "tracked_bytes": 2277865,
+      "path_exists_now": true
+    },
+    {
+      "path": "dragon_house_clean/assets/manifests/bank_coverage.json",
+      "git_blob": "a95d28c45801e71fdfc12a1664a17a76a37b3b89",
+      "tracked_bytes": 1372559,
+      "path_exists_now": true
+    },
+    {
+      "path": "dragon_house_clean/assets/manifests/media_preview_index.json",
+      "git_blob": "fe4dd3d75901b049f938501d903d1827a395dcef",
+      "tracked_bytes": 26368,
+      "path_exists_now": true
+    }
+  ],
+  "notes": "Git tree only; Git LFS pointers are not binary validation. External archives and same-repo historical branches not covered."
+}

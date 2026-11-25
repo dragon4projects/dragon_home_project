@@ -1,0 +1,3 @@
+# Canonical consolidation
+
+Merge the RC2 owner visual branch into the later media/wall/artifact line. Retain newer facade, levitation, support projection, measured 0.18m cube geometry, visibility, film/music duration and wall-placement logic. Integrate RC2 local door registry, source-hash master lookup and shelf snap; preserve dynamic conditional dressing on unoccupied slots. Remove decorative empty gallery cubes. RC2 test adapted to the later scene node names and cube renderer. RC2 source report remains historical; no private note text added. No Godot runtime verification yet. The merge is not a release.

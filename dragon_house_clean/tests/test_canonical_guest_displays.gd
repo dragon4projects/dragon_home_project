@@ -34,7 +34,7 @@ func run()->void:
 			assert(float(item["bounds_min_m"][1])==float(slot["xyz"][1]))
 			assert(float(item["uniform_scale"])==0.9)
 			cubes+=1
-	assert(cubes==3)
+	assert(cubes==0) # physical artifacts own the cubes, not empty substitutes
 	var library:Dictionary=world.get_room(-6,0)
 	assert(not nav.book_slots(library).is_empty())
 	assert(not nav.artifact_slots(gallery).is_empty())

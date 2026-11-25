@@ -182,6 +182,9 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 		meta_label.text += ("\n" if meta_label.text != "" else "") + 			"Для этой записи пока нет локального полнотекстового содержимого или превью."
 	if p_category in ["artifacts","paintings","posters","cups","creatures"] and preview.texture == null:
 		meta_label.text += ("\n" if meta_label.text != "" else "") + 			"Для этого объекта пока нет локального превью."
+	if bool(item.get("canonical_cube_master",false)) and preview.texture!=null:
+		meta_label.text=""
+	meta_label.visible=meta_label.text!=""
 	visible = true
 	return true
 
