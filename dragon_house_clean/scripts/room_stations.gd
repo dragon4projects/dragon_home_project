@@ -359,6 +359,68 @@ func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Di
 	return {"actor":_claim(room,int(indexes[0]),points[int(indexes[0])]),
 		"partner":_claim(room,int(indexes[1]),points[int(indexes[1])])}
 
+# A group uses only existing unobstructed standing stations. No virtual seats.
+func group_geometry(room:Dictionary,positions:Array)->bool:
+	if positions.size()<3 or positions.size()>6:return false
+	var center:=Vector2.ZERO
+	for point in positions:
+		center+=point
+	center/=float(positions.size())
+	var angles:Array=[]
+	for i in range(positions.size()):
+		var p:Vector2=positions[i]
+		var v:Vector2=p-center
+		if v.length()<0.25 or v.length()>2.0:return false
+		angles.append(v.angle())
+		for j in range(i):
+			var q:Vector2=positions[j]
+			if p.distance_to(q)<0.65 or p.distance_to(q)>3.6:return false
+			if candidate_navigation!=null and candidate_navigation.has_layout(room) and not candidate_navigation.segment_clear(room,p,q):return false
+	angles.sort()
+	for i in range(angles.size()):
+		var gap:float=float(angles[(i+1)%angles.size()])-float(angles[i])
+		if i==angles.size()-1:gap+=TAU
+		if gap>=PI-0.05:return false
+	return true
+
+func group_claims(world,actors:Array,room:Dictionary)->Dictionary:
+	if actors.size()<3 or actors.size()>6 or room.is_empty() or str(room.get("privacy",""))!="public":return {}
+	var ids:Array=[]
+	for actor in actors:
+		var id:String=str(actor.get("id",""))
+		if id=="" or ids.has(id) or not world.is_accessible(room,id):return {}
+		ids.append(id)
+	var used:Dictionary=used_slots(world,str(room["id"]),ids)
+	var points:Array=layout_for_world(world,room)
+	var available:Array=[]
+	for i in range(mini(points.size(),capacity(room))):
+		var spot:Dictionary=points[i]
+		if not used.has(i) and str(spot.get("kind",""))=="standing" and str(spot.get("furniture_id",""))=="":available.append(i)
+	if available.size()<actors.size():return {}
+	# Bound work by authored capacity (max 16). A triangle must already
+	# surround its center; larger circles extend it only if still valid.
+	for a in range(available.size()-2):
+		for b in range(a+1,available.size()-1):
+			for c in range(b+1,available.size()):
+				var selected:Array=[available[a],available[b],available[c]]
+				var pos:Array=[points[selected[0]]["offset"],points[selected[1]]["offset"],points[selected[2]]["offset"]]
+				if not group_geometry(room,pos):continue
+				for index in available:
+					if selected.size()>=actors.size():break
+					if selected.has(index):continue
+					var trial:Array=pos.duplicate()
+					trial.append(points[index]["offset"])
+					if group_geometry(room,trial):
+						selected.append(index)
+						pos=trial
+				if selected.size()!=actors.size():continue
+				var claims:Dictionary={}
+				for i in range(ids.size()):
+					var ix:int=int(selected[i])
+					claims[ids[i]]=_claim(room,ix,points[ix])
+				return claims
+	return {}
+
 func can_reserve(world, room: Dictionary, pair_needed: bool = false) -> bool:
 	if available_count(world,room)<(2 if pair_needed else 1):
 		return false
