@@ -1494,7 +1494,12 @@ func make_room(group: Dictionary) -> void:
 			add_room_overview_cues(overview,group)
 	if facade_only:
 		# Private/closed-guest interiors are facade-only; no hidden room is materialized.
-		box(n,Vector3(0,1.4,1.05),Vector3(2.08,2.8,0.22),palette["wood"])
+		# Solid facade sits behind the independent front transit lane (z >= 1.35).
+		# No private interior geometry or stations are materialized.
+		var facade:=box(n,Vector3(0,1.50,0.99),Vector3(span-0.08,3.0,0.18),palette["rock"])
+		facade.name="PrivateFacadeWall"
+		var door:=box(n,Vector3(0,1.4,1.105),Vector3(2.08,2.8,0.16),palette["wood"])
+		door.name="FacadeDoor"
 		box(n,Vector3(0.82,1.33,1.2),Vector3(0.12,0.12,0.07),palette["bronze"])
 		var private_room:Dictionary=group["cells"][0]
 		var owner_id:String=str(private_room.get("owner_id",""))
@@ -1504,13 +1509,24 @@ func make_room(group: Dictionary) -> void:
 			sign="Резерв"
 		var door_label := label3(n,sign,Vector3(0,3.34,1.0),24,Color("#d4bdb0"))
 		door_label.name = "RoomRoofLabel"
-		if t=="private" and door_registry.has_public_note(owner_id):
-			# Public framed note is a clickable threshold object, never interior access.
-			box(n,Vector3(-0.58,1.67,1.19),Vector3(0.52,0.70,0.055),palette["bronze"])
-			box(n,Vector3(-0.58,1.67,1.225),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
+		if t=="private" and owner_id!="":
+			# The name and paper belong on the wall beside the door, not on its leaf.
+			var sign_x:float=-(span*0.5+1.04)*0.5
+			var sign_width:float=minf(1.18,span*0.5-1.12)
+			var plaque:=box(n,Vector3(sign_x,2.25,1.115),Vector3(sign_width,0.34,0.055),palette["wood"])
+			plaque.name="DoorNamePlaque"
+			var wall_label:=label3(n,sign,Vector3(sign_x,2.25,1.155),24,Color("#eadfc8"))
+			wall_label.name="DoorWallName"
+			wall_label.billboard=BaseMaterial3D.BILLBOARD_DISABLED
+			wall_label.pixel_size=minf(0.0037,sign_width/(24.0*maxf(1.0,float(sign.length())*0.65)))
+			# Every assigned room has a sheet; missing notes stay genuinely blank.
+			var frame:=box(n,Vector3(sign_x,1.67,1.115),Vector3(0.52,0.70,0.055),palette["bronze"])
+			frame.name="DoorNoteFrame"
+			var paper:=box(n,Vector3(sign_x,1.67,1.15),Vector3(0.39,0.55,0.020),Color("#eadfc8"),true)
+			paper.name="DoorNotePaper"
 			var note_anchor:=Node3D.new()
 			note_anchor.name="DoorPublicNoteAnchor"
-			note_anchor.position=Vector3(-0.58,1.67,1.27)
+			note_anchor.position=Vector3(sign_x,1.67,1.17)
 			n.add_child(note_anchor)
 			door_note_anchors[str(private_room["id"])]=note_anchor
 	else:
@@ -2455,9 +2471,10 @@ func open_door_note(room_id:String)->bool:
 	if room.is_empty() or str(room.get("privacy","public"))!="door_only":
 		return false
 	var owner_id:String=str(room.get("owner_id",""))
-	var body:String=door_registry.note_text(owner_id)
-	if body=="":
+	if owner_id=="":
 		return false
+	# Registry reads explicitly public notes only; absent notes open an empty sheet.
+	var body:String=door_registry.note_text(owner_id)
 	door_note_title.text=door_registry.sign_text(owner_id,world.read_resident_profiles())
 	door_note_text.text=body
 	door_note_text.scroll_to_line(0)
@@ -2467,7 +2484,7 @@ func open_door_note(room_id:String)->bool:
 func door_note_at_screen(point:Vector2)->String:
 	if camera==null:
 		return ""
-	var best:=44.0
+	var best:=INF
 	var found:=""
 	for room_id in door_note_anchors:
 		var anchor:Node3D=door_note_anchors[room_id]
@@ -2476,6 +2493,15 @@ func door_note_at_screen(point:Vector2)->String:
 		if camera.is_position_behind(anchor.global_position):
 			continue
 		var screen:Vector2=camera.unproject_position(anchor.global_position)
+		# Hit the projected paper/frame, not an oversized 44-pixel circle that
+		# can steal adjacent room clicks at whole-house zoom.
+		var bounds:=Rect2(screen,Vector2.ZERO)
+		for dx in [-0.26,0.26]:
+			for dy in [-0.35,0.35]:
+				var corner:Vector3=anchor.global_position+Vector3(float(dx),float(dy),0)
+				bounds=bounds.expand(camera.unproject_position(corner))
+		if not bounds.grow(2.0).has_point(point):
+			continue
 		var distance:float=screen.distance_to(point)
 		if distance<best:
 			best=distance
