@@ -635,6 +635,7 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 		if actor.is_empty() or str(actor.get("social_session_id",""))!=sid:continue
 		actor.erase("social_session_id")
 		actor.erase("partner_id")
+		actor.erase("social_facing_xz")
 		if completed:
 			var habits:Dictionary=actor.get("habits",{})
 			var habit:String="TALK_GROUP" if str(row.get("kind","pair"))=="group" else "TALK_PAIR"
@@ -655,11 +656,20 @@ func _cancel_pair_for(actor:Dictionary,reason:String)->void:
 	var partner_id:String=str(actor.get("partner_id",""))
 	actor.erase("social_session_id")
 	actor.erase("partner_id")
+	actor.erase("social_facing_xz")
 	if str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"]:_reset_pair_actor(actor)
 	var partner:Dictionary=world.residents.get(partner_id,{})
 	if not partner.is_empty() and not partner.has("social_session_id") and str(partner.get("partner_id",""))==str(actor.get("id","")):
 		partner.erase("partner_id")
 		if str(partner.get("intent",""))=="TALK_PAIR":_reset_pair_actor(partner)
+
+# Explicit departure API for future encounter/owner controls. No session is
+# created or completion credited by a leave request.
+func leave_social_session(actor_id:String)->bool:
+	var actor:Dictionary=world.residents.get(actor_id,{})
+	if actor.is_empty() or _pair_session(actor).is_empty():return false
+	_cancel_pair_for(actor,"VOLUNTARY_LEAVE")
+	return true
 
 func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 	var sid:String=str(actor.get("social_session_id",""))
@@ -1230,6 +1240,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 	if candidate_navigation!=null and str(point.get("kind",""))=="station":
 		var destination:Dictionary=world.room_by_id(str(point.get("room_id","")))
 		if not world.is_accessible(destination,str(actor["id"])):
+			_cancel_pair_for(actor,"DESTINATION_ACCESS_REVOKED")
 			stations.release(actor)
 			end_catalog_browse(actor)
 			end_concrete_media(actor)
