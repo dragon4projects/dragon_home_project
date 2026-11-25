@@ -250,6 +250,8 @@ func borrow(actor_id: String, book_id: String, now: int = 0) -> bool:
 	var book: Dictionary = _lookup("books", book_id)
 	if not actor.get("active", false) or book.is_empty() or not bool(book.get("physical", true)):
 		return false
+	for other in world.media.get("books",[]):
+		if str(other.get("holder_id",""))==actor_id:return false
 	if not _book_copy_available(actor_id,book) or not book_eligible(actor_id,book,float(now)):
 		return false
 	if str(_reading_state(actor_id).get("wait_work_id",""))==book_work_id(book):_set_wait(actor_id,"")
@@ -374,7 +376,7 @@ func _rolling_book_returns(now:float)->int:
 
 func _book_return_slot(id:String,home:String)->Dictionary:
 	var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
-	var used:Dictionary={}
+	var used:Dictionary=_book_return_reservations(id)
 	for other in assignments:
 		if str(other)==id:continue
 		var entry:Dictionary=assignments[other]
@@ -933,14 +935,42 @@ func _book_support_free(book_id:String,room_id:String,slot:Dictionary)->bool:
 	var p:Array=slot.get("xyz",[])
 	return p.size()==3 and world.housekeeping_slot_free({"id":book_id},room_id,[p[0],p[2]],str(slot.get("id","")))
 
+# Reservations are shared with housekeeping and final placement.
+func _book_return_reservations(ignore_book:String="")->Dictionary:
+	var occupied:Dictionary={}
+	for actor in world.residents.values():
+		if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or str(actor.get("book_task_stage",""))!="return" or str(actor.get("phase",""))!="travel":continue
+		var book_id:String=str(actor.get("book_task_id",""))
+		if book_id=="" or book_id==ignore_book:continue
+		var book:Dictionary=_lookup("books",book_id)
+		if str(book.get("holder_id",""))!=str(actor.get("id","")):continue
+		var room_id:String=str(actor.get("book_return_room",""))
+		var slot:String=str(actor.get("book_return_slot",""))
+		if room_id!="" and slot!="":occupied[room_id+"|"+slot]=str(actor["id"])
+	return occupied
+
+func book_return_claim_valid(actor:Dictionary)->bool:
+	if candidate_navigation==null:return false
+	var id:String=str(actor.get("book_task_id",""))
+	var room_id:String=str(actor.get("book_return_room",""))
+	var wanted:String=str(actor.get("book_return_slot",""))
+	if id=="" or wanted=="" or not world.is_accessible(world.room_by_id(room_id),str(actor.get("id",""))):return false
+	if _book_return_reservations(id).has(room_id+"|"+wanted):return false
+	var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
+	for other in assignments:
+		var entry:Dictionary=assignments[other]
+		if str(other)!=id and str(entry.get("room_id",""))==room_id and str(entry.get("slot_id",""))==wanted:return false
+	for slot in candidate_navigation.book_slots(world.room_by_id(room_id)):
+		if str(slot["id"])==wanted and str(slot["station_id"])==str(actor.get("station_anchor_id","")) and _book_support_free(id,room_id,slot):return true
+	return false
+
 func free_book_slot(book_id:String,room:Dictionary)->Dictionary:
 	if candidate_navigation==null or not world.public_cutaway_allowed(room):return {}
 	var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
 	var occupied:Dictionary={}
-	for actor in world.residents.values():
-		if str(actor.get("book_task_id",""))==book_id:continue
-		if str(actor.get("book_task_stage",""))=="return" and str(actor.get("book_return_room",""))==str(room["id"]):
-			occupied[str(actor.get("book_return_slot",""))]=true
+	for key in _book_return_reservations(book_id):
+		var prefix:String=str(room["id"])+"|"
+		if str(key).begins_with(prefix):occupied[str(key).trim_prefix(prefix)]=true
 	for id in assignments:
 		if str(id)==book_id:continue
 		var entry:Dictionary=assignments[id]
@@ -960,7 +990,7 @@ func return_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
 			slot={}
 			for candidate in candidate_navigation.book_slots(world.room_by_id(room_id)):
 				if str(candidate["id"])!=wanted:continue
-				var used:bool=false
+				var used:bool=_book_return_reservations(book_id).has(room_id+"|"+wanted)
 				for other in world.runtime_state.get("teea008_book_slot_assignments",{}):
 					var entry:Dictionary=world.runtime_state["teea008_book_slot_assignments"][other]
 					if str(other)!=book_id and str(entry.get("room_id",""))==room_id and str(entry.get("slot_id",""))==wanted:used=true
