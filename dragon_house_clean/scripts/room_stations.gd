@@ -491,6 +491,11 @@ func migrate_legacy_positions(world) -> int:
 func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary,intent:String)->Dictionary:
 	var claim:Dictionary=_claim(room,index,spot)
 	var kind:String=str(spot.get("kind","standing"))
+	if intent in ["FETCH_BOOK","RETURN_BOOK"]:
+		if str(room.get("type",""))!="library" or kind!="standing" or not str(spot.get("candidate_asset_id","")).contains("shelf") or spot.get("candidate_supports",[]).is_empty():
+			return {}
+		claim["pose_hint"]="VIEW"
+		return claim
 	if intent in ["REST","SLEEP","READ_BOOK","TALK_PAIR","LISTEN_MUSIC"]:
 		var contact:Dictionary={}
 		if intent=="SLEEP" or kind=="seat" or (intent=="REST" and kind=="floor_rest"):

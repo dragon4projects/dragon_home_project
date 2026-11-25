@@ -38,6 +38,7 @@ const HUMAN_STATUS := {
 }
 const TRAVEL_STATUS := {
 	"REST": "идёт отдыхать", "SLEEP": "идёт спать",
+	"FETCH_BOOK":"идёт к книжной полке", "RETURN_BOOK":"несёт книгу обратно на полку",
 	"WORK_CREATE": "идёт работать", "READ_BOOK": "идёт читать",
 	"BROWSE_BOOK_CATALOG": "идёт к книжному каталогу",
 	"BROWSE_FILMS": "идёт выбирать фильм", "BROWSE_AUDIO": "идёт к аудиотеке",
@@ -202,9 +203,13 @@ func refresh_changed_station_claims() -> int:
 			continue
 		var book_id:String=str(actor.get("held_book",""))
 		if book_id!="":
-			media_runtime.return_book(str(id),book_id)
+			if candidate_navigation!=null:
+				media_runtime.drop_book(str(id),book_id,int(maxf(1.0,clock)))
+			else:
+				media_runtime.return_book(str(id),book_id)
 			actor.erase("held_book")
 		end_concrete_media(actor)
+		_clear_book_task(actor)
 		var partner_id:String=str(actor.get("partner_id",""))
 		actor.erase("partner_id")
 		if partner_id!="" and world.residents.has(partner_id):
@@ -260,7 +265,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores["WORK_CREATE"] += 0.45
 	if actor["id"] == "MANJKA":
 		return {"REST": 0.2 + rest, "PURPOSEFUL_EXPLORE": 1.0 + curiosity}
-	if media_runtime.available_books().is_empty():
+	if (media_runtime.available_shelf_books(str(actor["id"])) if candidate_navigation!=null else media_runtime.available_books()).is_empty():
 		scores.erase("READ_BOOK")
 	if world.media.get("books",[]).is_empty():
 		scores.erase("BROWSE_BOOK_CATALOG")
@@ -437,6 +442,21 @@ func reconcile_concrete_media() -> int:
 			continue
 		var active_id:String=str(actor.get("activity_media_id",""))
 		var held_book:String=str(actor.get("held_book",""))
+		if candidate_navigation!=null and actor.has("book_task_stage"):
+			var stage:String=str(actor["book_task_stage"])
+			var book:Dictionary=media_runtime._lookup("books",str(actor.get("book_task_id","")))
+			var valid:bool=not book.is_empty() and ((stage=="fetch" and str(book.get("holder_id",""))=="" and str(book.get("location_room_id",""))==str(actor.get("book_source_room","")) and str(actor.get("phase",""))=="travel") or (stage in ["read","return","return_wait"] and str(book.get("holder_id",""))==str(id)))
+			if not valid:
+				_clear_book_task(actor)
+				actor.erase("held_book")
+				end_concrete_media(actor)
+				stations.release(actor)
+				actor["phase"]="idle"
+				actor["waypoints"]=[]
+				actor["waypoint_index"]=0
+				actor["until"]=clock
+				fixed+=1
+				continue
 		if active_id=="" and held_book!="":
 			var book:Dictionary=media_runtime._lookup("books",held_book)
 			if not book.is_empty() and str(book.get("holder_id",""))==str(id):
@@ -480,6 +500,9 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		return
 	var room: Dictionary = task["room"]
 	var intent: String = str(task["intent"])
+	if candidate_navigation!=null and intent=="READ_BOOK":
+		_begin_book_task(actor,room)
+		return
 	var route: Array = world.find_route(actor["room_id"], room["id"], actor["id"])
 	if route.is_empty():
 		actor["until"] = clock + 15.0
@@ -708,8 +731,9 @@ func _move(actor: Dictionary, delta: float) -> void:
 			end_catalog_browse(actor)
 			end_concrete_media(actor)
 			if actor.has("held_book"):
-				media_runtime.return_book(str(actor["id"]),str(actor["held_book"]))
+				media_runtime.drop_book(str(actor["id"]),str(actor["held_book"]),int(maxf(1.0,clock)))
 				actor.erase("held_book")
+			_clear_book_task(actor)
 			actor["phase"]="idle"
 			actor["waypoints"]=[]
 			actor["waypoint_index"]=0
@@ -746,6 +770,11 @@ func _move(actor: Dictionary, delta: float) -> void:
 			var actor_id := str(actor.get("id",""))
 			_advance_needs(actor,life_scheduler.consume_elapsed(actor_id,clock))
 			actor["phase"] = "perform"
+			if candidate_navigation!=null and str(actor.get("book_task_stage","")) in ["fetch","return"]:
+				_arrive_book_shelf(actor)
+				return
+			if candidate_navigation!=null and str(actor.get("book_task_stage",""))=="read":
+				actor["book_read_started"]=clock
 			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
 			moving_ids.erase(actor_id)
 			life_scheduler.schedule_at(actor_id,float(actor["until"]),"ACTION_COMMITMENT")
@@ -773,6 +802,10 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		if partner.get("partner_id","") == id:
 			partner.erase("partner_id")
 			wake_actor(partner_id,"PAIR_RELEASED")
+	if candidate_navigation!=null and actor.has("book_task_stage"):
+		if _continue_book_task(actor):
+			_schedule_actor(actor,"BOOK_TASK")
+			return
 	if actor.get("held_book","") != "":
 		var book_id := str(actor["held_book"])
 		media_runtime.read(id,book_id,25.0)
@@ -842,3 +875,116 @@ func _prepare_candidate_positions()->void:
 			actor["until"]=world.sim_clock
 			actor.erase("partner_id")
 	world.runtime_state["teea008_navigation_initialized"]=true
+
+func _clear_book_task(actor:Dictionary)->void:
+	for key in ["book_task_stage","book_task_id","book_source_room","book_read_room","book_read_started"]:
+		actor.erase(key)
+
+func _book_route(actor:Dictionary,room:Dictionary,intent:String)->bool:
+	if room.is_empty() or not world.is_accessible(room,str(actor["id"])):
+		return false
+	var claim:Dictionary=stations.single(world,actor,room,intent)
+	if claim.is_empty():
+		return false
+	var route:Array=world.find_route(str(actor["room_id"]),str(room["id"]),str(actor["id"]))
+	var points:Array=locomotion.build_waypoints(world,actor,route,intent,claim["offset"],float(claim.get("approach_z",0.95)))
+	if points.is_empty():
+		return false
+	stations.release(actor)
+	stations.commit_claim(actor,claim)
+	actor["intent"]=intent
+	actor["route"]=route
+	actor["waypoints"]=points
+	actor["waypoint_index"]=0
+	actor["phase"]="travel"
+	actor["until"]=clock+30.0+float(route.size())*2.0
+	moving_ids[str(actor["id"])]=true
+	_schedule_actor(actor,"BOOK_ROUTE")
+	return true
+
+func _begin_book_task(actor:Dictionary,reading_room:Dictionary)->void:
+	if actor.has("held_book"):
+		actor["until"]=clock+8.0
+		return
+	_clear_book_task(actor)
+	var options:Array=media_runtime.available_shelf_books(str(actor["id"]))
+	for book in options:
+		var source:Dictionary=world.room_by_id(str(book["location_room_id"]))
+		if not candidate_navigation.has_layout(source):
+			continue
+		if not _book_route(actor,source,"FETCH_BOOK"):
+			continue
+		actor["book_task_stage"]="fetch"
+		actor["book_task_id"]=str(book["id"])
+		actor["book_source_room"]=str(source["id"])
+		actor["book_read_room"]=str(reading_room["id"])
+		world._append_journal("BOOK_RESERVED_FOR_PICKUP",str(actor["id"]),str(book["id"]),str(source["id"]),str(reading_room["id"]),{})
+		return
+	actor["until"]=clock+8.0
+
+func _arrive_book_shelf(actor:Dictionary)->void:
+	var id:String=str(actor["id"])
+	var book_id:String=str(actor.get("book_task_id",""))
+	var source:String=str(actor.get("book_source_room",""))
+	var stage:String=str(actor.get("book_task_stage",""))
+	if stage=="fetch" and media_runtime.borrow_at_shelf(id,book_id,source):
+		actor["held_book"]=book_id
+		actor["book_task_stage"]="read"
+		var book:Dictionary=media_runtime._lookup("books",book_id)
+		_set_concrete_media(actor,"books",book)
+		var target:Dictionary=world.room_by_id(str(actor.get("book_read_room","")))
+		if _book_route(actor,target,"READ_BOOK"):
+			return
+		# Seat became unavailable while walking to the shelf; return at the
+		# exact shelf already reached, rather than teleporting the book.
+		actor["intent"]="RETURN_BOOK"
+		media_runtime.return_at_shelf(id,book_id,source)
+	elif stage=="return":
+		if not media_runtime.return_at_shelf(id,book_id,source):
+			# Failed placement must not create a second copy.
+			media_runtime.drop_book(id,book_id,int(maxf(1.0,clock)))
+	actor.erase("held_book")
+	_clear_book_task(actor)
+	end_concrete_media(actor)
+	stations.release(actor)
+	actor["phase"]="idle"
+	actor["waypoints"]=[]
+	actor["waypoint_index"]=0
+	actor["until"]=clock+3.0
+	moving_ids.erase(id)
+	_schedule_actor(actor,"BOOK_FINISHED")
+
+func _continue_book_task(actor:Dictionary)->bool:
+	var stage:String=str(actor.get("book_task_stage",""))
+	var id:String=str(actor["id"])
+	var book_id:String=str(actor.get("book_task_id",""))
+	var book:Dictionary=media_runtime._lookup("books",book_id)
+	if stage in ["read","return_wait"] and str(book.get("holder_id",""))==id:
+		if stage=="read":
+			var start:float=float(actor.get("book_read_started",clock-12.0))
+			media_runtime.read(id,book_id,maxf(0.0,clock-start))
+			world._append_journal("BOOK_READING_FINISHED",id,book_id,str(actor["room_id"]),str(actor["room_id"]),{"seconds":maxf(0.0,clock-start)})
+		actor["book_task_stage"]="return_wait"
+		end_concrete_media(actor)
+		var source:Dictionary=world.room_by_id(str(actor.get("book_source_room","")))
+		if _book_route(actor,source,"RETURN_BOOK"):
+			actor["book_task_stage"]="return"
+			return true
+		# Keep the real book in hand while waiting for the shelf, without
+		# falsely claiming the actor continues to read it.
+		actor["phase"]="idle"
+		actor["intent"]="RETURN_BOOK"
+		actor["until"]=clock+5.0
+		stations.release(actor)
+		return true
+	if stage=="fetch" or stage=="return":
+		# An interrupted route can be retried only from the real position.
+		var source:Dictionary=world.room_by_id(str(actor.get("book_source_room","")))
+		if _book_route(actor,source,"FETCH_BOOK" if stage=="fetch" else "RETURN_BOOK"):
+			return true
+		if stage=="return" and str(book.get("holder_id",""))==id:
+			actor["book_task_stage"]="return_wait"
+			actor["until"]=clock+5.0
+			return true
+	_clear_book_task(actor)
+	return false

@@ -154,3 +154,46 @@ func can_watch(actor_id: String, item_id: String, room_id: String) -> bool:
 func can_listen(actor_id: String, item_id: String, room_id: String) -> bool:
 	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "") == "music" and not _lookup("tracks", item_id).is_empty() and playable("tracks").any(func(item): return item["id"] == item_id)
 
+
+# Live review: a reservation is not possession. Only a physically arrived
+# actor at a measured shelf station may change the actual holder/location.
+func reserved_book_ids(ignore_actor:String="")->Dictionary:
+	var ids:Dictionary={}
+	for id in world.residents:
+		var a:Dictionary=world.residents[id]
+		if str(id)==ignore_actor or not bool(a.get("active",false)):
+			continue
+		if str(a.get("book_task_stage",""))=="fetch" and str(a.get("phase",""))=="travel":
+			var book_id:String=str(a.get("book_task_id",""))
+			if book_id!="":ids[book_id]=str(id)
+	return ids
+
+func available_shelf_books(actor_id:String)->Array:
+	var reserved:=reserved_book_ids(actor_id)
+	var out:Array=[]
+	for book in available_books():
+		var room:Dictionary=world.room_by_id(str(book.get("location_room_id","")))
+		if str(room.get("type",""))=="library" and world.is_accessible(room,actor_id) and not reserved.has(str(book["id"])):
+			out.append(book)
+	return out
+
+func borrow_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
+	var actor:Dictionary=world.residents.get(actor_id,{})
+	var book:Dictionary=_lookup("books",book_id)
+	if str(actor.get("room_id",""))!=room_id or str(actor.get("station_room_id",""))!=room_id or str(actor.get("intent",""))!="FETCH_BOOK" or str(actor.get("phase",""))!="perform" or str(book.get("location_room_id",""))!=room_id:
+		return false
+	if reserved_book_ids(actor_id).has(book_id):
+		return false
+	if not borrow(actor_id,book_id,int(world.sim_clock)):
+		return false
+	world._append_journal("BOOK_PICKED_UP_AT_SHELF",actor_id,book_id,room_id,actor_id,{"station_id":str(actor.get("station_anchor_id",""))})
+	return true
+
+func return_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
+	var actor:Dictionary=world.residents.get(actor_id,{})
+	if str(actor.get("room_id",""))!=room_id or str(actor.get("station_room_id",""))!=room_id or str(actor.get("intent",""))!="RETURN_BOOK" or str(actor.get("phase",""))!="perform":
+		return false
+	if not return_book(actor_id,book_id,room_id):
+		return false
+	world._append_journal("BOOK_RETURNED_AT_SHELF",actor_id,book_id,actor_id,room_id,{"station_id":str(actor.get("station_anchor_id",""))})
+	return true
