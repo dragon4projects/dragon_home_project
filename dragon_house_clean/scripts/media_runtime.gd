@@ -140,16 +140,9 @@ func tick_book_home_reset() -> int:
 	world.runtime_state["book_home_reset_day"]=day
 	return count
 
-func playable(kind: String) -> Array:
-	var allowed: Array = ["ogg", "mp3", "wav"] if kind == "tracks" else ["ogv"] if kind == "films" else []
-	var out: Array = []
-	for item in world.media.get(kind, []):
-		var path: String = str(item.get("file_path", ""))
-		if path == "" or not allowed.has(path.get_extension().to_lower()):
-			continue
-		if FileAccess.file_exists(path) or ResourceLoader.exists(path):
-			out.append(item)
-	return out
+# Legacy API: local bytes never make a work playable. Use duration-based candidates.
+func playable(_kind: String) -> Array:
+	return []
 
 func next_watch_unit(actor_id:String,item:Dictionary)->Dictionary:
 	if not bool(item.get("simulation_only",false)):return {}
@@ -211,7 +204,7 @@ func timed_session_valid(actor:Dictionary,now:float)->bool:
 		if not can_watch(str(actor["id"]),item_id,room_id):return false
 		var expected:Dictionary=next_watch_unit(str(actor["id"]),_lookup("films",item_id))
 		return int(expected.get("season",-1))==int(unit.get("season",-2)) and int(expected.get("episode",-1))==int(unit.get("episode",-2))
-	return can_listen(str(actor["id"]),item_id,room_id)
+	return can_listen(str(actor["id"]),item_id,room_id,start)
 
 func _timed_arrival_valid(actor:Dictionary,now:float,intent:String)->bool:
 	if not is_finite(now) or now<0.0 or str(actor.get("intent",""))!=intent or str(actor.get("phase",""))!="perform":return false
@@ -220,7 +213,7 @@ func _timed_arrival_valid(actor:Dictionary,now:float,intent:String)->bool:
 	var actor_id:String=str(actor.get("id",""))
 	var item_id:String=str(actor.get("activity_media_id",""))
 	if intent=="WATCH_FILM":return can_watch(actor_id,item_id,room_id)
-	if intent=="LISTEN_MUSIC":return can_listen(actor_id,item_id,room_id)
+	if intent=="LISTEN_MUSIC":return can_listen(actor_id,item_id,room_id,now)
 	return false
 
 func begin_watch(actor:Dictionary,now:float)->bool:
@@ -291,26 +284,35 @@ func track_duration(item:Dictionary)->float:
 	var seconds:float=float(item.get("runtime_seconds",0))
 	return seconds if is_finite(seconds) and seconds>0 else 0.0
 
-func listen_candidates()->Array:
-	var out:Array=[]
-	for item in world.media.get("tracks",[]):
-		if track_duration(item)>0:out.append(item)
-	return out
-
 func listen_history(actor_id:String,item_id:String)->Dictionary:
 	return world.runtime_state.get("music_progress",{}).get(actor_id,{}).get(item_id,{})
 
+func listen_repeat_eligible(actor_id:String,item_id:String,now:float)->bool:
+	var history:Dictionary=listen_history(actor_id,item_id)
+	if int(history.get("completed_count",0))<=0:return true
+	var last:float=float(history.get("last_completed_at",0))
+	return is_finite(now) and is_finite(last) and now-last>=world.GAME_DAY_SECONDS
+
+func listen_candidates(actor_id:String="",now:float=-1.0)->Array:
+	var at:float=world.sim_clock if now<0.0 else now
+	var out:Array=[]
+	for item in world.media.get("tracks",[]):
+		if track_duration(item)>0 and (actor_id=="" or listen_repeat_eligible(actor_id,str(item["id"]),at)):
+			out.append(item)
+	return out
+
 func choose_listen_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Dictionary:
-	var options:Array=listen_candidates()
+	var options:Array=listen_candidates(actor_id,now)
 	if options.is_empty():return {}
-	# Novelty first, but repeat listening remains possible and has its own
-	# count/recency. Keep a small nonzero revisit weight for known songs.
+	# New works have weight 1. Eligible repeats gradually recover over seven
+	# game days, with a bounded familiar-favorite bonus.
 	var weights:=PackedFloat32Array()
 	for item in options:
 		var history:Dictionary=listen_history(actor_id,str(item["id"]))
 		var n:int=int(history.get("completed_count",0))
-		var age:float=now-float(history.get("last_completed_at",-86400.0))
-		weights.append(1.0 if n==0 else (0.02 if age<300.0 else 0.25+0.15*minf(float(n),4.0)))
+		var age:float=now-float(history.get("last_completed_at",0))
+		var recovery:float=clampf((age-world.GAME_DAY_SECONDS)/(7.0*world.GAME_DAY_SECONDS),0.0,1.0)
+		weights.append(1.0 if n==0 else lerpf(0.10,0.45+0.10*minf(float(n),4.0),recovery))
 	var index:int=rng.rand_weighted(weights)
 	return options[maxi(0,index)]
 
@@ -343,8 +345,9 @@ func finish_listen(actor:Dictionary,now:float)->bool:
 	world._append_journal("MUSIC_TRACK_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"seconds":unit["seconds"],"completed_count":history[id]["completed_count"]})
 	return true
 
-func can_listen(actor_id: String, item_id: String, room_id: String) -> bool:
-	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "")=="music" and track_duration(_lookup("tracks",item_id))>0
+func can_listen(actor_id: String, item_id: String, room_id: String, now:float=-1.0) -> bool:
+	var at:float=world.sim_clock if now<0.0 else now
+	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "")=="music" and track_duration(_lookup("tracks",item_id))>0 and listen_repeat_eligible(actor_id,item_id,at)
 
 
 # Live review: a reservation is not possession. Only a physically arrived

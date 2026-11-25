@@ -59,6 +59,12 @@ func run() -> void:
 	ui._on_selected(0)
 	assert(ui.details.text.contains("Симуляция просмотра"))
 	assert(ui.details.text.contains("Продолжительность не установлена"))
+	ui.switch_category("tracks")
+	ui._on_selected(0)
+	assert(ui.details.text.contains("симуляция прослушивания"))
+	ui.play_selected()
+	assert(ui.find_children("*","AudioStreamPlayer",true,false).is_empty())
+	assert(ui.find_children("*","VideoStreamPlayer",true,false).is_empty())
 	ui.queue_free()
 	for ext in ["",".bak",".tmp"]:
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(world.save_path+ext))

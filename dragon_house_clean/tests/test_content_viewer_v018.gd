@@ -33,9 +33,14 @@ func run() -> void:
 	assert(not viewer.visible)
 	assert(viewer.open_record("films",world.media["films"][0]))
 	assert(viewer.meta_label.text.contains("Симуляция просмотра"))
-	assert(not viewer.play_button.visible)
+	assert(viewer.find_children("*","VideoStreamPlayer",true,false).is_empty())
+	assert(viewer.find_children("*","AudioStreamPlayer",true,false).is_empty())
 	assert(viewer.open_record("tracks",world.media["tracks"][0]))
-	assert(viewer.meta_label.text.contains("формат не поддерживается"))
+	assert(viewer.meta_label.text.contains("Симуляция прослушивания"))
+	viewer.play()
+	viewer._open_source()
+	assert(viewer.visible and viewer.preview.visible)
+	assert(media.playable("tracks").is_empty() and media.playable("films").is_empty())
 	assert(viewer.open_record("artifacts",{
 		"id":"ART_01","display_name":"Артефакт без картинки","description":"Описание"
 	}))

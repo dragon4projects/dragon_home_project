@@ -9,10 +9,6 @@ var title_label: Label
 var meta_label: Label
 var preview: TextureRect
 var text_view: RichTextLabel
-var video: VideoStreamPlayer
-var audio: AudioStreamPlayer
-var play_button: Button
-var source_button: Button
 
 func _ready() -> void:
 	name = "ContentViewer"
@@ -53,46 +49,10 @@ func _ready() -> void:
 	text_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	text_view.visible = false
 	col.add_child(text_view)
-	video = VideoStreamPlayer.new()
-	video.custom_minimum_size = Vector2(720,400)
-	video.expand = true
-	video.visible = false
-	video.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	col.add_child(video)
-	audio = AudioStreamPlayer.new()
-	add_child(audio)
-	var controls := HBoxContainer.new()
-	col.add_child(controls)
-	play_button = Button.new()
-	play_button.text = "▶ Воспроизвести"
-	play_button.pressed.connect(play)
-	controls.add_child(play_button)
-	source_button=Button.new()
-	source_button.text="Открыть оригинал на YouTube"
-	source_button.visible=false
-	source_button.pressed.connect(_open_source)
-	controls.add_child(source_button)
-	var stop := Button.new()
-	stop.text = "■ Стоп"
-	stop.pressed.connect(stop_playback)
-	controls.add_child(stop)
 
-func _youtube_source(record:Dictionary)->String:
-	# Only the known exact YouTube watch URL shape is allowed, and only after
-	# an explicit click. No arbitrary OS-shell URLs or automatic requests.
-	var url:String=str(record.get("source_url",""))
-	const PREFIX:="https://www.youtube.com/watch?v="
-	if not url.begins_with(PREFIX):return ""
-	var video_id:String=url.trim_prefix(PREFIX)
-	if video_id.length()!=11:return ""
-	for i in range(video_id.length()):
-		if not "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-".contains(video_id.substr(i,1)):
-			return ""
-	return url
-
+# Legacy callers cannot open external media; previews are local and static.
 func _open_source()->void:
-	var url:String=_youtube_source(item)
-	if url!="":OS.shell_open(url)
+	pass
 
 func bind(p_media_runtime) -> void:
 	media_runtime = p_media_runtime
@@ -152,7 +112,6 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 	preview.visible = true
 	text_view.text = ""
 	text_view.visible = false
-	video.visible = false
 	var preview_path := str(item.get("preview",item.get("preview_path","")))
 	preview.texture = texture_override if texture_override!=null else _load_preview(preview_path)
 	var text_path := str(item.get("content_path",item.get("text_path","")))
@@ -161,23 +120,17 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 		text_view.text = body
 		text_view.visible = true
 		preview.visible = preview.texture != null
-	var file_path := str(item.get("file_path",""))
-	play_button.visible = p_category=="tracks" and not bool(item.get("simulation_only",false))
-	source_button.visible=false
 	if p_category=="tracks":
 		var seconds:int=int(item.get("runtime_seconds",0))
 		if seconds>0:meta_label.text+="\nПродолжительность: %d:%02d" % [seconds/60,seconds%60]
-		if bool(item.get("simulation_only",false)):meta_label.text+="\nСимуляция прослушивания."
+		else:meta_label.text+="\nПродолжительность не установлена."
+		meta_label.text+="\nСимуляция прослушивания; звук не воспроизводится."
 	if p_category=="films":
 		var duration:int=int(item.get("runtime_seconds",0))
 		if duration>0:meta_label.text+="\nПродолжительность: %d мин." % int(duration/60)
 		elif str(item.get("media_type",""))=="series":
 			meta_label.text+="\nСериал · просмотр по одной серии"
 		meta_label.text+="\nСимуляция просмотра; видео не воспроизводится."
-	if p_category=="tracks" and not bool(item.get("simulation_only",false)):
-		if media_runtime == null or not media_runtime.playable(p_category).any(
-			func(candidate): return str(candidate.get("id","")) == str(item.get("id",""))):
-			meta_label.text += ("\n" if meta_label.text != "" else "") + 				"Локальный файл отсутствует или формат не поддерживается."
 	if p_category == "books" and body == "" and preview.texture == null:
 		meta_label.text += ("\n" if meta_label.text != "" else "") + 			"Для этой записи пока нет локального полнотекстового содержимого или превью."
 	if p_category in ["artifacts","paintings","posters","cups","creatures"] and preview.texture == null:
@@ -188,40 +141,9 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 	visible = true
 	return true
 
+# Compatibility entry points; media is simulation-only even for legacy file records.
 func stop_playback() -> void:
-	if audio != null and audio.playing:
-		audio.stop()
-	if video != null and video.is_playing():
-		video.stop()
-	if video != null:
-		video.visible = false
-	if preview != null:
-		preview.visible = true
+	pass
 
 func play() -> void:
-	if item.is_empty() or category!="tracks" or media_runtime == null or bool(item.get("simulation_only",false)):
-		return
-	var id := str(item.get("id",""))
-	if not media_runtime.playable(category).any(func(candidate): return str(candidate.get("id","")) == id):
-		meta_label.text += "\nНечего воспроизводить: совместимых локальных байтов нет."
-		return
-	var path := str(item.get("file_path",""))
-	stop_playback()
-	if category == "tracks":
-		var sound: AudioStream
-		match path.get_extension().to_lower():
-			"mp3": sound = AudioStreamMP3.load_from_file(path)
-			"ogg": sound = AudioStreamOggVorbis.load_from_file(path)
-			"wav": sound = AudioStreamWAV.load_from_file(path)
-		if sound == null:
-			meta_label.text += "\nНе удалось загрузить аудио."
-			return
-		audio.stream = sound
-		audio.play()
-	elif category == "films":
-		var movie := VideoStreamTheora.new()
-		movie.file = path
-		video.stream = movie
-		video.visible = true
-		preview.visible = false
-		video.play()
+	pass

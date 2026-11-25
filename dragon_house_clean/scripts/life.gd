@@ -322,7 +322,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("BROWSE_AUDIO")
 	if media_runtime.watch_candidates(str(actor["id"])).is_empty():
 		scores.erase("WATCH_FILM")
-	if media_runtime.listen_candidates().is_empty():
+	if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty():
 		scores.erase("LISTEN_MUSIC")
 	return scores
 
@@ -703,7 +703,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			return
 		concrete_category="films"
 	elif intent=="LISTEN_MUSIC":
-		if media_runtime.listen_candidates().is_empty():
+		if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty():
 			actor["until"]=clock+12.0
 			return
 		if candidate_media_bindings!=null:

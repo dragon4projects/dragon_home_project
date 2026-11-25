@@ -1,6 +1,6 @@
 extends PanelContainer
 ## On-demand UI for verified, imported local catalogs.
-## Playback is explicit user action, never a fabricated autonomous event.
+## Only still artwork and metadata; no actual media playback.
 var model
 var media_runtime
 var category := "books"
@@ -8,12 +8,8 @@ var item_ids: Array = []
 var title: Label
 var list: ItemList
 var search_box: LineEdit
-var play_button: Button
-var stop_button: Button
 var details: Label
 var preview: TextureRect
-var video: VideoStreamPlayer
-var audio: AudioStreamPlayer
 var opened := false
 var content_viewer
 signal surface_assignment_requested(room_id:String,surface_id:String,category:String,item_id:String)
@@ -61,14 +57,6 @@ func _ready() -> void:
 	col.add_child(details)
 	var button_row := HBoxContainer.new()
 	col.add_child(button_row)
-	play_button = Button.new()
-	play_button.text = "▶ Воспроизвести"
-	play_button.pressed.connect(play_selected)
-	button_row.add_child(play_button)
-	stop_button = Button.new()
-	stop_button.text = "■ Стоп"
-	stop_button.pressed.connect(stop_playback)
-	button_row.add_child(stop_button)
 	var close := Button.new()
 	close.text = "Закрыть"
 	close.pressed.connect(close_panel)
@@ -97,13 +85,6 @@ func _ready() -> void:
 	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	col.add_child(preview)
-	video = VideoStreamPlayer.new()
-	video.custom_minimum_size = Vector2(360, 215)
-	video.expand = true
-	video.visible = false
-	col.add_child(video)
-	audio = AudioStreamPlayer.new()
-	add_child(audio)
 
 func bind(p_model, p_media_runtime, p_content_viewer = null) -> void:
 	model = p_model
@@ -133,8 +114,6 @@ func switch_category(k: String) -> void:
 func refresh() -> void:
 	if model == null or list == null:
 		return
-	play_button.visible=category=="tracks"
-	stop_button.visible=category=="tracks"
 	list.clear()
 	item_ids.clear()
 	var records:Array=model.media.get(category,[])
@@ -162,23 +141,19 @@ func _on_selected(index: int) -> void:
 	var item: Dictionary = model.physical_object(str(item_ids[index])) if category=="artifacts" else media_runtime._lookup(category,item_ids[index])
 	if item.is_empty():
 		return
-	play_button.visible=category=="tracks" and not bool(item.get("simulation_only",false))
-	stop_button.visible=play_button.visible
 	var source := str(item.get("source",""))
 	var raw_artist = item.get("artist",item.get("author",""))
 	var artist: String = "" if raw_artist == null else str(raw_artist)
 	details.text = str(item.get("title",item.get("display_name",""))) + (" — " + artist if artist != "" else "")
 	if category == "books" and not bool(item.get("physical", true)):
 		details.text += "\nТолько каталог: физический экземпляр не подтверждён"
-	var path: String = str(item.get("file_path",""))
-	if path != "":
-		details.text += "\nФайл: " + path.get_file()
 	if category=="films":
 		details.text+="\nСимуляция просмотра · "+str(item.get("duration_status","Продолжительность не установлена"))
-	elif category=="tracks" and bool(item.get("simulation_only",false)):
-		details.text+="\nПродолжительность: "+str(item.get("duration",""))+" · симуляция"
-	elif category=="tracks" and not media_runtime.playable(category).any(func(it): return it.get("id","") == item_ids[index]):
-		details.text += "\nНет совместимого локального файла для воспроизведения"
+	elif category=="tracks":
+		var seconds:int=int(item.get("runtime_seconds",0))
+		if seconds>0:details.text+="\nПродолжительность: %d:%02d" % [seconds/60,seconds%60]
+		else:details.text+="\nПродолжительность не установлена"
+		details.text+=" · симуляция прослушивания"
 	var image_path: String = str(item.get("preview",item.get("preview_path","")))
 	preview.texture = null
 	if content_viewer!=null:
@@ -192,51 +167,12 @@ func _on_selected(index: int) -> void:
 	if content_viewer != null and surface_id=="":
 		content_viewer.open_record(category,item)
 
+# Compatibility entry points intentionally cannot play media.
 func stop_playback() -> void:
-	if audio and audio.playing:
-		audio.stop()
-	if video and video.is_playing():
-		video.stop()
-	if video:
-		video.visible = false
-	if preview:
-		preview.visible = true
+	pass
 
 func play_selected() -> void:
-	if list.get_selected_items().is_empty() or category!="tracks":
-		return
-	var index: int = list.get_selected_items()[0]
-	var id: String = item_ids[index]
-	var item: Dictionary = media_runtime._lookup(category,id)
-	if item.is_empty() or bool(item.get("simulation_only",false)):
-		return
-	if not media_runtime.playable(category).any(func(it): return it.get("id","") == id):
-		details.text = "Файл недоступен или формат не поддерживается."
-		return
-	var path: String = str(item.get("file_path",""))
-	stop_playback()
-	if category == "tracks":
-		var sound: AudioStream
-		match path.get_extension().to_lower():
-			"mp3": sound = AudioStreamMP3.load_from_file(path)
-			"ogg": sound = AudioStreamOggVorbis.load_from_file(path)
-			"wav": sound = AudioStreamWAV.load_from_file(path)
-		if sound == null:
-			details.text = "Не удалось загрузить аудио."
-			return
-		audio.stream = sound
-		audio.play()
-		details.text = "Играет: " + str(item.get("title",""))
-	elif category == "films":
-		# Godot core supports only Ogg/Theora, not MP4.
-		var movie := VideoStreamTheora.new()
-		movie.file = path
-		video.stream = movie
-		video.visible = true
-		preview.visible = false
-		video.play()
-		details.text = "Смотрим: " + str(item.get("title",""))
-
+	pass
 
 func open_surface(room_id:String,id:String,k:String)->void:
 	clear_surface_context()
