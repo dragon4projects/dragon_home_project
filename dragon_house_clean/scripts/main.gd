@@ -12,6 +12,7 @@ const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
 const OwnerDecorBankScript = preload("res://scripts/owner_decor_bank.gd")
 const TEEA008ReviewScript = preload("res://scripts/teea008_review_bank.gd")
+const StaticOverviewBatch=preload("res://scripts/static_overview_batch.gd")
 const TEEA008NavigationScript = preload("res://scripts/teea008_navigation.gd")
 const TEEA008MediaBindingsScript = preload("res://scripts/teea008_media_bindings.gd")
 const BankGalleryScript = preload("res://scripts/asset_gallery_ui.gd")
@@ -1602,6 +1603,8 @@ func make_room(group: Dictionary) -> void:
 			overview.set_meta("real_model_count",overview_count)
 			if overview_count==0:
 				add_room_overview_cues(overview,group)
+			elif OS.get_environment("DRAGON_QA_DISABLE_OVERVIEW_BATCH")!="1":
+				StaticOverviewBatch.new().batch(overview)
 		else:
 			add_room_overview_cues(overview,group)
 	if facade_only:
