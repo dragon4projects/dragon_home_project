@@ -734,6 +734,7 @@ func _update_pair(actor:Dictionary,reschedule_all:bool=false)->void:
 		_finish_pair(sid,false,"INVALID_PHASE")
 		return
 	if str(row["phase"])=="active":
+		_prune_pending_join(sid,row)
 		var center:=Vector2.ZERO
 		for id in row["members"]:
 			var p:Array=world.residents[id]["station_point"]
@@ -767,11 +768,6 @@ func reconcile_pair_sessions()->void:
 				_finish_pair(sid,false,"RESTORE_INVALID_SESSION")
 			continue
 		_update_pair(world.residents[str(row["members"][0])],true)
-		if sessions.has(sid):
-			var pending=row.get("pending_join",{})
-			if typeof(pending)==TYPE_DICTIONARY and not pending.is_empty():
-				var approaching:Dictionary=world.residents.get(str(pending.get("actor_id","")),{})
-				if approaching.is_empty() or str(approaching.get("social_join_session_id",""))!=sid:row.erase("pending_join")
 	for actor in world.residents.values():
 		if actor.has("social_join_session_id"):
 			_update_pending_join(actor)
@@ -926,6 +922,19 @@ func request_group_join(actor_id:String,sid:String)->bool:
 	world._append_journal("GROUP_JOIN_RESERVED",actor_id,sid,"",str(room["id"]))
 	return true
 
+func _prune_pending_join(sid:String,row:Dictionary)->void:
+	if not row.has("pending_join"):return
+	var pending=row["pending_join"]
+	if typeof(pending)!=TYPE_DICTIONARY:
+		row.erase("pending_join")
+		return
+	var actor:Dictionary=world.residents.get(str(pending.get("actor_id","")),{})
+	if actor.is_empty() or str(actor.get("social_join_session_id",""))!=sid:
+		row.erase("pending_join")
+		return
+	if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or clock>=float(pending.get("deadline",0)):
+		_cancel_pending_join(actor,"PENDING_MEMBER_UNAVAILABLE")
+
 func _cancel_pending_join(actor:Dictionary,reason:String)->void:
 	var sid:String=str(actor.get("social_join_session_id",""))
 	var id:String=str(actor.get("id",""))
@@ -950,6 +959,9 @@ func _update_pending_join(actor:Dictionary)->void:
 		_cancel_pending_join(actor,"JOIN_EXPIRED_OR_INVALID")
 		return
 	var room:Dictionary=world.room_by_id(str(row["room_id"]))
+	if str(actor.get("intent",""))!="TALK_GROUP":
+		_cancel_pending_join(actor,"JOIN_INTENT_CHANGED")
+		return
 	var point=actor.get("station_point",[])
 	var anchor:String=str(actor.get("station_anchor_id",""))
 	var slot:int=int(actor.get("station_slot",-1))
@@ -958,6 +970,10 @@ func _update_pending_join(actor:Dictionary)->void:
 	if not world.is_accessible(room,id) or str(actor.get("room_id",""))!=str(room["id"]) or str(actor.get("station_room_id",""))!=str(room["id"]) or anchor=="" or anchor!=str(pending.get("anchor","")) or slot<0 or slot>=spots.size() or used.has(slot) or str(spots[slot].get("id",""))!=anchor or typeof(point)!=TYPE_ARRAY or point.size()!=2:
 		_cancel_pending_join(actor,"JOIN_STATION_INVALID")
 		return
+	for coordinate in point:
+		if typeof(coordinate) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(coordinate)):
+			_cancel_pending_join(actor,"JOIN_POINT_INVALID")
+			return
 	var p:=Vector2(float(point[0]),float(point[1]))
 	var positions:Array=_group_positions(row)
 	positions.append(p)
@@ -966,7 +982,7 @@ func _update_pending_join(actor:Dictionary)->void:
 		return
 	if str(actor.get("phase",""))=="travel":
 		var route:Array=actor.get("waypoints",[])
-		if route.is_empty() or int(actor.get("waypoint_index",0))>=route.size():
+		if route.is_empty() or int(actor.get("waypoint_index",0))<0 or int(actor.get("waypoint_index",0))>=route.size() or typeof(route[-1])!=TYPE_DICTIONARY or str(route[-1].get("kind",""))!="station" or str(route[-1].get("room_id",""))!=str(room["id"]):
 			_cancel_pending_join(actor,"JOIN_ROUTE_INVALID")
 			return
 		moving_ids[id]=true
