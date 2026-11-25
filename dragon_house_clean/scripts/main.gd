@@ -306,7 +306,9 @@ func _ready() -> void:
 	if architecture_review:
 		# Do not reinterpret or overwrite the legacy world or its event stores.
 		world.save_path="user://dragon_house_canonical_architecture_20261125.json"
-	world.load_or_seed()
+	if not world.load_or_seed():
+		_show_recovery_blocked()
+		return
 	if iter1_owner_review:
 		if candidate_content.initialize():
 			var guest_review_result: Dictionary = candidate_content.apply_guest_candidate(world)
@@ -3562,7 +3564,32 @@ func update_render_lod() -> void:
 		if node is Node3D:
 			node.visible = micro_detail_visible
 
+func _show_recovery_blocked()->void:
+	# No life setup, content import, camera or autosave on failed startup.
+	set_process(false)
+	set_process_input(false)
+	set_process_unhandled_input(false)
+	if DisplayServer.get_name()=="headless":
+		get_tree().quit(1)
+		return
+	var layer:=CanvasLayer.new()
+	add_child(layer)
+	var panel:=ColorRect.new()
+	layer.add_child(panel)
+	panel.color=Color("#19171e")
+	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var center:=CenterContainer.new()
+	panel.add_child(center)
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var message:=Label.new()
+	message.text="Дом не запущен: требуется восстановление сохранения.\nИсходные файлы сохранены. Не удаляйте их и не создавайте новый мир.\n\nКод: "+world.load_status+"\nЗакройте окно и восстановите проверенную резервную копию."
+	message.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	message.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	message.custom_minimum_size=Vector2(480,0)
+	center.add_child(message)
+
 func _process(delta: float) -> void:
+	if world.recovery_blocked:return
 	# The camera never chooses activities. Life is a separate simulation clock.
 	# Candidate layouts are deliberately visual-only until measured stations and
 	# actor footprint paths are bound. Do not simulate against stale furniture.
@@ -3591,7 +3618,7 @@ func _process(delta: float) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		world.save_world()
+		if not world.recovery_blocked:world.save_world()
 		get_tree().quit()
 
 
