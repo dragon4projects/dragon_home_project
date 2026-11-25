@@ -289,6 +289,15 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 			return reject("pickup room is inaccessible")
 		if holder != actor_id or location != "" or state != "HELD":
 			return reject("pickup projection is invalid")
+		# Creature mouths and the current resident cup lifecycle each have
+		# one physical carrier slot. Consult durable object truth, not a
+		# stale actor field restored from a snapshot.
+		for other in projection.values():
+			if str(other.get("current_holder_id",""))!=actor_id:continue
+			if world.creatures.has(actor_id):
+				return reject("creature already carries an object")
+			if str(object.get("viewer_category",""))=="cups" and str(other.get("viewer_category",""))=="cups":
+				return reject("resident already carries a cup")
 		if ambient:
 			if not bool(object.get("ambient_pickup_allowed",false)) or (
 				bool(object.get("ambient_protected",false))):
