@@ -14,9 +14,28 @@ func run()->void:
 	var a:Dictionary=w.residents["RES_01"]
 	var b:Dictionary=w.residents["RES_02"]
 	a["intent"]="WATCH_FILM"
+	a["room_id"]=w.get_room(4,0)["id"]
+	a["station_room_id"]=a["room_id"]
 	a["phase"]="perform"
 	a["activity_media_id"]="QA_SERIES"
+	a["phase"]="travel"
+	assert(not m.begin_watch(a,100))
+	assert(not a.has("watch_session"))
+	a["phase"]="perform"
+	a["station_room_id"]="WRONG_ROOM"
+	assert(not m.begin_watch(a,100))
+	a["station_room_id"]=a["room_id"]
 	assert(m.begin_watch(a,100))
+	assert(m.begin_watch(a,101))
+	assert(a["watch_session"]["started_at"]==100)
+	assert(a["watch_session"]["ends_at"]==2500)
+	var valid_session:Dictionary=a["watch_session"].duplicate(true)
+	a["watch_session"]["ends_at"]=102
+	assert(not m.finish_watch(a,102))
+	a["watch_session"]=valid_session
+	a["station_room_id"]="WRONG_ROOM"
+	assert(not m.finish_watch(a,2500))
+	a["station_room_id"]=a["room_id"]
 	assert(a["until"]==2500)
 	assert(not m.finish_watch(a,2499))
 	assert(m.finish_watch(a,2500))
