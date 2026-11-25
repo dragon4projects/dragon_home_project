@@ -30,7 +30,7 @@ func _initialize() -> void:
 			crossed_levels = true
 		if point["kind"] == "station":
 			station_count += 1
-			assert(float(point["position"][2]) != mover.AISLE_Z)
+			assert(float(point["position"][2]) != w.room_space.SIDE_CONNECTOR_Z)
 	assert(crossed_levels and lift_count == 1 and station_count == 1)
 	var life = LifeScript.new()
 	life.setup(w)
@@ -40,7 +40,7 @@ func _initialize() -> void:
 	var visited_lift := false
 	for i in range(650):
 		life._move(actor,0.1)
-		if absf(float(actor["z"])-mover.AISLE_Z) < 0.05:
+		if absf(float(actor["z"])-w.room_space.SIDE_CONNECTOR_Z) < 0.05:
 			visited_depth = true
 		if float(actor.get("visual_y",0.0)) > 0.5:
 			visited_lift = true
@@ -50,7 +50,7 @@ func _initialize() -> void:
 	assert(actor["room_id"] == upper["id"])
 	assert(absf(float(actor["visual_y"])-w.FLOOR_H) < 0.05)
 	assert(visited_depth and visited_lift)
-	assert(absf(float(actor["z"])-mover.AISLE_Z) > 0.05,"Destination at actual depth")
+	assert(absf(float(actor["z"])-w.room_space.SIDE_CONNECTOR_Z) > 0.05,"Destination at actual depth")
 	print("LOCOMOTION_TEST_PASS path=",route.size()," waypoints=",points.size()," lift=",lift_count)
 	quit(0)
 
