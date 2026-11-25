@@ -100,6 +100,9 @@ func bind(p_media_runtime) -> void:
 func close_viewer() -> void:
 	stop_playback()
 	visible = false
+	# Release full-size artifact originals when the viewer is closed.
+	if preview!=null:preview.texture=null
+	item.clear()
 
 func _safe_text(path: String) -> String:
 	if path == "" or not path.begins_with("res://") and not path.begins_with("user://"):

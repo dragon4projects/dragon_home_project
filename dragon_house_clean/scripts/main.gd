@@ -229,6 +229,58 @@ func _ensure_canonical_artifact_cube()->bool:
 			return true
 	return false
 
+func _restore_zna_artifact_sources()->int:
+	if not architecture_review or life.candidate_navigation==null:return 0
+	var file:=FileAccess.open("res://assets/manifests/artifact_master_sources_zna004.json",FileAccess.READ)
+	if file==null:return 0
+	var manifest=JSON.parse_string(file.get_as_text())
+	if typeof(manifest)!=TYPE_DICTIONARY:return 0
+	var room:Dictionary=_artifact_room()
+	if room.is_empty():return 0
+	var rid:String=str(room["id"])
+	var slots:Array=life.candidate_navigation.artifact_slots(room)
+	var added:=0
+	for entry in manifest.get("entries",[]):
+		var id:String=str(entry.get("normalized_id",""))
+		var title:String=str(entry.get("title",""))
+		if not id.begins_with("ARTEFACT_") or not id.contains("_CUBE_") or title=="":continue
+		var aliases:Array=[id,str(entry.get("current_media_content_id",""))]
+		if id=="ARTEFACT_006_CUBE_LETTERS_BEFORE_SLEEP":aliases.append("CUBE_LETTERS")
+		var exists:=false
+		for object in world.objects.values():
+			if str(object.get("id","")) in aliases or str(object.get("display_name",""))==title:
+				exists=true
+				break
+		if exists:continue
+		var source:String=str(entry.get("repo_source_target",""))
+		var preview:String=str(entry.get("preview_target",""))
+		if not source.begins_with("assets/props/artifacts/cubes/sources/library_confirmed/") or not preview.begins_with("assets/media/previews/artifacts/") or source.contains("..") or preview.contains(".."):continue
+		source="res://"+source
+		preview="res://"+preview
+		# Real imported textures are required; do not mount an LFS pointer
+		# or empty proxy if the binary assets were not hydrated.
+		if not ResourceLoader.exists(source,"Texture2D") or not ResourceLoader.exists(preview,"Texture2D"):continue
+		for slot in slots:
+			var sid:String=str(slot["id"])
+			var p:Array=slot["xyz"]
+			var dims:Array=slot["dimensions"]
+			# Keep central review/test opening available for owner-added art.
+			if sid=="artifact_r3_shelf_c.shelf_3_1":continue
+			if float(p[1])<0.35 or float(p[1])>1.70:continue
+			if float(dims[0])<ARTIFACT_CUBE_SIDE or float(dims[1])<ARTIFACT_CUBE_SIDE or float(dims[2])<ARTIFACT_CUBE_SIDE:continue
+			var occupied:=false
+			for object in world.objects.values():
+				if (str(object.get("home_room_id",""))==rid and str(object.get("home_support_id",""))==sid) or (str(object.get("current_room_id",""))==rid and str(object.get("current_support_id",""))==sid):
+					occupied=true
+					break
+			if occupied:continue
+			var metadata:Dictionary={"viewer_category":"artifacts","preview_path":preview,"full_image_path":source,"artifact_source_status":str(entry.get("migration_status","MIGRATION_REQUIRED")),"description":"Восстановленный исходник; художественная миграция ещё не утверждена.","home_anchor":[p[0],p[2]],"home_support_id":sid,"display_world_height":ARTIFACT_CUBE_SIDE}
+			if world.register_physical_object(id,title,"",rid,true,true,false,false,true,metadata):
+				added+=1
+				break
+	if added>0:world.save_world()
+	return added
+
 func _ready() -> void:
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	architecture_review = FileAccess.file_exists(ARCHITECTURE_MARKER) or OS.get_environment("DRAGON_HOUSE_ARCHITECTURE")=="1"
@@ -280,6 +332,7 @@ func _ready() -> void:
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
 		_ensure_canonical_artifact_cube()
+		_restore_zna_artifact_sources()
 		teea008_review.live_physical_objects=true
 		life.candidate_cups.setup(world,life.candidate_navigation)
 		life.candidate_cups.register_review_mugs()
@@ -2588,11 +2641,19 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 			return false
 	if record.is_empty():
 		return false
-	if category=="artifacts" and str(record.get("preview_path",""))=="":
-		var master:String=asset_banks.prop_master_path(str(record.get("asset_id","")))
-		if master!="":
+	if category=="artifacts":
+		var full_path:String=str(record.get("full_image_path",""))
+		if full_path!="":
 			record=record.duplicate(true)
-			record["preview_path"]="res://"+master
+			if ResourceLoader.exists(full_path,"Texture2D") or FileAccess.file_exists(full_path):
+				record["preview_path"]=full_path
+			else:
+				record["description"]=str(record.get("description",""))+"\nПолноразмерный исходник недоступен; показано превью."
+		elif str(record.get("preview_path",""))=="":
+			var master:String=asset_banks.prop_master_path(str(record.get("asset_id","")))
+			if master!="":
+				record=record.duplicate(true)
+				record["preview_path"]="res://"+master
 	return content_viewer.open_record(category,record)
 
 func update_content_hover(point: Vector2) -> void:

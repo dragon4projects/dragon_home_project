@@ -1,0 +1,5 @@
+# ZNA recovered artifact source integration
+
+The existing working branch contains ten preview images and the ZNA004 manifest, but lacks the corresponding full-resolution original paths. This targeted intake reuses the exact ten LFS pointer blobs from ZNA branch 3f7a9f831588a342ecdaec4df40c6775cfe59f5a. Every pointer SHA-256 matches the source manifest. Binary hydration is still an engine/build QA requirement; no new image generated, no new LFS objects uploaded.
+
+At canonical startup, the ten known cube source identities are evaluated idempotently. Existing CUBE_LETTERS / normalized ID / known legacy content ID / exact title are respected. New restored source records use free measured gallery slots and the actual glass cube rendering. World preview is the lightweight ZNA preview; click shows the original image if available. The source migration status is retained, ownership remains unassigned, and no candidate is promoted to final artistic LOCK. Runtime skips missing imported assets. Three absent source IDs remain unresolved. New test verifies restored count and idempotence; no engine or Actions run.

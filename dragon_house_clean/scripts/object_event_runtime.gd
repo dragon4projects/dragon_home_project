@@ -351,6 +351,8 @@ func _migration_registration(object: Dictionary) -> Dictionary:
 	var metadata := {
 		"description":str(object.get("description","")),
 		"preview_path":str(object.get("preview_path","")),
+		"full_image_path":str(object.get("full_image_path","")),
+		"artifact_source_status":str(object.get("artifact_source_status","")),
 		"asset_id":str(object.get("asset_id","")),
 		"viewer_category":str(object.get("viewer_category","artifacts")),
 		"display_mode":str(object.get("display_mode","")),

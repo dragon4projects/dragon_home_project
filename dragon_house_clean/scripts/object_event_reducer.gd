@@ -80,6 +80,8 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			"reset_eligible":bool(payload.get("reset_eligible",payload.get("movable",true))),
 			"description":str(metadata.get("description","")),
 			"preview_path":str(metadata.get("preview_path","")),
+			"full_image_path":str(metadata.get("full_image_path","")),
+			"artifact_source_status":str(metadata.get("artifact_source_status","")),
 			"asset_id":str(payload.get("asset_id",metadata.get("asset_id",""))),
 			"viewer_category":str(metadata.get("viewer_category","artifacts")),
 			"display_mode":str(metadata.get("display_mode","")),
