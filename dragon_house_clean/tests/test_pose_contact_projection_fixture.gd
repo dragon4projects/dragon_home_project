@@ -56,12 +56,18 @@ func run()->void:
 		assert(scene.book_nodes.has("book"))
 		var book:Node3D=scene.book_nodes["book"]
 		assert(book.get_meta("hand_contact_status")=="READ_FRAME_MARKED")
+		assert(book.get_meta("book_open") and book.get_node("OpenBook").visible)
+		assert(not book.get_child(0).visible)
 		assert(book.to_global(Vector3(0,0.09,0)).distance_to(book.get_meta("hand_contact_target"))<0.0001)
 		assert(scene._sprite_pixel_world(anchor,sprite,contact.contact_px).distance_to(anchor.global_position)<0.0001)
 	actor.erase("station_contact")
 	scene.update_residents()
 	scene._update_physical_books()
 	assert(scene.book_nodes["book"].get_meta("hand_contact_status")=="IDLE_FRAME_MARKED")
+	assert(not scene.book_nodes["book"].get_meta("book_open"))
+	assert(not scene.book_nodes["book"].get_node("OpenBook").visible)
+	assert(scene.book_nodes["book"].get_child(0).visible)
+	assert(w.media.books.size()==1 and w.media.books[0].holder_id==id)
 	actor.visual_wardrobe="CITY"
 	scene.update_residents()
 	scene._update_physical_books()
