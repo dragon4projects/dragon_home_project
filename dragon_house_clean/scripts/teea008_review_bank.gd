@@ -339,6 +339,16 @@ func _apply_canonical_device_bindings()->void:
 	# Preserve surface IDs (saved room-instance assignments). The canonical
 	# R3 audio surfaces now belong to existing physical media devices instead
 	# of separate wall rectangles. TV has its own independent catalog target.
+	# Keep the original measured wall sleeve above the primary boombox as
+	# a real cover display; the device itself remains separately clickable.
+	var primary:Dictionary=surfaces.get("music.r3.audio.01",{})
+	if not primary.is_empty():
+		var sleeve:Dictionary=primary.duplicate(true)
+		sleeve["surface_id"]="music.r3.audio.now_playing"
+		sleeve["holder_instance"]["instance_id"]="music_r3_now_playing_sleeve"
+		sleeve["carrier_instance_id"]=""
+		sleeve["binding_alias"]="music.r3.audio.01"
+		surfaces["music.r3.audio.now_playing"]=sleeve
 	var targets:Dictionary={
 		"music.r3.audio.01":["music/R3","music_r3_p2_boombox"],
 		"music.r3.audio.02":["music/R3","music_r3_p2_cassette"],

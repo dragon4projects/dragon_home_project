@@ -37,6 +37,25 @@ func run()->void:
 	assert(binding.choose_film(a["id"],"RES_02")["id"]=="QA_B")
 	actor["phase"]="idle"
 	assert(binding.resolve(a["id"],id)["id"]=="QA_A")
+	# Audio room selection follows an actual listener, then the saved pin.
+	var music_room:Dictionary=w.get_room(3,0)
+	if str(music_room.get("type",""))!="music":
+		music_room=w.make_room(8,0,"music",1,false)
+	var sound:=FileAccess.open("user://qa_track.ogg",FileAccess.WRITE)
+	sound.store_8(0);sound.close()
+	w.media["tracks"]=[{"id":"QA_TRACK_A","title":"A","file_path":"user://qa_track.ogg"},{"id":"QA_TRACK_B","title":"B","file_path":"user://qa_track.ogg"}]
+	var music_id:String="music.r1.audio.01"
+	assert(binding.assign(music_room["id"],music_id,"tracks","QA_TRACK_A"))
+	assert(binding.resolve(music_room["id"],music_id)["id"]=="QA_TRACK_A")
+	actor["intent"]="LISTEN_MUSIC"
+	actor["station_room_id"]=music_room["id"]
+	actor["room_id"]=music_room["id"]
+	actor["phase"]="perform"
+	actor["activity_media_id"]="QA_TRACK_B"
+	assert(binding.resolve(music_room["id"],music_id)["id"]=="QA_TRACK_B")
+	assert(binding.choose_track(music_room["id"],"RES_02")["id"]=="QA_TRACK_B")
+	actor["phase"]="idle"
+	assert(binding.resolve(music_room["id"],music_id)["id"]=="QA_TRACK_A")
 	assert(w.save_world())
 	var copy=W.new()
 	copy.save_path=w.save_path

@@ -11,7 +11,9 @@ func setup(model,review,media_runtime)->void:
 	media=media_runtime
 
 func _key(room_id:String,surface_id:String)->String:
-	return room_id+"|"+surface_id
+	# The cover sleeve and actual boombox share exactly one persistent binding.
+	var spec_data:Dictionary=bank.surfaces.get(surface_id,{})
+	return room_id+"|"+str(spec_data.get("binding_alias",surface_id))
 
 func spec(room_id:String,surface_id:String)->Dictionary:
 	var room:Dictionary=world.room_by_id(room_id)
@@ -101,6 +103,32 @@ func choose_film(room_id:String,actor_id:String)->Dictionary:
 		return item
 	return {}
 
+func active_track(room_id:String,ignore_actor:String="",perform_only:bool=false)->Dictionary:
+	var ids:Array=world.residents.keys()
+	ids.sort()
+	for id in ids:
+		if str(id)==ignore_actor:continue
+		var actor:Dictionary=world.residents[id]
+		if not bool(actor.get("active",false)) or str(actor.get("intent",""))!="LISTEN_MUSIC" or str(actor.get("station_room_id",""))!=room_id:
+			continue
+		if not str(actor.get("phase","")) in (["perform"] if perform_only else ["travel","perform"]):continue
+		if perform_only and str(actor.get("room_id",""))!=room_id:continue
+		var item_id:String=str(actor.get("activity_media_id",""))
+		if media.can_listen(str(id),item_id,room_id):
+			return media._lookup("tracks",item_id)
+	return {}
+
+func choose_track(room_id:String,actor_id:String)->Dictionary:
+	var active:Dictionary=active_track(room_id,actor_id)
+	if not active.is_empty() and media.can_listen(actor_id,str(active["id"]),room_id):
+		return active
+	var room:Dictionary=world.room_by_id(room_id)
+	var surface_id:String="music.r%d.audio.01" % int(room.get("size_modules",1))
+	var item:Dictionary=pinned(room_id,surface_id)
+	if not item.is_empty() and media.can_listen(actor_id,str(item["id"]),room_id):
+		return item
+	return {}
+
 func resolve(room_id:String,surface_id:String)->Dictionary:
 	var surface:Dictionary=spec(room_id,surface_id)
 	if surface.is_empty():
@@ -109,6 +137,9 @@ func resolve(room_id:String,surface_id:String)->Dictionary:
 		var active:Dictionary=active_film(room_id,"",true)
 		if not active.is_empty():
 			return active
+	if surface_id.ends_with(".audio.01") or surface_id=="music.r3.audio.now_playing":
+		var track:Dictionary=active_track(room_id,"",true)
+		if not track.is_empty():return track
 	return pinned(room_id,surface_id)
 
 func place_artifact(room_id:String,surface_id:String,item_id:String,navigation,width:float,height:float,depth:float)->bool:

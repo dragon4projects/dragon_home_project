@@ -58,6 +58,17 @@ func run()->void:
 					approaches+=1
 		tested+=1
 	assert(tested==12,str(tested))
+	var dressed:=0
+	for key in ["study/R3","workshop/R3","music/R3"]:
+		for item in nav.layouts[key]["instances"]:
+			if not str(item["instance_id"]).begins_with("lived_"):continue
+			assert(str(item.get("support_ref",""))!="")
+			assert(item["station_candidates"].is_empty())
+			dressed+=1
+	assert(dressed==13)
+	var sleeve:Dictionary=scene.teea008_review.surfaces.get("music.r3.audio.now_playing",{})
+	assert(not sleeve.is_empty() and sleeve.get("binding_alias","")=="music.r3.audio.01")
+	assert(not sleeve["holder_instance"].is_empty())
 	# Saved surface IDs now resolve to actual devices, not separate wall props.
 	var expected:Dictionary={
 		"music.r3.audio.01":"music_r3_p2_boombox",

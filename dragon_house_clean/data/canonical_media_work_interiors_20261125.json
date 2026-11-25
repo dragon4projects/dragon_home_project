@@ -795,6 +795,150 @@
           "support_instance_id": "music_r3_audio_console",
           "slot_id": "p2_cassette"
         }
+      },
+      {
+        "instance_id": "lived_music_r3_storage_shelf_shelf_3_1",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -0.233303,
+          0.43845,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.2823030000000001,
+          0.43845,
+          -1.71675
+        ],
+        "bounds_max_m": [
+          -0.18430299999999997,
+          0.49045,
+          -1.6432499999999999
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.2823030000000001,
+            -1.71675
+          ],
+          [
+            -0.18430299999999997,
+            -1.71675
+          ],
+          [
+            -0.18430299999999997,
+            -1.6432499999999999
+          ],
+          [
+            -0.2823030000000001,
+            -1.6432499999999999
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "music_r3_storage_shelf.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_music_r3_storage_shelf_shelf_4_2",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          0.233303,
+          0.814706,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          0.2121299999999999,
+          0.814755,
+          -1.717617
+        ],
+        "bounds_max_m": [
+          0.25438300000000047,
+          0.8598420000000001,
+          -1.642472
+        ],
+        "physical_footprint_xz": [
+          [
+            0.2121299999999999,
+            -1.717617
+          ],
+          [
+            0.25438300000000047,
+            -1.717617
+          ],
+          [
+            0.25438300000000047,
+            -1.642472
+          ],
+          [
+            0.2121299999999999,
+            -1.642472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "music_r3_storage_shelf.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_music_r3_storage_shelf_shelf_5_2",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          0.233303,
+          1.18964,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          0.18430299999999997,
+          1.18964,
+          -1.71675
+        ],
+        "bounds_max_m": [
+          0.2823030000000001,
+          1.24164,
+          -1.6432499999999999
+        ],
+        "physical_footprint_xz": [
+          [
+            0.18430299999999997,
+            -1.71675
+          ],
+          [
+            0.2823030000000001,
+            -1.71675
+          ],
+          [
+            0.2823030000000001,
+            -1.6432499999999999
+          ],
+          [
+            0.18430299999999997,
+            -1.6432499999999999
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "music_r3_storage_shelf.shelf_5_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
       }
     ],
     "study/R3": [
@@ -1147,6 +1291,246 @@
         "station_candidates": [],
         "support_slots": [],
         "owner_approved": false
+      },
+      {
+        "instance_id": "lived_study_r3_bookshelf_shelf_2_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          0.397284,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.4309836621639518,
+        "bounds_min_m": [
+          -6.536121784508169,
+          0.397284,
+          -1.6352505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          0.4996072791036411,
+          -1.5647494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6352505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6352505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5647494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5647494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_bookshelf.shelf_2_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_study_r3_bookshelf_shelf_3_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -5.902678,
+          0.66297,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.4309836621639518,
+        "bounds_min_m": [
+          -6.021477784508169,
+          0.66297,
+          -1.6352505847120518
+        ],
+        "bounds_max_m": [
+          -5.783877784508169,
+          0.7652932791036411,
+          -1.5647494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021477784508169,
+            -1.6352505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.6352505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.5647494152879484
+          ],
+          [
+            -6.021477784508169,
+            -1.5647494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_bookshelf.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_study_r3_bookshelf_shelf_4_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          0.93743,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.4309836621639518,
+        "bounds_min_m": [
+          -6.536121784508169,
+          0.93743,
+          -1.6352505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          1.039753279103641,
+          -1.5647494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6352505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6352505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5647494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5647494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_bookshelf.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_study_r3_bookshelf_shelf_4_2",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          -5.902678,
+          0.93743,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -5.923851,
+          0.937479,
+          -1.637617
+        ],
+        "bounds_max_m": [
+          -5.881597999999999,
+          0.982566,
+          -1.562472
+        ],
+        "physical_footprint_xz": [
+          [
+            -5.923851,
+            -1.637617
+          ],
+          [
+            -5.881597999999999,
+            -1.637617
+          ],
+          [
+            -5.881597999999999,
+            -1.562472
+          ],
+          [
+            -5.923851,
+            -1.562472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_bookshelf.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_study_r3_bookshelf_shelf_5_2",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -5.902678,
+          1.237697,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -5.951678,
+          1.237697,
+          -1.6367500000000001
+        ],
+        "bounds_max_m": [
+          -5.8536779999999995,
+          1.289697,
+          -1.56325
+        ],
+        "physical_footprint_xz": [
+          [
+            -5.951678,
+            -1.6367500000000001
+          ],
+          [
+            -5.8536779999999995,
+            -1.6367500000000001
+          ],
+          [
+            -5.8536779999999995,
+            -1.56325
+          ],
+          [
+            -5.951678,
+            -1.56325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_bookshelf.shelf_5_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
       }
     ],
     "workshop/R3": [
@@ -1408,6 +1792,246 @@
         ],
         "placement_policy": "supported",
         "support_ref": "workshop_lab_table.decor_workshop_lab_set",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_workshop_r3_storage_rack_shelf_1_1",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -6.60052,
+          0.455307,
+          -1.58
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.649520000000001,
+          0.455307,
+          -1.6167500000000001
+        ],
+        "bounds_max_m": [
+          -6.55152,
+          0.507307,
+          -1.54325
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.649520000000001,
+            -1.6167500000000001
+          ],
+          [
+            -6.55152,
+            -1.6167500000000001
+          ],
+          [
+            -6.55152,
+            -1.54325
+          ],
+          [
+            -6.649520000000001,
+            -1.54325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_storage_rack.shelf_1_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_workshop_r3_storage_rack_shelf_1_2",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -6.19948,
+          0.455307,
+          -1.58
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.248480000000001,
+          0.455307,
+          -1.6167500000000001
+        ],
+        "bounds_max_m": [
+          -6.15048,
+          0.507307,
+          -1.54325
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.248480000000001,
+            -1.6167500000000001
+          ],
+          [
+            -6.15048,
+            -1.6167500000000001
+          ],
+          [
+            -6.15048,
+            -1.54325
+          ],
+          [
+            -6.248480000000001,
+            -1.54325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_storage_rack.shelf_1_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_workshop_r3_storage_rack_shelf_2_2",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          -6.19948,
+          0.945151,
+          -1.58
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.220653,
+          0.9451999999999999,
+          -1.617617
+        ],
+        "bounds_max_m": [
+          -6.1784,
+          0.990287,
+          -1.542472
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.220653,
+            -1.617617
+          ],
+          [
+            -6.1784,
+            -1.617617
+          ],
+          [
+            -6.1784,
+            -1.542472
+          ],
+          [
+            -6.220653,
+            -1.542472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_storage_rack.shelf_2_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_workshop_r3_storage_rack_b_shelf_3_1",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          5.966697,
+          0.43845,
+          -1.66
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          5.9176969999999995,
+          0.43845,
+          -1.69675
+        ],
+        "bounds_max_m": [
+          6.015697,
+          0.49045,
+          -1.6232499999999999
+        ],
+        "physical_footprint_xz": [
+          [
+            5.9176969999999995,
+            -1.69675
+          ],
+          [
+            6.015697,
+            -1.69675
+          ],
+          [
+            6.015697,
+            -1.6232499999999999
+          ],
+          [
+            5.9176969999999995,
+            -1.6232499999999999
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_storage_rack_b.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "lived_workshop_r3_storage_rack_b_shelf_4_2",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          6.433303,
+          0.814706,
+          -1.66
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          6.41213,
+          0.814755,
+          -1.697617
+        ],
+        "bounds_max_m": [
+          6.454383000000001,
+          0.8598420000000001,
+          -1.622472
+        ],
+        "physical_footprint_xz": [
+          [
+            6.41213,
+            -1.697617
+          ],
+          [
+            6.454383000000001,
+            -1.697617
+          ],
+          [
+            6.454383000000001,
+            -1.622472
+          ],
+          [
+            6.41213,
+            -1.622472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_storage_rack_b.shelf_4_2",
         "station_candidates": [],
         "support_slots": [],
         "owner_approved": false

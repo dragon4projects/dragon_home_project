@@ -672,7 +672,10 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		if playable_tracks.is_empty():
 			actor["until"]=clock+12.0
 			return
-		concrete_item=playable_tracks[rng.randi_range(0,playable_tracks.size()-1)]
+		if candidate_media_bindings!=null:
+			concrete_item=candidate_media_bindings.choose_track(str(room["id"]),str(actor["id"]))
+		if concrete_item.is_empty():
+			concrete_item=playable_tracks[rng.randi_range(0,playable_tracks.size()-1)]
 		if not media_runtime.can_listen(str(actor["id"]),
 				str(concrete_item.get("id","")),str(room["id"])):
 			actor["until"]=clock+12.0
