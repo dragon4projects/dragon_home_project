@@ -318,13 +318,20 @@ func _destination_pressure(actor: Dictionary, room: Dictionary) -> Dictionary:
 	var room_used:int=stations.used_slots(world,str(room["id"]),[str(actor["id"])]).size()
 	var room_ratio:float=float(room_used)/float(room_capacity)
 
-	var group:Dictionary=world.merged_group(int(room["x"]),int(room["level"]))
-	var group_used:=0
-	var group_capacity:=0
-	for cell in group.get("cells",[]):
-		group_used+=stations.used_slots(world,str(cell["id"]),[str(actor["id"])]).size()
-		group_capacity+=stations.capacity(cell)
-	var group_ratio:float=float(group_used)/float(maxi(1,group_capacity))
+	var group_ratio:float=0.0
+	if world.canonical_house_seed:
+		# One physical room: virtual modules are copies with the same room ID.
+		# Preserve the exact old pressure without duplicating connector dictionaries.
+		var width:int=world.room_size_modules(room)
+		group_ratio=float(room_used*width)/float(maxi(1,stations.capacity(room)*width))
+	else:
+		var group:Dictionary=world.merged_group(int(room["x"]),int(room["level"]))
+		var group_used:=0
+		var group_capacity:=0
+		for cell in group.get("cells",[]):
+			group_used+=stations.used_slots(world,str(cell["id"]),[str(actor["id"])]).size()
+			group_capacity+=stations.capacity(cell)
+		group_ratio=float(group_used)/float(maxi(1,group_capacity))
 
 	# Cell pressure spreads residents across merged R2/R3 rooms; group pressure
 	# prevents one visual room from becoming a crowd magnet when another room
@@ -1160,21 +1167,28 @@ func _begin_candidate_plan(actor:Dictionary)->void:
 	# Adjacency contains geometry only. Access/transit is evaluated at each
 	# decision from live room state. Signature includes authored connectors.
 	var shape:Array=[]
+	var current_rooms:Dictionary={}
 	for room in world.rooms:
+		current_rooms[str(room["id"])]=room
 		shape.append([room["id"],room["x"],room["level"],room.get("size_modules",1),room.get("type",""),room.get("connectors",[])])
 	var signature:int=hash(shape)
 	if planner_graph.is_empty() or signature!=planner_graph_signature:
 		planner_graph.clear()
+		var geometry:Dictionary=world.route_geometry_index() if world.canonical_house_seed else {}
 		for room in world.rooms:
 			var neighbors:Array=[]
-			for other in world.rooms:
-				if str(room["id"])!=str(other["id"]) and not world.connection_between(room,other).is_empty():
+			if world.canonical_house_seed:
+				for other in world.indexed_geometry_neighbors(room,geometry):
 					neighbors.append(str(other["id"]))
+			else:
+				for other in world.rooms:
+					if str(room["id"])!=str(other["id"]) and not world.connection_between(room,other).is_empty():
+						neighbors.append(str(other["id"]))
 			planner_graph[str(room["id"])]=neighbors
 		planner_graph_signature=signature
 		planner_graph_rebuilds+=1
 	var start:String=str(actor.get("room_id",""))
-	if world.room_by_id(start).is_empty():
+	if not current_rooms.has(start):
 		return
 	var visited:Dictionary={start:[start]}
 	var q:Array=[start]
@@ -1184,7 +1198,7 @@ func _begin_candidate_plan(actor:Dictionary)->void:
 		at+=1
 		for rid in planner_graph.get(current,[]):
 			if visited.has(rid):continue
-			var room:Dictionary=world.room_by_id(str(rid))
+			var room:Dictionary=current_rooms.get(str(rid),{})
 			if not world.allows_transit(room) and not world.is_accessible(room,planning_actor_id):
 				continue
 			var path:Array=visited[current].duplicate()
@@ -1192,7 +1206,7 @@ func _begin_candidate_plan(actor:Dictionary)->void:
 			visited[rid]=path
 			q.append(rid)
 	for rid in visited:
-		if world.is_accessible(world.room_by_id(str(rid)),planning_actor_id):
+		if world.is_accessible(current_rooms.get(str(rid),{}),planning_actor_id):
 			planning_routes[rid]=visited[rid]
 	planner_route_queries+=1
 

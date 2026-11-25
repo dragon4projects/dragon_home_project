@@ -251,9 +251,46 @@ func neighbors(room: Dictionary, actor_id: String = "") -> Array:
 			out.append(candidate)
 	return out
 
+# A short-lived geometry index keeps direct room mutation and save/reload safe.
+# No privacy or ownership is cached. Ordering matches the original rooms array.
+func route_geometry_index()->Dictionary:
+	var cells:Dictionary={}
+	var by_id:Dictionary={}
+	var order:Dictionary={}
+	for i in range(rooms.size()):
+		var room:Dictionary=rooms[i]
+		var rid:String=str(room["id"])
+		by_id[rid]=room
+		order[rid]=i
+		for x in range(int(room["x"]),room_space.x_end(room)+1):
+			cells[Vector2i(x,int(room["level"]))]=room
+	return {"cells":cells,"by_id":by_id,"order":order}
+
+func indexed_geometry_neighbors(room:Dictionary,index:Dictionary)->Array:
+	var x:int=int(room["x"])
+	var level:int=int(room["level"])
+	var probes:Array=[Vector2i(x-1,level),Vector2i(room_space.x_end(room)+1,level)]
+	if str(room["type"])=="lift":
+		probes.append(Vector2i(x,level-1))
+		probes.append(Vector2i(x,level+1))
+	var result:Array=[]
+	var ids:Dictionary={}
+	var cells:Dictionary=index["cells"]
+	var order:Dictionary=index["order"]
+	for cell in probes:
+		var candidate:Dictionary=cells.get(cell,{})
+		if candidate.is_empty():continue
+		var rid:String=str(candidate["id"])
+		if ids.has(rid) or connection_between(room,candidate).is_empty():continue
+		ids[rid]=true
+		result.append(candidate)
+	result.sort_custom(func(a,b):return int(order[str(a["id"])])<int(order[str(b["id"])]))
+	return result
+
 func find_route(start_id: String, destination_id: String, actor_id: String = "") -> Array:
-	var start: Dictionary = room_by_id(start_id)
-	var target: Dictionary = room_by_id(destination_id)
+	var index:Dictionary=route_geometry_index() if canonical_house_seed else {}
+	var start: Dictionary = index["by_id"].get(start_id,{}) if canonical_house_seed else room_by_id(start_id)
+	var target: Dictionary = index["by_id"].get(destination_id,{}) if canonical_house_seed else room_by_id(destination_id)
 	if start.is_empty() or target.is_empty() or not is_accessible(target, actor_id):
 		return []
 	if start_id == destination_id:
@@ -265,7 +302,9 @@ func find_route(start_id: String, destination_id: String, actor_id: String = "")
 	while q_index < queue.size():
 		var current: Dictionary = queue[q_index]
 		q_index += 1
-		for next_room in neighbors(current, actor_id):
+		var adjacent:Array=indexed_geometry_neighbors(current,index) if canonical_house_seed else neighbors(current,actor_id)
+		for next_room in adjacent:
+			if canonical_house_seed and not allows_transit(next_room) and not is_accessible(next_room,actor_id):continue
 			var key: String = next_room["id"]
 			if seen.has(key):
 				continue

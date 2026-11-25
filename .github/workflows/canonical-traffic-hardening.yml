@@ -1,0 +1,53 @@
+name: Canonical traffic and route hardening QA
+on:
+  push:
+    branches: [integration/canonical-house-traffic-hardening-20261125]
+    paths:
+      - 'dragon_house_clean/scripts/**'
+      - 'dragon_house_clean/tests/**'
+      - '.github/workflows/canonical-traffic-hardening.yml'
+permissions:
+  contents: read
+jobs:
+  focused-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Restore existing review resources
+        run: |
+          set -euo pipefail
+          bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
+          find dragon_house_clean/assets/props -maxdepth 1 -type f -name '*.blend' -delete
+          python3 -m pip install --disable-pip-version-check --quiet pillow scipy
+          python3 dragon_house_clean/tools/build_room_visual_components_review.py
+      - name: Install Godot 4.7.2
+        run: |
+          curl -fLsS --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
+      - name: Import and focused runtime regressions
+        working-directory: dragon_house_clean
+        run: |
+          set -euo pipefail
+          godot=/tmp/Godot_v4.7.2-stable_linux.x86_64
+          timeout 600 "$godot" --headless --path . --import > hardening_import.log 2>&1
+          ! grep -Eq 'SCRIPT ERROR|Parse Error' hardening_import.log
+          for t in test_canonical_frontage_guard test_canonical_route_index test_canonical_house_architecture test_canonical_house_scene test_canonical_house_life; do
+            XDG_DATA_HOME="$RUNNER_TEMP/$t" timeout 240 "$godot" --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
+            grep -q '_PASS' "$t.log"
+            ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' "$t.log"
+          done
+      - name: Upload logs only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-traffic-hardening-logs
+          path: |
+            dragon_house_clean/hardening_import.log
+            dragon_house_clean/test_canonical*.log
+          retention-days: 3
