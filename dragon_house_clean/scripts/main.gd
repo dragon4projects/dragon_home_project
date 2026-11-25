@@ -2813,6 +2813,13 @@ func _world_journal_line(entry: Dictionary) -> String:
 			return "Дом нашёл: %s" % subject_name
 		"OBJECT_RESTORED_HOME":
 			return "На место возвращено: %s" % subject_name
+		"OBJECT_HOUSEKEEPING_RETURNED":
+			return "Домовой убрал: %s" % subject_name
+		"OBJECT_VIEWED":
+			return "%s — рассмотрела: %s" % [actor_name,subject_name]
+		"BOOK_RESTORED_HOME":
+			var book:Dictionary=life.media_runtime._lookup("books",subject_id)
+			return "Домовой вернул книгу: %s" % str(book.get("title","Книга"))
 		"GUEST_REGISTERED":
 			return "Гостья в Доме: %s" % actor_name
 		"CREATURE_REGISTERED":

@@ -532,6 +532,11 @@ func housekeeping_age(object:Dictionary)->float:
 
 func housekeeping_slot_free(object:Dictionary,room_id:String,anchor:Array,support_id:String)->bool:
 	if anchor.size()!=2:return false
+	if support_id!="":
+		for actor in residents.values():
+			if not bool(actor.get("active",false)):continue
+			if str(actor.get("cup_task_id",""))==str(object.get("id","")):continue
+			if str(actor.get("cup_task_room",""))==room_id and str(actor.get("cup_task_slot",""))==support_id and str(actor.get("cup_task_stage","")) in ["fetch","serve","hold","return"]:return false
 	for other in objects.values():
 		if str(other.get("id",""))==str(object.get("id","")):continue
 		# Keep other assigned homes reserved, as well as physical occupants.
@@ -548,6 +553,7 @@ func housekeeping_target(object:Dictionary)->Dictionary:
 	var current:Dictionary=room_by_id(str(object.get("current_room_id","")))
 	# A closed/private source is not permission for invisible entry.
 	if not public_cutaway_allowed(current):return {}
+	if canonical_house_seed and housekeeping_navigation==null:return {}
 	var home:String=str(object.get("home_room_id",""))
 	var home_room:Dictionary=room_by_id(home)
 	var anchor:Array=object.get("home_anchor",[])

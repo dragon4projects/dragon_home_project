@@ -1353,15 +1353,32 @@ func _route_cup_return(actor:Dictionary)->bool:
 	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
 	if room.is_empty() or not world.is_accessible(room,str(actor["id"])):
 		return false
-	var claim:Dictionary=stations.cup_claim(world,actor,room,str(actor.get("cup_task_slot","")))
-	if claim.is_empty():
-		return false
+	var obj:Dictionary=world.physical_object(str(actor.get("cup_task_id","")))
+	var claim:Dictionary={}
+	var preferred:String=str(actor.get("cup_task_slot",""))
+	var slots:Array=candidate_navigation.cup_slots(room).duplicate()
+	for slot in slots.duplicate():
+		if str(slot["id"])==preferred:
+			slots.erase(slot)
+			slots.push_front(slot)
+			break
+	var target_slot:String=""
+	for slot in slots:
+		var p:Array=slot["xyz"]
+		var sid:String=str(slot["id"])
+		if not world.housekeeping_slot_free(obj,str(room["id"]),[p[0],p[2]],sid):continue
+		claim=stations.cup_claim(world,actor,room,sid)
+		if not claim.is_empty():
+			target_slot=sid
+			break
+	if claim.is_empty():return false
 	var route:Array=world.find_route(str(actor["room_id"]),str(room["id"]),str(actor["id"]))
 	var points:Array=locomotion.build_waypoints(world,actor,route,"GET_COFFEE",claim["offset"],float(claim.get("approach_z",0.95)))
 	if points.is_empty():
 		return false
 	stations.release(actor)
 	stations.commit_claim(actor,claim)
+	actor["cup_task_slot"]=target_slot
 	actor["intent"]="GET_COFFEE"
 	actor["route"]=route
 	actor["waypoints"]=points
