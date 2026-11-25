@@ -7,6 +7,7 @@ var candidate_navigation=null
 func setup(model) -> void:
 	world = model
 	_normalize_catalogue()
+	_restore_device_sessions()
 	if candidate_navigation!=null:
 		reconcile_book_slots()
 
@@ -267,58 +268,236 @@ func timed_session_key(actor:Dictionary)->String:
 		"LISTEN_MUSIC":return "listen_session"
 	return ""
 
-func timed_session_valid(actor:Dictionary,now:float)->bool:
-	if not is_finite(now):return false
-	var key:String=timed_session_key(actor)
-	if key=="" or not actor.has(key) or str(actor.get("phase",""))!="perform":return false
-	var raw=actor[key]
+# One durable simulated program per physical cinema/audio source.
+# Actor records retain a projection of timing for compatibility, but the
+# shared program and its attendance map own the authoritative deadline.
+func _devices()->Dictionary:
+	if not world.runtime_state.has("media_device_sessions"):
+		world.runtime_state["media_device_sessions"]={}
+	return world.runtime_state["media_device_sessions"]
+
+func _device_key(category:String,room_id:String)->String:
+	return room_id+"|"+category
+
+func _session_category(key:String)->String:
+	return "films" if key=="watch_session" else "tracks"
+
+func _category_key(category:String)->String:
+	return "watch_session" if category=="films" else "listen_session"
+
+func _device_access(actor_id:String,category:String,room_id:String)->bool:
+	var room:Dictionary=world.room_by_id(room_id)
+	return bool(world.residents.get(actor_id,{}).get("active",false)) and world.public_cutaway_allowed(room) and world.is_accessible(room,actor_id) and str(room.get("type",""))==("cinema" if category=="films" else "music")
+
+func _catalog_unit(category:String,id:String,season:int,episode:int)->Dictionary:
+	var item:Dictionary=_lookup(category,id)
+	if not bool(item.get("simulation_only",false)):return {}
+	var seconds:float=0.0
+	if category=="tracks":
+		if season!=0 or episode!=0:return {}
+		seconds=track_duration(item)
+	elif str(item.get("media_type",""))=="film":
+		if season!=0 or episode!=0:return {}
+		seconds=float(item.get("runtime_seconds",0))
+	elif str(item.get("media_type",""))=="series":
+		if season<1 or season>int(item.get("latest_season",0)) or (season==int(item.get("latest_season",0)) and episode>int(item.get("latest_episode",0))):return {}
+		var runtimes:Array=item.get("episode_runtime_seconds",{}).get(str(season),[])
+		if episode<1 or episode>runtimes.size():return {}
+		seconds=float(runtimes[episode-1])
+	if seconds<=0 or not is_finite(seconds):return {}
+	return {"item_id":id,"season":season,"episode":episode,"seconds":seconds}
+
+func _unit_matches(a:Dictionary,b:Dictionary)->bool:
+	return not a.is_empty() and not b.is_empty() and str(a.get("item_id",""))==str(b.get("item_id","")) and int(a.get("season",0))==int(b.get("season",0)) and int(a.get("episode",0))==int(b.get("episode",0)) and absf(float(a.get("seconds",0))-float(b.get("seconds",0)))<0.001
+
+func _program_valid(program:Dictionary,category:String,now:float)->bool:
+	var start:float=float(program.get("started_at",-1))
+	var end:float=float(program.get("ends_at",-1))
+	var seconds:float=float(program.get("seconds",0))
+	return is_finite(now) and is_finite(start) and is_finite(end) and is_finite(seconds) and start>=0 and start<=now and seconds>0 and absf(end-start-seconds)<0.001 and _unit_matches(program,_catalog_unit(category,str(program.get("item_id","")),int(program.get("season",0)),int(program.get("episode",0))))
+
+func _member_matches(actor:Dictionary,key:String,program:Dictionary)->bool:
+	var raw=actor.get(key,{})
 	if typeof(raw)!=TYPE_DICTIONARY:return false
 	var unit:Dictionary=raw
-	var start:float=float(unit.get("started_at",-1))
-	var end:float=float(unit.get("ends_at",-1))
-	var seconds:float=float(unit.get("seconds",0))
-	if not is_finite(start) or not is_finite(end) or not is_finite(seconds) or start<0 or start>now or seconds<=0 or absf(end-start-seconds)>0.001:return false
-	var room_id:String=str(actor.get("room_id",""))
-	if room_id=="" or room_id!=str(unit.get("room_id","")) or room_id!=str(actor.get("station_room_id","")):return false
-	var item_id:String=str(actor.get("activity_media_id",""))
-	if item_id=="" or item_id!=str(unit.get("item_id","")):return false
-	if key=="watch_session":
-		if not can_watch(str(actor["id"]),item_id,room_id,start):return false
-		var expected:Dictionary=next_watch_unit(str(actor["id"]),_lookup("films",item_id),start)
-		return int(expected.get("season",-1))==int(unit.get("season",-2)) and int(expected.get("episode",-1))==int(unit.get("episode",-2))
-	return can_listen(str(actor["id"]),item_id,room_id,start)
+	var id:String=str(actor.get("id",""))
+	var members:Dictionary=program.get("members",{})
+	var member:Dictionary=members.get(id,{})
+	return not member.is_empty() and bool(actor.get("active",false)) and str(actor.get("phase",""))=="perform" and timed_session_key(actor)==key and str(actor.get("room_id",""))==str(program.get("room_id","")) and str(actor.get("station_room_id",""))==str(program.get("room_id","")) and str(actor.get("activity_media_id",""))==str(program.get("item_id","")) and str(unit.get("session_id",""))==str(program.get("session_id","")) and _unit_matches(unit,program) and float(unit.get("started_at",-1))==float(program.get("started_at",-2)) and float(unit.get("ends_at",-1))==float(program.get("ends_at",-2)) and float(unit.get("joined_at",-1))==float(member.get("joined_at",-2)) and bool(unit.get("full_credit",false))==bool(member.get("full_credit",false))
 
-func _timed_arrival_valid(actor:Dictionary,now:float,intent:String)->bool:
-	if not is_finite(now) or now<0.0 or str(actor.get("intent",""))!=intent or str(actor.get("phase",""))!="perform":return false
-	var room_id:String=str(actor.get("room_id",""))
-	if room_id=="" or room_id!=str(actor.get("station_room_id","")):return false
-	var actor_id:String=str(actor.get("id",""))
-	var item_id:String=str(actor.get("activity_media_id",""))
-	if intent=="WATCH_FILM":return can_watch(actor_id,item_id,room_id,now)
-	if intent=="LISTEN_MUSIC":return can_listen(actor_id,item_id,room_id,now)
+func _has_member(program:Dictionary,category:String)->bool:
+	for id in program.get("members",{}):
+		if _member_matches(world.residents.get(id,{}),_category_key(category),program):return true
 	return false
 
-func begin_watch(actor:Dictionary,now:float)->bool:
-	if not _timed_arrival_valid(actor,now,"WATCH_FILM"):return false
-	# Duplicate arrival/reconciliation must not restart an active commitment.
-	if actor.has("watch_session"):
-		if not timed_session_valid(actor,now):return false
-		actor["until"]=float(actor["watch_session"]["ends_at"])
-		return true
-	var item:Dictionary=_lookup("films",str(actor.get("activity_media_id","")))
-	var unit:Dictionary=next_watch_unit(str(actor["id"]),item,now)
-	if unit.is_empty():return false
-	unit["started_at"]=now
-	unit["ends_at"]=now+float(unit["seconds"])
-	unit["room_id"]=str(actor.get("room_id",""))
-	actor["watch_session"]=unit
-	actor["until"]=unit["ends_at"]
+func active_device_session(category:String,room_id:String,now:float=-1.0)->Dictionary:
+	var at:float=world.sim_clock if now<0.0 else now
+	var program:Dictionary=_devices().get(_device_key(category,room_id),{})
+	if program.is_empty() or not _program_valid(program,category,at) or at>=float(program["ends_at"]) or not _has_member(program,category):return {}
+	return program
+
+func active_device_record(category:String,room_id:String,now:float=-1.0)->Dictionary:
+	var program:Dictionary=active_device_session(category,room_id,now)
+	return _lookup(category,str(program.get("item_id",""))) if not program.is_empty() else {}
+
+func _full_credit_eligible(actor_id:String,category:String,program:Dictionary,at:float)->bool:
+	var id:String=str(program["item_id"])
+	if category=="tracks":return listen_repeat_eligible(actor_id,id,at)
+	return _unit_matches(program,next_watch_unit(actor_id,_lookup("films",id),at))
+
+func _attendance_eligible(actor_id:String,category:String,program:Dictionary,now:float)->bool:
+	if not _device_access(actor_id,category,str(program.get("room_id",""))):return false
+	var id:String=str(program["item_id"])
+	if category=="tracks":return listen_repeat_eligible(actor_id,id,now)
+	var row:Dictionary=_cinema_history(actor_id,id)
+	var season:int=int(program.get("season",0))
+	var episode:int=int(program.get("episode",0))
+	if int(row.get("last_completed_season",-1))==season and int(row.get("last_completed_episode",-1))==episode and now-float(row.get("last_completed_at",0))<world.GAME_DAY_SECONDS:return false
+	return _unit_repeat_eligible(row,season,episode,now)
+
+func has_joinable_device(actor_id:String,category:String,now:float)->bool:
+	for program in _devices().values():
+		var room_id:String=str(program.get("room_id",""))
+		if str(program.get("category",""))!=category:continue
+		var active:Dictionary=active_device_session(category,room_id,now)
+		if not active.is_empty() and _attendance_eligible(actor_id,category,active,now):return true
+	return false
+
+func _attach_member(actor:Dictionary,key:String,program:Dictionary,joined:float,full:bool)->void:
+	var id:String=str(actor["id"])
+	program["members"][id]={"joined_at":joined,"full_credit":full}
+	var unit:Dictionary=program.duplicate(true)
+	unit.erase("members")
+	unit["joined_at"]=joined
+	unit["full_credit"]=full
+	actor[key]=unit
+	actor["until"]=float(program["ends_at"])
+
+func _restore_device_sessions()->void:
+	# Legacy snapshots carry actor-local timing only. Adopt a matching
+	# legacy deadline without restarting it; conflicting old timings fail closed.
+	var ids:Array=world.residents.keys()
+	ids.sort()
+	for id in ids:
+		var actor:Dictionary=world.residents[id]
+		var key:String=timed_session_key(actor)
+		if key=="" or not actor.has(key):continue
+		var raw=actor[key]
+		if typeof(raw)!=TYPE_DICTIONARY:continue
+		var unit:Dictionary=raw
+		if unit.has("session_id"):continue
+		var category:String=_session_category(key)
+		var rid:String=str(actor.get("room_id",""))
+		if str(actor.get("phase",""))!="perform" or rid!=str(actor.get("station_room_id","")) or rid!=str(unit.get("room_id","")) or str(unit.get("item_id",""))!=str(actor.get("activity_media_id","")) or not _device_access(str(id),category,rid) or not _program_valid(unit,category,world.sim_clock):continue
+		var device:String=_device_key(category,rid)
+		var program:Dictionary=_devices().get(device,{})
+		if program.is_empty():
+			program=unit.duplicate(true)
+			program["session_id"]=_new_session_id()
+			program["category"]=category
+			program["members"]={}
+			_devices()[device]=program
+		elif not _unit_matches(unit,program) or float(unit["started_at"])!=float(program["started_at"]) or float(unit["ends_at"])!=float(program["ends_at"]):continue
+		var start:float=float(program["started_at"])
+		_attach_member(actor,key,program,start,_full_credit_eligible(str(id),category,program,start))
+
+func _new_session_id()->String:
+	var serial:int=int(world.runtime_state.get("media_device_serial",0))+1
+	world.runtime_state["media_device_serial"]=serial
+	return "MEDIA_"+str(serial)
+
+func timed_session_valid(actor:Dictionary,now:float)->bool:
+	var key:String=timed_session_key(actor)
+	if key=="" or not actor.has(key):return false
+	var category:String=_session_category(key)
+	var rid:String=str(actor.get("room_id",""))
+	var program:Dictionary=_devices().get(_device_key(category,rid),{})
+	if program.is_empty() or not _device_access(str(actor.get("id","")),category,rid) or not _program_valid(program,category,now) or not _member_matches(actor,key,program):return false
+	var member:Dictionary=program["members"][str(actor["id"])]
+	var joined:float=float(member.get("joined_at",-1))
+	if not is_finite(joined) or joined<float(program["started_at"]) or joined>=float(program["ends_at"]) or joined>now:return false
+	if bool(member.get("full_credit",false)):
+		return joined==float(program["started_at"]) and _full_credit_eligible(str(actor["id"]),category,program,joined)
 	return true
+
+func _begin_timed(actor:Dictionary,now:float,category:String)->bool:
+	var key:String=_category_key(category)
+	if not is_finite(now) or now<0 or timed_session_key(actor)!=key or str(actor.get("phase",""))!="perform":return false
+	var rid:String=str(actor.get("room_id",""))
+	var id:String=str(actor.get("id",""))
+	var item_id:String=str(actor.get("activity_media_id",""))
+	if rid=="" or rid!=str(actor.get("station_room_id","")) or not _device_access(id,category,rid):return false
+	if actor.has(key):
+		if not timed_session_valid(actor,now):return false
+		actor["until"]=float(actor[key]["ends_at"])
+		return true
+	var device:String=_device_key(category,rid)
+	var program:Dictionary=active_device_session(category,rid,now)
+	if not program.is_empty():
+		if str(program["item_id"])!=item_id or not _attendance_eligible(id,category,program,now):return false
+		_attach_member(actor,key,program,now,now==float(program["started_at"]) and _full_credit_eligible(id,category,program,now))
+		world._append_journal("MEDIA_ATTENDANCE_JOINED",id,item_id,"",rid,{"session_id":program["session_id"],"full_credit":actor[key]["full_credit"],"ends_at":program["ends_at"]})
+		return true
+	# Do not replace an ended program before its due attendees settle.
+	var old:Dictionary=_devices().get(device,{})
+	if not old.is_empty() and _has_member(old,category):return false
+	var unit:Dictionary={}
+	if category=="films":
+		unit=next_watch_unit(id,_lookup(category,item_id),now)
+	else:
+		if listen_repeat_eligible(id,item_id,now):unit=_catalog_unit(category,item_id,0,0)
+	if unit.is_empty():return false
+	program=unit.duplicate(true)
+	program.merge({"category":category,"room_id":rid,"session_id":_new_session_id(),"started_at":now,"ends_at":now+float(unit["seconds"]),"members":{}},true)
+	_devices()[device]=program
+	_attach_member(actor,key,program,now,true)
+	world._append_journal("MEDIA_SESSION_STARTED",id,item_id,"",rid,{"session_id":program["session_id"],"seconds":unit["seconds"]})
+	return true
+
+func begin_watch(actor:Dictionary,now:float)->bool:
+	return _begin_timed(actor,now,"films")
+
+func _settle_attendance(actor:Dictionary,key:String,now:float,full:bool,reason:String)->void:
+	var raw=actor.get(key,{})
+	if typeof(raw)!=TYPE_DICTIONARY:return
+	var unit:Dictionary=raw
+	var category:String=_session_category(key)
+	var device:String=_device_key(category,str(unit.get("room_id","")))
+	var program:Dictionary=_devices().get(device,{})
+	var id:String=str(actor.get("id",""))
+	if program.is_empty() or str(program.get("session_id",""))!=str(unit.get("session_id","")):return
+	var members:Dictionary=program.get("members",{})
+	var member:Dictionary=members.get(id,{})
+	if member.is_empty():return
+	var elapsed:float=clampf(minf(now,float(program["ends_at"]))-float(member["joined_at"]),0.0,float(program["seconds"]))
+	var all:Dictionary=world.runtime_state.get("media_attendance",{})
+	var per_actor:Dictionary=all.get(id,{})
+	var item_key:String=category+"|"+str(program["item_id"])
+	var row:Dictionary=per_actor.get(item_key,{})
+	row["attended_seconds"]=float(row.get("attended_seconds",0))+elapsed
+	row["full_sessions"]=int(row.get("full_sessions",0))+(1 if full else 0)
+	row["partial_sessions"]=int(row.get("partial_sessions",0))+(0 if full else 1)
+	per_actor[item_key]=row
+	all[id]=per_actor
+	world.runtime_state["media_attendance"]=all
+	members.erase(id)
+	if members.is_empty():_devices().erase(device)
+	world._append_journal("MEDIA_ATTENDANCE_ENDED",id,str(program["item_id"]),str(program["room_id"]),"",{"session_id":program["session_id"],"seconds":elapsed,"full_credit":full,"reason":reason})
+
+func cancel_timed_media(actor:Dictionary,now:float)->void:
+	for key in ["watch_session","listen_session"]:
+		if actor.has(key):
+			_settle_attendance(actor,key,now,false,"INTERRUPTED")
+			actor.erase(key)
 
 func finish_watch(actor:Dictionary,now:float)->bool:
 	if timed_session_key(actor)!="watch_session" or not timed_session_valid(actor,now):return false
 	var unit:Dictionary=actor["watch_session"]
 	if now<float(unit["ends_at"]):return false
+	if not bool(unit.get("full_credit",false)):
+		_settle_attendance(actor,"watch_session",now,false,"PARTIAL_END")
+		actor.erase("watch_session")
+		return true
 	var id:String=str(unit["item_id"])
 	var item:Dictionary=_lookup("films",id)
 	var expected:Dictionary=next_watch_unit(str(actor["id"]),item,float(unit["started_at"]))
@@ -361,14 +540,17 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 	all[actor_id]=progress
 	world.runtime_state["cinema_progress"]=all
 	actor["last_watch_id"]=id
+	_settle_attendance(actor,"watch_session",now,true,"COMPLETE")
 	actor.erase("watch_session")
 	world._append_journal("CINEMA_UNIT_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"season":season,"episode":episode,"seconds":unit["seconds"]})
 	return true
 
-func can_watch(actor_id: String, item_id: String, room_id: String, now:float=-1.0) -> bool:
-	if not world.residents.get(actor_id, {}).get("active", false) or world.room_by_id(room_id).get("type", "")!="cinema":return false
-	var item:Dictionary=_lookup("films",item_id)
-	return not next_watch_unit(actor_id,item,now).is_empty()
+func can_watch(actor_id:String,item_id:String,room_id:String,now:float=-1.0)->bool:
+	var at:float=world.sim_clock if now<0.0 else now
+	if not _device_access(actor_id,"films",room_id):return false
+	var active:Dictionary=active_device_session("films",room_id,at)
+	if not active.is_empty():return str(active["item_id"])==item_id and _attendance_eligible(actor_id,"films",active,at)
+	return not next_watch_unit(actor_id,_lookup("films",item_id),at).is_empty()
 
 func track_duration(item:Dictionary)->float:
 	if not bool(item.get("simulation_only",false)) or not bool(item.get("autonomous_music",false)):return 0.0
@@ -408,22 +590,16 @@ func choose_listen_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Di
 	return options[maxi(0,index)]
 
 func begin_listen(actor:Dictionary,now:float)->bool:
-	if not _timed_arrival_valid(actor,now,"LISTEN_MUSIC"):return false
-	if actor.has("listen_session"):
-		if not timed_session_valid(actor,now):return false
-		actor["until"]=float(actor["listen_session"]["ends_at"])
-		return true
-	var item_id:String=str(actor.get("activity_media_id",""))
-	var duration:float=track_duration(_lookup("tracks",item_id))
-	if duration<=0:return false
-	actor["listen_session"]={"item_id":item_id,"started_at":now,"ends_at":now+duration,"seconds":duration,"room_id":str(actor.get("room_id",""))}
-	actor["until"]=now+duration
-	return true
+	return _begin_timed(actor,now,"tracks")
 
 func finish_listen(actor:Dictionary,now:float)->bool:
 	if timed_session_key(actor)!="listen_session" or not timed_session_valid(actor,now):return false
 	var unit:Dictionary=actor["listen_session"]
 	if now<float(unit["ends_at"]):return false
+	if not bool(unit.get("full_credit",false)):
+		_settle_attendance(actor,"listen_session",now,false,"PARTIAL_END")
+		actor.erase("listen_session")
+		return true
 	var id:String=str(unit["item_id"])
 	var actor_id:String=str(actor["id"])
 	var all:Dictionary=world.runtime_state.get("music_progress",{})
@@ -432,14 +608,17 @@ func finish_listen(actor:Dictionary,now:float)->bool:
 	history[id]={"completed_count":int(previous.get("completed_count",0))+1,"total_seconds":float(previous.get("total_seconds",0))+float(unit["seconds"]),"last_completed_at":now}
 	all[actor_id]=history
 	world.runtime_state["music_progress"]=all
+	_settle_attendance(actor,"listen_session",now,true,"COMPLETE")
 	actor.erase("listen_session")
 	world._append_journal("MUSIC_TRACK_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"seconds":unit["seconds"],"completed_count":history[id]["completed_count"]})
 	return true
 
-func can_listen(actor_id: String, item_id: String, room_id: String, now:float=-1.0) -> bool:
+func can_listen(actor_id:String,item_id:String,room_id:String,now:float=-1.0)->bool:
 	var at:float=world.sim_clock if now<0.0 else now
-	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "")=="music" and track_duration(_lookup("tracks",item_id))>0 and listen_repeat_eligible(actor_id,item_id,at)
-
+	if not _device_access(actor_id,"tracks",room_id):return false
+	var active:Dictionary=active_device_session("tracks",room_id,at)
+	if not active.is_empty():return str(active["item_id"])==item_id and _attendance_eligible(actor_id,"tracks",active,at)
+	return track_duration(_lookup("tracks",item_id))>0 and listen_repeat_eligible(actor_id,item_id,at)
 
 # Live review: a reservation is not possession. Only a physically arrived
 # actor at a measured shelf station may change the actual holder/location.

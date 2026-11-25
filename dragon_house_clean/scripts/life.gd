@@ -322,9 +322,9 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("BROWSE_FILMS")
 	if world.media.get("tracks",[]).is_empty():
 		scores.erase("BROWSE_AUDIO")
-	if media_runtime.watch_candidates(str(actor["id"]),clock).is_empty():
+	if media_runtime.watch_candidates(str(actor["id"]),clock).is_empty() and not media_runtime.has_joinable_device(str(actor["id"]),"films",clock):
 		scores.erase("WATCH_FILM")
-	if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty():
+	if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty() and not media_runtime.has_joinable_device(str(actor["id"]),"tracks",clock):
 		scores.erase("LISTEN_MUSIC")
 	return scores
 
@@ -477,8 +477,8 @@ func end_catalog_browse(actor: Dictionary) -> void:
 	actor.erase("browsing_category")
 
 func end_concrete_media(actor: Dictionary) -> void:
-	# Concrete media state is evidence for the resident activity, not a global
-	# playback command. UI playback remains explicit user action.
+	# Release attendance independently of other listeners. No completion on cancellation.
+	media_runtime.cancel_timed_media(actor,clock)
 	actor.erase("activity_media_category")
 	actor.erase("activity_media_id")
 	actor.erase("activity_media_title")
@@ -506,6 +506,8 @@ func _concrete_media_is_valid(actor: Dictionary) -> bool:
 		return bool(item.get("physical",true)) and (
 			str(item.get("holder_id",""))==str(actor.get("id","")))
 	var destination_id:String=str(actor.get("station_room_id",""))
+	var key:String=media_runtime.timed_session_key(actor)
+	if key!="" and actor.has(key):return media_runtime.timed_session_valid(actor,clock)
 	if category=="films":
 		return media_runtime.can_watch(str(actor.get("id","")),item_id,destination_id)
 	if category=="tracks":
@@ -682,39 +684,22 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	# Watching/listening needs a concrete timed simulation record.
 	# A room visit alone is not evidence of completed consumption.
 	if intent=="WATCH_FILM":
-		var playable_films:Array=media_runtime.watch_candidates(str(actor["id"]),clock)
-		if playable_films.is_empty():
-			actor["until"]=clock+12.0
-			return
-		if candidate_media_bindings!=null:
-			# One uninterrupted simulated screening per cinema. Never credit a
-			# late arrival with watching an episode from its beginning.
-			if not candidate_media_bindings.active_film(str(room["id"]),str(actor["id"])).is_empty():
-				actor["until"]=clock+30.0
-				return
+		concrete_item=media_runtime.active_device_record("films",str(room["id"]),clock)
+		if concrete_item.is_empty() and candidate_media_bindings!=null:
 			concrete_item=candidate_media_bindings.choose_film(str(room["id"]),str(actor["id"]))
 		if concrete_item.is_empty():
 			concrete_item=media_runtime.choose_watch_item(str(actor["id"]),rng,clock)
-		if not media_runtime.can_watch(str(actor["id"]),
-				str(concrete_item.get("id","")),str(room["id"])):
+		if not media_runtime.can_watch(str(actor["id"]),str(concrete_item.get("id","")),str(room["id"]),clock):
 			actor["until"]=clock+12.0
 			return
 		concrete_category="films"
 	elif intent=="LISTEN_MUSIC":
-		if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty():
-			actor["until"]=clock+12.0
-			return
-		if candidate_media_bindings!=null:
-			# A shared salon has one sound source. Do not give a later
-			# arrival credit for the portion before arrival.
-			if not candidate_media_bindings.active_track(str(room["id"]),str(actor["id"])).is_empty():
-				actor["until"]=clock+12.0
-				return
+		concrete_item=media_runtime.active_device_record("tracks",str(room["id"]),clock)
+		if concrete_item.is_empty() and candidate_media_bindings!=null:
 			concrete_item=candidate_media_bindings.choose_track(str(room["id"]),str(actor["id"]))
 		if concrete_item.is_empty():
 			concrete_item=media_runtime.choose_listen_item(str(actor["id"]),rng,clock)
-		if not media_runtime.can_listen(str(actor["id"]),
-				str(concrete_item.get("id","")),str(room["id"])):
+		if not media_runtime.can_listen(str(actor["id"]),str(concrete_item.get("id","")),str(room["id"]),clock):
 			actor["until"]=clock+12.0
 			return
 		concrete_category="tracks"
@@ -962,6 +947,9 @@ func _start_cinema_commitment(actor:Dictionary)->void:
 	moving_ids.erase(id)
 	var started:=false
 	if str(actor.get("room_id",""))==str(actor.get("station_room_id","")) and str(actor.get("room_id",""))!="":
+		var category:String="tracks" if str(actor.get("intent",""))=="LISTEN_MUSIC" else "films"
+		var active:Dictionary=media_runtime.active_device_record(category,str(actor["room_id"]),clock)
+		if not active.is_empty():_set_concrete_media(actor,category,active)
 		started=media_runtime.begin_listen(actor,clock) if str(actor.get("intent",""))=="LISTEN_MUSIC" else media_runtime.begin_watch(actor,clock)
 	if not started:
 		stations.release(actor)

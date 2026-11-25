@@ -81,22 +81,8 @@ func pinned(room_id:String,surface_id:String)->Dictionary:
 		return {}
 	return record
 
-func active_film(room_id:String,ignore_actor:String="",perform_only:bool=false)->Dictionary:
-	var ids:Array=world.residents.keys()
-	ids.sort()
-	for id in ids:
-		if str(id)==ignore_actor:
-			continue
-		var actor:Dictionary=world.residents[id]
-		if not bool(actor.get("active",false)) or str(actor.get("intent",""))!="WATCH_FILM" or str(actor.get("station_room_id",""))!=room_id:
-			continue
-		if not str(actor.get("phase","")) in (["perform"] if perform_only else ["travel","perform"]):
-			continue
-		if perform_only and (str(actor.get("room_id",""))!=room_id or not actor.has("watch_session")):continue
-		var item_id:String=str(actor.get("activity_media_id",""))
-		if media.can_watch(str(id),item_id,room_id):
-			return media._lookup("films",item_id)
-	return {}
+func active_film(room_id:String,_ignore_actor:String="",_perform_only:bool=false)->Dictionary:
+	return media.active_device_record("films",room_id)
 
 func choose_film(room_id:String,actor_id:String)->Dictionary:
 	var active:Dictionary=active_film(room_id,actor_id)
@@ -109,20 +95,8 @@ func choose_film(room_id:String,actor_id:String)->Dictionary:
 		return item
 	return {}
 
-func active_track(room_id:String,ignore_actor:String="",perform_only:bool=false)->Dictionary:
-	var ids:Array=world.residents.keys()
-	ids.sort()
-	for id in ids:
-		if str(id)==ignore_actor:continue
-		var actor:Dictionary=world.residents[id]
-		if not bool(actor.get("active",false)) or str(actor.get("intent",""))!="LISTEN_MUSIC" or str(actor.get("station_room_id",""))!=room_id:
-			continue
-		if not str(actor.get("phase","")) in (["perform"] if perform_only else ["travel","perform"]):continue
-		if perform_only and (str(actor.get("room_id",""))!=room_id or not actor.has("listen_session")):continue
-		var item_id:String=str(actor.get("activity_media_id",""))
-		if media.can_listen(str(id),item_id,room_id):
-			return media._lookup("tracks",item_id)
-	return {}
+func active_track(room_id:String,_ignore_actor:String="",_perform_only:bool=false)->Dictionary:
+	return media.active_device_record("tracks",room_id)
 
 func choose_track(room_id:String,actor_id:String)->Dictionary:
 	var active:Dictionary=active_track(room_id,actor_id)
