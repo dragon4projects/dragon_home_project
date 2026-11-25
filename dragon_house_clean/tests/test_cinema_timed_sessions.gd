@@ -26,7 +26,9 @@ func run()->void:
 	assert(not m.begin_watch(a,100))
 	a["station_room_id"]=a["room_id"]
 	assert(m.begin_watch(a,100))
+	a["until"]=102
 	assert(m.begin_watch(a,101))
+	assert(a["until"]==2500)
 	assert(a["watch_session"]["started_at"]==100)
 	assert(a["watch_session"]["ends_at"]==2500)
 	var valid_session:Dictionary=a["watch_session"].duplicate(true)
