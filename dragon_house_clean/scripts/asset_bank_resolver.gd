@@ -12,8 +12,34 @@ var cache: Dictionary = {}
 var cache_order: Array = []
 var cache_capacity := 36
 var last_error := ""
+# Only active during a synchronous startup pass; never cache disk validity
+# across live gallery checks, imports or manifest reloads.
+var _validation_pass_active:=false
+var _validation_pass_images:Dictionary={}
+var validation_disk_probes:=0
+var validation_cache_hits:=0
+
+func begin_validation_pass()->void:
+	_validation_pass_images.clear()
+	_validation_pass_active=true
+	validation_disk_probes=0
+	validation_cache_hits=0
+
+func end_validation_pass()->void:
+	_validation_pass_active=false
+	_validation_pass_images.clear()
+
+func _validated_image_bytes(relative:String)->bool:
+	if _validation_pass_active and _validation_pass_images.has(relative):
+		validation_cache_hits+=1
+		return bool(_validation_pass_images[relative])
+	validation_disk_probes+=1
+	var ok:bool=_real_image_bytes(relative)
+	if _validation_pass_active:_validation_pass_images[relative]=ok
+	return ok
 
 func initialize(path: String = REGISTRY_PATH) -> bool:
+	end_validation_pass()
 	source_path = path
 	manifest = {}
 	cache.clear()
@@ -110,7 +136,7 @@ func candidate_bank(resident_id: String, appearance_profile: String, wardrobe: S
 			var relative: String = _normalize_frame(frame)
 			if not _safe_frame_path(resident_id,wardrobe,relative):
 				return false
-			if not _real_image_bytes(relative):
+			if not _validated_image_bytes(relative):
 				return false
 	return true
 
