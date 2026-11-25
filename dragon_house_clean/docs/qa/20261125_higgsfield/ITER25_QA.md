@@ -1,0 +1,13 @@
+# Iteration 4.25 — hearth conversation layout
+
+Baseline aff4aaf618af8cb4c3a26a81fffe6383b40cd1cd. Owner explicitly permits furniture rearrangement. Tested in hydrated Higgsfield sandbox with Godot 4.7.2, same temporary import limitations as previous QA. No topology change or CI.
+
+Two unsupported chairs move: common_r3_p3_chair_center from (-2.60,-0.08) to (-2.60,-1.40); canonical_hearth_extra_chair from (1.50,0.25) to (1.80,-0.50), in room-local X/Z meters. Existing translation helper moves mesh pivot, footprint, bounds, seat/feet/approach coordinates together. Fireplace, dragon, rugs, sofas, supported tables and cups/chess remain unchanged. The canonical geometry revision changes to CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH, triggering existing geometry migration. Old-save migration was not independently executed in this iteration.
+
+Trial search evaluated 432 valid chair combinations (coarse original standing grid yielded no groups); finer hearth-only 0.5m X / 0.25m Z sampling allows a four-person circle under existing 16-slot capacity, clearance and aisle rules. The selected arrangement is a valid candidate, not global optimum. Actual canonical group capacities: rest rooms 4 and 5, hearth 4, kitchen 6. No new furniture assets or room boundaries.
+
+Four executed final tests exit 0: test_canonical_hearth_interior (10 measured approaches, 20 entry paths, 2 cups, 12 non-overlapping blockers), test_canonical_group_geometry (44 reachable claims, capacities 4/5/4/6), test_canonical_render_contract (seat projection, invalid pose fallback, guest privacy, conditional dressing), test_teea008_nav (33 variants, 292 stations, 584 routes, 57400 live samples, 836 path calls, no failures). Hashes of changed source files verified against committed blobs.
+
+Staged actual four-person session screenshot iter25_hearth.jpg SHA256 b1fb9edf2df0ff0cc5475415c38715d14e74faae958ee8f4e766f09c4ab6b08d; visual capture exit 0, GROUP_VISUAL_CAPTURE_PASS active=4, log SHA256 10ab6eca0831fc79c97ca00712ad231426538cc95711910c02ff76702ab9ee17. Visually inspected: four characters grounded, repositioned chairs and coffee table visible, conversational group somewhat stretched with some overlapping silhouettes in projection; fireplace dominates room. Not an artistic acceptance or autonomous assembly proof. Dragon nook outside this close framing. Full original PNG/log in ephemeral sandbox.
+
+Next: close-up calibrated seated poses in actual furniture, hand contact cups/books, moving FOLLOW; continue artistic furniture arrangement and lighting after reviewing complete room views. Verify save migration on changed layout and autonomous groups. Full export/hardware QA pending.
