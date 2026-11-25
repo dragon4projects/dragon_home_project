@@ -6,6 +6,7 @@ const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const ContentViewerScript = preload("res://scripts/content_viewer.gd")
 const ObjectImportScript = preload("res://scripts/runtime_object_import.gd")
+const WallPlacementScript = preload("res://scripts/wall_display_placement.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
 const RoomVisualLayoutScript = preload("res://scripts/room_visual_layout_v2.gd")
@@ -108,6 +109,7 @@ var object_home_drag_id := ""
 var object_home_drag_room_id := ""
 var object_home_drag_anchor := Vector2.ZERO
 var object_home_drag_world_x := 0.0
+var object_home_drag_wall_y := -1.0
 var bank_gallery: PanelContainer
 var door_note_panel: PanelContainer
 var door_note_title: Label
@@ -2654,7 +2656,7 @@ func door_note_at_screen(point:Vector2)->String:
 
 func _import_media(path: String) -> void:
 	var importer=ObjectImportScript.new()
-	var result:Dictionary=importer.import_file(world,path)
+	var result:Dictionary=importer.import_file(world,path,teea008_review if teea008_review.enabled else null,life.candidate_navigation)
 	if not bool(result.get("ok",false)):
 		notice.text="Ошибка импорта: "+str(result.get("error","unknown"))
 		if int(result.get("added",0))>0:
@@ -3065,6 +3067,10 @@ func _input(event: InputEvent) -> void:
 					object_home_drag_room_id=room_id
 					object_home_drag_anchor=Vector2(float(raw[0]),float(raw[1]))
 					object_home_drag_world_x=world.room_center_pos(room).x+object_home_drag_anchor.x
+					object_home_drag_wall_y=-1.0
+					var mounted:Array=object.get("display_anchor",[])
+					if str(object.get("display_mode",""))=="wall" and mounted.size()==3:
+						object_home_drag_wall_y=float(mounted[1])
 					notice.text="Переставляю %s · отпусти ЛКМ, чтобы назначить новый дом" % [
 						str(object.get("display_name",object_id))]
 					get_viewport().set_input_as_handled()
@@ -3073,14 +3079,21 @@ func _input(event: InputEvent) -> void:
 			var moved_id:String=object_home_drag_id
 			var moved_room:String=object_home_drag_room_id
 			var moved_anchor:Vector2=object_home_drag_anchor
+			var wall_y:float=object_home_drag_wall_y
 			object_home_drag_id=""
 			object_home_drag_room_id=""
-			if world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true):
+			object_home_drag_wall_y=-1.0
+			var allowed:=true
+			if wall_y>=0.0:
+				var object:Dictionary=world.physical_object(moved_id)
+				allowed=WallPlacementScript.valid(world,teea008_review if teea008_review.enabled else null,life.candidate_navigation,world.room_by_id(moved_room),Vector2(moved_anchor.x,wall_y),WallPlacementScript.object_extent(object),moved_id)
+			if allowed and world.assign_physical_object_home(moved_id,moved_room,moved_anchor,true,"",wall_y):
+				world.save_world()
 				life.refresh_changed_station_claims()
 				notice.text="Новое место назначено домом: %s" % str(
 					world.physical_object(moved_id).get("display_name",moved_id))
 			else:
-				notice.text="Не удалось назначить новое место"
+				notice.text="Место занято или не подходит по размеру; прежний дом сохранён"
 			update_physical_objects()
 			update_hud()
 			get_viewport().set_input_as_handled()
@@ -3102,6 +3115,8 @@ func _input(event: InputEvent) -> void:
 				object_home_drag_world_x+=e.relative.x*drag_scale
 				if not wall:
 					object_home_drag_anchor.y+=e.relative.y*drag_scale
+				else:
+					object_home_drag_wall_y=clampf(object_home_drag_wall_y-e.relative.y*drag_scale,0.65,2.8)
 				var absolute_x:float=object_home_drag_world_x
 				var candidate:Dictionary=world.get_room(roundi(absolute_x/W),int(room.get("level",0)))
 				if world.public_cutaway_allowed(candidate) and str(candidate["id"])!=object_home_drag_room_id:
@@ -3121,13 +3136,11 @@ func _input(event: InputEvent) -> void:
 					var pos:Vector3=world.room_local_to_world(room,object_home_drag_anchor)
 					var height:float=0.0 if node.has_meta("artifact_cube_side") else 0.22
 					if wall:
-						var mounted:Array=dragged.get("display_anchor",[])
-						if mounted.size()==3:
-							height=float(mounted[1])
+						height=object_home_drag_wall_y
+						if teea008_review.enabled and bool(visual_room_groups.get(object_home_drag_room_id,{}).get("teea008_review",false)):pos.z=-1.98
 					node.position=Vector3(depth_visual_x(object_home_drag_room_id,pos.x,pos.z),pos.y+height,pos.z)
-					node.scale=Vector3.ONE*depth_visual_scale(object_home_drag_anchor.y)
-				notice.text="Новый дом X %.2f · Z %.2f" % [
-					object_home_drag_anchor.x,object_home_drag_anchor.y]
+					node.scale=Vector3.ONE*depth_visual_scale(pos.z)
+				notice.text="Новый дом X %.2f · высота %.2f" % [object_home_drag_anchor.x,object_home_drag_wall_y] if wall else "Новый дом X %.2f · Z %.2f" % [object_home_drag_anchor.x,object_home_drag_anchor.y]
 			get_viewport().set_input_as_handled()
 			return
 		if not moving_view and not build_mode:

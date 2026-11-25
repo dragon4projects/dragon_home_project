@@ -225,6 +225,10 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 			return reject("invalid support identity")
 		if str(support_id)!="" and (wall or str(object.get("viewer_category",""))!="artifacts"):
 			return reject("support home is only for movable artifacts")
+		if payload.has("wall_height"):
+			var height=payload["wall_height"]
+			if not wall or typeof(height) not in [TYPE_FLOAT,TYPE_INT] or not is_finite(float(height)) or float(height)<0.65 or float(height)>2.8:
+				return reject("invalid wall display height")
 		if wall:
 			var mounted:Array=object.get("display_anchor",[])
 			var next_anchor:Array=payload["home_anchor"]

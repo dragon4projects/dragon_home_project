@@ -1,5 +1,6 @@
 extends RefCounted
 ## Explicit local owner import. No new store: registration is event-backed.
+const WallPlacementScript=preload("res://scripts/wall_display_placement.gd")
 const CATEGORIES := ["artifacts","paintings","posters","cups"]
 const LIMIT_BYTES := 16777216
 const LIMIT_IMAGE := 4096
@@ -7,7 +8,7 @@ const LIMIT_IMAGE := 4096
 func _fail(reason:String, added:int=0)->Dictionary:
 	return {"ok":false,"error":reason,"added":added}
 
-func import_file(world,path:String)->Dictionary:
+func import_file(world,path:String,bank=null,navigation=null)->Dictionary:
 	var file:=FileAccess.open(path,FileAccess.READ)
 	if file==null or file.get_length()>LIMIT_BYTES:
 		return _fail("unreadable/oversized manifest")
@@ -16,6 +17,7 @@ func import_file(world,path:String)->Dictionary:
 		return _fail("manifest must be a JSON object")
 	var seen:Dictionary={}
 	var pending:Array=[]
+	var wall_reservations:Array=[]
 	var has_media:bool=parsed.has("books") or parsed.has("films") or parsed.has("tracks") or parsed.has("audio")
 	var has_objects:=false
 	for category in CATEGORIES:
@@ -40,6 +42,8 @@ func import_file(world,path:String)->Dictionary:
 				return _fail("public non-lift room required: "+id)
 			var wall:bool=category in ["paintings","posters"]
 			var anchor=row.get("home_anchor",[])
+			var auto_wall:bool=wall and not row.has("home_anchor")
+			if auto_wall:anchor=[0.0,1.5,-1.52]
 			if typeof(anchor)!=TYPE_ARRAY or anchor.size()!=(3 if wall else 2):
 				return _fail("home_anchor requires [x,y,z] for wall, [x,z] otherwise: "+id)
 			for v in anchor:
@@ -76,6 +80,17 @@ func import_file(world,path:String)->Dictionary:
 			var height:float=float(row.get("display_world_height",0.8 if wall else 0.3))
 			if not is_finite(height) or height<0.05 or height>2.5:
 				return _fail("invalid display height: "+id)
+			if wall:
+				var size:Vector2=WallPlacementScript.extent(height,float(image.get_width())/float(image.get_height()))
+				if auto_wall:
+					anchor=WallPlacementScript.find_slot(world,bank,navigation,room,size,wall_reservations)
+					if anchor.is_empty():return _fail("no free wall position for "+id)
+					x=float(anchor[0])
+					z=float(anchor[2])
+				var center:=Vector2(float(anchor[0]),float(anchor[1]))
+				if not WallPlacementScript.valid(world,bank,navigation,room,center,size,"",wall_reservations):
+					return _fail("wall display overlaps furniture/display or room edge: "+id)
+				wall_reservations.append({"room":room_id,"rect":Rect2(center-size*0.5,size)})
 			var small:bool=category=="artifacts" and str(row.get("object_class","display_object"))=="small_artifact"
 			var metadata:Dictionary={"description":str(row.get("description","")),"viewer_category":category,"object_class":"small_artifact" if small else "display_object","home_anchor":anchor.duplicate(),"display_mode":"wall" if wall else "","display_world_height":height,"reset_eligible":not wall}
 			if wall:

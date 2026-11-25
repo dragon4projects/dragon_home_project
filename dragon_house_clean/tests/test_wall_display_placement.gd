@@ -1,0 +1,31 @@
+extends SceneTree
+const W=preload("res://scripts/world_model.gd")
+const P=preload("res://scripts/wall_display_placement.gd")
+func _initialize()->void:call_deferred("run")
+func run()->void:
+	var w=W.new()
+	w.save_path="user://wall_placement_qa.json"
+	w.seed_world()
+	var room:Dictionary=w.get_room(2,0)
+	assert(w.public_cutaway_allowed(room))
+	var rid:String=str(room["id"])
+	var size:Vector2=P.extent(0.6,1.0)
+	var anchor:Array=P.find_slot(w,null,null,room,size)
+	assert(anchor.size()==3)
+	assert(P.valid(w,null,null,room,Vector2(anchor[0],anchor[1]),size))
+	assert(not P.valid(w,null,null,room,Vector2(0,2.8),Vector2(0.9,1.5)))
+	var held:Array=[{"room":rid,"rect":Rect2(Vector2(anchor[0],anchor[1])-size*0.5,size)}]
+	assert(not P.valid(w,null,null,room,Vector2(anchor[0],anchor[1]),size,"",held))
+	var second:Array=P.find_slot(w,null,null,room,size,held)
+	assert(second.size()==3 and second!=anchor)
+	assert(w.register_physical_object("QA_WALL","QA","",rid,false,false,false,false,true,{"viewer_category":"paintings","display_mode":"wall","home_anchor":anchor,"display_world_height":0.6}))
+	assert(w.assign_physical_object_home("QA_WALL",rid,Vector2(0,-1.52),true,"",1.8))
+	assert(absf(float(w.physical_object("QA_WALL")["display_anchor"][1])-1.8)<0.001)
+	assert(not w.assign_physical_object_home("QA_WALL",rid,Vector2(0,-1.52),true,"",3.1))
+	assert(w.save_world())
+	var copy=W.new()
+	copy.save_path=w.save_path
+	copy.load_or_seed()
+	assert(absf(float(copy.physical_object("QA_WALL")["display_anchor"][1])-1.8)<0.001)
+	print("WALL_PLACEMENT_PASS")
+	quit(0)

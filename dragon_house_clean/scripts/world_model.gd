@@ -436,11 +436,11 @@ func restore_physical_object_home(object_id: String, reset_day: int = -1) -> boo
 	return object_events.restore_home(object_id,reset_day)
 
 func assign_physical_object_home(object_id: String, target_room_id: String,
-		home_anchor: Vector2, move_now: bool = true, support_id:String="") -> bool:
+		home_anchor: Vector2, move_now: bool = true, support_id:String="",wall_height:float=-1.0) -> bool:
 	if not _ensure_object_events():
 		return false
 	return object_events.assign_home(
-		object_id,target_room_id,home_anchor,move_now,"LOCAL_DRAGON",support_id)
+		object_id,target_room_id,home_anchor,move_now,"LOCAL_DRAGON",support_id,wall_height)
 
 func game_day_index() -> int:
 	return maxi(0,int(floor(sim_clock/GAME_DAY_SECONDS)))

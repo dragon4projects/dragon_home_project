@@ -617,7 +617,7 @@ func register_object(object_id: String, display_name: String,
 	return bool(submit(event).get("ok",false))
 
 func assign_home(object_id: String, target_room_id: String, home_anchor: Vector2,
-		move_now: bool = true, source_id: String = "LOCAL_DRAGON", support_id:String="") -> bool:
+		move_now: bool = true, source_id: String = "LOCAL_DRAGON", support_id:String="",wall_height:float=-1.0) -> bool:
 	var object:Dictionary=world.objects.get(object_id,{})
 	if object.is_empty():
 		return false
@@ -640,6 +640,8 @@ func assign_home(object_id: String, target_room_id: String, home_anchor: Vector2
 			"move_now":move_now,
 			"sim_clock":float(world.sim_clock)
 		})
+	if wall_height!=-1.0:
+		event["payload"]["wall_height"]=wall_height
 	return bool(submit(event).get("ok",false))
 
 func set_ambient_protection(object_id: String, protected: bool) -> bool:

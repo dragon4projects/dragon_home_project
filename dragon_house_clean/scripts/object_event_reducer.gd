@@ -145,7 +145,7 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			if str(object.get("display_mode",""))=="wall":
 				var old_display:Array=object.get("display_anchor",[])
 				if old_display.size()==3:
-					object["display_anchor"]=[new_anchor[0],old_display[1],new_anchor[1]]
+					object["display_anchor"]=[new_anchor[0],float(payload.get("wall_height",old_display[1])),new_anchor[1]]
 					object["interaction_point"]=[new_anchor[0],float(new_anchor[1])+0.30]
 					object["interaction_station_id"]="WALL_DISPLAY_"+object_id
 		_append_history(object,_history_entry(event,"HOME_ASSIGNED",
