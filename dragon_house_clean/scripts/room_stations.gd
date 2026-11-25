@@ -34,7 +34,15 @@ func _init() -> void:
 		if selected != InteractionAnchors.DEFAULT_PATH:
 			furniture.initialize(InteractionAnchors.DEFAULT_PATH)
 
+func _owned_hidden_room(room:Dictionary)->bool:
+	return str(room.get("type",""))=="private" and str(room.get("architecture_revision","")).begins_with("CANONICAL_HOUSE_") and str(room.get("owner_id",""))!=""
+
+func _private_layout()->Array:
+	# Logical bed/rest station. Never instantiated as visible room art.
+	return [{"id":"PRIVATE_HOME_REST","offset":Vector2(0,-0.90),"kind":"floor_rest","furniture_id":"PRIVATE_HOME","pose_hint":"IDLE_S","approach_z":1.5}]
+
 func capacity(room: Dictionary) -> int:
+	if _owned_hidden_room(room):return 1
 	if room.is_empty() or str(room.get("privacy","public"))!="public" or (
 			str(room.get("type",""))=="lift"):
 		return 0
@@ -129,6 +137,7 @@ func _layout_from_anchors(room: Dictionary, anchors: Array) -> Array:
 	return positions
 
 func layout(room: Dictionary) -> Array:
+	if _owned_hidden_room(room):return _private_layout()
 	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
 	if candidate_navigation!=null and candidate_navigation.has_layout(room):
@@ -157,6 +166,7 @@ func _display_anchor_data(world, room: Dictionary) -> Array:
 	return result
 
 func layout_for_world(world, room: Dictionary) -> Array:
+	if world.canonical_house_seed and _owned_hidden_room(room):return _private_layout()
 	if room.is_empty() or str(room.get("privacy","public"))!="public":
 		return []
 	var rid:String=str(room.get("id",""))
@@ -243,6 +253,8 @@ func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
 	return used
 
 func available_count(world, room: Dictionary) -> int:
+	if world.canonical_house_seed and _owned_hidden_room(room):
+		return maxi(0,1-used_slots(world,str(room["id"])).size())
 	if room.is_empty() or room.get("privacy","public") != "public":
 		return 0
 	var slots:int=capacity(room)
@@ -260,6 +272,10 @@ func _claim(room: Dictionary, index: int, spot: Dictionary) -> Dictionary:
 
 func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> Dictionary:
 	var id: String = str(actor.get("id",""))
+	if world.canonical_house_seed and _owned_hidden_room(room):
+		if not world.is_accessible(room,id) or not intent in ["REST","SLEEP"]:return {}
+		if not used_slots(world,str(room["id"]),[id]).is_empty():return {}
+		return _claim(room,0,_private_layout()[0])
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,id) or capacity(room)==0:
 		return {}
 	var used: Dictionary = used_slots(world,str(room["id"]),[id])

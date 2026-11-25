@@ -397,10 +397,16 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 				if stations.single(world,actor,room,intent).is_empty():
 					continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
+				if str(room.get("type",""))=="private" and stations.single(world,actor,room,intent).is_empty():continue
 				candidates.append(room)
 		if candidates.is_empty():
 			continue
-		var selected:Dictionary=best_destination(actor,candidates)
+		var selected:Dictionary={}
+		if world.canonical_house_seed and intent=="SLEEP" and daypart()=="night":
+			var home:Dictionary=world.room_by_id(str(actor.get("home_room_id","")))
+			if not home.is_empty() and candidates.has(home):
+				selected=_destination_pressure(actor,home)
+		if selected.is_empty():selected=best_destination(actor,candidates)
 		if selected.is_empty():
 			continue
 		var destination:Dictionary=selected["room"]

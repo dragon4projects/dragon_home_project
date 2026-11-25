@@ -1523,6 +1523,37 @@ func make_room(group: Dictionary) -> void:
 		var roof_label := label3(n,title,Vector3(0,3.35,0.40),24,Color("#f4d9b9"))
 		roof_label.name = "RoomRoofLabel"
 
+func _batch_static_shell_boxes(parent:Node3D)->int:
+	if parent==null:return 0
+	var groups:Dictionary={}
+	for child in parent.get_children():
+		if not child is MeshInstance3D:continue
+		var mesh_node:MeshInstance3D=child
+		if not mesh_node.mesh is BoxMesh or mesh_node.is_in_group("low_end_micro_detail") or not mesh_node.visible:continue
+		if mesh_node.material_override==null:continue
+		var key:String=str(mesh_node.mesh.get_instance_id())+":"+str(mesh_node.material_override.get_instance_id())
+		if not groups.has(key):groups[key]=[]
+		groups[key].append(mesh_node)
+	var saved:=0
+	for items in groups.values():
+		if items.size()<2:continue
+		var first:MeshInstance3D=items[0]
+		var batch:=MultiMesh.new()
+		batch.transform_format=MultiMesh.TRANSFORM_3D
+		batch.mesh=first.mesh
+		batch.instance_count=items.size()
+		for i in range(items.size()):
+			batch.set_instance_transform(i,items[i].transform)
+			items[i].visible=false
+		var node:=MultiMeshInstance3D.new()
+		node.name="StaticShellBatch_%d"%parent.get_child_count()
+		node.multimesh=batch
+		node.material_override=first.material_override
+		node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		parent.add_child(node)
+		saved+=items.size()-1
+	return saved
+
 func make_rooms() -> void:
 	art_layer_count = 0
 	detailed_room_groups.clear()
@@ -1532,6 +1563,14 @@ func make_rooms() -> void:
 	_clear_children_now(room_root)
 	for group in world.visual_groups():
 		make_room(group)
+	if architecture_review:
+		var saved:=0
+		for group_node in room_root.get_children():
+			# Rear returns are used by the occlusion controller; do not batch
+			# those mutable nodes. Only immutable repeated ceiling beams.
+			var beams:Node3D=group_node.get_node_or_null("Layer_Structure/CeilingDepthBeams")
+			saved+=_batch_static_shell_boxes(beams)
+		world.runtime_state["canonical_shell_draws_saved"]=saved
 
 func make_sprite_texture(is_manka: bool) -> Texture2D:
 	var img := Image.create(96, 144, false, Image.FORMAT_RGBA8)
@@ -2165,6 +2204,11 @@ func build_interface() -> void:
 	qa_button.text = "QA-спрайты [V]"
 	qa_button.pressed.connect(toggle_qa_art_preview)
 	hud_main_body.add_child(qa_button)
+	if architecture_review:
+		var drinks_button:=Button.new()
+		drinks_button.text="Напитки · QA"
+		drinks_button.pressed.connect(_open_drink_qa)
+		hud_main_body.add_child(drinks_button)
 	var journal_button := Button.new()
 	journal_button.text = "Журнал дома [J]"
 	journal_button.pressed.connect(toggle_journal)
@@ -3454,3 +3498,78 @@ func _place_cup_at_verified_hand(anchor:Node3D,holder:Dictionary)->bool:
 	anchor.set_meta("hand_contact_status","IDLE_FRAME_MARKED")
 	anchor.set_meta("hand_contact_target",target)
 	return true
+
+func _open_drink_qa()->void:
+	var actor_id:String=follow_id
+	var actor:Dictionary=world.residents.get(actor_id,{})
+	var beverage=life.candidate_cups.beverages
+	if actor.is_empty() or actor_id=="MANJKA" or not beverage.enabled:
+		notice.text="Для QA напитков выбери сестру или гостя и включи слежение"
+		return
+	var window:=Window.new()
+	window.title="QA напитков · "+str(actor.get("name",actor_id))
+	window.size=Vector2i(800,580)
+	window.transient=true
+	window.exclusive=true
+	add_child(window)
+	window.close_requested.connect(window.queue_free)
+	var column:=VBoxContainer.new()
+	column.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	window.add_child(column)
+	var context:=OptionButton.new()
+	context.add_item("Контекст: автоматически")
+	context.set_item_metadata(0,"")
+	for key in beverage.config["weights"]:
+		context.add_item(str(key))
+		context.set_item_metadata(context.item_count-1,str(key))
+		if str(beverage.forced_contexts.get(actor_id,""))==str(key):context.select(context.item_count-1)
+	context.item_selected.connect(func(i):
+		var value:String=str(context.get_item_metadata(i))
+		if value=="":beverage.forced_contexts.erase(actor_id)
+		else:beverage.forced_contexts[actor_id]=value)
+	column.add_child(context)
+	var drink:=OptionButton.new()
+	drink.add_item("Напиток: автоматически")
+	drink.set_item_metadata(0,"")
+	for row in beverage.entries:
+		drink.add_item(str(row["display_name_ru"]))
+		drink.set_item_metadata(drink.item_count-1,str(row["drink_id"]))
+		if str(beverage.forced_drinks.get(actor_id,""))==str(row["drink_id"]):drink.select(drink.item_count-1)
+	drink.item_selected.connect(func(i):
+		var value:String=str(drink.get_item_metadata(i))
+		if value=="":beverage.forced_drinks.erase(actor_id)
+		else:beverage.forced_drinks[actor_id]=value)
+	column.add_child(drink)
+	var report:=RichTextLabel.new()
+	report.bbcode_enabled=false
+	report.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	report.text=beverage.summary(actor_id)
+	column.add_child(report)
+	var actions:=HBoxContainer.new()
+	column.add_child(actions)
+	var refresh:=Button.new()
+	refresh.text="Обновить"
+	refresh.pressed.connect(func():report.text=beverage.summary(actor_id))
+	actions.add_child(refresh)
+	var simulation:=Button.new()
+	simulation.text="1000 выборов"
+	simulation.pressed.connect(func():
+		var value:String=str(context.get_item_metadata(context.selected))
+		report.text=beverage.simulate(actor_id,value if value!="" else "GENERIC"))
+	actions.add_child(simulation)
+	var empty:=Button.new()
+	empty.text="Опустошить её чашки"
+	empty.pressed.connect(func():
+		for cid in world.runtime_state.get("beverages",{}).get("cups",{}):
+			if str(beverage.content(str(cid)).get("consumer_id",""))==actor_id:beverage.empty_cup(str(cid))
+		world.save_world()
+		report.text=beverage.summary(actor_id))
+	actions.add_child(empty)
+	var reset:=Button.new()
+	reset.text="Сбросить историю"
+	reset.pressed.connect(func():
+		beverage.reset_history(actor_id)
+		world.save_world()
+		report.text=beverage.summary(actor_id))
+	actions.add_child(reset)
+	window.popup_centered()

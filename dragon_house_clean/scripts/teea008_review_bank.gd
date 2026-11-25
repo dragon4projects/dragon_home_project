@@ -11,10 +11,12 @@ var layouts:Dictionary={}
 var enabled:=false
 var sketchfab_common_enabled:=false
 var live_physical_objects:=false
+var packed_model_cache:Dictionary={}
 var error:=""
 func initialize(force_review:bool=false) -> bool:
 	layouts.clear()
 	surfaces.clear()
+	packed_model_cache.clear()
 	enabled=false
 	sketchfab_common_enabled=false
 	error=""
@@ -85,7 +87,10 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->
 	var asset:String=str(item["asset_id"])
 	var position:Array=item["room_local_xyz"]
 	var rotation:Array=item["rotation_deg_xyz"]
-	var scene:=ResourceLoader.load(_asset_path(asset),"PackedScene") as PackedScene
+	var scene:PackedScene=packed_model_cache.get(asset)
+	if scene==null:
+		scene=ResourceLoader.load(_asset_path(asset),"PackedScene") as PackedScene
+		if scene!=null:packed_model_cache[asset]=scene
 	if scene==null:
 		return null
 	var wrapper:=Node3D.new()

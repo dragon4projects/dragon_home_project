@@ -9,6 +9,8 @@ var entries:Array=[]
 var by_id:Dictionary={}
 var rng:=RandomNumberGenerator.new()
 var enabled:=false
+var forced_contexts:Dictionary={}
+var forced_drinks:Dictionary={}
 
 func setup(model)->void:
 	world=model
@@ -119,6 +121,8 @@ func fill_or_resume(cup_id:String,actor_id:String,context:String,daypart:String,
 	if str(obj.get("current_holder_id",""))!=actor_id or str(obj.get("viewer_category",""))!="cups":return false
 	var existing:=content(cup_id)
 	if float(existing.get("remaining_ml",0))>0:return can_use(cup_id,actor_id)
+	context=str(forced_contexts.get(actor_id,context))
+	forced=str(forced_drinks.get(actor_id,forced))
 	var prefs:=history(actor_id)
 	var options:=weights(prefs,context,daypart,available)
 	var roll:=rng.randf()
@@ -186,3 +190,40 @@ func empty_cup(cup_id:String)->void:
 
 func reset_history(actor_id:String)->void:
 	if enabled:_store()["preferences"].erase(actor_id)
+
+func summary(actor_id:String)->String:
+	var prefs:=history(actor_id)
+	var last:Dictionary=prefs.get("last_choice",{})
+	var counts:Dictionary=prefs.get("drink_counts",{})
+	var keys:Array=counts.keys()
+	keys.sort_custom(func(a,b):return int(counts[a])>int(counts[b]))
+	var lines:Array[String]=["Успешные новые напитки: "+str(prefs.get("total_choices",0))]
+	for id in keys:
+		lines.append("%s: %d"%[by_id.get(str(id),{}).get("display_name_ru",id),int(counts[id])])
+	if not last.is_empty():
+		lines.append("Последний выбор: %s | %s | RNG %.5f"%[by_id[last["selected_drink_id"]]["display_name_ru"],last["event_context"],float(last["rng_roll"])])
+		lines.append("10 кандидатов: вес = обучение × событие × время × тег × доступность × серия")
+		for row in last.get("top_candidates",[]):
+			lines.append("%s: %.3f × %.3f × %.3f × %.3f × %.3f × %.3f = %.3f"%[by_id[row["drink_id"]]["display_name_ru"],row["learned_weight"],row["event_multiplier"],row["time_multiplier"],row["tag_multiplier"],row["availability_multiplier"],row["recent_streak_modifier"],row["final_weight"]])
+	for cid in _store()["cups"]:
+		var c:Dictionary=content(str(cid))
+		if str(c.get("consumer_id",""))==actor_id and float(c.get("remaining_ml",0))>0:
+			lines.append("%s: %s, %.1f мл"%[cid,c["display_name"],float(c["remaining_ml"])])
+	return "\n".join(lines)
+
+func simulate(actor_id:String,context:String,count:int=1000)->String:
+	var options:=weights(history(actor_id),context,"day")
+	var local:=RandomNumberGenerator.new()
+	local.seed=1052026
+	var totals:Dictionary={}
+	for i in range(count):
+		var choice:=select_weighted(options,local.randf())
+		if choice.is_empty():continue
+		var id:String=str(choice["drink_id"])
+		totals[id]=int(totals.get(id,0))+1
+	var keys:Array=totals.keys()
+	keys.sort_custom(func(a,b):return int(totals[a])>int(totals[b]))
+	var lines:Array[String]=["QA %d выборов (без изменения истории)"%count]
+	for id in keys.slice(0,10):
+		lines.append("%s: %.1f%%"%[by_id[id]["display_name_ru"],float(totals[id])*100.0/count])
+	return "\n".join(lines)

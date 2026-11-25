@@ -1,0 +1,5 @@
+# RC work: owned hidden home station, QA drink controls and static optimization
+
+Adds one logical REST/SLEEP-only spot per assigned canonical private room; only owner can reserve, strangers cannot enter, empty reserve rooms remain unavailable, facade and room-art privacy unchanged. Night SLEEP prefers home when reachable; no new personal appearance or interior assumed. Tests validate all 24 home claims and actual route creation.
+
+Per-room ceiling beams are batched with MultiMesh only when exact mesh and material are shared, original named nodes retained but hidden. Do not batch mutable side returns, doors, or micro detail. PackedScene references reused for static model mount/unmount. Candidate optimization needs measured draw-call and frame impact; no claim of target Dell FPS. Beverage QA window gives selected actor history, last ten scored options, context and next-beverage override, deterministic 1000-choice simulation, empty cups and reset history. Overrides only affect QA session; source model routes still abstract. No interim exports. 
