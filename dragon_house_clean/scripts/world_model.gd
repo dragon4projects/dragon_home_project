@@ -1159,7 +1159,7 @@ func import_catalog(path: String) -> bool:
 			var updated:Dictionary=old.duplicate(true)
 			updated.merge(incoming,true)
 			if category=="books":
-				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id","last_interaction_at"]:
+				for field in ["holder_id","location_room_id","idle_since","progress_by_actor","owner_id","borrowed_at","home_room_id","last_interaction_at","physical_item_id","work_id"]:
 					if old.has(field):
 						updated[field]=old[field]
 				if bool(old.get("physical",true)):

@@ -168,6 +168,10 @@ func setup(p_world) -> void:
 	# Only active timed performers are rearmed, once on load.
 	for id in active_ids:
 		var actor:Dictionary=world.residents[id]
+		if actor.has("reading_session"):
+			var reading:Dictionary=actor["reading_session"]
+			actor["until"]=float(reading.get("ends_at",clock))
+			life_scheduler.schedule_at(id,maxf(clock,float(actor["until"])),"RESTORED_READING_COMMITMENT")
 		if media_runtime.timed_session_valid(actor,clock):
 			var key:String=media_runtime.timed_session_key(actor)
 			actor["until"]=float(actor[key]["ends_at"])
@@ -250,6 +254,7 @@ func refresh_changed_station_claims() -> int:
 			continue
 		var book_id:String=str(actor.get("held_book",""))
 		if book_id!="":
+			media_runtime.pause_reading(actor,clock)
 			if candidate_navigation!=null:
 				media_runtime.drop_book(str(id),book_id,int(maxf(1.0,clock)))
 			else:
@@ -314,7 +319,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores["WORK_CREATE"] += 0.45
 	if actor["id"] == "MANJKA":
 		return {"REST": 0.2 + rest, "PURPOSEFUL_EXPLORE": 1.0 + curiosity}
-	if (media_runtime.available_shelf_books(str(actor["id"])) if candidate_navigation!=null else media_runtime.available_books()).is_empty():
+	if not media_runtime.has_reading_choice(str(actor["id"]),clock):
 		scores.erase("READ_BOOK")
 	if world.media.get("books",[]).is_empty():
 		scores.erase("BROWSE_BOOK_CATALOG")
@@ -477,7 +482,8 @@ func end_catalog_browse(actor: Dictionary) -> void:
 	actor.erase("browsing_category")
 
 func end_concrete_media(actor: Dictionary) -> void:
-	# Release attendance independently of other listeners. No completion on cancellation.
+	# Settle actual elapsed reading once, and release independent attendance.
+	media_runtime.pause_reading(actor,clock)
 	media_runtime.cancel_timed_media(actor,clock)
 	actor.erase("activity_media_category")
 	actor.erase("activity_media_id")
@@ -708,11 +714,11 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 
 	# Acquiring an object comes only after a destination and station are valid.
 	if intent == "READ_BOOK":
-		var books: Array = media_runtime.available_books()
+		var books: Array = media_runtime.choose_book_options(str(actor["id"]),rng,clock)
 		if books.is_empty():
 			actor["until"] = clock + 12.0
 			return
-		concrete_item=books[rng.randi_range(0,books.size()-1)]
+		concrete_item=books[0]
 		var book_id: String = str(concrete_item.get("id",""))
 		if not media_runtime.borrow(actor["id"],book_id,int(clock)):
 			actor["until"] = clock + 12.0
@@ -935,8 +941,11 @@ func _move(actor: Dictionary, delta: float) -> void:
 				moving_ids.erase(actor_id)
 				_schedule_actor(actor,"DRINK_SERVICE_ARRIVAL")
 				return
-			if candidate_navigation!=null and str(actor.get("book_task_stage",""))=="read":
-				actor["book_read_started"]=clock
+			if str(actor.get("intent",""))=="READ_BOOK" and actor.has("held_book"):
+				if media_runtime.begin_reading(actor,clock,rng.randf_range(MediaRuntime.READING_SESSION_MIN,MediaRuntime.READING_SESSION_MAX)):
+					moving_ids.erase(actor_id)
+					_schedule_actor(actor,"READING_COMMITMENT")
+					return
 			if str(actor.get("intent","")) in ["WATCH_FILM","LISTEN_MUSIC"]:
 				_start_cinema_commitment(actor)
 				return
@@ -1039,7 +1048,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 			return
 	if actor.get("held_book","") != "":
 		var book_id := str(actor["held_book"])
-		media_runtime.read(id,book_id,25.0)
+		media_runtime.pause_reading(actor,clock)
 		media_runtime.return_book(id,book_id)
 		actor.erase("held_book")
 		_record("%s — вернула книгу" % actor.get("name",id))
@@ -1129,7 +1138,7 @@ func _prepare_candidate_positions()->void:
 	world.runtime_state["teea008_navigation_initialized"]=true
 
 func _clear_book_task(actor:Dictionary)->void:
-	for key in ["book_task_stage","book_task_id","book_source_room","book_read_room","book_read_started"]:
+	for key in ["book_task_stage","book_task_id","book_source_room","book_read_room","book_read_started","book_return_slot","book_return_room"]:
 		actor.erase(key)
 
 func _book_route(actor:Dictionary,room:Dictionary,intent:String,shelf_station:String="")->bool:
@@ -1165,7 +1174,7 @@ func _begin_book_task(actor:Dictionary,reading_room:Dictionary)->void:
 		actor["until"]=clock+8.0
 		return
 	_clear_book_task(actor)
-	var options:Array=media_runtime.available_shelf_books(str(actor["id"]))
+	var options:Array=media_runtime.choose_book_options(str(actor["id"]),rng,clock)
 	for book in options:
 		var source:Dictionary=world.room_by_id(str(book["location_room_id"]))
 		if not candidate_navigation.has_layout(source):
@@ -1183,8 +1192,8 @@ func _begin_book_task(actor:Dictionary,reading_room:Dictionary)->void:
 func _arrive_book_shelf(actor:Dictionary)->void:
 	var id:String=str(actor["id"])
 	var book_id:String=str(actor.get("book_task_id",""))
-	var source:String=str(actor.get("book_source_room",""))
 	var stage:String=str(actor.get("book_task_stage",""))
+	var source:String=str(actor.get("book_return_room",actor.get("book_source_room",""))) if stage=="return" else str(actor.get("book_source_room",""))
 	if stage=="fetch" and media_runtime.borrow_at_shelf(id,book_id,source):
 		actor["held_book"]=book_id
 		actor["book_task_stage"]="read"
@@ -1199,8 +1208,14 @@ func _arrive_book_shelf(actor:Dictionary)->void:
 		media_runtime.return_at_shelf(id,book_id,source)
 	elif stage=="return":
 		if not media_runtime.return_at_shelf(id,book_id,source):
-			# Failed placement must not create a second copy.
-			media_runtime.drop_book(id,book_id,int(maxf(1.0,clock)))
+			# The reserved destination may have changed; retain the copy.
+			actor["book_task_stage"]="return_wait"
+			actor["phase"]="idle"
+			actor["until"]=clock+5.0
+			stations.release(actor)
+			moving_ids.erase(id)
+			_schedule_actor(actor,"BOOK_RETURN_RETRY")
+			return
 	actor.erase("held_book")
 	_clear_book_task(actor)
 	end_concrete_media(actor)
@@ -1218,16 +1233,24 @@ func _continue_book_task(actor:Dictionary)->bool:
 	var book_id:String=str(actor.get("book_task_id",""))
 	var book:Dictionary=media_runtime._lookup("books",book_id)
 	if stage in ["read","return_wait"] and str(book.get("holder_id",""))==id:
-		if stage=="read":
-			var start:float=float(actor.get("book_read_started",clock-12.0))
-			media_runtime.read(id,book_id,maxf(0.0,clock-start))
-			world._append_journal("BOOK_READING_FINISHED",id,book_id,str(actor["room_id"]),str(actor["room_id"]),{"seconds":maxf(0.0,clock-start)})
+		if stage=="read":media_runtime.pause_reading(actor,clock)
 		actor["book_task_stage"]="return_wait"
 		end_concrete_media(actor)
-		var source:Dictionary=world.room_by_id(str(actor.get("book_source_room","")))
-		if _book_route(actor,source,"RETURN_BOOK"):
-			actor["book_task_stage"]="return"
-			return true
+		# Prefer a compatible shelf in the reading room or another library,
+		# not a mandatory trip back to the source. A committed placement
+		# keeps the canonical home intact.
+		var rooms:Array=world.matching_rooms(["library"],id)
+		var local:Dictionary=world.room_by_id(str(actor["room_id"]))
+		rooms.erase(local)
+		rooms.push_front(local)
+		for room in rooms:
+			var slot:Dictionary=media_runtime.free_book_slot(book_id,room)
+			if slot.is_empty():continue
+			if _book_route(actor,room,"RETURN_BOOK",str(slot["station_id"])):
+				actor["book_return_room"]=str(room["id"])
+				actor["book_return_slot"]=str(slot["id"])
+				actor["book_task_stage"]="return"
+				return true
 		# Keep the real book in hand while waiting for the shelf, without
 		# falsely claiming the actor continues to read it.
 		actor["phase"]="idle"
@@ -1238,7 +1261,11 @@ func _continue_book_task(actor:Dictionary)->bool:
 	if stage=="fetch" or stage=="return":
 		# An interrupted route can be retried only from the real position.
 		var source:Dictionary=world.room_by_id(str(actor.get("book_source_room","")))
-		if _book_route(actor,source,"FETCH_BOOK" if stage=="fetch" else "RETURN_BOOK"):
+		if stage=="return":
+			actor["book_task_stage"]="return_wait"
+			actor["until"]=clock+5.0
+			return true
+		if _book_route(actor,source,"FETCH_BOOK"):
 			return true
 		if stage=="return" and str(book.get("holder_id",""))==id:
 			actor["book_task_stage"]="return_wait"
