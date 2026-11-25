@@ -44,6 +44,15 @@ func _initialize() -> void:
 	assert(loader.preferred_wardrobe("RES_99","HELGA_99") == "","Unapproved default stays hidden")
 	assert(loader.preferred_wardrobe("RES_99","HELGA_99",true) == "HOME")
 	assert(loader.preview_count([{"id":"RES_99","appearance_profile":"HELGA_99"}])==1)
+	# The synchronous startup scope must reuse byte checks, without
+	# bypassing path/identity validation or leaving stale checks afterward.
+	loader.begin_validation_pass()
+	for i in range(5):assert(loader.candidate_bank("RES_99","HELGA_99"))
+	assert(loader.validation_disk_probes==3 and loader.validation_cache_hits==12)
+	actual_entries["WALK_LEFT"]["frames"]=["assets/residents/RES_98/wardrobes/HOME/WALK_LEFT/0001.png"]
+	assert(not loader.candidate_bank("RES_99","HELGA_99"))
+	actual_entries["WALK_LEFT"]["frames"]=["assets/residents/RES_99/wardrobes/HOME/WALK_LEFT/0001.png"]
+	loader.end_validation_pass()
 	# Git LFS pointers contain readable text but no actual image pixels.
 	var pointer_path: String = ROOT+"WALK_LEFT/0001.png"
 	var ptr := FileAccess.open(pointer_path,FileAccess.WRITE)
