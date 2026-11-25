@@ -894,12 +894,25 @@ func _merge_cinema_record(previous:Dictionary,incoming:Dictionary)->Dictionary:
 				else:ids.erase(unit)
 		updated[str(key)]=values
 	row["episode_runtime_seconds"]=updated
-	var complete:Array=row.get("complete_seasons",[]).duplicate()
+	var complete:Array=[]
+	var declared:Dictionary=incoming.get("episode_runtime_seconds",{})
+	# A complete-season assertion must describe the entire retained table.
+	for s in incoming.get("complete_seasons",[]):
+		var key:String=str(int(s))
+		var incoming_values:Array=declared.get(key,[])
+		var retained:Array=updated.get(key,[])
+		if incoming_values.size()==retained.size() and not complete.has(s):complete.append(s)
 	for s in previous.get("complete_seasons",[]):
 		var key:String=str(int(s))
 		var prior:Array=old.get(key,[])
 		var merged_values:Array=updated.get(key,[])
 		if not complete.has(s) and prior.size()==merged_values.size():complete.append(s)
+	# A later bookmark boundary can expose episodes whose runtimes are unknown.
+	var last_s:int=int(row.get("latest_season",0))
+	var last_e:int=int(row.get("latest_episode",0))
+	var last_values:Array=updated.get(str(last_s),[])
+	if last_e>last_values.size():
+		complete.erase(last_s)
 	row["complete_seasons"]=complete
 	row["episode_imdb_ids"]=ids
 	row["episode_duration_sources"]=sources
