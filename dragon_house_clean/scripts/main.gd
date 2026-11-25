@@ -1231,7 +1231,7 @@ func add_room_overview_cues(parent: Node3D, group: Dictionary) -> void:
 func _is_near_detail(group_node: Node3D) -> bool:
 	# Detail follows the camera position but never drives simulation.
 	# R1/R2/R3 shells stay drawn; rich furniture is mounted only near focus.
-	if zoom_current >= 44.0:
+	if zoom_current >= 44.0 or current_mode in ["HOUSE","LEVEL"]:
 		return false
 	var half_width: float = float(visual_room_groups.get(group_node.name,{}).get("width",1))*W*0.5
 	var radius_x: float = maxf(7.0,zoom_current*0.63)+half_width
@@ -3148,6 +3148,11 @@ func zoom_around_pointer(mouse: Vector2, multiplier: float) -> void:
 			desired_focus.x = float(target.x) - (float(target.x)-desired_focus.x)*ratio
 			desired_focus.y = float(target.y) - (float(target.y)-desired_focus.y)*ratio
 	zoom = new_zoom
+	# Wheel-only inspection must retain the same detail access as mouse pan.
+	if architecture_review and not build_mode and follow_id=="" and current_mode in ["HOUSE","LEVEL"] and new_zoom<44.0:
+		current_mode="FREE"
+		Engine.max_fps=60
+		update_hud()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -3494,6 +3499,8 @@ func _refresh_conditional_dressing()->void:
 	var used:Dictionary={}
 	for record in world.runtime_state.get("teea008_book_slot_assignments",{}).values():
 		used[str(record.get("room_id",""))+"|"+str(record.get("slot_id",""))]=true
+	# An incoming book owns its return support before it physically arrives.
+	for key in life.media_runtime._book_return_reservations():used[key]=true
 	for obj in world.objects.values():
 		for pair in [["home_room_id","home_support_id"],["current_room_id","current_support_id"]]:
 			var slot:String=str(obj.get(pair[1],""))
@@ -3503,8 +3510,29 @@ func _refresh_conditional_dressing()->void:
 			var key:String=str(node.get_meta("room_id",""))+"|"+str(node.get_meta("decor_slot_id",""))
 			node.visible=not used.has(key)
 
+# Bound costly mounted interiors, including legacy fallback furniture; shells and real
+# overview models stay visible. Rank by physical camera focus, not actor AI.
+func _canonical_detail_budget()->Dictionary:
+	var candidates:Array=[]
+	for node in room_root.get_children():
+		var group:Dictionary=visual_room_groups.get(node.name,{})
+		if group.is_empty() or node.get_node_or_null("LocalFurniture")==null or _group_facade_only(group) or not semantic_view.group_visible(group):continue
+		if not _is_near_detail(node):continue
+		var half_width:float=float(group.get("width",1))*W*0.5
+		var dx:float=maxf(0.0,absf(node.position.x-smooth_focus.x)-half_width)
+		var dy:float=absf(node.position.y+1.45-smooth_focus.y)
+		# Prefer the focused floor; modest retention avoids boundary churn.
+		var score:float=dx+dy*2.0+absf(node.position.x-smooth_focus.x)*0.03
+		if detailed_room_groups.has(node.name):score-=0.20
+		candidates.append({"id":str(node.name),"score":score})
+	candidates.sort_custom(func(a,b):return str(a["id"])<str(b["id"]) if is_equal_approx(float(a["score"]),float(b["score"])) else float(a["score"])<float(b["score"]))
+	var chosen:Dictionary={}
+	for i in range(mini(2,candidates.size())):chosen[candidates[i]["id"]]=true
+	return chosen
+
 func update_render_lod() -> void:
 	_refresh_guest_facades()
+	var detail_budget:Dictionary=_canonical_detail_budget() if architecture_review else {}
 	# Keep the inexpensive shell/cues visible at HOUSE scale. Detailed 3D depth,
 	# rear alcoves, rich furniture and accepted full-resolution art are useful
 	# only near the camera; rendering them across the whole house wastes draw
@@ -3540,10 +3568,12 @@ func update_render_lod() -> void:
 		else:
 			_release_room_art(group_node)
 		var near: bool = _is_near_detail(group_node) if furniture != null else false
+		if architecture_review:
+			near=detail_budget.has(str(group_node.name))
 		if furniture != null:
 			# Model-only furnishings are the room's visible art at all zooms.
 			# Semantic visibility above still evicts inaccessible/offscreen groups.
-			var show_furniture:bool=near or (bool(group.get("native_decor",false)) and not bool(group.get("teea008_review",false)))
+			var show_furniture:bool=near or (not architecture_review and bool(group.get("native_decor",false)) and not bool(group.get("teea008_review",false)))
 			if show_furniture:
 				_populate_furniture(group_node)
 			else:
@@ -3777,8 +3807,9 @@ func _update_physical_books()->void:
 		if not bool(book.get("physical",true)):continue
 		var id:String=str(book["id"])
 		var slot:Dictionary=life.media_runtime.book_slot(id)
-		if slot.is_empty():continue
 		var holder_id:String=str(book.get("holder_id",""))
+		# Possession is authoritative even if a shelf assignment needs repair.
+		if slot.is_empty() and holder_id=="":continue
 		var room:Dictionary={}
 		var position_value:=Vector3.ZERO
 		var scale_value:=1.0
