@@ -591,3 +591,13 @@ func cup_claim(world,actor:Dictionary,room:Dictionary,slot_id:String)->Dictionar
 		if not used.has(index) and str(points[index].get("cup_slot_id",""))==slot_id:
 			return _candidate_claim(actor,room,index,points[index],"GET_COFFEE")
 	return {}
+
+func book_shelf_claim(world,actor:Dictionary,room:Dictionary,intent:String,station_id:String)->Dictionary:
+	if station_id=="" or not world.is_accessible(room,str(actor["id"])):
+		return {}
+	var used:Dictionary=used_slots(world,str(room["id"]),[str(actor["id"])])
+	var points:Array=layout_for_world(world,room)
+	for index in range(points.size()):
+		if not used.has(index) and str(points[index].get("id",""))==station_id:
+			return _candidate_claim(actor,room,index,points[index],intent)
+	return {}

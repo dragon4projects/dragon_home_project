@@ -71,6 +71,7 @@ func run()->void:
 			scene.life._move(a,0.125)
 			if str(a.get("phase",""))!="travel":break
 		assert(str(a["room_id"])==str(destination["id"]) and str(a["phase"])=="perform",id+" travel failed")
+	print("TEEA008_TRAFFIC_METRICS ",scene.life.candidate_traffic.metrics())
 	print("TEEA008_PLANNER_METRICS ",scene.life.candidate_planner_percentiles())
 	print("TEEA008_LIVE_SCENE_PASS active_sisters=",active," bound_sisters=",bound," guests=3 samples=",samples," contact_ticks=",contacts," paths=",nav.path_calls," failed=",nav.path_failures," cache_hits=",nav.path_cache_hits," max_planner_us=",scene.life.planner_usec_max)
 	quit(0)

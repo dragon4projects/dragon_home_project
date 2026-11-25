@@ -7,7 +7,14 @@ const ObjectReducer = preload("res://scripts/object_event_reducer.gd")
 ## Strangler facade: keeps current WorldModel object APIs stable while moving
 ## their durable truth path to gate -> append-only event -> reducer projection.
 
-var world
+# WorldModel owns this runtime. A strong reverse reference creates a
+# RefCounted cycle and retains the SQLite store and its resources on exit.
+var _world_ref:WeakRef
+var world:
+	get:
+		return _world_ref.get_ref() if _world_ref!=null else null
+	set(value):
+		_world_ref=weakref(value) if value!=null else null
 var store = JsonEventStore.new()
 var backend_requested: String = "json"
 var gate = EventGate.new()
@@ -606,7 +613,7 @@ func register_object(object_id: String, display_name: String,
 	return bool(submit(event).get("ok",false))
 
 func assign_home(object_id: String, target_room_id: String, home_anchor: Vector2,
-		move_now: bool = true, source_id: String = "LOCAL_DRAGON") -> bool:
+		move_now: bool = true, source_id: String = "LOCAL_DRAGON", support_id:String="") -> bool:
 	var object:Dictionary=world.objects.get(object_id,{})
 	if object.is_empty():
 		return false
@@ -625,6 +632,7 @@ func assign_home(object_id: String, target_room_id: String, home_anchor: Vector2
 			"previous_home_anchor":object.get("home_anchor",[]),
 			"home_room_id":target_room_id,
 			"home_anchor":[home_anchor.x,home_anchor.y],
+			"home_support_id":support_id,
 			"move_now":move_now,
 			"sim_clock":float(world.sim_clock)
 		})

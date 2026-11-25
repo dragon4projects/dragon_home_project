@@ -19,6 +19,8 @@ var surface_id: String=""
 var surface_category: String=""
 var surface_controls: HBoxContainer
 var surface_label: Label
+var place_button:Button
+signal artifact_placement_requested(room_id:String,surface_id:String,item_id:String)
 
 func _ready() -> void:
 	name = "MediaLibrary"
@@ -74,6 +76,11 @@ func _ready() -> void:
 	assign_button.text="Назначить на держатель"
 	assign_button.pressed.connect(_assign_selected_surface)
 	surface_controls.add_child(assign_button)
+	place_button=Button.new()
+	place_button.text="Поставить на опору"
+	place_button.visible=false
+	place_button.pressed.connect(_place_selected_artifact)
+	surface_controls.add_child(place_button)
 	var clear_button:=Button.new()
 	clear_button.text="Очистить держатель"
 	clear_button.pressed.connect(func(): surface_assignment_requested.emit(surface_room_id,surface_id,surface_category,""))
@@ -120,11 +127,17 @@ func refresh() -> void:
 		return
 	list.clear()
 	item_ids.clear()
-	for item in model.media.get(category, []):
-		var title_text: String = str(item.get("title","Без названия"))
+	var records:Array=model.media.get(category,[])
+	if category=="artifacts":
+		records=[]
+		for item in model.objects.values():
+			if str(item.get("viewer_category",""))=="artifacts" and str(item.get("current_room_id",""))==surface_room_id and str(item.get("state",""))=="PLACED" and str(item.get("current_holder_id",""))=="":
+				records.append(item)
+	for item in records:
+		var title_text: String = str(item.get("title",item.get("display_name","Без названия")))
 		list.add_item(title_text)
 		item_ids.append(str(item.get("id","")))
-	var human: String = {"books":"КНИГИ","tracks":"АУДИОТЕКА","films":"ФИЛЬМОТЕКА"}.get(category,"МЕДИА")
+	var human: String = {"books":"КНИГИ","tracks":"АУДИОТЕКА","films":"ФИЛЬМОТЕКА","artifacts":"АРТЕФАКТЫ"}.get(category,"МЕДИА")
 	title.text = human + " — " + str(item_ids.size()) + " записей"
 	details.text = "Каталог пуст. Импортируйте проверенный JSON." if item_ids.is_empty() else "Выберите запись."
 	preview.texture = null
@@ -133,21 +146,21 @@ func refresh() -> void:
 func _on_selected(index: int) -> void:
 	if index < 0 or index >= item_ids.size():
 		return
-	var item: Dictionary = media_runtime._lookup(category,item_ids[index])
+	var item: Dictionary = model.physical_object(str(item_ids[index])) if category=="artifacts" else media_runtime._lookup(category,item_ids[index])
 	if item.is_empty():
 		return
 	var source := str(item.get("source",""))
 	var raw_artist = item.get("artist",item.get("author",""))
 	var artist: String = "" if raw_artist == null else str(raw_artist)
-	details.text = str(item.get("title","")) + (" — " + artist if artist != "" else "")
+	details.text = str(item.get("title",item.get("display_name",""))) + (" — " + artist if artist != "" else "")
 	if category == "books" and not bool(item.get("physical", true)):
 		details.text += "\nТолько каталог: физический экземпляр не подтверждён"
 	var path: String = str(item.get("file_path",""))
 	if path != "":
 		details.text += "\nФайл: " + path.get_file()
-	if category != "books" and not media_runtime.playable(category).any(func(it): return it.get("id","") == item_ids[index]):
+	if category in ["films","tracks"] and not media_runtime.playable(category).any(func(it): return it.get("id","") == item_ids[index]):
 		details.text += "\nНет совместимого локального файла для воспроизведения"
-	var image_path: String = str(item.get("preview",""))
+	var image_path: String = str(item.get("preview",item.get("preview_path","")))
 	preview.texture = null
 	if image_path != "" and FileAccess.file_exists(image_path):
 		var image := Image.new()
@@ -167,7 +180,7 @@ func stop_playback() -> void:
 		preview.visible = true
 
 func play_selected() -> void:
-	if list.get_selected_items().is_empty() or category == "books":
+	if list.get_selected_items().is_empty() or not category in ["films","tracks"]:
 		return
 	var index: int = list.get_selected_items()[0]
 	var id: String = item_ids[index]
@@ -213,6 +226,7 @@ func open_surface(room_id:String,id:String,k:String)->void:
 	surface_label.text="Держатель: "+id+" · "+room_id
 	surface_label.visible=true
 	surface_controls.visible=true
+	place_button.visible=k=="artifacts"
 
 func clear_surface_context()->void:
 	surface_room_id=""
@@ -227,3 +241,9 @@ func _assign_selected_surface()->void:
 	var index:int=list.get_selected_items()[0]
 	if index>=0 and index<item_ids.size():
 		surface_assignment_requested.emit(surface_room_id,surface_id,category,str(item_ids[index]))
+
+func _place_selected_artifact()->void:
+	if surface_category!="artifacts" or list.get_selected_items().is_empty():return
+	var index:int=list.get_selected_items()[0]
+	if index>=0 and index<item_ids.size():
+		artifact_placement_requested.emit(surface_room_id,surface_id,str(item_ids[index]))

@@ -395,11 +395,11 @@ func restore_physical_object_home(object_id: String, reset_day: int = -1) -> boo
 	return object_events.restore_home(object_id,reset_day)
 
 func assign_physical_object_home(object_id: String, target_room_id: String,
-		home_anchor: Vector2, move_now: bool = true) -> bool:
+		home_anchor: Vector2, move_now: bool = true, support_id:String="") -> bool:
 	if not _ensure_object_events():
 		return false
 	return object_events.assign_home(
-		object_id,target_room_id,home_anchor,move_now,"LOCAL_DRAGON")
+		object_id,target_room_id,home_anchor,move_now,"LOCAL_DRAGON",support_id)
 
 func game_day_index() -> int:
 	return maxi(0,int(floor(sim_clock/GAME_DAY_SECONDS)))
@@ -425,6 +425,8 @@ func object_is_displaced(object: Dictionary) -> bool:
 	if str(object.get("current_room_id",""))!=home_room:
 		return true
 	if str(object.get("state","PLACED"))!="PLACED":
+		return true
+	if str(object.get("current_support_id",""))!=str(object.get("home_support_id","")):
 		return true
 	return not _anchors_equal(
 		object.get("current_anchor",[]),object.get("home_anchor",[]))

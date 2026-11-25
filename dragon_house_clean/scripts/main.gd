@@ -55,6 +55,8 @@ var creature_nodes: Dictionary = {}
 var creature_labels: Dictionary = {}
 var creature_animations: Dictionary = {}
 var object_root: Node3D
+var book_root:Node3D
+var book_nodes:Dictionary={}
 var object_nodes: Dictionary = {}
 var actor_sprites: Dictionary = {}
 var actor_labels: Dictionary = {}
@@ -279,6 +281,9 @@ func _ready() -> void:
 	object_root = Node3D.new()
 	object_root.name = "PhysicalObjects"
 	add_child(object_root)
+	book_root=Node3D.new()
+	book_root.name="PhysicalBooks"
+	add_child(book_root)
 	if teea008_live:
 		print("TEEA008_LIVE_START scene")
 	make_rooms()
@@ -1768,9 +1773,26 @@ func update_physical_objects() -> void:
 			else:
 				var fallback:Vector3=_object_offset(str(object_id))
 				local_anchor=Vector2(fallback.x,0.72+fallback.z)
+			if str(object.get("viewer_category",""))=="artifacts":
+				var plain_sprite:Sprite3D=anchor.get_node_or_null("Visual")
+				if plain_sprite!=null:plain_sprite.position.y=0.28
 			var room_world:Vector3=world.room_local_to_world(room,local_anchor)
 			anchor.position=Vector3(depth_visual_x(room_id,room_world.x,local_anchor.y),room_world.y+0.22,room_world.z)
 			anchor.scale=Vector3.ONE*depth_visual_scale(local_anchor.y)
+			if teea008_live and str(object.get("viewer_category",""))=="artifacts" and str(object.get("home_room_id",""))==room_id and world._anchors_equal(object.get("current_anchor",[]),object.get("home_anchor",[])):
+				var support:Dictionary=life.candidate_navigation.artifact_support(room,str(object.get("current_support_id","")))
+				if not support.is_empty():
+					if not detailed_room_groups.has(room_id):
+						anchor.visible=false
+						continue
+					var pos:Array=support["xyz"]
+					var inst:Array=support["instance_xyz"]
+					var scale_value:float=depth_visual_scale(float(inst[2]))
+					anchor.position=Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
+					anchor.scale=Vector3.ONE*scale_value
+					var sprite:Sprite3D=anchor.get_node_or_null("Visual")
+					if sprite!=null:
+						sprite.position.y=float(object.get("display_world_height",0.48))*0.5
 			if teea008_live and str(object.get("viewer_category",""))=="cups":
 				var slot:Dictionary=life.candidate_cups.slot_for_object(object)
 				if not slot.is_empty():
@@ -2063,6 +2085,7 @@ func build_interface() -> void:
 	root.add_child(media_panel)
 	media_panel.bind(world,life.media_runtime,content_viewer)
 	media_panel.surface_assignment_requested.connect(_assign_teea008_media)
+	media_panel.artifact_placement_requested.connect(_place_teea008_artifact)
 	bank_gallery = BankGalleryScript.new()
 	root.add_child(bank_gallery)
 	bank_gallery.bind(asset_banks,world.read_resident_profiles())
@@ -2184,6 +2207,16 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 		if distance < best:
 			best = distance
 			found = entry
+	for id in book_nodes:
+		var node:Node3D=book_nodes[id]
+		if not is_instance_valid(node) or not node.is_visible_in_tree() or camera.is_position_behind(node.global_position):
+			continue
+		var distance:float=camera.unproject_position(node.global_position).distance_to(point)
+		if distance<minf(best,16.0):
+			var book:Dictionary=life.media_runtime._lookup("books",str(id))
+			if not book.is_empty():
+				best=distance
+				found={"anchor":node,"category":"books","item_id":str(id),"display_name":str(book.get("title",id)),"physical_book":true}
 	# Inspect a real book/film/track currently consumed by a visible actor.
 	# Do not fabricate a film frame or a final decor surface before TEEA008.
 	for id in actor_sprites:
@@ -2245,11 +2278,15 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 			if not record.is_empty() and not bool(entry.get("assign_only",false)):
 				return content_viewer.open_record(bound_category,record)
 		elif bound_category=="artifacts":
-			if not record.is_empty():
+			media_panel.open_surface(room_id,item_id,bound_category)
+			if not record.is_empty() and not bool(entry.get("assign_only",false)):
 				return open_content_hotspot({"category":"artifacts","item_id":str(record["id"])})
-			notice.text="Медиадержатель: "+item_id+" · предмет ещё не назначен"
 		return true
 	if category in ["books","films","tracks"]:
+		if bool(entry.get("physical_book",false)):
+			var node:Node3D=book_nodes.get(item_id)
+			if not is_instance_valid(node) or not node.is_visible_in_tree():
+				return false
 		if entry.has("actor_id"):
 			var actor:Dictionary=world.residents.get(str(entry["actor_id"]),{})
 			if str(actor.get("phase",""))!="perform" or not world.public_cutaway_allowed(world.room_by_id(str(actor.get("room_id","")))) or not life._concrete_media_is_valid(actor):
@@ -3060,6 +3097,8 @@ func _process(delta: float) -> void:
 	update_residents(delta)
 	update_creatures(delta)
 	update_physical_objects()
+	if teea008_live:
+		_update_physical_books()
 	apply_camera(delta)
 	save_timer += delta
 	if save_timer > 20.0:
@@ -3183,3 +3222,99 @@ func _update_teea008_media_previews()->void:
 		mesh.material_override=material
 		mesh.position.z=0.003
 		anchor.add_child(mesh)
+
+func _create_physical_book(book:Dictionary)->Node3D:
+	var node:=Node3D.new()
+	node.name="Book_"+str(book["id"]).validate_node_name()
+	book_root.add_child(node)
+	var volume:=BoxMesh.new()
+	volume.size=Vector3(0.16,0.18,0.045)
+	var body:=MeshInstance3D.new()
+	body.mesh=volume
+	body.position.y=0.09
+	var mat:=StandardMaterial3D.new()
+	mat.albedo_color=Color("#594238")
+	body.material_override=mat
+	node.add_child(body)
+	var path:String=str(book.get("preview",book.get("preview_path","")))
+	var tex:Texture2D=content_viewer._load_preview(path) if content_viewer!=null else null
+	if tex!=null:
+		var quad:=QuadMesh.new()
+		var fit:float=minf(0.16/float(tex.get_width()),0.18/float(tex.get_height()))
+		quad.size=Vector2(tex.get_width(),tex.get_height())*fit
+		var cover:=MeshInstance3D.new()
+		cover.mesh=quad
+		cover.position=Vector3(0,0.09,0.023)
+		var cover_mat:=StandardMaterial3D.new()
+		cover_mat.albedo_texture=tex
+		cover.material_override=cover_mat
+		node.add_child(cover)
+	return node
+
+func _update_physical_books()->void:
+	if book_root==null:return
+	var visible_ids:Dictionary={}
+	for book in world.media.get("books",[]):
+		if not bool(book.get("physical",true)):continue
+		var id:String=str(book["id"])
+		var slot:Dictionary=life.media_runtime.book_slot(id)
+		if slot.is_empty():continue
+		var holder_id:String=str(book.get("holder_id",""))
+		var room:Dictionary={}
+		var position_value:=Vector3.ZERO
+		var scale_value:=1.0
+		if holder_id!="":
+			var actor:Dictionary=world.residents.get(holder_id,{})
+			room=world.room_by_id(str(actor.get("room_id","")))
+			if actor.is_empty() or not semantic_view.actor_visible(actor) or not world.public_cutaway_allowed(room):continue
+			# Reading pose already contains a volume; never double-render it.
+			if str(actor.get("intent",""))=="READ_BOOK" and str(actor.get("phase",""))=="perform":continue
+			var z:float=float(actor.get("z",0))
+			scale_value=depth_visual_scale(z)
+			position_value=Vector3(depth_visual_x(str(room["id"]),float(actor["x"]),z)+0.20*scale_value,float(actor.get("visual_y",0))+0.90*scale_value,z+0.14)
+		else:
+			if str(book.get("location_room_id",""))!=str(slot["room_id"]):continue
+			room=world.room_by_id(str(slot["room_id"]))
+			if not world.public_cutaway_allowed(room):continue
+			if not detailed_room_groups.has(str(room["id"])):continue
+			var pos:Array=slot["xyz"]
+			var inst:Array=slot["instance_xyz"]
+			var center:Vector3=world.room_center_pos(room)
+			scale_value=depth_visual_scale(float(inst[2]))
+			position_value=Vector3(center.x+float(pos[0])*scale_value,center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
+		var node:Node3D=book_nodes.get(id)
+		if not is_instance_valid(node):
+			node=_create_physical_book(book)
+			book_nodes[id]=node
+		node.position=position_value
+		node.scale=Vector3.ONE*scale_value
+		node.visible=true
+		visible_ids[id]=true
+	for id in book_nodes.keys():
+		if not visible_ids.has(id):
+			book_nodes[id].visible=false
+			book_nodes[id].queue_free()
+			book_nodes.erase(id)
+
+func _place_teea008_artifact(room_id:String,surface_id:String,item_id:String)->void:
+	if not teea008_live:return
+	var obj:Dictionary=world.physical_object(item_id)
+	var node:Node3D=object_nodes.get(item_id)
+	if obj.is_empty() or not is_instance_valid(node):
+		notice.text="Предмет не доступен"
+		return
+	var sprite:Sprite3D=node.get_node_or_null("Visual")
+	# Do not infer physical size from missing images or invent a support fit.
+	if sprite==null or sprite.texture==null:
+		notice.text="Нет измеряемого изображения предмета"
+		return
+	var height:float=float(obj.get("display_world_height",0.48))
+	var width:float=height*float(sprite.texture.get_width())/maxf(1.0,float(sprite.texture.get_height()))
+	if not teea008_media_bindings.place_artifact(room_id,surface_id,item_id,life.candidate_navigation,width,height,0.04):
+		notice.text="Нет свободной совместимой опоры для этого предмета"
+		return
+	world.save_world()
+	life.refresh_changed_station_claims()
+	update_physical_objects()
+	_update_teea008_media_previews()
+	notice.text="Дом предмета назначен на измеренной опоре"

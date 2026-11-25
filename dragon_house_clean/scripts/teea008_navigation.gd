@@ -21,6 +21,8 @@ var pose_profiles:Dictionary={}
 var static_spots:Dictionary={}
 var display_cache:Dictionary={}
 var cup_slot_cache:Dictionary={}
+var book_slot_cache:Dictionary={}
+var artifact_slot_cache:Dictionary={}
 
 func configure(rows:Dictionary)->void:
 	layouts=rows
@@ -32,6 +34,8 @@ func configure(rows:Dictionary)->void:
 	static_spots.clear()
 	display_cache.clear()
 	cup_slot_cache.clear()
+	book_slot_cache.clear()
+	artifact_slot_cache.clear()
 	pose_profiles.clear()
 	if FileAccess.file_exists(POSE_PATH):
 		var f:=FileAccess.open(POSE_PATH,FileAccess.READ)
@@ -471,3 +475,77 @@ func _pose_source_valid(path:String,entry:Dictionary)->bool:
 	var tex:=ResourceLoader.load(path,"Texture2D") as Texture2D
 	var canvas:Array=entry.get("canvas",[])
 	return tex!=null and canvas.size()==2 and tex.get_width()==int(canvas[0]) and tex.get_height()==int(canvas[1])
+
+func book_slots(room:Dictionary)->Array:
+	var variant:=key(room)
+	if book_slot_cache.has(variant):
+		return book_slot_cache[variant]
+	var out:Array=[]
+	if str(room.get("type",""))!="library":
+		return out
+	var row:Dictionary=layouts.get(variant,{})
+	var used:Dictionary={}
+	for item in row.get("instances",[]):
+		var ref:String=str(item.get("support_ref",""))
+		if ref!="":used[ref]=true
+	var spots:Array=candidate_spots(room)
+	for item in row.get("instances",[]):
+		if not str(item.get("asset_id","")).contains("shelf"):continue
+		var station_id:=""
+		for spot in spots:
+			if str(spot.get("furniture_id",""))==str(item["instance_id"]) and str(spot.get("kind",""))=="standing":
+				station_id=str(spot["id"])
+				break
+		if station_id=="":continue
+		for slot in item.get("support_slots",[]):
+			var p:Array=slot.get("room_xyz",[])
+			var fit:Array=slot.get("max_dimensions_m",[])
+			if p.size()!=3 or fit.size()!=3 or used.has(str(slot["room_slot_id"])):
+				continue
+			if float(p[1])<0.35 or float(p[1])>1.65 or float(fit[0])<0.16 or float(fit[1])<0.18 or float(fit[2])<0.045:
+				continue
+			out.append({"id":str(slot["room_slot_id"]),"station_id":station_id,"xyz":p,"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
+	out.sort_custom(func(a,b):return str(a["id"])<str(b["id"]))
+	book_slot_cache[variant]=out
+	return out
+
+func artifact_slots(room:Dictionary)->Array:
+	var variant:=key(room)
+	if artifact_slot_cache.has(variant):return artifact_slot_cache[variant]
+	var out:Array=[]
+	if str(room.get("type",""))!="artifact":return out
+	var row:Dictionary=layouts.get(variant,{})
+	var used:Dictionary={}
+	for item in row.get("instances",[]):
+		var ref:String=str(item.get("support_ref",""))
+		if ref!="":used[ref]=true
+	for item in row.get("instances",[]):
+		var asset:String=str(item.get("asset_id","")).to_lower()
+		if not (asset.contains("shelf") or asset.contains("shelv") or asset.contains("commode") or asset.contains("cabinet")):continue
+		for slot in item.get("support_slots",[]):
+			var p:Array=slot.get("room_xyz",[])
+			var dims:Array=slot.get("max_dimensions_m",[])
+			var sid:String=str(slot.get("room_slot_id",""))
+			if p.size()!=3 or dims.size()!=3 or used.has(sid):continue
+			# Avoid any shelf-top position occupied by a separate authored prop,
+			# including phase-2 props with nonstandard support identifiers.
+			var blocked:=false
+			for prop in row.get("instances",[]):
+				if str(prop.get("instance_id",""))==str(item["instance_id"]):continue
+				if str(prop.get("support_ref",""))=="":
+					continue
+				var lo:Array=prop.get("bounds_min_m",[])
+				var hi:Array=prop.get("bounds_max_m",[])
+				if lo.size()==3 and hi.size()==3 and float(p[0])+float(dims[0])*0.5>float(lo[0]) and float(p[0])-float(dims[0])*0.5<float(hi[0]) and float(p[2])+float(dims[2])*0.5>float(lo[2]) and float(p[2])-float(dims[2])*0.5<float(hi[2]) and float(p[1])+float(dims[1])>float(lo[1]) and float(p[1])-0.015<float(hi[1]):
+					blocked=true
+					break
+			if blocked:continue
+			out.append({"id":sid,"xyz":p,"dimensions":dims,"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
+	out.sort_custom(func(a,b):return str(a["id"])<str(b["id"]))
+	artifact_slot_cache[variant]=out
+	return out
+
+func artifact_support(room:Dictionary,id:String)->Dictionary:
+	for slot in artifact_slots(room):
+		if str(slot["id"])==id:return slot
+	return {}

@@ -119,6 +119,11 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		var new_anchor:Array=payload.get("home_anchor",object.get("home_anchor",[0.0,0.72]))
 		object["home_room_id"]=new_home
 		object["home_anchor"]=new_anchor.duplicate(true)
+		var support_id:String=str(payload.get("home_support_id",""))
+		if support_id!="":
+			object["home_support_id"]=support_id
+		else:
+			object.erase("home_support_id")
 		object["movement_reason"]="HOME_ASSIGNED"
 		object["movement_authority"]=authority
 		object["updated_event_id"]=event_id
@@ -126,6 +131,10 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			object["current_holder_id"]=""
 			object["current_room_id"]=new_home
 			object["current_anchor"]=new_anchor.duplicate(true)
+			if support_id!="":
+				object["current_support_id"]=support_id
+			else:
+				object.erase("current_support_id")
 			object["state"]="PLACED"
 			object["last_explicit_location"]=new_home
 			object["visibility"]=str(event.get("visibility","house_public"))
@@ -153,6 +162,12 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 		object["current_room_id"] = str(payload.get("current_location",""))
 		var raw_anchor=payload.get("current_anchor",[] if str(payload.get("current_holder",""))!="" else object.get("home_anchor",_legacy_anchor(object_id)))
 		object["current_anchor"]=(raw_anchor as Array).duplicate(true) if typeof(raw_anchor)==TYPE_ARRAY else []
+		# A normal placement is not proof of shelf placement merely because
+		# its X/Z matches the home (several tiers can share those coordinates).
+		if movement_kind=="RESTORED_HOME" and str(object.get("home_support_id",""))!="":
+			object["current_support_id"]=str(object["home_support_id"])
+		else:
+			object.erase("current_support_id")
 		object["state"] = str(payload.get("state",""))
 		object["movement_reason"] = movement_kind
 		object["movement_authority"] = authority

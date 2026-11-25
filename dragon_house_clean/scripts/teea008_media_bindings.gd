@@ -25,7 +25,7 @@ func spec(room_id:String,surface_id:String)->Dictionary:
 func _record(category:String,id:String)->Dictionary:
 	if category=="artifacts":
 		var obj:Dictionary=world.physical_object(id)
-		if obj.is_empty() or str(obj.get("state",""))=="STASHED":
+		if obj.is_empty() or str(obj.get("viewer_category",""))!="artifacts" or str(obj.get("state",""))=="STASHED":
 			return {}
 		return obj
 	return media._lookup(category,id)
@@ -42,6 +42,8 @@ func assign(room_id:String,surface_id:String,category:String,item_id:String)->bo
 		if item.is_empty():
 			return false
 		if category=="artifacts" and (str(item.get("current_room_id",""))!=room_id or str(item.get("current_holder_id",""))!=""):
+			return false
+		if category=="books" and bool(item.get("physical",true)) and (str(item.get("location_room_id",""))!=room_id or str(item.get("holder_id",""))!=""):
 			return false
 		if _is_screen(surface_id) and not media.playable("films").any(func(r):return str(r.get("id",""))==item_id):
 			return false
@@ -67,6 +69,8 @@ func pinned(room_id:String,surface_id:String)->Dictionary:
 		return {}
 	var record:Dictionary=_record(category,str(binding.get("item_id","")))
 	if category=="artifacts" and (str(record.get("current_room_id",""))!=room_id or str(record.get("current_holder_id",""))!=""):
+		return {}
+	if category=="books" and bool(record.get("physical",true)) and (str(record.get("location_room_id",""))!=room_id or str(record.get("holder_id",""))!=""):
 		return {}
 	return record
 
@@ -106,3 +110,35 @@ func resolve(room_id:String,surface_id:String)->Dictionary:
 		if not active.is_empty():
 			return active
 	return pinned(room_id,surface_id)
+
+func place_artifact(room_id:String,surface_id:String,item_id:String,navigation,width:float,height:float,depth:float)->bool:
+	# Explicit owner action, no invented physical size. Caller supplies
+	# the actual rendered representation's dimensions, not an inferred real-world object.
+	var surface:Dictionary=spec(room_id,surface_id)
+	var obj:Dictionary=_record("artifacts",item_id)
+	if surface.is_empty() or str(surface.get("legacy_runtime_category",""))!="artifacts" or obj.is_empty() or str(obj.get("current_room_id",""))!=room_id or str(obj.get("current_holder_id",""))!="" or not bool(obj.get("movable",false)) or str(obj.get("display_mode",""))=="wall":
+		return false
+	if width<=0 or height<=0 or depth<=0 or not is_finite(width+height+depth):return false
+	var room:Dictionary=world.room_by_id(room_id)
+	var carrier:String=str(surface.get("carrier_instance_id",""))
+	for slot in navigation.artifact_slots(room):
+		if str(slot["furniture_id"])!=carrier:continue
+		var dims:Array=slot["dimensions"]
+		if width>float(dims[0]) or height>float(dims[1]) or depth>float(dims[2]):continue
+		var pos:Array=slot["xyz"]
+		var occupied:=false
+		for other in world.objects.values():
+			if str(other.get("id",""))==item_id:continue
+			if str(other.get("home_room_id",""))==room_id and str(other.get("home_support_id",""))==str(slot["id"]):
+				occupied=true
+				break
+			if str(other.get("current_room_id",""))==room_id and str(other.get("current_holder_id",""))=="" and str(other.get("state",""))=="PLACED" and str(other.get("home_support_id",""))=="":
+				var anchor:Array=other.get("current_anchor",[])
+				if anchor.size()==2 and Vector2(float(anchor[0]),float(anchor[1])).distance_to(Vector2(float(pos[0]),float(pos[2])))<0.12:
+					occupied=true
+					break
+		if occupied:continue
+		if not world.assign_physical_object_home(item_id,room_id,Vector2(float(pos[0]),float(pos[2])),true,str(slot["id"])):
+			return false
+		return assign(room_id,surface_id,"artifacts",item_id)
+	return false

@@ -2,10 +2,13 @@ extends RefCounted
 ## Physical-media lifecycle, independent from camera and autonomous planner.
 ## Catalogue entries are explicit. No invented titles, playback or ownership.
 var world
+var candidate_navigation=null
 
 func setup(model) -> void:
 	world = model
 	_normalize_catalogue()
+	if candidate_navigation!=null:
+		reconcile_book_slots()
 
 func _normalize_catalogue() -> void:
 	for book in world.media.get("books", []):
@@ -174,7 +177,8 @@ func available_shelf_books(actor_id:String)->Array:
 	for book in available_books():
 		var room:Dictionary=world.room_by_id(str(book.get("location_room_id","")))
 		if str(room.get("type",""))=="library" and world.is_accessible(room,actor_id) and not reserved.has(str(book["id"])):
-			out.append(book)
+			if candidate_navigation==null or not book_slot(str(book["id"])).is_empty():
+				out.append(book)
 	return out
 
 func borrow_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
@@ -184,16 +188,77 @@ func borrow_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
 		return false
 	if reserved_book_ids(actor_id).has(book_id):
 		return false
+	var slot:Dictionary=book_slot(book_id)
+	if candidate_navigation!=null and (slot.is_empty() or str(slot.get("room_id",""))!=room_id or str(actor.get("station_anchor_id",""))!=str(slot["station_id"])):
+		return false
 	if not borrow(actor_id,book_id,int(world.sim_clock)):
 		return false
-	world._append_journal("BOOK_PICKED_UP_AT_SHELF",actor_id,book_id,room_id,actor_id,{"station_id":str(actor.get("station_anchor_id",""))})
+	world._append_journal("BOOK_PICKED_UP_AT_SHELF",actor_id,book_id,room_id,actor_id,{"station_id":str(actor.get("station_anchor_id","")),"shelf_slot_id":str(slot.get("id",""))})
 	return true
 
 func return_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
 	var actor:Dictionary=world.residents.get(actor_id,{})
 	if str(actor.get("room_id",""))!=room_id or str(actor.get("station_room_id",""))!=room_id or str(actor.get("intent",""))!="RETURN_BOOK" or str(actor.get("phase",""))!="perform":
 		return false
+	var slot:Dictionary=book_slot(book_id)
+	if candidate_navigation!=null and (slot.is_empty() or str(slot.get("room_id",""))!=room_id or str(actor.get("station_anchor_id",""))!=str(slot["station_id"])):
+		return false
 	if not return_book(actor_id,book_id,room_id):
 		return false
-	world._append_journal("BOOK_RETURNED_AT_SHELF",actor_id,book_id,actor_id,room_id,{"station_id":str(actor.get("station_anchor_id",""))})
+	world._append_journal("BOOK_RETURNED_AT_SHELF",actor_id,book_id,actor_id,room_id,{"station_id":str(actor.get("station_anchor_id","")),"shelf_slot_id":str(slot.get("id",""))})
 	return true
+
+func reconcile_book_slots()->int:
+	if candidate_navigation==null:return 0
+	var previous:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
+	var next:Dictionary={}
+	var occupied:Dictionary={}
+	var physical:Array=[]
+	for book in world.media.get("books",[]):
+		if bool(book.get("physical",true)):
+			physical.append(book)
+	physical.sort_custom(func(a,b):return str(a["id"])<str(b["id"]))
+	# Preserve valid previous assignments first, including while held, so a
+	# returning volume cannot find its exact physical home filled by another.
+	for book in physical:
+		var id:String=str(book["id"])
+		var prior:Dictionary=previous.get(id,{})
+		var room_id:String=str(book.get("location_room_id",""))
+		if room_id=="":room_id=str(prior.get("room_id",book.get("home_room_id","")))
+		var room:Dictionary=world.room_by_id(room_id)
+		if room.is_empty() or room_id!=str(prior.get("room_id","")):
+			continue
+		for slot in candidate_navigation.book_slots(room):
+			var key:String=room_id+"|"+str(slot["id"])
+			if str(slot["id"])==str(prior.get("slot_id","")) and not occupied.has(key):
+				next[id]=prior.duplicate()
+				occupied[key]=true
+				break
+	for book in physical:
+		var id:String=str(book["id"])
+		if next.has(id):continue
+		var room_id:String=str(book.get("location_room_id",""))
+		if room_id=="":room_id=str(book.get("home_room_id",""))
+		var room:Dictionary=world.room_by_id(room_id)
+		if room.is_empty():continue
+		for slot in candidate_navigation.book_slots(room):
+			var key:String=room_id+"|"+str(slot["id"])
+			if occupied.has(key):continue
+			next[id]={"room_id":room_id,"slot_id":str(slot["id"])}
+			occupied[key]=true
+			break
+	world.runtime_state["teea008_book_slot_assignments"]=next
+	return next.size()
+
+func book_slot(book_id:String)->Dictionary:
+	if candidate_navigation==null:return {}
+	var stored:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{}).get(book_id,{})
+	var room_id:String=str(stored.get("room_id",""))
+	var room:Dictionary=world.room_by_id(room_id)
+	if room.is_empty():return {}
+	for slot in candidate_navigation.book_slots(room):
+		if str(slot["id"])==str(stored.get("slot_id","")):
+			var result:Dictionary=slot.duplicate(true)
+			result["room_id"]=room_id
+			return result
+	return {}

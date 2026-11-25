@@ -204,6 +204,11 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 			return reject("assigned home must be publicly accessible")
 		if not _valid_anchor(world,target_home,payload.get("home_anchor",[])):
 			return reject("assigned home anchor is outside room")
+		var support_id=payload.get("home_support_id","")
+		if typeof(support_id)!=TYPE_STRING or str(support_id).length()>180:
+			return reject("invalid support identity")
+		if str(support_id)!="" and (wall or str(object.get("viewer_category",""))!="artifacts"):
+			return reject("support home is only for movable artifacts")
 		if wall:
 			var mounted:Array=object.get("display_anchor",[])
 			var next_anchor:Array=payload["home_anchor"]

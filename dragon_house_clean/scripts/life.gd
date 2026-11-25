@@ -1,6 +1,7 @@
 extends RefCounted
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
 const CandidateCupRuntime = preload("res://scripts/teea008_cup_runtime.gd")
+const CandidateTraffic = preload("res://scripts/teea008_traffic.gd")
 const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 const RoomStations = preload("res://scripts/room_stations.gd")
 const AmbientCreatureRuntime = preload("res://scripts/ambient_creature_runtime.gd")
@@ -33,6 +34,7 @@ var planner_route_queries:int=0
 var planner_graph_rebuilds:int=0
 var planner_sample_usec:Array=[]
 var candidate_cups=CandidateCupRuntime.new()
+var candidate_traffic=CandidateTraffic.new()
 # Deterministic QA may inject a daypart; production uses the system clock.
 var daypart_override: String=""
 var last_cleanup_wall_time := 0
@@ -123,6 +125,7 @@ func setup(p_world) -> void:
 		creature_runtime.locomotion.candidate_navigation=candidate_navigation
 		candidate_cups.setup(world,candidate_navigation)
 		_prepare_candidate_positions()
+	media_runtime.candidate_navigation=candidate_navigation
 	media_runtime.setup(world)
 	creature_runtime.setup(world)
 	rng.seed = 814223
@@ -804,11 +807,22 @@ func _move(actor: Dictionary, delta: float) -> void:
 	if point["kind"] == "lift":
 		speed = 1.65
 	var next: Vector3 = at.move_toward(target, speed * minf(delta, 0.15))
+	if candidate_navigation!=null and candidate_traffic.enabled:
+		next=candidate_traffic.step(actor,at,authored_target,next,speed*minf(delta,0.15),str(point["kind"]))
+		candidate_traffic.publish(str(actor["id"]),next)
 	actor["x"] = next.x
 	actor["visual_y"] = next.y
 	actor["z"] = next.z
 	actor["moving_axis"] = "up" if point["kind"] == "lift" else ("right" if next.x > at.x else "left" if next.x < at.x else "depth")
+	if next.distance_squared_to(at)<0.000001:
+		actor["moving_axis"]="wait"
+	if candidate_navigation!=null and candidate_traffic.enabled and point["kind"]!="lift" and next.distance_to(authored_target)>0.025:
+		if candidate_traffic.stalled(str(actor["id"]),idx,next,authored_target,delta):
+			if _recover_traffic_stall(actor,next):
+				return
 	if next.distance_to(authored_target) <= 0.025:
+		if candidate_navigation!=null:
+			candidate_traffic.clear_progress(str(actor["id"]))
 		actor["room_id"] = point["room_id"]
 		var current_room: Dictionary = world.room_by_id(point["room_id"])
 		if not current_room.is_empty():
@@ -905,10 +919,13 @@ func tick(delta: float) -> void:
 		_record("Дом вернул вещи на назначенные места: %d" % home_restored)
 	var books_restored:int=media_runtime.tick_book_home_reset()
 	if books_restored>0:
+		if candidate_navigation!=null:media_runtime.reconcile_book_slots()
 		reconcile_concrete_media()
 		_record("Дом вернул книги на назначенные места: %d" % books_restored)
 	creature_runtime.tick(delta)
 	# Movement stays frame-driven, but only actors actually travelling are touched.
+	if candidate_navigation!=null and not moving_ids.is_empty():
+		candidate_traffic.begin(world,candidate_navigation)
 	for raw_id in moving_ids.keys().duplicate():
 		var id := str(raw_id)
 		var actor: Dictionary = world.residents.get(id,{})
@@ -918,6 +935,8 @@ func tick(delta: float) -> void:
 			moving_ids.erase(id)
 			continue
 		_move(actor,delta)
+	if candidate_traffic.enabled:
+		candidate_traffic.finish()
 	for due in life_scheduler.pop_due(clock,max_jobs_per_tick):
 		_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
@@ -954,10 +973,16 @@ func _clear_book_task(actor:Dictionary)->void:
 	for key in ["book_task_stage","book_task_id","book_source_room","book_read_room","book_read_started"]:
 		actor.erase(key)
 
-func _book_route(actor:Dictionary,room:Dictionary,intent:String)->bool:
+func _book_route(actor:Dictionary,room:Dictionary,intent:String,shelf_station:String="")->bool:
 	if room.is_empty() or not world.is_accessible(room,str(actor["id"])):
 		return false
-	var claim:Dictionary=stations.single(world,actor,room,intent)
+	var claim:Dictionary={}
+	if intent in ["FETCH_BOOK","RETURN_BOOK"]:
+		if shelf_station=="":
+			shelf_station=str(media_runtime.book_slot(str(actor.get("book_task_id",""))).get("station_id",""))
+		claim=stations.book_shelf_claim(world,actor,room,intent,shelf_station)
+	else:
+		claim=stations.single(world,actor,room,intent)
 	if claim.is_empty():
 		return false
 	var route:Array=world.find_route(str(actor["room_id"]),str(room["id"]),str(actor["id"]))
@@ -986,7 +1011,7 @@ func _begin_book_task(actor:Dictionary,reading_room:Dictionary)->void:
 		var source:Dictionary=world.room_by_id(str(book["location_room_id"]))
 		if not candidate_navigation.has_layout(source):
 			continue
-		if not _book_route(actor,source,"FETCH_BOOK"):
+		if not _book_route(actor,source,"FETCH_BOOK",str(media_runtime.book_slot(str(book["id"])).get("station_id",""))):
 			continue
 		actor["book_task_stage"]="fetch"
 		actor["book_task_id"]=str(book["id"])
@@ -1172,3 +1197,37 @@ func candidate_planner_percentiles()->Dictionary:
 	values.sort()
 	if values.is_empty():return {}
 	return {"samples":values.size(),"p50_us":values[int((values.size()-1)*0.5)],"p95_us":values[int((values.size()-1)*0.95)],"p99_us":values[int((values.size()-1)*0.99)],"max_us":values[-1],"graph_rebuilds":planner_graph_rebuilds,"route_trees":planner_route_queries}
+
+func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
+	# Replanning is legal only at an actual traversable physical position.
+	# Do not move the actor, rewrite the graph, or lose a held object.
+	var room:Dictionary=world.get_room(roundi(at.x/world.MODULE_W),roundi(at.y/world.FLOOR_H))
+	if room.is_empty() or not world.is_accessible(room,str(actor["id"])):
+		return false
+	if candidate_navigation.has_layout(room) and not candidate_navigation.clear(room,world.room_space.world_to_local(room,at)):
+		return false
+	var id:String=str(actor["id"])
+	actor["room_id"]=str(room["id"])
+	actor["level"]=int(room["level"])
+	stations.release(actor)
+	end_catalog_browse(actor)
+	end_concrete_media(actor)
+	actor.erase("viewing_object_id")
+	var partner_id:String=str(actor.get("partner_id",""))
+	actor.erase("partner_id")
+	if partner_id!="" and world.residents.has(partner_id):
+		world.residents[partner_id].erase("partner_id")
+		wake_actor(partner_id,"TRAFFIC_PARTNER_REPLAN")
+	if actor.has("held_book") and actor.has("book_task_stage"):
+		actor["book_task_stage"]="return_wait"
+	else:
+		_clear_book_task(actor)
+	if str(actor.get("cup_task_stage",""))!="hold":
+		_clear_cup_task(actor)
+	actor["phase"]="idle"
+	actor["waypoints"]=[]
+	actor["waypoint_index"]=0
+	actor["until"]=clock+2.0+float(id.hash()%7)*0.35
+	moving_ids.erase(id)
+	_schedule_actor(actor,"TRAFFIC_REPLAN")
+	return true
