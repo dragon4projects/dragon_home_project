@@ -320,6 +320,7 @@ func _ready() -> void:
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
+	asset_banks.begin_validation_pass()
 	world.merge_zna_media_previews()
 	world.load_private_cinema_catalog()
 	_ensure_canonical_wall_displays()
@@ -412,6 +413,8 @@ func _ready() -> void:
 		print("TEEA008_LIVE_START scene")
 	make_rooms()
 	make_residents()
+	if teea008_live:print("ASSET_STARTUP_VALIDATION probes=",asset_banks.validation_disk_probes," reused=",asset_banks.validation_cache_hits)
+	asset_banks.end_validation_pass()
 	build_interface()
 	make_creatures()
 	make_physical_objects()
@@ -3827,7 +3830,54 @@ func _create_physical_book(book:Dictionary)->Node3D:
 		cover_mat.albedo_texture=tex
 		cover.material_override=cover_mat
 		node.add_child(cover)
+	for child in node.get_children():child.set_meta("closed_book_geometry",true)
 	return node
+
+# A rendering-only variant of the same physical book, never a second copy.
+# The spine stays at the same calibrated centre used by the closed volume.
+func _set_book_open(node:Node3D,opened:bool)->void:
+	var pages:Node3D=node.get_node_or_null("OpenBook")
+	if opened and pages==null:
+		pages=Node3D.new()
+		pages.name="OpenBook"
+		node.add_child(pages)
+		var cover_mat:=StandardMaterial3D.new()
+		cover_mat.albedo_color=Color("#594238")
+		var paper_mat:=StandardMaterial3D.new()
+		paper_mat.albedo_color=Color("#e4d9ba")
+		var edge_mat:=StandardMaterial3D.new()
+		edge_mat.albedo_color=Color("#a69678")
+		for side in [-1,1]:
+			var leaf:=Node3D.new()
+			leaf.position.y=0.09
+			leaf.rotation.z=0.0
+			leaf.rotation.y=float(side)*0.15
+			pages.add_child(leaf)
+			var cover:=MeshInstance3D.new()
+			var cover_box:=BoxMesh.new()
+			cover_box.size=Vector3(0.125,0.185,0.008)
+			cover.mesh=cover_box
+			cover.material_override=cover_mat
+			cover.position=Vector3(float(side)*0.0625,0,-0.008)
+			leaf.add_child(cover)
+			var paper:=MeshInstance3D.new()
+			var paper_box:=BoxMesh.new()
+			paper_box.size=Vector3(0.114,0.172,0.012)
+			paper.mesh=paper_box
+			paper.material_override=paper_mat
+			paper.position=Vector3(float(side)*0.061,0,0.004)
+			leaf.add_child(paper)
+			var line:=MeshInstance3D.new()
+			var line_box:=BoxMesh.new()
+			line_box.size=Vector3(0.003,0.168,0.001)
+			line.mesh=line_box
+			line.material_override=edge_mat
+			line.position=Vector3(float(side)*0.006,0,0.0105)
+			leaf.add_child(line)
+	for child in node.get_children():
+		if child.has_meta("closed_book_geometry"):child.visible=not opened
+	if pages!=null:pages.visible=opened
+	node.set_meta("book_open",opened)
 
 func _update_physical_books()->void:
 	if book_root==null:return
@@ -3871,6 +3921,7 @@ func _update_physical_books()->void:
 		node.scale=Vector3.ONE*scale_value
 		node.set_meta("hand_contact_status","SHELF" if holder_id=="" else "UNCALIBRATED")
 		if holder_id!="":_place_book_at_verified_hand(node,world.residents[holder_id])
+		_set_book_open(node,str(node.get_meta("hand_contact_status",""))=="READ_FRAME_MARKED")
 		node.visible=true
 		visible_ids[id]=true
 	for id in book_nodes.keys():
