@@ -518,6 +518,20 @@ func _apply_social_interiors()->void:
 	_apply_media_work_dressing()
 	_apply_guest_display_dressing()
 	_apply_conditional_shelf_dressing()
+	_apply_hearth_conversation_v2()
+
+# Owner permits furniture relocation. Only two unsupported chairs move;
+# preserve support IDs, cup homes, dragon and the authored shell.
+func _apply_hearth_conversation_v2()->void:
+	var row:Dictionary=layouts.get("common/R3",{})
+	if row.is_empty():return
+	var positions:Dictionary={"common_r3_p3_chair_center":Vector2(-2.6,-1.4),"canonical_hearth_extra_chair":Vector2(1.8,-0.5)}
+	for item in row.get("instances",[]):
+		var id:String=str(item["instance_id"])
+		if positions.has(id):
+			var at:Vector2=positions[id]
+			_translate_hearth_item(item,at.x,at.y)
+	row["runtime_review_geometry_revision"]="CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH"
 
 func _apply_library_gallery_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)
