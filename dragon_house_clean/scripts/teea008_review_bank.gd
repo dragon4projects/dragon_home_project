@@ -384,3 +384,20 @@ func _apply_social_interiors()->void:
 	hearth["instances"].append_array(data["hearth_additions"])
 	hearth["runtime_review_geometry_revision"]=str(data["revision"])
 	layouts["common/R3"]=hearth
+	_apply_library_gallery_dressing()
+
+func _apply_library_gallery_dressing()->void:
+	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)
+	if file==null:return
+	var doc=JSON.parse_string(file.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)):return
+	for key in doc.get("additions",{}):
+		if not layouts.has(key):continue
+		var valid:=true
+		for item in doc["additions"][key]:
+			if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):
+				valid=false
+				push_error("Library/gallery missing model "+str(item["asset_id"]))
+		if valid:
+			layouts[key]["instances"].append_array(doc["additions"][key])
+			layouts[key]["canonical_dressing_revision"]="LIBRARY_GALLERY_V1"

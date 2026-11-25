@@ -1288,12 +1288,14 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 
 func _migrate_review_geometry(previously_initialized:bool)->int:
 	var revision:String=str(candidate_navigation.layouts.get("common/R3",{}).get("runtime_review_geometry_revision",""))
+	if world.canonical_house_seed and candidate_navigation.layouts.get("library/R3",{}).get("canonical_dressing_revision","")!="":
+		revision+="|"+str(candidate_navigation.layouts["library/R3"]["canonical_dressing_revision"])
 	if revision=="" or str(world.runtime_state.get("teea008_geometry_revision",""))==revision:
 		return 0
 	var affected:Dictionary={}
 	for room in world.rooms:
 		var key:String=candidate_navigation.key(room)
-		if key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3"]):
+		if key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3"]):
 			affected[str(room["id"])]=true
 	var count:=0
 	if previously_initialized:

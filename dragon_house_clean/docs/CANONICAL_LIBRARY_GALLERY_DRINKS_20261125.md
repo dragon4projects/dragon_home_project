@@ -1,0 +1,5 @@
+# Library/gallery dressing and drink catalog source extraction
+
+Owner: no cooking simulation. Recovered exact catalog names from source specification sections 22–31, pp.149–153: 7 nonalcoholic/tea, 3 wines, 15 coffees, 20 straight/simple alcohol, 60 cocktails. One physical CUP and content label, no recipes; learned preference and partial sipping remain pending. Source catalogue preserved separately, with generated cocktail IDs prefixed to disambiguate Americano from coffee. No claim that metadata or runtime is complete. Decorative assets are supply/staging props, not additional drink vessels.
+
+Library R3 receives reading table, decorative book sets, oil lamp, side table and rug; existing physical book slots untouched. Both existing libraries use same dressing delta for now. Gallery receives three separate display tables with bust, vase, bronze ray and lantern. Existing artifact slots and identities untouched. No new third-party files. JS checked fixed AABB separation, old approaches and front aisle. Runtime import/visual tests pending. 
