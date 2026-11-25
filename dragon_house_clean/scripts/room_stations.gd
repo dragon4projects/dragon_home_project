@@ -549,6 +549,14 @@ func reconcile(world) -> int:
 			invalid=restored_claim.is_empty() or prior.size()!=2 or offset.distance_to(Vector2(float(prior[0]),float(prior[1])))>0.01
 		if invalid:
 			release(actor)
+			# A rider between floors must drain the current physical lift leg.
+			var waypoints:Array=actor.get("waypoints",[])
+			var waypoint_index:int=int(actor.get("waypoint_index",0))
+			var y:float=float(actor.get("visual_y",0))
+			if world.canonical_house_seed and str(actor.get("phase",""))=="travel" and waypoint_index>=0 and waypoint_index<waypoints.size() and str(waypoints[waypoint_index].get("kind",""))=="lift" and absf(y-roundf(y/world.FLOOR_H)*world.FLOOR_H)>0.035 and actor.has("book_task_stage"):
+				actor["book_recovery_lift_drain"]=true
+				fixed+=1
+				continue
 			# Old/corrupt reservations cannot continue a phantom activity
 			# while another resident legitimately claims their former seat.
 			actor["phase"] = "idle"
