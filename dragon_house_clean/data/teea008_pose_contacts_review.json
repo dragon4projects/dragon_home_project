@@ -50,6 +50,7 @@
           ],
           "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
           "contact_span_px": 74,
+          "book_px": [256, 344],
           "book_baked": false
         },
         "LIE_SIDE_CURLED": {
