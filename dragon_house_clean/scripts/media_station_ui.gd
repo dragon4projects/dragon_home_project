@@ -223,7 +223,7 @@ func open_surface(room_id:String,id:String,k:String)->void:
 	switch_category(k)
 	opened=true
 	visible=true
-	surface_label.text="Держатель: "+id+" · "+room_id
+	surface_label.text={"books":"Книжная полка","films":"Кинозона","tracks":"Аудиоаппаратура","artifacts":"Полка артефактов"}.get(k,"Место экспозиции")
 	surface_label.visible=true
 	surface_controls.visible=true
 	place_button.visible=k=="artifacts"

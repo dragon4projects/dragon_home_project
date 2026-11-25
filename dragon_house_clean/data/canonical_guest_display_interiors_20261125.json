@@ -538,196 +538,151 @@
     ],
     "artifact/R3": [
       {
-        "instance_id": "gallery_cube_pedestal",
-        "asset_id": "WoodenTable_01",
-        "room_local_xyz": [
-          0,
-          0.025,
-          0.28
-        ],
-        "rotation_deg_xyz": [
-          0,
-          0,
-          0
-        ],
-        "uniform_scale": 1,
-        "bounds_min_m": [
-          -0.76485,
-          0.025,
-          0.0007010000000000072
-        ],
-        "bounds_max_m": [
-          0.76485,
-          0.491522,
-          0.559299
-        ],
-        "physical_footprint_xz": [
-          [
-            -0.76485,
-            0.0007010000000000072
-          ],
-          [
-            0.76485,
-            0.0007010000000000072
-          ],
-          [
-            0.76485,
-            0.559299
-          ],
-          [
-            -0.76485,
-            0.559299
-          ]
-        ],
-        "placement_policy": "floor_fixed",
-        "support_ref": null,
-        "station_candidates": [],
-        "support_slots": [],
-        "owner_approved": false
-      },
-      {
-        "instance_id": "gallery_empty_cube_small",
+        "instance_id": "gallery_empty_cube_shelf_1",
         "asset_id": "artifact_glass_cube_s",
         "room_local_xyz": [
-          -0.52,
-          0.491522,
-          0.28
+          -4.057322,
+          0.66297,
+          -1.55
         ],
         "rotation_deg_xyz": [
           0,
           0,
           0
         ],
-        "uniform_scale": 1,
+        "uniform_scale": 0.9,
         "bounds_min_m": [
-          -0.62,
-          0.491522,
-          0.18000000000000002
+          -4.147322,
+          0.66297,
+          -1.6400000000000001
         ],
         "bounds_max_m": [
-          -0.42000000000000004,
-          0.691522,
-          0.38
+          -3.9673220000000002,
+          0.84297,
+          -1.46
         ],
         "physical_footprint_xz": [
           [
-            -0.62,
-            0.18000000000000002
+            -4.147322,
+            -1.6400000000000001
           ],
           [
-            -0.42000000000000004,
-            0.18000000000000002
+            -3.9673220000000002,
+            -1.6400000000000001
           ],
           [
-            -0.42000000000000004,
-            0.38
+            -3.9673220000000002,
+            -1.46
           ],
           [
-            -0.62,
-            0.38
+            -4.147322,
+            -1.46
           ]
         ],
         "placement_policy": "supported",
-        "support_ref": "gallery_cube_pedestal.decor_gallery_empty_cube_small",
+        "support_ref": "",
         "station_candidates": [],
         "support_slots": [],
-        "owner_approved": false
+        "owner_approved": false,
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_3_1"
       },
       {
-        "instance_id": "gallery_empty_cube_medium",
-        "asset_id": "artifact_glass_cube_m",
+        "instance_id": "gallery_empty_cube_shelf_2",
+        "asset_id": "artifact_glass_cube_s",
         "room_local_xyz": [
-          -0.15,
-          0.491522,
-          0.28
+          -4.057322,
+          0.93743,
+          -1.55
         ],
         "rotation_deg_xyz": [
           0,
           0,
           0
         ],
-        "uniform_scale": 1,
+        "uniform_scale": 0.9,
         "bounds_min_m": [
-          -0.32499999999999996,
-          0.491522,
-          0.10500000000000004
+          -4.147322,
+          0.93743,
+          -1.6400000000000001
         ],
         "bounds_max_m": [
-          0.024999999999999994,
-          0.841522,
-          0.455
+          -3.9673220000000002,
+          1.11743,
+          -1.46
         ],
         "physical_footprint_xz": [
           [
-            -0.32499999999999996,
-            0.10500000000000004
+            -4.147322,
+            -1.6400000000000001
           ],
           [
-            0.024999999999999994,
-            0.10500000000000004
+            -3.9673220000000002,
+            -1.6400000000000001
           ],
           [
-            0.024999999999999994,
-            0.455
+            -3.9673220000000002,
+            -1.46
           ],
           [
-            -0.32499999999999996,
-            0.455
+            -4.147322,
+            -1.46
           ]
         ],
         "placement_policy": "supported",
-        "support_ref": "gallery_cube_pedestal.decor_gallery_empty_cube_medium",
+        "support_ref": "",
         "station_candidates": [],
         "support_slots": [],
-        "owner_approved": false
+        "owner_approved": false,
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_4_1"
       },
       {
-        "instance_id": "gallery_empty_cube_large",
-        "asset_id": "artifact_glass_cube_l",
+        "instance_id": "gallery_empty_cube_shelf_3",
+        "asset_id": "artifact_glass_cube_s",
         "room_local_xyz": [
-          0.39,
-          0.491522,
-          0.28
+          3.59948,
+          0.945151,
+          -1.55
         ],
         "rotation_deg_xyz": [
           0,
           0,
           0
         ],
-        "uniform_scale": 1,
+        "uniform_scale": 0.9,
         "bounds_min_m": [
-          0.14,
-          0.491522,
-          0.030000000000000027
+          3.50948,
+          0.945151,
+          -1.6400000000000001
         ],
         "bounds_max_m": [
-          0.64,
-          0.991522,
-          0.53
+          3.6894799999999996,
+          1.125151,
+          -1.46
         ],
         "physical_footprint_xz": [
           [
-            0.14,
-            0.030000000000000027
+            3.50948,
+            -1.6400000000000001
           ],
           [
-            0.64,
-            0.030000000000000027
+            3.6894799999999996,
+            -1.6400000000000001
           ],
           [
-            0.64,
-            0.53
+            3.6894799999999996,
+            -1.46
           ],
           [
-            0.14,
-            0.53
+            3.50948,
+            -1.46
           ]
         ],
         "placement_policy": "supported",
-        "support_ref": "gallery_cube_pedestal.decor_gallery_empty_cube_large",
+        "support_ref": "",
         "station_candidates": [],
         "support_slots": [],
-        "owner_approved": false
+        "owner_approved": false,
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_2_1"
       }
     ],
     "library/R3": [

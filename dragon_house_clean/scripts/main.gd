@@ -1742,6 +1742,53 @@ func _object_offset(object_id: String) -> Vector3:
 	var oz := (float(int(code / 7) % 5) - 2.0) * 0.12
 	return Vector3(ox,0.0,oz)
 
+const ARTIFACT_CUBE_SIDE:float=0.18
+const ARTIFACT_CUBE_MODEL:="res://assets/decor_bank/artifact_glass_cube_s/model.gltf"
+
+func _make_artifact_cube(anchor:Node3D,texture:Texture2D)->bool:
+	# The physical artifact IS a glass cube, not a loose picture next to a cube.
+	# Measured source model: 0.20 m, floor pivot. Uniformly fit shelf clearance.
+	var model:PackedScene=ResourceLoader.load(ARTIFACT_CUBE_MODEL,"PackedScene") as PackedScene
+	if model==null:return false
+	var glass:Node3D=Node3D.new()
+	glass.name="ArtifactGlassCube"
+	glass.scale=Vector3.ONE*(ARTIFACT_CUBE_SIDE/0.20)
+	glass.add_child(model.instantiate())
+	anchor.add_child(glass)
+	anchor.set_meta("artifact_cube_side",ARTIFACT_CUBE_SIDE)
+	if texture!=null:
+		var face:=Sprite3D.new()
+		face.name="Visual"
+		face.texture=texture
+		face.billboard=BaseMaterial3D.BILLBOARD_DISABLED
+		face.pixel_size=ARTIFACT_CUBE_SIDE*0.80/maxf(float(texture.get_width()),float(texture.get_height()))
+		face.position=Vector3(0,ARTIFACT_CUBE_SIDE*0.5,ARTIFACT_CUBE_SIDE*0.5+0.002)
+		face.alpha_cut=SpriteBase3D.ALPHA_CUT_DISCARD
+		face.no_depth_test=false
+		anchor.add_child(face)
+	return true
+
+func _artifact_cube_hotspot(point:Vector2)->Dictionary:
+	if camera==null:return {}
+	var ray_origin:Vector3=camera.project_ray_origin(point)
+	var ray_direction:Vector3=camera.project_ray_normal(point)
+	var nearest:float=INF
+	var found:Dictionary={}
+	for entry in content_hotspots:
+		var anchor:Node3D=entry.get("anchor")
+		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree() or not anchor.has_meta("artifact_cube_side"):
+			continue
+		var side:float=float(anchor.get_meta("artifact_cube_side"))
+		var inverse:Transform3D=anchor.global_transform.affine_inverse()
+		var bounds:=AABB(Vector3(-side*0.5,0,-side*0.5),Vector3.ONE*side)
+		var hit:Variant=bounds.intersects_ray(inverse*ray_origin,inverse.basis*ray_direction)
+		if hit==null:continue
+		var distance:float=ray_origin.distance_squared_to(anchor.to_global(hit))
+		if distance<nearest:
+			nearest=distance
+			found=entry
+	return found
+
 func make_physical_objects() -> void:
 	if object_root == null:
 		return
@@ -1769,6 +1816,11 @@ func make_physical_objects() -> void:
 		var texture: Texture2D = asset_banks.prop_display_texture(asset_id) if asset_id != "" else null
 		if texture==null and content_viewer!=null:
 			texture=content_viewer._load_preview(str(object.get("preview_path","")))
+		if architecture_review and str(object.get("viewer_category",""))=="artifacts" and str(object.get("display_mode",""))!="wall":
+			if _make_artifact_cube(anchor,texture):
+				object_nodes[str(object_id)]=anchor
+				register_content_hotspot(anchor,"artifacts",str(object_id),str(object.get("display_name",object_id)))
+				continue
 		if texture != null:
 			var sprite := Sprite3D.new()
 			sprite.name = "Visual"
@@ -1896,11 +1948,12 @@ func update_physical_objects() -> void:
 			else:
 				var fallback:Vector3=_object_offset(str(object_id))
 				local_anchor=Vector2(fallback.x,0.72+fallback.z)
-			if str(object.get("viewer_category",""))=="artifacts":
+			var cube:bool=anchor.has_meta("artifact_cube_side")
+			if str(object.get("viewer_category",""))=="artifacts" and not cube:
 				var plain_sprite:Sprite3D=anchor.get_node_or_null("Visual")
 				if plain_sprite!=null:plain_sprite.position.y=0.28
 			var room_world:Vector3=world.room_local_to_world(room,local_anchor)
-			anchor.position=Vector3(depth_visual_x(room_id,room_world.x,local_anchor.y),room_world.y+0.22,room_world.z)
+			anchor.position=Vector3(depth_visual_x(room_id,room_world.x,local_anchor.y),room_world.y+(0.0 if cube else 0.22),room_world.z)
 			anchor.scale=Vector3.ONE*depth_visual_scale(local_anchor.y)
 			if teea008_live and str(object.get("viewer_category",""))=="artifacts" and str(object.get("home_room_id",""))==room_id and world._anchors_equal(object.get("current_anchor",[]),object.get("home_anchor",[])):
 				var support:Dictionary=life.candidate_navigation.artifact_support(room,str(object.get("current_support_id","")))
@@ -1914,7 +1967,7 @@ func update_physical_objects() -> void:
 					anchor.position=Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
 					anchor.scale=Vector3.ONE*scale_value
 					var sprite:Sprite3D=anchor.get_node_or_null("Visual")
-					if sprite!=null:
+					if sprite!=null and not cube:
 						sprite.position.y=float(object.get("display_world_height",0.48))*0.5
 			if teea008_live and str(object.get("viewer_category",""))=="cups":
 				var slot:Dictionary=life.candidate_cups.slot_for_object(object)
@@ -2363,12 +2416,16 @@ func clear_content_hotspots() -> void:
 func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 	if camera == null:
 		return {}
+	var cube_hit:Dictionary=_artifact_cube_hotspot(point)
+	if not cube_hit.is_empty():return cube_hit
 	var best := 42.0
 	var found: Dictionary = {}
 	for entry in content_hotspots:
 		var anchor = entry.get("anchor")
 		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree():
 			continue
+		# Cubes use their real projected volume, never an oversized pixel halo.
+		if anchor.has_meta("artifact_cube_side"):continue
 		if camera.is_position_behind(anchor.global_position):
 			continue
 		var screen := camera.unproject_position(anchor.global_position)
@@ -2425,7 +2482,10 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 		if not surface.is_empty() and world.public_cutaway_allowed(world.room_by_id(str(surface.get("room_id","")))):
 			var item:Dictionary=teea008_media_bindings.resolve(str(surface["room_id"]),str(surface["item_id"]))
 			if not item.is_empty():
-				surface["display_name"]=str(item.get("title",item.get("display_name",surface["item_id"])))
+				surface["display_name"]=str(item.get("title",item.get("display_name","Без названия")))
+			else:
+				var category:String=str(teea008_review.surfaces.get(str(surface["item_id"]),{}).get("legacy_runtime_category",""))
+				surface["display_name"]={"books":"Книжная полка","films":"Кинозона","tracks":"Аудиотека","artifacts":"Полка артефактов"}.get(category,"Место для экспозиции")
 			found=surface
 	return found
 
@@ -2484,6 +2544,11 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 			return false
 	if record.is_empty():
 		return false
+	if category=="artifacts" and str(record.get("preview_path",""))=="":
+		var master:String=asset_banks.prop_master_path(str(record.get("asset_id","")))
+		if master!="":
+			record=record.duplicate(true)
+			record["preview_path"]="res://"+master
 	return content_viewer.open_record(category,record)
 
 func update_content_hover(point: Vector2) -> void:
@@ -3012,7 +3077,7 @@ func _input(event: InputEvent) -> void:
 				var node:Node3D=object_nodes.get(object_home_drag_id)
 				if node!=null:
 					var pos:Vector3=world.room_local_to_world(room,object_home_drag_anchor)
-					var height:float=0.22
+					var height:float=0.0 if node.has_meta("artifact_cube_side") else 0.22
 					if wall:
 						var mounted:Array=dragged.get("display_anchor",[])
 						if mounted.size()==3:
@@ -3569,12 +3634,18 @@ func _place_teea008_artifact(room_id:String,surface_id:String,item_id:String)->v
 		return
 	var height:float=float(obj.get("display_world_height",0.48))
 	var width:float=height*float(sprite.texture.get_width())/maxf(1.0,float(sprite.texture.get_height()))
-	if not teea008_media_bindings.place_artifact(room_id,surface_id,item_id,life.candidate_navigation,width,height,0.04):
+	var depth:float=0.04
+	if node.has_meta("artifact_cube_side"):
+		width=ARTIFACT_CUBE_SIDE
+		height=ARTIFACT_CUBE_SIDE
+		depth=ARTIFACT_CUBE_SIDE
+	if not teea008_media_bindings.place_artifact(room_id,surface_id,item_id,life.candidate_navigation,width,height,depth):
 		notice.text="Нет свободной совместимой опоры для этого предмета"
 		return
 	world.save_world()
 	life.refresh_changed_station_claims()
 	update_physical_objects()
+	_refresh_conditional_dressing()
 	_update_teea008_media_previews()
 	notice.text="Дом предмета назначен на измеренной опоре"
 

@@ -2063,55 +2063,6 @@
         "owner_approved": false
       },
       {
-        "instance_id": "conditional_artifact_r3_shelf_c_shelf_3_1",
-        "asset_id": "generic_mini_compass",
-        "room_local_xyz": [
-          -4.057322,
-          0.66297,
-          -1.55
-        ],
-        "rotation_deg_xyz": [
-          0,
-          0,
-          0
-        ],
-        "uniform_scale": 1,
-        "bounds_min_m": [
-          -4.078495,
-          0.6630189999999999,
-          -1.587617
-        ],
-        "bounds_max_m": [
-          -4.036242,
-          0.7081059999999999,
-          -1.512472
-        ],
-        "physical_footprint_xz": [
-          [
-            -4.078495,
-            -1.587617
-          ],
-          [
-            -4.036242,
-            -1.587617
-          ],
-          [
-            -4.036242,
-            -1.512472
-          ],
-          [
-            -4.078495,
-            -1.512472
-          ]
-        ],
-        "placement_policy": "supported",
-        "support_ref": "",
-        "decor_slot_id": "artifact_r3_shelf_c.shelf_3_1",
-        "station_candidates": [],
-        "support_slots": [],
-        "owner_approved": false
-      },
-      {
         "instance_id": "conditional_artifact_r3_shelf_c_shelf_3_2",
         "asset_id": "brass_vase_03",
         "room_local_xyz": [
@@ -2156,55 +2107,6 @@
         "placement_policy": "supported",
         "support_ref": "",
         "decor_slot_id": "artifact_r3_shelf_c.shelf_3_2",
-        "station_candidates": [],
-        "support_slots": [],
-        "owner_approved": false
-      },
-      {
-        "instance_id": "conditional_artifact_r3_shelf_c_shelf_4_1",
-        "asset_id": "generic_closed_trinket_case",
-        "room_local_xyz": [
-          -4.057322,
-          0.93743,
-          -1.55
-        ],
-        "rotation_deg_xyz": [
-          0,
-          0,
-          0
-        ],
-        "uniform_scale": 1,
-        "bounds_min_m": [
-          -4.1063220000000005,
-          0.93743,
-          -1.58675
-        ],
-        "bounds_max_m": [
-          -4.008322,
-          0.98943,
-          -1.51325
-        ],
-        "physical_footprint_xz": [
-          [
-            -4.1063220000000005,
-            -1.58675
-          ],
-          [
-            -4.008322,
-            -1.58675
-          ],
-          [
-            -4.008322,
-            -1.51325
-          ],
-          [
-            -4.1063220000000005,
-            -1.51325
-          ]
-        ],
-        "placement_policy": "supported",
-        "support_ref": "",
-        "decor_slot_id": "artifact_r3_shelf_c.shelf_4_1",
         "station_candidates": [],
         "support_slots": [],
         "owner_approved": false
@@ -2548,55 +2450,6 @@
         "placement_policy": "supported",
         "support_ref": "",
         "decor_slot_id": "artifact_r3_shelf_d.shelf_1_2",
-        "station_candidates": [],
-        "support_slots": [],
-        "owner_approved": false
-      },
-      {
-        "instance_id": "conditional_artifact_r3_shelf_d_shelf_2_1",
-        "asset_id": "generic_miniature_ray_replica",
-        "room_local_xyz": [
-          3.59948,
-          0.945151,
-          -1.55
-        ],
-        "rotation_deg_xyz": [
-          0,
-          0,
-          0
-        ],
-        "uniform_scale": 1,
-        "bounds_min_m": [
-          3.5534929999999996,
-          0.945151,
-          -1.584811
-        ],
-        "bounds_max_m": [
-          3.645467,
-          1.021805,
-          -1.5151890000000001
-        ],
-        "physical_footprint_xz": [
-          [
-            3.5534929999999996,
-            -1.584811
-          ],
-          [
-            3.645467,
-            -1.584811
-          ],
-          [
-            3.645467,
-            -1.5151890000000001
-          ],
-          [
-            3.5534929999999996,
-            -1.5151890000000001
-          ]
-        ],
-        "placement_policy": "supported",
-        "support_ref": "",
-        "decor_slot_id": "artifact_r3_shelf_d.shelf_2_1",
         "station_candidates": [],
         "support_slots": [],
         "owner_approved": false
