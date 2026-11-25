@@ -135,6 +135,9 @@ func _migrate_json_event_store_to_sqlite() -> int:
 	if not legacy.setup(str(world.save_path)):
 		last_error = "Canonical v0.20 JSON event stream is unreadable: "+legacy.last_error
 		return -1
+	if legacy.last_sequence() < int(world.runtime_state.get("object_event_revision",0)):
+		last_error = "Legacy JSON stream is older than saved object revision"
+		return -1
 	var source_events: Array = legacy.snapshot_events()
 	if source_events.is_empty():
 		return 0
@@ -184,7 +187,18 @@ func setup(p_world) -> bool:
 		last_error = store.last_error
 		_update_runtime_state()
 		return false
-	var canonical_migrated := _migrate_json_event_store_to_sqlite()
+	# A previously canonical store must not replay, migrate, or publish
+	# an older projection before checking the snapshot/marker revision.
+	var saved_revision:int = int(world.runtime_state.get("object_event_revision",0))
+	var marker_revision:int = _sqlite_marker_sequence() if backend_requested == "sqlite" else -1
+	var required_revision:int = maxi(saved_revision,marker_revision)
+	var can_migrate:bool = backend_requested == "sqlite" and not sqlite_was_canonical and store.events.is_empty() and _legacy_json_event_store_exists()
+	if not can_migrate and store.last_sequence() < required_revision:
+		status = "SQLITE_ROLLBACK_DETECTED" if backend_requested == "sqlite" else "JSON_ROLLBACK_DETECTED"
+		last_error = "Readable object event revision %d is behind required revision %d" % [store.last_sequence(),required_revision]
+		_update_runtime_state()
+		return false
+	var canonical_migrated:int = _migrate_json_event_store_to_sqlite() if can_migrate else 0
 	if canonical_migrated < 0:
 		status = "JSON_EVENT_MIGRATION_FAILED"
 		_update_runtime_state()
@@ -238,7 +252,8 @@ func setup(p_world) -> bool:
 func _update_runtime_state() -> void:
 	if world == null:
 		return
-	var reported_revision: int = store.last_sequence()
+	# A failed recovery must not erase the last known committed revision.
+	var reported_revision: int = maxi(store.last_sequence(),int(world.runtime_state.get("object_event_revision",0)))
 	if backend_requested == "sqlite":
 		var marker_sequence: int = _sqlite_marker_sequence()
 		if marker_sequence > reported_revision:
