@@ -9,26 +9,27 @@ func setup(model,navigation)->void:
 	nav=navigation
 
 func register_review_mugs()->int:
-	var room:Dictionary=world.get_room(-2,0)
+	var rooms:Array=[]
 	if world.canonical_house_seed:
-		var common_rooms:Array=world.matching_rooms(["common"])
-		room=common_rooms[0] if not common_rooms.is_empty() else {}
-	if str(room.get("type",""))!="common" or int(room.get("size_modules",1))!=3:
-		return 0
-	var row:Dictionary=nav.layouts.get(nav.key(room),{})
+		rooms=world.matching_rooms(["common","rest","kitchen"])
+	else:
+		rooms=[world.get_room(-2,0)]
 	var added:=0
-	for item in row.get("instances",[]):
-		var asset:String=str(item.get("asset_id",""))
-		if not asset in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:
-			continue
-		var id:String="TEEA008_REVIEW_"+asset
-		if not world.physical_object(id).is_empty():
-			continue
-		var pos:Array=item["room_local_xyz"]
-		var meta:Dictionary={"asset_id":asset,"viewer_category":"cups","object_class":"display_object","home_anchor":[pos[0],pos[2]],"display_world_height":0.105,"description":"Проверочная чашка TEEA008; владелец не назначен; не канонический предмет.","reset_eligible":true}
-		var title:String="Красная чашка · кандидат" if asset.ends_with("_red") else "Синяя чашка · кандидат"
-		if world.register_physical_object(id,title,"",str(room["id"]),true,true,false,false,true,meta):
-			added+=1
+	for room in rooms:
+		if room.is_empty():continue
+		var row:Dictionary=nav.layouts.get(nav.key(room),{})
+		for item in row.get("instances",[]):
+			var asset:String=str(item.get("asset_id",""))
+			if not asset in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:continue
+			var id:String="TEEA008_REVIEW_"+asset
+			if str(room["type"])!="common":
+				id="SOCIAL_REVIEW_"+str(room["id"])+"_"+str(item["instance_id"])
+			if not world.physical_object(id).is_empty():continue
+			var pos:Array=item["room_local_xyz"]
+			var meta:Dictionary={"asset_id":asset,"viewer_category":"cups","object_class":"display_object","home_anchor":[pos[0],pos[2]],"display_world_height":0.105,"description":"Проверочная чашка; владелец не назначен; не канонический предмет.","reset_eligible":true}
+			var title:String="Красная чашка · кандидат" if asset.ends_with("_red") else "Синяя чашка · кандидат"
+			if world.register_physical_object(id,title,"",str(room["id"]),true,true,false,false,true,meta):
+				added+=1
 	return added
 
 func reserved(ignore:String="")->Dictionary:

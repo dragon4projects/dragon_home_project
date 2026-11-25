@@ -284,6 +284,7 @@ func apply_architecture_layouts()->void:
 	_apply_hearth_interior_v1(hearth)
 	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_INTERIOR_20261125_V1"
 	layouts["common/R3"]=hearth
+	_apply_social_interiors()
 
 func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->int:
 	# Actual normalized model silhouettes, not box proxies. Shared imported
@@ -353,7 +354,7 @@ func _apply_hearth_interior_v1(hearth:Dictionary)->void:
 		extra["instance_id"]="canonical_hearth_extra_chair"
 		for station in extra.get("station_candidates",[]):
 			station["station_candidate_id"]="canonical_hearth_extra_chair."+str(station["id"])
-		_translate_hearth_item(extra,1.50,-0.62)
+		_translate_hearth_item(extra,1.50,0.25)
 		hearth["instances"].append(extra)
 	var count:=0
 	for item in hearth["instances"]:
@@ -364,3 +365,22 @@ func _apply_hearth_interior_v1(hearth:Dictionary)->void:
 		{"id":"hearth_rest","x_range":[-2.3,2.4]},
 		{"id":"dragon_nook","x_range":[2.4,7.2]}
 	]
+
+func _apply_social_interiors()->void:
+	var file:=FileAccess.open("res://data/canonical_social_interiors_20261125.json",FileAccess.READ)
+	if file==null:return
+	var data=JSON.parse_string(file.get_as_text())
+	if typeof(data)!=TYPE_DICTIONARY or bool(data.get("owner_approved",true)):return
+	for row in data.get("variants",[]):
+		for item in row.get("instances",[]):
+			if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):
+				push_error("Missing social interior asset "+str(item["asset_id"]))
+				return
+	for item in data.get("hearth_additions",[]):
+		if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):return
+	for row in data["variants"]:
+		layouts[str(row["variant_id"])]=row
+	var hearth:Dictionary=layouts["common/R3"]
+	hearth["instances"].append_array(data["hearth_additions"])
+	hearth["runtime_review_geometry_revision"]=str(data["revision"])
+	layouts["common/R3"]=hearth

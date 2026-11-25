@@ -71,7 +71,7 @@ func hand_contact(actor:Dictionary,state:String,frame:int)->Dictionary:
 	return record
 
 func key(room:Dictionary)->String:
-	var kind:String=str(room.get("type",""))
+	var kind:String=str(room.get("interior_variant",room.get("type","")))
 	if kind=="guest":
 		kind=str(room.get("candidate_room_id","")).trim_suffix("_01")
 	return "%s/R%d" % [kind,int(room.get("size_modules",1))]
@@ -448,7 +448,7 @@ func cup_slots(room:Dictionary)->Array:
 	if cup_slot_cache.has(k):
 		return cup_slot_cache[k]
 	var out:Array=[]
-	if str(room.get("type",""))!="common":
+	if not str(room.get("type","")) in ["common","rest","kitchen"]:
 		return out
 	var row:Dictionary=layouts.get(k,{})
 	var by_id:Dictionary={}

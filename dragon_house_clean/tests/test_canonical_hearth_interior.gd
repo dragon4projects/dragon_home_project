@@ -12,7 +12,7 @@ func run()->void:
 	var room:Dictionary=scene.world.get_room(-3,1)
 	var nav=scene.life.candidate_navigation
 	var layout:Dictionary=nav.layouts["common/R3"]
-	assert(str(layout["runtime_review_geometry_revision"])=="CANONICAL_HEARTH_INTERIOR_20261125_V1")
+	assert(str(layout["runtime_review_geometry_revision"])=="CANONICAL_SOCIAL_INTERIOR_20261125_V1")
 	assert(layout["interior_zones"].size()==3)
 	var by_id:Dictionary={}
 	var blockers:Array=[]

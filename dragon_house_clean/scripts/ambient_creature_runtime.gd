@@ -63,7 +63,7 @@ func begin_roam(creature_id: String, target_room_id: String = "") -> bool:
 	else:
 		var candidates: Array = world.matching_rooms([
 			"arrival","corridor","common","study","rest","library",
-			"cinema","music","workshop","artifact","lift"
+			"cinema","music","workshop","artifact","lift","kitchen"
 		],"")
 		for room in candidates:
 			if str(room.get("id","")) != str(creature.get("room_id","")):

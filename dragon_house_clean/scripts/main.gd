@@ -124,7 +124,7 @@ var room_names := {
 	"rest": "Комната отдыха", "library": "Библиотека",
 	"cinema": "Фильмотека", "music": "Аудиотека",
 	"workshop": "Мастерская", "private": "Личная дверь", "guest": "Гостевая",
-	"lift": "Подъёмник", "artifact": "Артефакты"
+	"lift": "Подъёмник", "artifact": "Артефакты", "kitchen": "Кухня / бар"
 }
 
 func _artifact_room() -> Dictionary:
@@ -351,6 +351,10 @@ func _register_iter1_review_creatures() -> void:
 
 func _review_room_art_type(group: Dictionary) -> String:
 	var room_type := str(group.get("type",""))
+	if architecture_review:
+		var physical_room:Dictionary=world.room_by_id(str(group.get("primary_id","")))
+		if str(physical_room.get("interior_variant",""))!="":
+			return str(physical_room["interior_variant"])
 	if not iter1_owner_review or room_type != "guest":
 		return room_type
 	var cells: Array = group.get("cells",[])
@@ -1097,7 +1101,7 @@ func add_room_overview_cues(parent: Node3D, group: Dictionary) -> void:
 					Vector3(0.62,1.40,0.24),palette["black"])
 			box(root,Vector3(0,0.68,-1.05),
 				Vector3(maxf(1.25,span*0.24),0.17,0.75),palette["wood"])
-		"study","workshop":
+		"study","workshop","kitchen":
 			box(root,Vector3(0,0.66,-1.26),
 				Vector3(maxf(2.72,span*0.62),0.18,0.66),palette["wood"])
 		"arrival":

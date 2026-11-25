@@ -16,7 +16,7 @@ func run()->void:
 	scene.set_process(false)
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://private_review"))
 	await capture(scene,"canonical_house")
-	for spec in [[-3,1,"canonical_hearth"],[-6,-2,"canonical_centaur"],[1,0,"canonical_cinema"],[-6,0,"canonical_library"]]:
+	for spec in [[4,0,"canonical_kitchen"],[-3,2,"canonical_lounge_upper"],[-6,1,"canonical_lounge_lower"],[-3,1,"canonical_hearth"],[-6,-2,"canonical_centaur"],[1,0,"canonical_cinema"],[-6,0,"canonical_library"]]:
 		var room:Dictionary=scene.world.get_room(int(spec[0]),int(spec[1]))
 		scene.selected_room=room["id"]
 		scene.set_mode("ROOM")

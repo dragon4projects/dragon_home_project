@@ -7,7 +7,7 @@ const SHAFTS := [-7,0,7]
 const PUBLIC_FLOORS := {
 	2: [[-6,"cinema","Кинотеатр"],[-3,"rest","Гостиная"],[1,"music","Музыкальный салон"],[4,"library","Библиотека"]],
 	1: [[-6,"rest","Гостиная с диванами"],[-3,"common","Каминный зал"],[1,"artifact","Галерея артефактов"],[4,"study","Кабинет"]],
-	0: [[-6,"library","Читальный зал"],[-3,"workshop","Мастерская"],[1,"cinema","Второй кинотеатр"],[4,"music","Музыкальная студия"]]
+	0: [[-6,"library","Читальный зал"],[-3,"workshop","Мастерская"],[1,"cinema","Второй кинотеатр"],[4,"kitchen","Кухня / бар"]]
 }
 
 static func _add(world, x:int, level:int, kind:String, width:int, title:String, candidate_id:String="")->Dictionary:
@@ -53,3 +53,18 @@ static func assign_homes(world,profiles:Array)->void:
 		room["display_name"]=str(profiles[i].get("display_name",actor_id))
 		if world.residents.has(actor_id):
 			world.residents[actor_id]["home_room_id"]=str(room["id"])
+
+# Explicit owner-approved purpose change; never rebuild a seed room.
+static func apply_social_purposes(world)->bool:
+	var changed:=false
+	var kitchen:Dictionary=world.get_room(4,0)
+	if int(kitchen.get("x",-999))==4 and int(kitchen.get("size_modules",0))==3 and bool(kitchen.get("immutable_topology",false)) and str(kitchen.get("type",""))=="music":
+		kitchen["type"]="kitchen"
+		kitchen["display_name"]="Кухня / бар"
+		changed=true
+	for spec in [[-3,2,"rest_social_upper"],[-6,1,"rest_social_lower"]]:
+		var room:Dictionary=world.get_room(int(spec[0]),int(spec[1]))
+		if str(room.get("type",""))=="rest" and int(room.get("size_modules",0))==3 and str(room.get("interior_variant",""))!=str(spec[2]):
+			room["interior_variant"]=str(spec[2])
+			changed=true
+	return changed

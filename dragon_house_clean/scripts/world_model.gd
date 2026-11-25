@@ -11,10 +11,10 @@ var sim_clock: float = 0.0
 const MODULE_W := RoomSpaceV2.MODULE_W
 const FLOOR_H := RoomSpaceV2.FLOOR_H
 const GAME_DAY_SECONDS := 86400.0
-const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "guest", "lift", "artifact"]
+const ROOM_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "private", "guest", "lift", "artifact", "kitchen"]
 const MERGEABLE_TYPES := ["common", "study", "rest", "library", "cinema", "music", "workshop", "artifact"]
 const MAX_MERGE := 3
-const SHARED_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "lift", "artifact"]
+const SHARED_TYPES := ["arrival", "corridor", "common", "study", "rest", "library", "cinema", "music", "workshop", "lift", "artifact", "kitchen"]
 const INITIAL_SEED_CELLS := {
 	"-5:0":"arrival","-4:0":"corridor","-3:0":"study",
 	"-2:0":"common","-1:0":"common","0:0":"common",
@@ -636,6 +636,7 @@ func seed_world() -> void:
 	# runtime may add rooms, but it must never merge, resize, move or rebuild seed rooms.
 	if canonical_house_seed:
 		CanonicalHouseSeed.build(self)
+		CanonicalHouseSeed.apply_social_purposes(self)
 	else:
 		for record in [
 			[-5,0,"arrival",1],[-4,0,"corridor",1],[-3,0,"study",1],
@@ -822,6 +823,7 @@ func load_or_seed() -> void:
 		save_world()
 		return
 	rooms.assign(parsed["rooms"])
+	var social_changed:bool=CanonicalHouseSeed.apply_social_purposes(self) if canonical_house_seed else false
 	residents = parsed["residents"]
 	media = parsed.get("media", {"books": [], "films": [], "tracks": []})
 	objects = parsed.get("objects", {})
@@ -845,7 +847,7 @@ func load_or_seed() -> void:
 	object_events_initialized = false
 	object_events_save_path = ""
 	_ensure_object_events()
-	if migrated:
+	if migrated or social_changed:
 		save_world()
 
 func save_world() -> bool:

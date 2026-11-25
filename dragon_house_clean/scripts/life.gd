@@ -374,6 +374,10 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 	var best_room: Dictionary = {}
 	for intent in scored:
 		var types: Array = INTENTS[intent]
+		if world.canonical_house_seed and intent in ["GET_COFFEE","TALK_PAIR","PURPOSEFUL_EXPLORE"]:
+			types=types.duplicate()
+			if not types.has("kitchen"):types.append("kitchen")
+			if intent=="GET_COFFEE" and not types.has("rest"):types.append("rest")
 		if candidate_navigation!=null and intent in ["REST","SLEEP"]:
 			types=types.duplicate()
 			if not types.has("common"):
@@ -1288,7 +1292,8 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 		return 0
 	var affected:Dictionary={}
 	for room in world.rooms:
-		if candidate_navigation.key(room)=="common/R3":
+		var key:String=candidate_navigation.key(room)
+		if key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3"]):
 			affected[str(room["id"])]=true
 	var count:=0
 	if previously_initialized:
