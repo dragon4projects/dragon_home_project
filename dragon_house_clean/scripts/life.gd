@@ -503,7 +503,7 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 					continue
 				if stations.single(world,actor,room,intent).is_empty():
 					continue
-			if intent=="TALK_GROUP" and stations.available_count(world,room)<3:continue
+			if intent=="TALK_GROUP" and not stations.can_reserve_group(world,room,str(actor["id"])):continue
 			if stations.can_reserve(world,room,intent=="TALK_PAIR"):
 				if str(room.get("type",""))=="private" and stations.single(world,actor,room,intent).is_empty():continue
 				candidates.append(room)
