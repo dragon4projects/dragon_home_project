@@ -314,7 +314,7 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("BROWSE_AUDIO")
 	if media_runtime.watch_candidates(str(actor["id"])).is_empty():
 		scores.erase("WATCH_FILM")
-	if media_runtime.playable("tracks").is_empty():
+	if media_runtime.listen_candidates().is_empty():
 		scores.erase("LISTEN_MUSIC")
 	return scores
 
@@ -473,6 +473,7 @@ func end_concrete_media(actor: Dictionary) -> void:
 	actor.erase("activity_media_id")
 	actor.erase("activity_media_title")
 	actor.erase("watch_session")
+	actor.erase("listen_session")
 
 func _set_concrete_media(actor: Dictionary, category: String,
 		item: Dictionary) -> void:
@@ -538,6 +539,9 @@ func reconcile_concrete_media() -> int:
 				# An old save has no trustworthy start time; start a full
 				# timed unit now instead of crediting fictional past viewing.
 				media_runtime.begin_watch(actor,clock)
+				fixed+=1
+			if str(actor.get("intent",""))=="LISTEN_MUSIC" and str(actor.get("phase",""))=="perform" and not actor.has("listen_session"):
+				media_runtime.begin_listen(actor,clock)
 				fixed+=1
 			continue
 		var intent:String=str(actor.get("intent",""))
@@ -687,14 +691,18 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			return
 		concrete_category="films"
 	elif intent=="LISTEN_MUSIC":
-		var playable_tracks:Array=media_runtime.playable("tracks")
-		if playable_tracks.is_empty():
+		if media_runtime.listen_candidates().is_empty():
 			actor["until"]=clock+12.0
 			return
 		if candidate_media_bindings!=null:
+			# A shared salon has one sound source. Do not give a later
+			# arrival credit for the portion before arrival.
+			if not candidate_media_bindings.active_track(str(room["id"]),str(actor["id"])).is_empty():
+				actor["until"]=clock+12.0
+				return
 			concrete_item=candidate_media_bindings.choose_track(str(room["id"]),str(actor["id"]))
 		if concrete_item.is_empty():
-			concrete_item=playable_tracks[rng.randi_range(0,playable_tracks.size()-1)]
+			concrete_item=media_runtime.choose_listen_item(str(actor["id"]),rng,clock)
 		if not media_runtime.can_listen(str(actor["id"]),
 				str(concrete_item.get("id","")),str(room["id"])):
 			actor["until"]=clock+12.0
@@ -826,7 +834,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 	var idx: int = int(actor.get("waypoint_index", 0))
 	if idx >= waypoints.size():
 		actor["phase"] = "perform"
-		if str(actor.get("intent",""))=="WATCH_FILM":
+		if str(actor.get("intent","")) in ["WATCH_FILM","LISTEN_MUSIC"]:
 			_start_cinema_commitment(actor)
 		return
 	var point: Dictionary = waypoints[idx]
@@ -932,7 +940,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 				return
 			if candidate_navigation!=null and str(actor.get("book_task_stage",""))=="read":
 				actor["book_read_started"]=clock
-			if str(actor.get("intent",""))=="WATCH_FILM":
+			if str(actor.get("intent","")) in ["WATCH_FILM","LISTEN_MUSIC"]:
 				_start_cinema_commitment(actor)
 				return
 			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
@@ -942,12 +950,13 @@ func _move(actor: Dictionary, delta: float) -> void:
 func _start_cinema_commitment(actor:Dictionary)->void:
 	var id:String=str(actor["id"])
 	moving_ids.erase(id)
-	if not media_runtime.begin_watch(actor,clock):
+	var started:bool=media_runtime.begin_listen(actor,clock) if str(actor.get("intent",""))=="LISTEN_MUSIC" else media_runtime.begin_watch(actor,clock)
+	if not started:
 		stations.release(actor)
 		end_concrete_media(actor)
 		actor["phase"]="idle"
 		actor["until"]=clock+12.0
-	life_scheduler.schedule_at(id,float(actor["until"]),"CINEMA_COMMITMENT")
+	life_scheduler.schedule_at(id,float(actor["until"]),"MEDIA_COMMITMENT")
 
 func _process_due_actor(id: String, wake_reason: String) -> void:
 	var actor: Dictionary = world.residents.get(id,{})
@@ -964,6 +973,14 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	if float(actor.get("until",0.0)) > clock:
 		life_scheduler.schedule_at(id,float(actor["until"]),"COMMITMENT_ACTIVE")
+		return
+	if str(actor.get("intent",""))=="LISTEN_MUSIC" and actor.has("listen_session"):
+		media_runtime.finish_listen(actor,clock)
+		stations.release(actor)
+		end_concrete_media(actor)
+		actor["phase"]="idle"
+		actor["until"]=clock+12.0
+		_schedule_actor(actor,"MUSIC_INTERMISSION")
 		return
 	if str(actor.get("intent",""))=="WATCH_FILM" and actor.has("watch_session"):
 		media_runtime.finish_watch(actor,clock)

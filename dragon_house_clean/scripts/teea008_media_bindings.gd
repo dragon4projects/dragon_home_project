@@ -118,7 +118,7 @@ func active_track(room_id:String,ignore_actor:String="",perform_only:bool=false)
 		if not bool(actor.get("active",false)) or str(actor.get("intent",""))!="LISTEN_MUSIC" or str(actor.get("station_room_id",""))!=room_id:
 			continue
 		if not str(actor.get("phase","")) in (["perform"] if perform_only else ["travel","perform"]):continue
-		if perform_only and str(actor.get("room_id",""))!=room_id:continue
+		if perform_only and (str(actor.get("room_id",""))!=room_id or not actor.has("listen_session")):continue
 		var item_id:String=str(actor.get("activity_media_id",""))
 		if media.can_listen(str(id),item_id,room_id):
 			return media._lookup("tracks",item_id)

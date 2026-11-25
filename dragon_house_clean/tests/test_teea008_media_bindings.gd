@@ -49,7 +49,7 @@ func run()->void:
 		music_room=w.make_room(8,0,"music",1,false)
 	var sound:=FileAccess.open("user://qa_track.ogg",FileAccess.WRITE)
 	sound.store_8(0);sound.close()
-	w.media["tracks"]=[{"id":"QA_TRACK_A","title":"A","file_path":"user://qa_track.ogg"},{"id":"QA_TRACK_B","title":"B","file_path":"user://qa_track.ogg"}]
+	w.media["tracks"]=[{"id":"QA_TRACK_A","title":"A","file_path":"user://qa_track.ogg","simulation_only":true,"autonomous_music":true,"runtime_seconds":195},{"id":"QA_TRACK_B","title":"B","file_path":"user://qa_track.ogg","simulation_only":true,"autonomous_music":true,"runtime_seconds":178}]
 	var music_id:String="music.r1.audio.01"
 	assert(binding.assign(music_room["id"],music_id,"tracks","QA_TRACK_A"))
 	assert(binding.resolve(music_room["id"],music_id)["id"]=="QA_TRACK_A")
@@ -58,6 +58,7 @@ func run()->void:
 	actor["room_id"]=music_room["id"]
 	actor["phase"]="perform"
 	actor["activity_media_id"]="QA_TRACK_B"
+	assert(media.begin_listen(actor,0))
 	assert(binding.resolve(music_room["id"],music_id)["id"]=="QA_TRACK_B")
 	assert(binding.choose_track(music_room["id"],"RES_02")["id"]=="QA_TRACK_B")
 	actor["phase"]="idle"
@@ -76,8 +77,8 @@ func run()->void:
 	# ZNA preview records must be additive and never masquerade as playable.
 	var original_films:int=copy.media["films"].size()
 	var original_tracks:int=copy.media["tracks"].size()
-	assert(copy.merge_zna_media_previews()==203)
-	assert(copy.media["tracks"].size()==original_tracks+203)
+	assert(copy.merge_zna_media_previews()==698)
+	assert(copy.media["tracks"].size()==original_tracks+698)
 	assert(copy.media["films"].size()==original_films)
 	assert(media._lookup("films","YT_dpUIOPQgJpQ").is_empty())
 	var source:Dictionary=media._lookup("tracks","YT_KJ6ogPmYjLI")
@@ -86,5 +87,5 @@ func run()->void:
 	assert(not media.playable("tracks").any(func(item):return item["id"]==source["id"]))
 	assert(copy.merge_zna_media_previews()==0)
 	assert(media._lookup("tracks","QA_TRACK_A")["file_path"]=="user://qa_track.ogg")
-	print("TEEA008_MEDIA_BINDINGS_PASS zna_audio=203 private_cinema_separate=true no_fake_playback=true  isolated_instances=true active_shared_film=true saved=true")
+	print("TEEA008_MEDIA_BINDINGS_PASS zna_audio=698 private_cinema_separate=true no_fake_playback=true  isolated_instances=true active_shared_film=true saved=true")
 	quit(0)

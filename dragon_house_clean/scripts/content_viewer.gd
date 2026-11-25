@@ -159,15 +159,19 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 		text_view.visible = true
 		preview.visible = preview.texture != null
 	var file_path := str(item.get("file_path",""))
-	play_button.visible = p_category=="tracks"
-	source_button.visible=p_category=="tracks" and _youtube_source(item)!=""
+	play_button.visible = p_category=="tracks" and not bool(item.get("simulation_only",false))
+	source_button.visible=false
+	if p_category=="tracks":
+		var seconds:int=int(item.get("runtime_seconds",0))
+		if seconds>0:meta_label.text+="\nПродолжительность: %d:%02d" % [seconds/60,seconds%60]
+		if bool(item.get("simulation_only",false)):meta_label.text+="\nСимуляция прослушивания."
 	if p_category=="films":
 		var duration:int=int(item.get("runtime_seconds",0))
 		if duration>0:meta_label.text+="\nПродолжительность: %d мин." % int(duration/60)
 		elif str(item.get("media_type",""))=="series":
 			meta_label.text+="\nСериал · просмотр по одной серии"
 		meta_label.text+="\nСимуляция просмотра; видео не воспроизводится."
-	if p_category=="tracks":
+	if p_category=="tracks" and not bool(item.get("simulation_only",false)):
 		if media_runtime == null or not media_runtime.playable(p_category).any(
 			func(candidate): return str(candidate.get("id","")) == str(item.get("id",""))):
 			meta_label.text += ("\n" if meta_label.text != "" else "") + 				"Локальный файл отсутствует или формат не поддерживается."
@@ -189,7 +193,7 @@ func stop_playback() -> void:
 		preview.visible = true
 
 func play() -> void:
-	if item.is_empty() or category!="tracks" or media_runtime == null:
+	if item.is_empty() or category!="tracks" or media_runtime == null or bool(item.get("simulation_only",false)):
 		return
 	var id := str(item.get("id",""))
 	if not media_runtime.playable(category).any(func(candidate): return str(candidate.get("id","")) == id):

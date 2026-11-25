@@ -162,6 +162,8 @@ func _on_selected(index: int) -> void:
 	var item: Dictionary = model.physical_object(str(item_ids[index])) if category=="artifacts" else media_runtime._lookup(category,item_ids[index])
 	if item.is_empty():
 		return
+	play_button.visible=category=="tracks" and not bool(item.get("simulation_only",false))
+	stop_button.visible=play_button.visible
 	var source := str(item.get("source",""))
 	var raw_artist = item.get("artist",item.get("author",""))
 	var artist: String = "" if raw_artist == null else str(raw_artist)
@@ -173,6 +175,8 @@ func _on_selected(index: int) -> void:
 		details.text += "\nФайл: " + path.get_file()
 	if category=="films":
 		details.text+="\nСимуляция просмотра · "+str(item.get("duration_status","Продолжительность не установлена"))
+	elif category=="tracks" and bool(item.get("simulation_only",false)):
+		details.text+="\nПродолжительность: "+str(item.get("duration",""))+" · симуляция"
 	elif category=="tracks" and not media_runtime.playable(category).any(func(it): return it.get("id","") == item_ids[index]):
 		details.text += "\nНет совместимого локального файла для воспроизведения"
 	var image_path: String = str(item.get("preview",item.get("preview_path","")))
@@ -204,7 +208,7 @@ func play_selected() -> void:
 	var index: int = list.get_selected_items()[0]
 	var id: String = item_ids[index]
 	var item: Dictionary = media_runtime._lookup(category,id)
-	if item.is_empty():
+	if item.is_empty() or bool(item.get("simulation_only",false)):
 		return
 	if not media_runtime.playable(category).any(func(it): return it.get("id","") == id):
 		details.text = "Файл недоступен или формат не поддерживается."

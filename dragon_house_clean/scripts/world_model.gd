@@ -602,19 +602,29 @@ func merge_reference_book_metadata(items: Array) -> int:
 		save_world()
 	return added
 
+func _zna_duration_seconds(value:String)->int:
+	var parts:PackedStringArray=value.strip_edges().split(":")
+	if parts.size()<2 or parts.size()>3:return 0
+	var seconds:=0
+	for i in range(parts.size()):
+		if not parts[i].is_valid_int():return 0
+		var n:int=int(parts[i])
+		if n<0 or (i>0 and n>=60):return 0
+		seconds=seconds*60+n
+	return seconds
+
 func merge_zna_media_previews() -> int:
 	# ZNA004 delivered actual previews and source metadata, not local media
-	# files. Owner explicitly assigned all 495 formerly unclassified videos
-	# to the film library on 2026-11-25. Preserve the source classification
-	# and preview paths as provenance, not as runtime categories.
-	# Run once on load; never manufacture local playback.
+	# files. Owner clarified that the YouTube source is the audio library.
+	# Original ZNA categories remain provenance. Four explicit nonmusic
+	# titles are retained for inspection but not selected by residents.
 	var file:=FileAccess.open("res://assets/manifests/media_preview_index.json",FileAccess.READ)
 	if file==null:return 0
 	var manifest=JSON.parse_string(file.get_as_text())
 	if typeof(manifest)!=TYPE_DICTIONARY:return 0
 	var added:=0
 	var changed:=false
-	for pair in [["audio","tracks","audio"]]:
+	for pair in [["audio","tracks","audio"],["unclassified","tracks","unclassified"]]:
 		var source_key:String=pair[0]
 		var category:String=pair[1]
 		var folder:String=pair[2]
@@ -634,17 +644,22 @@ func merge_zna_media_previews() -> int:
 			if not relative.get_extension().to_lower() in ["webp","png","jpg","jpeg"]:continue
 			var preview_path:String="res://"+relative
 			if not ResourceLoader.exists(preview_path,"Texture2D") and not FileAccess.file_exists(preview_path):continue
+			var duration_seconds:int=_zna_duration_seconds(str(entry.get("duration","")))
+			var nonmusic:bool=id in ["YT_ExiWrVHAx0g","YT_TBjGUZJivg4","YT_k1GTx3aZ4iU","YT_Hpp9iO0I-9A"]
+			var timing:Dictionary={"runtime_seconds":duration_seconds,"simulation_only":true,"autonomous_music":not nonmusic and duration_seconds>0,"source_classification":source_key,"classification_authority":"OWNER_20261125_YOUTUBE_AUDIO_LIBRARY"}
 			if existing.has(id):
 				# Preserve imported local file, user edits and existing artwork.
 				var old:Dictionary=existing[id]
 				if str(old.get("preview",old.get("preview_path","")))=="":
 					old["preview"]=preview_path
 					changed=true
+				for key in timing:
+					if old.get(key,null)!=timing[key]:
+						old[key]=timing[key]
+						changed=true
 				continue
 			var record:Dictionary={"id":id,"title":title,"artist":str(entry.get("artist","")),"duration":str(entry.get("duration","")),"preview":preview_path,"file_path":"","catalog_only":true,"provenance":"ZNA004 · source-derived preview","source_url":str(entry.get("source_url","")),"owner_approved":bool(entry.get("owner_approved",false))}
-			record["source_classification"]=source_key
-			if source_key=="unclassified":
-				record["classification_authority"]="OWNER_20261125_ALL_UNCLASSIFIED_ARE_FILMS"
+			record.merge(timing,true)
 			records.append(record)
 			existing[id]=record
 			added+=1

@@ -234,8 +234,60 @@ func can_watch(actor_id: String, item_id: String, room_id: String) -> bool:
 	var item:Dictionary=_lookup("films",item_id)
 	return not next_watch_unit(actor_id,item).is_empty()
 
+func track_duration(item:Dictionary)->float:
+	if not bool(item.get("simulation_only",false)) or not bool(item.get("autonomous_music",false)):return 0.0
+	var seconds:float=float(item.get("runtime_seconds",0))
+	return seconds if is_finite(seconds) and seconds>0 else 0.0
+
+func listen_candidates()->Array:
+	var out:Array=[]
+	for item in world.media.get("tracks",[]):
+		if track_duration(item)>0:out.append(item)
+	return out
+
+func listen_history(actor_id:String,item_id:String)->Dictionary:
+	return world.runtime_state.get("music_progress",{}).get(actor_id,{}).get(item_id,{})
+
+func choose_listen_item(actor_id:String,rng:RandomNumberGenerator,now:float)->Dictionary:
+	var options:Array=listen_candidates()
+	if options.is_empty():return {}
+	# Novelty first, but repeat listening remains possible and has its own
+	# count/recency. Keep a small nonzero revisit weight for known songs.
+	var weights:=PackedFloat32Array()
+	for item in options:
+		var history:Dictionary=listen_history(actor_id,str(item["id"]))
+		var n:int=int(history.get("completed_count",0))
+		var age:float=now-float(history.get("last_completed_at",-86400.0))
+		weights.append(1.0 if n==0 else (0.02 if age<300.0 else 0.25+0.15*minf(float(n),4.0)))
+	var index:int=rng.rand_weighted(weights)
+	return options[maxi(0,index)]
+
+func begin_listen(actor:Dictionary,now:float)->bool:
+	var item_id:String=str(actor.get("activity_media_id",""))
+	var duration:float=track_duration(_lookup("tracks",item_id))
+	if duration<=0:return false
+	actor["listen_session"]={"item_id":item_id,"started_at":now,"ends_at":now+duration,"seconds":duration,"room_id":str(actor.get("room_id",""))}
+	actor["until"]=now+duration
+	return true
+
+func finish_listen(actor:Dictionary,now:float)->bool:
+	var unit:Dictionary=actor.get("listen_session",{})
+	if unit.is_empty() or now<float(unit.get("ends_at",INF)):return false
+	if str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="LISTEN_MUSIC" or str(actor.get("room_id",""))!=str(unit.get("room_id","")) or str(actor.get("activity_media_id",""))!=str(unit.get("item_id","")):return false
+	var id:String=str(unit["item_id"])
+	var actor_id:String=str(actor["id"])
+	var all:Dictionary=world.runtime_state.get("music_progress",{})
+	var history:Dictionary=all.get(actor_id,{})
+	var previous:Dictionary=history.get(id,{})
+	history[id]={"completed_count":int(previous.get("completed_count",0))+1,"total_seconds":float(previous.get("total_seconds",0))+float(unit["seconds"]),"last_completed_at":now}
+	all[actor_id]=history
+	world.runtime_state["music_progress"]=all
+	actor.erase("listen_session")
+	world._append_journal("MUSIC_TRACK_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"seconds":unit["seconds"],"completed_count":history[id]["completed_count"]})
+	return true
+
 func can_listen(actor_id: String, item_id: String, room_id: String) -> bool:
-	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "") == "music" and not _lookup("tracks", item_id).is_empty() and playable("tracks").any(func(item): return item["id"] == item_id)
+	return world.residents.get(actor_id, {}).get("active", false) and world.room_by_id(room_id).get("type", "")=="music" and track_duration(_lookup("tracks",item_id))>0
 
 
 # Live review: a reservation is not possession. Only a physically arrived
