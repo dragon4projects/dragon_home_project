@@ -1,0 +1,1356 @@
+{
+  "owner_approved": false,
+  "revision": "MEDIA_WORK_V1",
+  "additions": {
+    "cinema/R3": [
+      {
+        "instance_id": "cinema_archive_console",
+        "asset_id": "chinese_commode",
+        "room_local_xyz": [
+          -5.65,
+          0.025,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.4133830000000005,
+          0.025,
+          -1.748883
+        ],
+        "bounds_max_m": [
+          -4.886617,
+          0.711757,
+          -1.3511170000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.4133830000000005,
+            -1.748883
+          ],
+          [
+            -4.886617,
+            -1.748883
+          ],
+          [
+            -4.886617,
+            -1.3511170000000001
+          ],
+          [
+            -6.4133830000000005,
+            -1.3511170000000001
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "cinema_film_projector",
+        "asset_id": "filmstrip_projector_8mm",
+        "room_local_xyz": [
+          -5.96,
+          0.711757,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.85,
+        "bounds_min_m": [
+          -6.1648313,
+          0.711757,
+          -1.63622145
+        ],
+        "bounds_max_m": [
+          -5.75516785,
+          0.9469290499999999,
+          -1.4637777
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.1648313,
+            -1.63622145
+          ],
+          [
+            -5.75516785,
+            -1.63622145
+          ],
+          [
+            -5.75516785,
+            -1.4637777
+          ],
+          [
+            -6.1648313,
+            -1.4637777
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "cinema_archive_console.decor_cinema_film_projector",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "cinema_archive_lantern",
+        "asset_id": "wooden_lantern_01",
+        "room_local_xyz": [
+          -5.300000000000001,
+          0.711757,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8,
+        "bounds_min_m": [
+          -5.3751560000000005,
+          0.711757,
+          -1.6298064
+        ],
+        "bounds_max_m": [
+          -5.224844000000001,
+          1.0722498,
+          -1.4701936
+        ],
+        "physical_footprint_xz": [
+          [
+            -5.3751560000000005,
+            -1.6298064
+          ],
+          [
+            -5.224844000000001,
+            -1.6298064
+          ],
+          [
+            -5.224844000000001,
+            -1.4701936
+          ],
+          [
+            -5.3751560000000005,
+            -1.4701936
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "cinema_archive_console.decor_cinema_archive_lantern",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "cinema_arcade_corner",
+        "asset_id": "cinema_arcade_cabinet",
+        "room_local_xyz": [
+          -3.75,
+          0.025,
+          -1.34
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.120003,
+          0.025,
+          -1.756204
+        ],
+        "bounds_max_m": [
+          -3.379997,
+          1.724996,
+          -0.9237960000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.120003,
+            -1.756204
+          ],
+          [
+            -3.379997,
+            -1.756204
+          ],
+          [
+            -3.379997,
+            -0.9237960000000001
+          ],
+          [
+            -4.120003,
+            -0.9237960000000001
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "cinema_side_chair",
+        "asset_id": "ArmChair_01",
+        "room_local_xyz": [
+          4.45,
+          0.025,
+          0.12
+        ],
+        "rotation_deg_xyz": [
+          0,
+          180,
+          0
+        ],
+        "uniform_scale": 1,
+        "physical_footprint_xz": [
+          [
+            4.8742149999999995,
+            0.50288
+          ],
+          [
+            4.025785,
+            0.50288
+          ],
+          [
+            4.025785,
+            -0.26288
+          ],
+          [
+            4.8742149999999995,
+            -0.26288
+          ]
+        ],
+        "bounds_min_m": [
+          4.025785,
+          0.025,
+          -0.26288
+        ],
+        "bounds_max_m": [
+          4.8742149999999995,
+          1.090088,
+          0.50288
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "seat_1",
+            "kind": "seat",
+            "pelvis_contact_xyz": [
+              0,
+              0.481769,
+              0.067567
+            ],
+            "feet_contact_xyz": [
+              0,
+              0,
+              0.51288
+            ],
+            "seating_width_m": 0.56562,
+            "seat_depth_m": 0.49549,
+            "facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "approach_xz": [
+              0,
+              0.76288
+            ],
+            "pose_hint": "RELAXED_SIT",
+            "status": "POSE_AND_CLEARANCE_CANDIDATE",
+            "station_candidate_id": "cinema_side_chair.seat_1",
+            "legacy_station_binding": null,
+            "room_pelvis_contact_xyz": [
+              4.45,
+              0.506769,
+              0.05243299999999999
+            ],
+            "room_feet_contact_xyz": [
+              4.45,
+              0.025,
+              -0.39288
+            ],
+            "room_facing_xyz": [
+              0,
+              0,
+              -1
+            ],
+            "room_approach_xz": [
+              4.45,
+              -0.64288
+            ],
+            "approach_validation": "GRID_PASS"
+          }
+        ],
+        "support_slots": [],
+        "status": "PROPOSED_NOT_OWNER_APPROVED",
+        "owner_approved": false
+      }
+    ],
+    "music/R3": [
+      {
+        "instance_id": "music_listening_sofa_b",
+        "asset_id": "Sofa_01",
+        "room_local_xyz": [
+          -3.6,
+          0.025,
+          -1.37
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "physical_footprint_xz": [
+          [
+            -4.480022,
+            -1.7384880000000003
+          ],
+          [
+            -2.7199780000000002,
+            -1.7384880000000003
+          ],
+          [
+            -2.7199780000000002,
+            -1.0015120000000002
+          ],
+          [
+            -4.480022,
+            -1.0015120000000002
+          ]
+        ],
+        "bounds_min_m": [
+          -4.480022,
+          0.025,
+          -1.7384880000000003
+        ],
+        "bounds_max_m": [
+          -2.7199780000000002,
+          0.917097,
+          -1.0015120000000002
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "seat_1",
+            "kind": "seat",
+            "pelvis_contact_xyz": [
+              -0.398105,
+              0.424034,
+              0.086703
+            ],
+            "feet_contact_xyz": [
+              -0.398105,
+              0,
+              0.498488
+            ],
+            "seating_width_m": 0.7124,
+            "seat_depth_m": 0.43352,
+            "facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "approach_xz": [
+              -0.398105,
+              0.748488
+            ],
+            "pose_hint": "RELAXED_SIT",
+            "status": "POSE_AND_CLEARANCE_CANDIDATE",
+            "station_candidate_id": "music_listening_sofa_b.seat_1",
+            "legacy_station_binding": null,
+            "room_pelvis_contact_xyz": [
+              -3.998105,
+              0.449034,
+              -1.2832970000000001
+            ],
+            "room_feet_contact_xyz": [
+              -3.998105,
+              0.025,
+              -0.8715120000000002
+            ],
+            "room_facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "room_approach_xz": [
+              -3.998105,
+              -0.6215120000000002
+            ],
+            "approach_validation": "GRID_PASS"
+          },
+          {
+            "id": "seat_2",
+            "kind": "seat",
+            "pelvis_contact_xyz": [
+              0.314293,
+              0.424034,
+              0.086703
+            ],
+            "feet_contact_xyz": [
+              0.314293,
+              0,
+              0.498488
+            ],
+            "seating_width_m": 0.7124,
+            "seat_depth_m": 0.43352,
+            "facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "approach_xz": [
+              0.314293,
+              0.748488
+            ],
+            "pose_hint": "RELAXED_SIT",
+            "status": "POSE_AND_CLEARANCE_CANDIDATE",
+            "station_candidate_id": "music_listening_sofa_b.seat_2",
+            "legacy_station_binding": null,
+            "room_pelvis_contact_xyz": [
+              -3.285707,
+              0.449034,
+              -1.2832970000000001
+            ],
+            "room_feet_contact_xyz": [
+              -3.285707,
+              0.025,
+              -0.8715120000000002
+            ],
+            "room_facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "room_approach_xz": [
+              -3.285707,
+              -0.6215120000000002
+            ],
+            "approach_validation": "GRID_PASS"
+          }
+        ],
+        "support_slots": [],
+        "status": "PROPOSED_NOT_OWNER_APPROVED",
+        "owner_approved": false
+      },
+      {
+        "instance_id": "music_listening_chair",
+        "asset_id": "ArmChair_01",
+        "room_local_xyz": [
+          2.65,
+          0.025,
+          -0.30000000000000004
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "physical_footprint_xz": [
+          [
+            2.225785,
+            -0.6828799999999999
+          ],
+          [
+            3.074215,
+            -0.6828799999999999
+          ],
+          [
+            3.074215,
+            0.08288000000000006
+          ],
+          [
+            2.225785,
+            0.08288000000000006
+          ]
+        ],
+        "bounds_min_m": [
+          2.225785,
+          0.025,
+          -0.6828799999999999
+        ],
+        "bounds_max_m": [
+          3.074215,
+          1.090088,
+          0.08288000000000006
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "seat_1",
+            "kind": "seat",
+            "pelvis_contact_xyz": [
+              0,
+              0.481769,
+              0.067567
+            ],
+            "feet_contact_xyz": [
+              0,
+              0,
+              0.51288
+            ],
+            "seating_width_m": 0.56562,
+            "seat_depth_m": 0.49549,
+            "facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "approach_xz": [
+              0,
+              0.76288
+            ],
+            "pose_hint": "RELAXED_SIT",
+            "status": "POSE_AND_CLEARANCE_CANDIDATE",
+            "station_candidate_id": "music_listening_chair.seat_1",
+            "legacy_station_binding": null,
+            "room_pelvis_contact_xyz": [
+              2.65,
+              0.506769,
+              -0.2324329999999999
+            ],
+            "room_feet_contact_xyz": [
+              2.65,
+              0.025,
+              0.21288000000000007
+            ],
+            "room_facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "room_approach_xz": [
+              2.65,
+              0.46288000000000007
+            ],
+            "approach_validation": "GRID_PASS"
+          }
+        ],
+        "support_slots": [],
+        "status": "PROPOSED_NOT_OWNER_APPROVED",
+        "owner_approved": false
+      },
+      {
+        "instance_id": "music_record_table",
+        "asset_id": "wooden_table_02",
+        "room_local_xyz": [
+          3.3,
+          0.025,
+          -1.42
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          2.732792,
+          0.025,
+          -1.773012
+        ],
+        "bounds_max_m": [
+          3.8672079999999998,
+          0.824543,
+          -1.0669879999999998
+        ],
+        "physical_footprint_xz": [
+          [
+            2.732792,
+            -1.773012
+          ],
+          [
+            3.8672079999999998,
+            -1.773012
+          ],
+          [
+            3.8672079999999998,
+            -1.0669879999999998
+          ],
+          [
+            2.732792,
+            -1.0669879999999998
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "music_cassette_deck",
+        "asset_id": "cassette_player",
+        "room_local_xyz": [
+          3.0199999999999996,
+          0.824543,
+          -1.42
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1.2,
+        "bounds_min_m": [
+          2.9423239999999997,
+          0.824543,
+          -1.449328
+        ],
+        "bounds_max_m": [
+          3.0976759999999994,
+          1.1087234000000001,
+          -1.390672
+        ],
+        "physical_footprint_xz": [
+          [
+            2.9423239999999997,
+            -1.449328
+          ],
+          [
+            3.0976759999999994,
+            -1.449328
+          ],
+          [
+            3.0976759999999994,
+            -1.390672
+          ],
+          [
+            2.9423239999999997,
+            -1.390672
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "music_record_table.decor_music_cassette_deck",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "music_lantern",
+        "asset_id": "wooden_lantern_01",
+        "room_local_xyz": [
+          3.55,
+          0.824543,
+          -1.42
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8,
+        "bounds_min_m": [
+          3.474844,
+          0.824543,
+          -1.4998064
+        ],
+        "bounds_max_m": [
+          3.6251559999999996,
+          1.1850358,
+          -1.3401935999999999
+        ],
+        "physical_footprint_xz": [
+          [
+            3.474844,
+            -1.4998064
+          ],
+          [
+            3.6251559999999996,
+            -1.4998064
+          ],
+          [
+            3.6251559999999996,
+            -1.3401935999999999
+          ],
+          [
+            3.474844,
+            -1.3401935999999999
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "music_record_table.decor_music_lantern",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "music_listening_rug",
+        "asset_id": "common_woven_rug",
+        "room_local_xyz": [
+          -3.6,
+          0.006,
+          0.05
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.775,
+          0.006,
+          -0.6499999999999999
+        ],
+        "bounds_max_m": [
+          -2.425,
+          0.006,
+          0.75
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.775,
+            -0.6499999999999999
+          ],
+          [
+            -2.425,
+            -0.6499999999999999
+          ],
+          [
+            -2.425,
+            0.75
+          ],
+          [
+            -4.775,
+            0.75
+          ]
+        ],
+        "placement_policy": "soft_floor",
+        "support_ref": null,
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      }
+    ],
+    "study/R3": [
+      {
+        "instance_id": "study_notebook",
+        "asset_id": "binder_notebook",
+        "room_local_xyz": [
+          3.4299999999999997,
+          0.824543,
+          -1.34
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.9,
+        "bounds_min_m": [
+          3.2197609,
+          0.824543,
+          -1.4119856000000002
+        ],
+        "bounds_max_m": [
+          3.64024,
+          0.8427338,
+          -1.2680153
+        ],
+        "physical_footprint_xz": [
+          [
+            3.2197609,
+            -1.4119856000000002
+          ],
+          [
+            3.64024,
+            -1.4119856000000002
+          ],
+          [
+            3.64024,
+            -1.2680153
+          ],
+          [
+            3.2197609,
+            -1.2680153
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_desk_b.decor_study_notebook",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "study_task_lamp",
+        "asset_id": "desk_lamp_arm_01",
+        "room_local_xyz": [
+          3.96,
+          0.824543,
+          -1.34
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8,
+        "bounds_min_m": [
+          3.807732,
+          0.824543,
+          -1.3900552000000002
+        ],
+        "bounds_max_m": [
+          4.112268,
+          1.2673366000000001,
+          -1.289944
+        ],
+        "physical_footprint_xz": [
+          [
+            3.807732,
+            -1.3900552000000002
+          ],
+          [
+            4.112268,
+            -1.3900552000000002
+          ],
+          [
+            4.112268,
+            -1.289944
+          ],
+          [
+            3.807732,
+            -1.289944
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_r3_desk_b.decor_study_task_lamp",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "study_reference_table",
+        "asset_id": "WoodenTable_03",
+        "room_local_xyz": [
+          -3.8,
+          0.025,
+          -1.33
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.436889,
+          0.025,
+          -1.606133
+        ],
+        "bounds_max_m": [
+          -3.163111,
+          0.821878,
+          -1.053867
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.436889,
+            -1.606133
+          ],
+          [
+            -3.163111,
+            -1.606133
+          ],
+          [
+            -3.163111,
+            -1.053867
+          ],
+          [
+            -4.436889,
+            -1.053867
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "approach",
+            "kind": "standing",
+            "station_candidate_id": "study_reference_table.approach",
+            "room_approach_xz": [
+              -3.8,
+              -0.6538670000000001
+            ],
+            "pose_hint": "IDLE_S"
+          }
+        ],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "study_reference_books",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -3.8,
+          0.821878,
+          -1.33
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.9,
+        "bounds_min_m": [
+          -4.0480832,
+          0.821878,
+          -1.4036119
+        ],
+        "bounds_max_m": [
+          -3.5519159,
+          1.0355542,
+          -1.2563881000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.0480832,
+            -1.4036119
+          ],
+          [
+            -3.5519159,
+            -1.4036119
+          ],
+          [
+            -3.5519159,
+            -1.2563881000000001
+          ],
+          [
+            -4.0480832,
+            -1.2563881000000001
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "study_reference_table.decor_study_reference_books",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "study_reading_chair",
+        "asset_id": "ArmChair_01",
+        "room_local_xyz": [
+          -2.0999999999999996,
+          0.025,
+          -0.1499999999999999
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "physical_footprint_xz": [
+          [
+            -2.5242149999999994,
+            -0.5328799999999998
+          ],
+          [
+            -1.6757849999999994,
+            -0.5328799999999998
+          ],
+          [
+            -1.6757849999999994,
+            0.2328800000000002
+          ],
+          [
+            -2.5242149999999994,
+            0.2328800000000002
+          ]
+        ],
+        "bounds_min_m": [
+          -2.5242149999999994,
+          0.025,
+          -0.5328799999999998
+        ],
+        "bounds_max_m": [
+          -1.6757849999999994,
+          1.090088,
+          0.2328800000000002
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "seat_1",
+            "kind": "seat",
+            "pelvis_contact_xyz": [
+              0,
+              0.481769,
+              0.067567
+            ],
+            "feet_contact_xyz": [
+              0,
+              0,
+              0.51288
+            ],
+            "seating_width_m": 0.56562,
+            "seat_depth_m": 0.49549,
+            "facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "approach_xz": [
+              0,
+              0.76288
+            ],
+            "pose_hint": "RELAXED_SIT",
+            "status": "POSE_AND_CLEARANCE_CANDIDATE",
+            "station_candidate_id": "study_reading_chair.seat_1",
+            "legacy_station_binding": null,
+            "room_pelvis_contact_xyz": [
+              -2.0999999999999996,
+              0.506769,
+              -0.08243299999999976
+            ],
+            "room_feet_contact_xyz": [
+              -2.0999999999999996,
+              0.025,
+              0.3628800000000002
+            ],
+            "room_facing_xyz": [
+              0,
+              0,
+              1
+            ],
+            "room_approach_xz": [
+              -2.0999999999999996,
+              0.6128800000000002
+            ],
+            "approach_validation": "GRID_PASS"
+          }
+        ],
+        "support_slots": [],
+        "status": "PROPOSED_NOT_OWNER_APPROVED",
+        "owner_approved": false
+      },
+      {
+        "instance_id": "study_plant",
+        "asset_id": "potted_plant_01",
+        "room_local_xyz": [
+          6.35,
+          0.025,
+          -1.4
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          6.11522,
+          0.025,
+          -1.652186
+        ],
+        "bounds_max_m": [
+          6.5847809999999996,
+          1.103607,
+          -1.147814
+        ],
+        "physical_footprint_xz": [
+          [
+            6.11522,
+            -1.652186
+          ],
+          [
+            6.5847809999999996,
+            -1.652186
+          ],
+          [
+            6.5847809999999996,
+            -1.147814
+          ],
+          [
+            6.11522,
+            -1.147814
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      }
+    ],
+    "workshop/R3": [
+      {
+        "instance_id": "workshop_bench_vice",
+        "asset_id": "bench_vice_01",
+        "room_local_xyz": [
+          -5.4,
+          0.824543,
+          -1.33
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8,
+        "bounds_min_m": [
+          -5.4801928,
+          0.824543,
+          -1.4882888
+        ],
+        "bounds_max_m": [
+          -5.3198072000000005,
+          1.0526622,
+          -1.1717112
+        ],
+        "physical_footprint_xz": [
+          [
+            -5.4801928,
+            -1.4882888
+          ],
+          [
+            -5.3198072000000005,
+            -1.4882888
+          ],
+          [
+            -5.3198072000000005,
+            -1.1717112
+          ],
+          [
+            -5.4801928,
+            -1.1717112
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_additional_table.decor_workshop_bench_vice",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "workshop_bench_drill",
+        "asset_id": "old_drill_press",
+        "room_local_xyz": [
+          -4.9,
+          0.824543,
+          -1.33
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.9,
+        "bounds_min_m": [
+          -5.0896732,
+          0.824543,
+          -1.5493435
+        ],
+        "bounds_max_m": [
+          -4.710326800000001,
+          1.5805529,
+          -1.1106565000000002
+        ],
+        "physical_footprint_xz": [
+          [
+            -5.0896732,
+            -1.5493435
+          ],
+          [
+            -4.710326800000001,
+            -1.5493435
+          ],
+          [
+            -4.710326800000001,
+            -1.1106565000000002
+          ],
+          [
+            -5.0896732,
+            -1.1106565000000002
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_r3_additional_table.decor_workshop_bench_drill",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "workshop_tool_cart",
+        "asset_id": "tool_cart",
+        "room_local_xyz": [
+          -2.75,
+          0.025,
+          -1.36
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -3.310307,
+          0.025,
+          -1.691597
+        ],
+        "bounds_max_m": [
+          -2.189693,
+          0.873887,
+          -1.0284030000000002
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.310307,
+            -1.691597
+          ],
+          [
+            -2.189693,
+            -1.691597
+          ],
+          [
+            -2.189693,
+            -1.0284030000000002
+          ],
+          [
+            -3.310307,
+            -1.0284030000000002
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "approach",
+            "kind": "standing",
+            "station_candidate_id": "workshop_tool_cart.approach",
+            "room_approach_xz": [
+              -2.75,
+              -0.6284030000000002
+            ],
+            "pose_hint": "IDLE_S"
+          }
+        ],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "workshop_lab_table",
+        "asset_id": "wooden_table_02",
+        "room_local_xyz": [
+          3.5,
+          0.025,
+          -1.34
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          2.932792,
+          0.025,
+          -1.693012
+        ],
+        "bounds_max_m": [
+          4.067208,
+          0.824543,
+          -0.9869880000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            2.932792,
+            -1.693012
+          ],
+          [
+            4.067208,
+            -1.693012
+          ],
+          [
+            4.067208,
+            -0.9869880000000001
+          ],
+          [
+            2.932792,
+            -0.9869880000000001
+          ]
+        ],
+        "placement_policy": "floor_fixed",
+        "support_ref": null,
+        "station_candidates": [
+          {
+            "id": "approach",
+            "kind": "standing",
+            "station_candidate_id": "workshop_lab_table.approach",
+            "room_approach_xz": [
+              3.5,
+              -0.5869880000000001
+            ],
+            "pose_hint": "IDLE_S"
+          }
+        ],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "workshop_lab_set",
+        "asset_id": "chemistry_set",
+        "room_local_xyz": [
+          3.5,
+          0.824543,
+          -1.34
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          3.122316,
+          0.824543,
+          -1.4638740000000001
+        ],
+        "bounds_max_m": [
+          3.877685,
+          1.124548,
+          -1.216126
+        ],
+        "physical_footprint_xz": [
+          [
+            3.122316,
+            -1.4638740000000001
+          ],
+          [
+            3.877685,
+            -1.4638740000000001
+          ],
+          [
+            3.877685,
+            -1.216126
+          ],
+          [
+            3.122316,
+            -1.216126
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "workshop_lab_table.decor_workshop_lab_set",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      }
+    ]
+  }
+}

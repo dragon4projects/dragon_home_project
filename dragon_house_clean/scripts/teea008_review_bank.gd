@@ -337,7 +337,7 @@ func _apply_hearth_interior_v1(hearth:Dictionary)->void:
 	var positions:Dictionary={
 		"common_r3_p3_fur_left":Vector2(-1.64,0.23),
 		"common_r3_p3_fur_right":Vector2(6.45,0.65),
-		"common_r3_p3_chair_center":Vector2(-2.85,-0.08),
+		"common_r3_p3_chair_center":Vector2(-2.60,-0.08),
 		"common_r3_p3_sofa_right":Vector2(3.95,-1.37),
 		"common_r3_p3_chair_right":Vector2(5.80,-0.04),
 		"common_r3_p3_rug_right":Vector2(4.45,0.08)
@@ -385,6 +385,7 @@ func _apply_social_interiors()->void:
 	hearth["runtime_review_geometry_revision"]=str(data["revision"])
 	layouts["common/R3"]=hearth
 	_apply_library_gallery_dressing()
+	_apply_media_work_dressing()
 
 func _apply_library_gallery_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)
@@ -401,3 +402,19 @@ func _apply_library_gallery_dressing()->void:
 		if valid:
 			layouts[key]["instances"].append_array(doc["additions"][key])
 			layouts[key]["canonical_dressing_revision"]="LIBRARY_GALLERY_V1"
+
+func _apply_media_work_dressing()->void:
+	var file:=FileAccess.open("res://data/canonical_media_work_interiors_20261125.json",FileAccess.READ)
+	if file==null:return
+	var doc=JSON.parse_string(file.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)):return
+	for key in doc.get("additions",{}):
+		if not layouts.has(key):continue
+		var valid:=true
+		for item in doc["additions"][key]:
+			if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):
+				valid=false
+				push_error("Media/work missing model "+str(item["asset_id"]))
+		if valid:
+			layouts[key]["instances"].append_array(doc["additions"][key])
+			layouts[key]["canonical_dressing_revision"]="MEDIA_WORK_V1"
