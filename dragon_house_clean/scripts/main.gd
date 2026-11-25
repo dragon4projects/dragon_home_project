@@ -2258,7 +2258,29 @@ func _active_station_render_contact(actor:Dictionary)->Dictionary:
 		return {}
 	if contact.get("local_xyz",[]).size()!=3 or contact.get("instance_xyz",[]).size()!=3 or contact.get("contact_px",[]).size()!=2:
 		return {}
+	if life.candidate_navigation==null:return {}
+	var profile:Dictionary=life.candidate_navigation.pose_profile(actor,state)
+	if profile.is_empty() or profile.get("contact_px",[])!=contact.get("contact_px",[]) or profile.get("canvas",[])!=contact.get("canvas",[]):return {}
+	if not _calibrated_frame_matches(actor,state,profile):return {}
+	if bool(contact.get("book_baked",false))!=bool(profile.get("book_baked",false)):return {}
 	return contact
+
+# A contact measured on one source frame cannot be applied to another bank.
+func _calibrated_frame_matches(actor:Dictionary,state:String,profile:Dictionary)->bool:
+	var id:String=str(actor.get("id",""))
+	var wardrobe:String=str(actor.get("visual_wardrobe","HOME"))
+	var frames:Array=asset_banks._entry(id,wardrobe,state).get("frames",[])
+	return frames.size()>0 and asset_banks._normalize_frame(frames[0])==str(profile.get("path",""))
+
+func _sprite_camera_right()->Vector3:
+	if camera==null:return Vector3.RIGHT
+	var right:Vector3=camera.global_transform.basis.x
+	right.y=0.0
+	return right.normalized()
+
+func _sprite_pixel_world(actor_node:Node3D,sprite:Sprite3D,px:Array)->Vector3:
+	var m:float=sprite.pixel_size*actor_node.scale.x
+	return sprite.global_position+_sprite_camera_right()*(float(px[0])-float(sprite.texture.get_width())*0.5)*m+Vector3.UP*(float(sprite.texture.get_height())*0.5-float(px[1]))*m
 
 func desired_actor_animation(actor: Dictionary) -> String:
 	# Pure pose selection. A sofa station is an actual authored seat, not
@@ -2323,7 +2345,8 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 	var state: Dictionary = actor_animations.get(id,{"state":"","frame":0,"elapsed":0.0})
 	var old_state:String=str(state["state"])
 	var old_frame:int=int(state["frame"])
-	if state["state"] != requested:
+	var wardrobe_changed:bool=str(state.get("wardrobe",""))!=wardrobe
+	if state["state"] != requested or wardrobe_changed:
 		state["state"] = requested
 		state["elapsed"] = 0.0
 		state["frame"] = 0
@@ -2333,10 +2356,13 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 		if float(state["elapsed"]) >= period:
 			state["frame"] = (int(state["frame"])+int(float(state["elapsed"])/period)) % maxi(1,asset_banks.frame_count(id,wardrobe,requested))
 			state["elapsed"] = fmod(float(state["elapsed"]),period)
+	# The validated seat/lying calibration is for the first frame only.
+	if not _active_station_render_contact(actor).is_empty():state["frame"]=0
+	state["wardrobe"]=wardrobe
 	actor_animations[id] = state
 	var sprite: Sprite3D = actor_sprites[id].get_node("Body")
 	var texture:Texture2D=sprite.texture
-	if old_state!=requested or old_frame!=int(state["frame"]) or texture==null:
+	if wardrobe_changed or old_state!=requested or old_frame!=int(state["frame"]) or texture==null:
 		texture=asset_banks.texture_for(id,wardrobe,requested,int(state["frame"]))
 	if texture != null and (texture != sprite.texture or teea008_live):
 		if texture!=sprite.texture:
@@ -2346,7 +2372,7 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 		var contact:Dictionary=_active_station_render_contact(actor)
 		if not contact.is_empty() and requested==str(contact.get("state","")):
 			var px:Array=contact["contact_px"]
-			sprite.position=Vector3((float(texture.get_width())*0.5-float(px[0]))*sprite.pixel_size,(float(px[1])-float(texture.get_height())*0.5)*sprite.pixel_size,0.0)
+			sprite.position=_sprite_camera_right()*(float(texture.get_width())*0.5-float(px[0]))*sprite.pixel_size+Vector3.UP*(float(px[1])-float(texture.get_height())*0.5)*sprite.pixel_size
 		else:
 			var feet:float=float(texture.get_height())*480.0/512.0 if teea008_live else asset_banks.feet_anchor(id,wardrobe,texture.get_height())
 			sprite.position=Vector3(0,maxf(0.15,(feet-float(texture.get_height())*0.5)*sprite.pixel_size),0)
@@ -3820,8 +3846,9 @@ func _update_physical_books()->void:
 			var actor:Dictionary=world.residents.get(holder_id,{})
 			room=world.room_by_id(str(actor.get("room_id","")))
 			if actor.is_empty() or not semantic_view.actor_visible(actor) or not world.public_cutaway_allowed(room):continue
-			# Reading pose already contains a volume; never double-render it.
-			if str(actor.get("intent",""))=="READ_BOOK" and str(actor.get("phase",""))=="perform":continue
+			# Only an actually rendered, calibrated pose with a baked book may hide the physical volume.
+			var contact:Dictionary=_active_station_render_contact(actor)
+			if str(contact.get("state",""))=="READ" and bool(contact.get("book_baked",false)) and str(actor_animations.get(holder_id,{}).get("state",""))=="READ":continue
 			var z:float=float(actor.get("z",0))
 			scale_value=depth_visual_scale(z)
 			position_value=Vector3(depth_visual_x(str(room["id"]),float(actor["x"]),z)+0.20*scale_value,float(actor.get("visual_y",0))+0.90*scale_value,z+0.14)
@@ -3839,8 +3866,11 @@ func _update_physical_books()->void:
 		if not is_instance_valid(node):
 			node=_create_physical_book(book)
 			book_nodes[id]=node
+		node.rotation=Vector3.ZERO
 		node.position=position_value
 		node.scale=Vector3.ONE*scale_value
+		node.set_meta("hand_contact_status","SHELF" if holder_id=="" else "UNCALIBRATED")
+		if holder_id!="":_place_book_at_verified_hand(node,world.residents[holder_id])
 		node.visible=true
 		visible_ids[id]=true
 	for id in book_nodes.keys():
@@ -3890,12 +3920,44 @@ func _seat_render_projection(contact:Vector3,front_z:float,base_scale:float)->Di
 	var ratio:float=(origin.z-target_z)/depth
 	return {"position":origin+(contact-origin)*ratio,"scale":base_scale*ratio}
 
+func _place_book_at_verified_hand(node:Node3D,actor:Dictionary)->bool:
+	var id:String=str(actor.get("id",""))
+	var anim:Dictionary=actor_animations.get(id,{})
+	var state:String=str(anim.get("state",""))
+	if life.candidate_navigation==null or int(anim.get("frame",-1))!=0:return false
+	var profile:Dictionary={}
+	var point:Array=[]
+	if state=="READ":
+		if _active_station_render_contact(actor).is_empty():return false
+		profile=life.candidate_navigation.pose_profile(actor,state)
+		point=profile.get("book_px",[])
+	elif state=="IDLE_S":
+		profile=life.candidate_navigation.hand_contact(actor,state,0)
+		point=profile.get("hand_px",[])
+	if point.size()!=2 or not _calibrated_frame_matches(actor,state,profile):return false
+	var actor_node:Node3D=actor_sprites.get(id)
+	if not is_instance_valid(actor_node) or not actor_node.is_visible_in_tree():return false
+	var sprite:Sprite3D=actor_node.get_node_or_null("Body")
+	var canvas:Array=profile.get("canvas",[])
+	if sprite==null or sprite.texture==null or canvas.size()!=2 or sprite.texture.get_width()!=int(canvas[0]) or sprite.texture.get_height()!=int(canvas[1]):return false
+	var facing:Vector3=_sprite_camera_right().cross(Vector3.UP).normalized()
+	var scale_value:float=actor_node.scale.x
+	var basis_value:=Basis(Vector3.UP,atan2(facing.x,facing.z))
+	if state=="READ":basis_value=basis_value*Basis(Vector3.RIGHT,-PI/3.0)
+	basis_value=basis_value.scaled(Vector3.ONE*scale_value)
+	var target:Vector3=_sprite_pixel_world(actor_node,sprite,point)+facing*0.035*scale_value
+	# Physical book mesh has its centre 0.09m above its base pivot.
+	node.global_transform=Transform3D(basis_value,target-basis_value*Vector3(0,0.09,0))
+	node.set_meta("hand_contact_status","READ_FRAME_MARKED" if state=="READ" else "IDLE_FRAME_MARKED")
+	node.set_meta("hand_contact_target",target)
+	return true
+
 func _place_cup_at_verified_hand(anchor:Node3D,holder:Dictionary)->bool:
 	var id:String=str(holder.get("id",""))
 	var animation:Dictionary=actor_animations.get(id,{})
 	if life.candidate_navigation==null or camera==null:return false
 	var contact:Dictionary=life.candidate_navigation.hand_contact(holder,str(animation.get("state","")),int(animation.get("frame",-1)))
-	if contact.is_empty():return false
+	if contact.is_empty() or not _calibrated_frame_matches(holder,"IDLE_S",contact):return false
 	var actor_node:Node3D=actor_sprites.get(id)
 	if not is_instance_valid(actor_node) or not actor_node.is_visible_in_tree():return false
 	var sprite:Sprite3D=actor_node.get_node_or_null("Body")
