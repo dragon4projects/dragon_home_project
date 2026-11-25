@@ -1,7 +1,7 @@
 name: Canonical social interiors QA
 on:
   push:
-    branches: [integration/integration/canonical-kitchen-lounges-20261125]
+    branches: [integration/canonical-kitchen-lounges-20261125]
     paths:
       - 'dragon_house_clean/scripts/**'
       - 'dragon_house_clean/tests/**'
