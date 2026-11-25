@@ -1,0 +1,15 @@
+# Iteration 4.27 — open physical book and startup validation reuse
+
+Baseline b56553e92b4066c1104aa9aae7d3696808a6fad3. Godot 4.7.2 in hydrated Higgsfield Linux sandbox, same temporary import exclusions as previous QA. No CI, no target export.
+
+## Implementation
+- The same physical book node has closed geometry and a lazily created open two-leaf model. Only a rendered READ frame with a marked and verified book centre selects the open model. Baked-book hiding and uncalibrated fallback remain unchanged. The only current READ hand-centre calibration is RES_01 SHORT; the open model is not universal hand calibration. The book identity, shelf assignment, possession and reading progress do not change. Covers and blank paper are provisional geometry, not a generated catalog page or master image.
+- Resolver caches the exact PNG/WebP signature check result only inside synchronous startup validation, from initialize through make_residents. It clears the scope before interactive use. Every candidate still checks identity, state and frame path. No persistent trust cache or candidate-to-approved promotion. Runtime gallery calls and initialize revalidate the files. Within the scope packaged assets are assumed unchanged. Signature checks are not full decoding or cryptographic validation.
+- Measured fixture: five repeated validations required 3 probes and 12 cache hits instead of 15 probes. Real full scene startup: ASSET_STARTUP_VALIDATION probes=675 reused=1275 (1950 total, 65.4% avoided repeated disk probes). These counters measure validation calls only, not total startup latency or target device speed.
+
+## Tests and visual QA
+Actual Godot check-only main.gd passed. Three focused tests exited 0: test_asset_binding (identity/path/LFS pointer rejection after cache scope, 3/12 probe count), test_pose_contact_projection_fixture (real frame, three camera angles, wardrobe refresh, open/closed visibility and unchanged physical copy), test_book_possession_recovery. Full scene test_verified_book_contact also exited 0 and printed VERIFIED_BOOK_CONTACT_PASS yaw_samples=3 wardrobe_refresh=true book_visible=true, after navigation, roster, life, scene and ready. It used an isolated copy of the existing synthetic iter25 QA save, not the user's save, and the hydrated working tree, not a clean production export. Other full scene tests from iteration 4.26 not rerun here.
+
+Actual Xvfb/llvmpipe isolated sofa capture POSE_VISUAL_FIXTURE_CAPTURE_PASS exit 0. The open pages are visible between hands; legs/feet remain imperfectly aligned with floor; paper is intentionally blank and rather bright in this fixture. No full house visual approval. Evidence iter27_read.jpg SHA256 53708786ea7eb7cdfcdd2e8c62a0f75c30fa8e404dc2d35a16e9e199e017c767. Image is actual engine output, not generated illustration.
+
+Next: verify remaining full-scene regressions, moving FOLLOW, old layout migration, autonomous gathering, broader read-hand calibration and seat/feet fit. Full production import/export, acceptance matrix and hardware performance remain pending. No topology, furniture, privacy, catalog or simulation-rule changes.
