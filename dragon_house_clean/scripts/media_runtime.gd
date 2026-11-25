@@ -186,6 +186,32 @@ func watch_candidates(actor_id:String)->Array:
 		if not next_watch_unit(actor_id,item).is_empty():result.append(item)
 	return result
 
+func timed_session_key(actor:Dictionary)->String:
+	match str(actor.get("intent","")):
+		"WATCH_FILM":return "watch_session"
+		"LISTEN_MUSIC":return "listen_session"
+	return ""
+
+func timed_session_valid(actor:Dictionary,now:float)->bool:
+	var key:String=timed_session_key(actor)
+	if key=="" or not actor.has(key) or str(actor.get("phase",""))!="perform":return false
+	var raw=actor[key]
+	if typeof(raw)!=TYPE_DICTIONARY:return false
+	var unit:Dictionary=raw
+	var start:float=float(unit.get("started_at",-1))
+	var end:float=float(unit.get("ends_at",-1))
+	var seconds:float=float(unit.get("seconds",0))
+	if not is_finite(start) or not is_finite(end) or not is_finite(seconds) or start<0 or start>now or seconds<=0 or absf(end-start-seconds)>0.001:return false
+	var room_id:String=str(actor.get("room_id",""))
+	if room_id=="" or room_id!=str(unit.get("room_id","")) or room_id!=str(actor.get("station_room_id","")):return false
+	var item_id:String=str(actor.get("activity_media_id",""))
+	if item_id=="" or item_id!=str(unit.get("item_id","")):return false
+	if key=="watch_session":
+		if not can_watch(str(actor["id"]),item_id,room_id):return false
+		var expected:Dictionary=next_watch_unit(str(actor["id"]),_lookup("films",item_id))
+		return int(expected.get("season",-1))==int(unit.get("season",-2)) and int(expected.get("episode",-1))==int(unit.get("episode",-2))
+	return can_listen(str(actor["id"]),item_id,room_id)
+
 func begin_watch(actor:Dictionary,now:float)->bool:
 	var item:Dictionary=_lookup("films",str(actor.get("activity_media_id","")))
 	var unit:Dictionary=next_watch_unit(str(actor["id"]),item)

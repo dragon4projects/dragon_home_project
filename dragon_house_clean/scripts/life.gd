@@ -162,6 +162,14 @@ func setup(p_world) -> void:
 	life_scheduler.restore(saved_scheduler,active_ids,clock,idle_retry_seconds,3.0)
 	if candidate_navigation!=null:
 		_migrate_review_geometry(previously_initialized)
+	# The session is the authoritative deadline, not a stale scheduler entry.
+	# Only active timed performers are rearmed, once on load.
+	for id in active_ids:
+		var actor:Dictionary=world.residents[id]
+		if media_runtime.timed_session_valid(actor,clock):
+			var key:String=media_runtime.timed_session_key(actor)
+			actor["until"]=float(actor[key]["ends_at"])
+			life_scheduler.schedule_at(id,maxf(clock,float(actor["until"])),"RESTORED_MEDIA_COMMITMENT")
 	# Existing pre-scheduler saves retain their commitments. First wake only
 	# reconciles/schedules them; it does not cancel an unexpired action.
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
@@ -535,15 +543,19 @@ func reconcile_concrete_media() -> int:
 				fixed+=1
 				continue
 		if active_id!="" and _concrete_media_is_valid(actor):
-			if str(actor.get("intent",""))=="WATCH_FILM" and str(actor.get("phase",""))=="perform" and not actor.has("watch_session"):
-				# An old save has no trustworthy start time; start a full
-				# timed unit now instead of crediting fictional past viewing.
-				media_runtime.begin_watch(actor,clock)
+			var key:String=media_runtime.timed_session_key(actor)
+			if key=="" or str(actor.get("phase",""))!="perform":continue
+			if not actor.has(key) and str(actor.get("room_id",""))==str(actor.get("station_room_id","")):
+				# Legacy saves have no trustworthy elapsed time. Start a full
+				# unit only when the actor is actually at the destination.
+				if key=="watch_session":media_runtime.begin_watch(actor,clock)
+				else:media_runtime.begin_listen(actor,clock)
 				fixed+=1
-			if str(actor.get("intent",""))=="LISTEN_MUSIC" and str(actor.get("phase",""))=="perform" and not actor.has("listen_session"):
-				media_runtime.begin_listen(actor,clock)
-				fixed+=1
-			continue
+			if media_runtime.timed_session_valid(actor,clock):
+				actor["until"]=float(actor[key]["ends_at"])
+				continue
+			# Malformed/stale session falls through to ordinary cancellation.
+			# Never credit a missed, interrupted, or inconsistent session.
 		var intent:String=str(actor.get("intent",""))
 		var needs_concrete:bool=intent in ["READ_BOOK","WATCH_FILM","LISTEN_MUSIC"]
 		if active_id=="" and not needs_concrete:
@@ -950,7 +962,9 @@ func _move(actor: Dictionary, delta: float) -> void:
 func _start_cinema_commitment(actor:Dictionary)->void:
 	var id:String=str(actor["id"])
 	moving_ids.erase(id)
-	var started:bool=media_runtime.begin_listen(actor,clock) if str(actor.get("intent",""))=="LISTEN_MUSIC" else media_runtime.begin_watch(actor,clock)
+	var started:=false
+	if str(actor.get("room_id",""))==str(actor.get("station_room_id","")) and str(actor.get("room_id",""))!="":
+		started=media_runtime.begin_listen(actor,clock) if str(actor.get("intent",""))=="LISTEN_MUSIC" else media_runtime.begin_watch(actor,clock)
 	if not started:
 		stations.release(actor)
 		end_concrete_media(actor)
@@ -971,6 +985,16 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		moving_ids[id] = true
 		life_scheduler.schedule_in(id,clock,2.0,"TRAVEL_ACTIVE")
 		return
+	var media_key:String=media_runtime.timed_session_key(actor)
+	if media_key!="" and actor.has(media_key):
+		if not media_runtime.timed_session_valid(actor,clock):
+			stations.release(actor)
+			end_concrete_media(actor)
+			actor["phase"]="idle"
+			actor["until"]=clock+12.0
+			_schedule_actor(actor,"INVALID_MEDIA_COMMITMENT")
+			return
+		actor["until"]=float(actor[media_key]["ends_at"])
 	if float(actor.get("until",0.0)) > clock:
 		life_scheduler.schedule_at(id,float(actor["until"]),"COMMITMENT_ACTIVE")
 		return
