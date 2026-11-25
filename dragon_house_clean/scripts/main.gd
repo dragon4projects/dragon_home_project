@@ -2261,6 +2261,12 @@ func desired_actor_animation(actor: Dictionary) -> String:
 	# Pure pose selection. A sofa station is an actual authored seat, not
 	# simply two actors standing at the same arbitrary position in a room.
 	var requested := "IDLE_S"
+	if str(actor.get("phase",""))=="perform" and str(actor.get("intent","")) in ["TALK_PAIR","TALK_GROUP"] and not actor.has("station_contact"):
+		var session:Dictionary=life._pair_session(actor)
+		var facing=actor.get("social_facing_xz",[])
+		if str(session.get("phase",""))=="active" and typeof(facing)==TYPE_ARRAY and facing.size()==2:
+			var direction:String=AssetBankResolverScript.social_idle_state(Vector2(float(facing[0]),float(facing[1])),effective_camera_yaw())
+			if asset_banks.frame_count(str(actor.get("id","")),str(actor.get("visual_wardrobe","HOME")),direction)>0:return direction
 	if teea008_live and str(actor.get("phase",""))=="perform":
 		var contact:Dictionary=_active_station_render_contact(actor)
 		if not contact.is_empty():
