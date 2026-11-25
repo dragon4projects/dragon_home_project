@@ -575,6 +575,17 @@ func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 		_update_runtime_state()
 		return {"ok":false,"error":last_error}
 	_publish_projection(candidate)
+	# Live creature carrier cache follows the same committed movement that
+	# owns possession. A rejected event cannot change the actor cache.
+	if str(committed.get("event_type",""))=="OBJECT_MOVED":
+		var movement:Dictionary=committed.get("payload",{})
+		var object_id:String=str(movement.get("object_id",""))
+		var previous:String=str(movement.get("previous_holder",""))
+		var current:String=str(movement.get("current_holder",""))
+		if previous!=current:
+			world._clear_carrier_reference(object_id,previous)
+		if world.creatures.has(current):
+			world.creatures[current]["carried_object_id"]=object_id
 	status = "READY_BACKUP_STALE" if str(store.status) == "READY_BACKUP_STALE" else "READY"
 	last_error = ""
 	if backend_requested == "sqlite" and not _write_sqlite_marker():
