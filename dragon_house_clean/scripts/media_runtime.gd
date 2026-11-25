@@ -97,6 +97,7 @@ func book_eligible(actor_id:String,book:Dictionary,now:float)->bool:
 	if bool(row.get("complete",false)) and now-float(row.get("last_completed_at",0))<world.GAME_DAY_SECONDS:return false
 	var sid:String=_series_id(book)
 	if sid=="":return true
+	if _volume(book)<=0:return false
 	var series:Dictionary=_series_state(actor_id,sid)
 	if bool(series.get("complete",false)):
 		return _volume(book)==1 and now-float(series.get("last_completed_at",0))>=world.GAME_DAY_SECONDS
@@ -120,6 +121,8 @@ func choose_book_options(actor_id:String,rng:RandomNumberGenerator,now:float,rec
 	var best:float=-1.0
 	var available:Array=[]
 	var detours:Array=[]
+	var first_busy:Dictionary={}
+	var reserved:Dictionary=reserved_book_ids(actor_id)
 	var wait:String=str(state.get("wait_work_id",""))
 	for book in world.media.get("books",[]):
 		if not book_eligible(actor_id,book,now):continue
@@ -135,6 +138,7 @@ func choose_book_options(actor_id:String,rng:RandomNumberGenerator,now:float,rec
 		if _book_copy_available(actor_id,book):
 			available.append(book)
 			if sid=="":detours.append(book)
+		elif first_busy.is_empty() and (str(book.get("holder_id",""))!="" or reserved.has(str(book["id"]))):first_busy=book
 	if not target.is_empty():
 		for copy in available:
 			if book_work_id(copy)==book_work_id(target):
@@ -142,6 +146,8 @@ func choose_book_options(actor_id:String,rng:RandomNumberGenerator,now:float,rec
 				return [copy]
 		if record_wait:_set_wait(actor_id,book_work_id(target))
 		available=detours
+	elif available.is_empty() and not first_busy.is_empty() and record_wait:
+		_set_wait(actor_id,book_work_id(first_busy))
 	elif wait!="" and record_wait:
 		_set_wait(actor_id,"")
 	# Weighted choice without replacement; new works favored, known favorites
@@ -168,7 +174,7 @@ func begin_reading(actor:Dictionary,now:float,duration:float)->bool:
 	var id:String=str(actor.get("id",""))
 	var book:Dictionary=_lookup("books",str(actor.get("held_book","")))
 	if book.is_empty() or str(book.get("holder_id",""))!=id or str(actor.get("intent",""))!="READ_BOOK" or str(actor.get("phase",""))!="perform" or str(actor.get("room_id",""))!=str(actor.get("station_room_id","")) or not world.is_accessible(world.room_by_id(str(actor.get("room_id",""))),id):return false
-	if actor.has("reading_session"):return true
+	if actor.has("reading_session"):return reading_session_valid(actor,now)
 	if not is_finite(now) or not is_finite(duration) or duration<=0 or not book_eligible(id,book,now):return false
 	var row:Dictionary=book_history(id,book)
 	var sid:String=_series_id(book)
@@ -181,6 +187,8 @@ func begin_reading(actor:Dictionary,now:float,duration:float)->bool:
 	if bool(row.get("complete",false)):
 		row["complete"]=false
 		row["progress"]=0.0
+		if not book.has("progress_by_actor"):book["progress_by_actor"]={}
+		book["progress_by_actor"][id]=0.0
 		row["repeat_cycle"]=int(row.get("repeat_cycle",0))+1
 	var remaining:float=maxf(0.0,book_reading_length(book)-float(row["progress"]))
 	if remaining<=0:return false
@@ -191,9 +199,22 @@ func begin_reading(actor:Dictionary,now:float,duration:float)->bool:
 	world._append_journal("BOOK_READING_RESUME" if float(row["progress"])>0 else "BOOK_READING_START",id,str(book["id"]),"",str(actor["room_id"]),{"progress":row["progress"],"ends_at":actor["until"]})
 	return true
 
+func reading_session_valid(actor:Dictionary,now:float)->bool:
+	var raw=actor.get("reading_session",{})
+	if typeof(raw)!=TYPE_DICTIONARY or raw.is_empty():return false
+	var s:Dictionary=raw
+	var book:Dictionary=_lookup("books",str(s.get("book_id","")))
+	var id:String=str(actor.get("id",""))
+	var rid:String=str(actor.get("room_id",""))
+	var start:float=float(s.get("started_at",-1))
+	var end:float=float(s.get("ends_at",-1))
+	return not book.is_empty() and str(book.get("holder_id",""))==id and str(actor.get("held_book",""))==str(book["id"]) and str(actor.get("phase",""))=="perform" and str(actor.get("intent",""))=="READ_BOOK" and rid==str(s.get("room_id","")) and rid==str(actor.get("station_room_id","")) and world.is_accessible(world.room_by_id(rid),id) and is_finite(start) and is_finite(end) and is_finite(now) and start>=0 and start<=now and end>start and end-start<=book_reading_length(book)
+
 func pause_reading(actor:Dictionary,now:float)->bool:
+	var valid:bool=reading_session_valid(actor,now)
 	var raw=actor.get("reading_session",{})
 	actor.erase("reading_session")
+	if not valid:return false
 	if typeof(raw)!=TYPE_DICTIONARY or raw.is_empty():return false
 	var session:Dictionary=raw
 	var start:float=float(session.get("started_at",-1))
@@ -238,6 +259,7 @@ func read(actor_id:String,book_id:String,seconds:float)->bool:
 	var applied:float=minf(seconds,maxf(0.0,length-float(row.get("progress",0))))
 	row["progress"]=float(row.get("progress",0))+applied
 	row["total_seconds"]=float(row.get("total_seconds",0))+applied
+	if not book.has("progress_by_actor"):book["progress_by_actor"]={}
 	book["progress_by_actor"][actor_id]=row["progress"]
 	book["last_interaction_at"]=float(world.sim_clock)
 	if float(row["progress"])>=length:
@@ -897,6 +919,10 @@ func free_book_slot(book_id:String,room:Dictionary)->Dictionary:
 	if candidate_navigation==null or not world.public_cutaway_allowed(room):return {}
 	var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
 	var occupied:Dictionary={}
+	for actor in world.residents.values():
+		if str(actor.get("book_task_id",""))==book_id:continue
+		if str(actor.get("book_task_stage",""))=="return" and str(actor.get("book_return_room",""))==str(room["id"]):
+			occupied[str(actor.get("book_return_slot",""))]=true
 	for id in assignments:
 		if str(id)==book_id:continue
 		var entry:Dictionary=assignments[id]
@@ -929,6 +955,47 @@ func return_at_shelf(actor_id:String,book_id:String,room_id:String)->bool:
 		world.runtime_state["teea008_book_slot_assignments"][book_id]={"room_id":room_id,"slot_id":str(slot["id"])}
 	world._append_journal("BOOK_RETURNED_AT_SHELF",actor_id,book_id,actor_id,room_id,{"station_id":str(actor.get("station_anchor_id","")),"shelf_slot_id":str(slot.get("id",""))})
 	return true
+
+func install_canonical_book_catalog()->Dictionary:
+	# Source-backed metadata becomes a single simulated volume only if a
+	# measured free shelf exists. No book text or unapproved official cover.
+	if candidate_navigation==null:return {"catalog":0,"physical":0}
+	var file:=FileAccess.open("res://data/canonical_book_metadata_20261125.json",FileAccess.READ)
+	if file==null:return {"catalog":0,"physical":0}
+	var parsed=JSON.parse_string(file.get_as_text())
+	if typeof(parsed)!=TYPE_DICTIONARY:return {"catalog":0,"physical":0}
+	var added:=0
+	var active:=0
+	for source in parsed.get("books",[]):
+		var id:String=str(source.get("id",""))
+		if id=="":continue
+		var book:Dictionary=_lookup("books",id)
+		if book.is_empty():
+			book=source.duplicate(true)
+			book.merge({"physical":false,"catalog_only":true,"holder_id":"","location_room_id":"","progress_by_actor":{},"preview":""},true)
+			world.media["books"].append(book)
+			added+=1
+		else:
+			for field in ["work_id","series_id","series_name","series_index","series_catalog_status","series_catalog_last_index","series_status","publication_year","preview_status"]:
+				if source.has(field) and not book.has(field):book[field]=source[field]
+		if bool(book.get("physical",true)):continue
+		for room in world.matching_rooms(["library"]):
+			var slot:Dictionary=free_book_slot(id,room)
+			if slot.is_empty():continue
+			book["physical"]=true
+			book["catalog_only"]=false
+			book["physical_item_id"]=id
+			book["home_room_id"]=str(room["id"])
+			book["location_room_id"]=str(room["id"])
+			book["holder_id"]=""
+			book["last_interaction_at"]=world.sim_clock
+			var assignments:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{})
+			assignments[id]={"room_id":str(room["id"]),"slot_id":str(slot["id"])}
+			world.runtime_state["teea008_book_slot_assignments"]=assignments
+			active+=1
+			break
+	_normalize_catalogue()
+	return {"catalog":added,"physical":active}
 
 func reconcile_book_slots()->int:
 	if candidate_navigation==null:return 0

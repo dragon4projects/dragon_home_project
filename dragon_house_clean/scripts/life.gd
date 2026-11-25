@@ -168,7 +168,7 @@ func setup(p_world) -> void:
 	# Only active timed performers are rearmed, once on load.
 	for id in active_ids:
 		var actor:Dictionary=world.residents[id]
-		if actor.has("reading_session"):
+		if media_runtime.reading_session_valid(actor,clock):
 			var reading:Dictionary=actor["reading_session"]
 			actor["until"]=float(reading.get("ends_at",clock))
 			life_scheduler.schedule_at(id,maxf(clock,float(actor["until"])),"RESTORED_READING_COMMITMENT")
@@ -530,6 +530,7 @@ func reconcile_concrete_media() -> int:
 		if not bool(actor.get("active",false)):
 			media_runtime.cancel_timed_media(actor,clock)
 			continue
+		if actor.has("reading_session") and not media_runtime.reading_session_valid(actor,clock):actor.erase("reading_session")
 		var active_id:String=str(actor.get("activity_media_id",""))
 		var held_book:String=str(actor.get("held_book",""))
 		if candidate_navigation!=null and actor.has("book_task_stage"):
@@ -982,6 +983,12 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		moving_ids[id] = true
 		life_scheduler.schedule_in(id,clock,2.0,"TRAVEL_ACTIVE")
 		return
+	if actor.has("reading_session"):
+		if media_runtime.reading_session_valid(actor,clock):
+			actor["until"]=float(actor["reading_session"]["ends_at"])
+		else:
+			actor.erase("reading_session")
+			actor["until"]=clock
 	var media_key:String=media_runtime.timed_session_key(actor)
 	if media_key!="" and actor.has(media_key):
 		if not media_runtime.timed_session_valid(actor,clock):
@@ -1205,7 +1212,14 @@ func _arrive_book_shelf(actor:Dictionary)->void:
 		# Seat became unavailable while walking to the shelf; return at the
 		# exact shelf already reached, rather than teleporting the book.
 		actor["intent"]="RETURN_BOOK"
-		media_runtime.return_at_shelf(id,book_id,source)
+		if not media_runtime.return_at_shelf(id,book_id,source):
+			actor["book_task_stage"]="return_wait"
+			actor["phase"]="idle"
+			actor["until"]=clock+5.0
+			stations.release(actor)
+			moving_ids.erase(id)
+			_schedule_actor(actor,"BOOK_RETURN_RETRY")
+			return
 	elif stage=="return":
 		if not media_runtime.return_at_shelf(id,book_id,source):
 			# The reserved destination may have changed; retain the copy.

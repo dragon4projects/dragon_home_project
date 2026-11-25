@@ -352,6 +352,10 @@ func _ready() -> void:
 		asset_banks.cache_capacity=96
 		print("TEEA008_LIVE_START life")
 	life.setup(world)
+	if architecture_review and teea008_live:
+		var books_installed:Dictionary=life.media_runtime.install_canonical_book_catalog()
+		if int(books_installed.get("catalog",0))+int(books_installed.get("physical",0))>0:
+			world.save_world()
 	interior_skin.initialize()
 	if not room_visual_layout.initialize():
 		push_warning("Physical room visual layout unavailable: "+room_visual_layout.error)
