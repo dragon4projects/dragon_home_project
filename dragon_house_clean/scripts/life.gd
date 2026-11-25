@@ -469,7 +469,9 @@ func _pair_sessions()->Dictionary:
 
 func _pair_session(actor:Dictionary)->Dictionary:
 	if world==null:return {}
-	var row=_pair_sessions().get(str(actor.get("social_session_id","")),{})
+	var sessions=world.runtime_state.get("pair_sessions",{})
+	if typeof(sessions)!=TYPE_DICTIONARY:return {}
+	var row=sessions.get(str(actor.get("social_session_id","")),{})
 	return row if typeof(row)==TYPE_DICTIONARY else {}
 
 func _create_pair_session(actor:Dictionary,partner:Dictionary,room:Dictionary,deadline:float)->void:
