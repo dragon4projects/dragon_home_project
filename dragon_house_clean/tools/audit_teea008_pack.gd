@@ -61,6 +61,22 @@ func run()->void:
 		assert(ResourceLoader.exists("res://scripts/canonical_house_seed.gd"))
 		for asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
 			assert(ResourceLoader.exists("res://assets/decor_bank/"+asset+"/model.gltf","PackedScene"),asset)
-		print("CANONICAL_PACK_ASSETS_PASS dragon=1 cubes=3")
+		var drinks:=read_dict("res://data/canonical_drinks.json")
+		assert(drinks.get("entries",[]).size()==105)
+		assert(ResourceLoader.exists("res://scripts/canonical_beverage_runtime.gd"))
+		for filename in ["canonical_social_interiors_20261125.json","canonical_library_gallery_20261125.json","canonical_media_work_interiors_20261125.json","canonical_guest_display_interiors_20261125.json","canonical_conditional_shelves_20261125.json"]:
+			var doc:=read_dict("res://data/"+filename)
+			assert(not doc.is_empty(),filename)
+			var items:Array=[]
+			for row in doc.get("variants",[]):items.append_array(row.get("instances",[]))
+			items.append_array(doc.get("hearth_additions",[]))
+			for key in doc.get("additions",{}):items.append_array(doc["additions"][key])
+			for item in items:
+				var asset:String=str(item["asset_id"])
+				var base:String="res://assets/teea008_review/decor_bank/"
+				if asset.begins_with("sketchfab_"):base="res://assets/sketchfab_review/decor_bank/"
+				if asset=="owner_sleeping_dragon" or asset.begins_with("artifact_glass_cube_"):base="res://assets/decor_bank/"
+				assert(ResourceLoader.exists(base+asset+"/model.gltf","PackedScene"),asset)
+		print("CANONICAL_PACK_ASSETS_PASS dragon=1 cubes=3 drinks=105 all_rc_interiors=true")
 	print("TEEA008_PACK_AUDIT_PASS assets=",count," sketchfab=",new_models," layouts=33 media=32 pose_frames=",verified," hand_contacts=27 actor_banks=",banks)
 	quit(0)

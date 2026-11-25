@@ -43,6 +43,7 @@ var art_layer_count := 0
 var detailed_room_groups: Dictionary = {}
 var art_loaded_groups: Dictionary = {}
 var visual_room_groups: Dictionary = {}
+var canonical_guest_nodes:Dictionary={}
 var detail_materialization_count := 0
 var detail_eviction_count := 0
 var validated_visual_banks := 0
@@ -1384,6 +1385,8 @@ func make_room(group: Dictionary) -> void:
 	visual_room_groups[n.name] = group
 	var t: String = group["type"]
 	var facade_only := _group_facade_only(group)
+	n.set_meta("facade_only",facade_only)
+	if architecture_review and t=="guest":canonical_guest_nodes[str(n.name)]=n
 	var art_type := _review_room_art_type(group)
 	visual_room_groups[n.name]["art_type"] = art_type
 	var accepted: Array=interior_skin.validated_layers(art_type,int(group["width"]))
@@ -1559,6 +1562,7 @@ func make_rooms() -> void:
 	detailed_room_groups.clear()
 	art_loaded_groups.clear()
 	visual_room_groups.clear()
+	canonical_guest_nodes.clear()
 	door_note_anchors.clear()
 	_clear_children_now(room_root)
 	for group in world.visual_groups():
@@ -3157,7 +3161,56 @@ func apply_camera(delta: float) -> void:
 	update_cutaway_return_visibility()
 	register_loaded_foregrounds()
 
+func _refresh_guest_facades()->bool:
+	if not architecture_review or room_root==null:return false
+	var changed:=false
+	for id in canonical_guest_nodes.keys():
+		var node:Node3D=canonical_guest_nodes[id]
+		if not is_instance_valid(node):continue
+		var room:Dictionary=world.room_by_id(str(id))
+		if room.is_empty():continue
+		var closed:bool=not world.public_cutaway_allowed(room)
+		if bool(node.get_meta("facade_only",false))==closed:continue
+		_release_room_art(node)
+		_release_furniture(node)
+		room_root.remove_child(node)
+		node.free()
+		make_room(world.merged_group(int(room["x"]),int(room["level"])))
+		changed=true
+	return changed
+
+func _update_roof_label(label:Label3D,group:Dictionary)->void:
+	if label==null or not architecture_review or camera==null:return
+	var at:Vector3=label.global_position
+	if camera.is_position_behind(at):return
+	var one:Vector2=camera.unproject_position(at)
+	var up:Vector2=camera.unproject_position(at+Vector3.UP)
+	var per_meter:float=maxf(1.0,one.distance_to(up))
+	var span:float=float(group.get("width",1))*W
+	var left:Vector2=camera.unproject_position(at-Vector3.RIGHT*span*0.45)
+	var right:Vector2=camera.unproject_position(at+Vector3.RIGHT*span*0.45)
+	var width_px:float=left.distance_to(right)
+	var desired:float=12.0 if str(group.get("type","")) not in ["private","lift"] else 10.0
+	var estimated_chars:float=maxf(1.0,float(label.text.length())*0.60)
+	var target:float=minf(desired,width_px/estimated_chars)
+	label.pixel_size=clampf(target/(float(label.font_size)*per_meter),0.0037,0.035)
+
+func _refresh_conditional_dressing()->void:
+	if not architecture_review:return
+	var used:Dictionary={}
+	for record in world.runtime_state.get("teea008_book_slot_assignments",{}).values():
+		used[str(record.get("room_id",""))+"|"+str(record.get("slot_id",""))]=true
+	for obj in world.objects.values():
+		for pair in [["home_room_id","home_support_id"],["current_room_id","current_support_id"]]:
+			var slot:String=str(obj.get(pair[1],""))
+			if slot!="":used[str(obj.get(pair[0],""))+"|"+slot]=true
+	for node in get_tree().get_nodes_in_group("canonical_conditional_dressing"):
+		if node is Node3D:
+			var key:String=str(node.get_meta("room_id",""))+"|"+str(node.get_meta("decor_slot_id",""))
+			node.visible=not used.has(key)
+
 func update_render_lod() -> void:
+	_refresh_guest_facades()
 	# Keep the inexpensive shell/cues visible at HOUSE scale. Detailed 3D depth,
 	# rear alcoves, rich furniture and accepted full-resolution art are useful
 	# only near the camera; rendering them across the whole house wastes draw
@@ -3180,6 +3233,10 @@ func update_render_lod() -> void:
 			_release_furniture(group_node)
 			if furniture!=null:furniture.visible=false
 			if cues!=null:cues.visible=false
+			var private_label:Label3D=group_node.get_node_or_null("RoomRoofLabel")
+			if private_label!=null:
+				private_label.visible=zoom_current>=25.0 and current_mode!="FOLLOW"
+				_update_roof_label(private_label,group)
 			continue
 		# Real room art is part of the Fallout-Shelter cutaway at every zoom.
 		# Camera proximity controls only heavier 3D/furniture detail. Manual FREE
@@ -3216,7 +3273,9 @@ func update_render_lod() -> void:
 			rear_stage.visible = not backdrop_loaded
 		var roof_label: Label3D = group_node.get_node_or_null("RoomRoofLabel")
 		if roof_label != null:
-			roof_label.visible = zoom_current >= 35.0 and current_mode != "FOLLOW"
+			roof_label.visible = zoom_current >= 25.0 and current_mode != "FOLLOW"
+			_update_roof_label(roof_label,group)
+	_refresh_conditional_dressing()
 	var micro_detail_visible: bool = zoom_current < 31.0
 	for node in get_tree().get_nodes_in_group("low_end_micro_detail"):
 		if node is Node3D:
@@ -3228,6 +3287,8 @@ func _process(delta: float) -> void:
 	# actor footprint paths are bound. Do not simulate against stale furniture.
 	if not teea008_review.enabled or teea008_live:
 		life.tick(delta)
+	# The three guest facade transitions are cheap to check each frame.
+	if _refresh_guest_facades():update_render_lod()
 	# Seat projection must use the actual camera transform of this frame.
 	apply_camera(delta)
 	update_residents(delta)

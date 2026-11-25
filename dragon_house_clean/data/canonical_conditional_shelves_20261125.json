@@ -1,0 +1,2753 @@
+{
+  "owner_approved": false,
+  "additions": {
+    "library/R3": [
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_2_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          0.397284,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.536121784508169,
+          0.397284,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          0.49960727910364106,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5747494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_2_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_2_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -5.902678,
+          0.397284,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.021477784508169,
+          0.397284,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -5.783877784508169,
+          0.49960727910364106,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021477784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.5747494152879484
+          ],
+          [
+            -6.021477784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_2_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_3_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          0.66297,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.536121784508169,
+          0.66297,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          0.765293279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5747494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_3_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -5.902678,
+          0.66297,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.021477784508169,
+          0.66297,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -5.783877784508169,
+          0.765293279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021477784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.5747494152879484
+          ],
+          [
+            -6.021477784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_4_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          0.93743,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.536121784508169,
+          0.93743,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          1.039753279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5747494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_4_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -5.902678,
+          0.93743,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.021477784508169,
+          0.93743,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -5.783877784508169,
+          1.039753279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021477784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.5747494152879484
+          ],
+          [
+            -6.021477784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_5_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          1.237697,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.536121784508169,
+          1.237697,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          1.340020279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5747494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_5_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_5_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -5.902678,
+          1.237697,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.021477784508169,
+          1.237697,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -5.783877784508169,
+          1.340020279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021477784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.5747494152879484
+          ],
+          [
+            -6.021477784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_5_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_6_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -6.417322,
+          1.605214,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.536121784508169,
+          1.605214,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -6.29852178450817,
+          1.707537279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.536121784508169,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.6452505847120518
+          ],
+          [
+            -6.29852178450817,
+            -1.5747494152879484
+          ],
+          [
+            -6.536121784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_6_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_shelf_6_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -5.902678,
+          1.605214,
+          -1.61
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -6.021477784508169,
+          1.605214,
+          -1.6452505847120518
+        ],
+        "bounds_max_m": [
+          -5.783877784508169,
+          1.707537279103641,
+          -1.5747494152879484
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021477784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.6452505847120518
+          ],
+          [
+            -5.783877784508169,
+            -1.5747494152879484
+          ],
+          [
+            -6.021477784508169,
+            -1.5747494152879484
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf.shelf_6_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_display_shelf_shelf_3_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -0.053303,
+          0.43845,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -0.17210278450816893,
+          0.43845,
+          -1.7152505847120516
+        ],
+        "bounds_max_m": [
+          0.06549721549183107,
+          0.540773279103641,
+          -1.6447494152879483
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.17210278450816893,
+            -1.7152505847120516
+          ],
+          [
+            0.06549721549183107,
+            -1.7152505847120516
+          ],
+          [
+            0.06549721549183107,
+            -1.6447494152879483
+          ],
+          [
+            -0.17210278450816893,
+            -1.6447494152879483
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_display_shelf.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_display_shelf_shelf_3_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          0.413303,
+          0.43845,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          0.29450321549183106,
+          0.43845,
+          -1.7152505847120516
+        ],
+        "bounds_max_m": [
+          0.532103215491831,
+          0.540773279103641,
+          -1.6447494152879483
+        ],
+        "physical_footprint_xz": [
+          [
+            0.29450321549183106,
+            -1.7152505847120516
+          ],
+          [
+            0.532103215491831,
+            -1.7152505847120516
+          ],
+          [
+            0.532103215491831,
+            -1.6447494152879483
+          ],
+          [
+            0.29450321549183106,
+            -1.6447494152879483
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_display_shelf.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_display_shelf_shelf_4_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -0.053303,
+          0.814706,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -0.17210278450816893,
+          0.814706,
+          -1.7152505847120516
+        ],
+        "bounds_max_m": [
+          0.06549721549183107,
+          0.9170292791036411,
+          -1.6447494152879483
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.17210278450816893,
+            -1.7152505847120516
+          ],
+          [
+            0.06549721549183107,
+            -1.7152505847120516
+          ],
+          [
+            0.06549721549183107,
+            -1.6447494152879483
+          ],
+          [
+            -0.17210278450816893,
+            -1.6447494152879483
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_display_shelf.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_display_shelf_shelf_4_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          0.413303,
+          0.814706,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          0.29450321549183106,
+          0.814706,
+          -1.7152505847120516
+        ],
+        "bounds_max_m": [
+          0.532103215491831,
+          0.9170292791036411,
+          -1.6447494152879483
+        ],
+        "physical_footprint_xz": [
+          [
+            0.29450321549183106,
+            -1.7152505847120516
+          ],
+          [
+            0.532103215491831,
+            -1.7152505847120516
+          ],
+          [
+            0.532103215491831,
+            -1.6447494152879483
+          ],
+          [
+            0.29450321549183106,
+            -1.6447494152879483
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_display_shelf.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_display_shelf_shelf_5_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          -0.053303,
+          1.18964,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          -0.17210278450816893,
+          1.18964,
+          -1.7152505847120516
+        ],
+        "bounds_max_m": [
+          0.06549721549183107,
+          1.291963279103641,
+          -1.6447494152879483
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.17210278450816893,
+            -1.7152505847120516
+          ],
+          [
+            0.06549721549183107,
+            -1.7152505847120516
+          ],
+          [
+            0.06549721549183107,
+            -1.6447494152879483
+          ],
+          [
+            -0.17210278450816893,
+            -1.6447494152879483
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_display_shelf.shelf_5_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_display_shelf_shelf_5_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          0.413303,
+          1.18964,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          0.29450321549183106,
+          1.18964,
+          -1.7152505847120516
+        ],
+        "bounds_max_m": [
+          0.532103215491831,
+          1.291963279103641,
+          -1.6447494152879483
+        ],
+        "physical_footprint_xz": [
+          [
+            0.29450321549183106,
+            -1.7152505847120516
+          ],
+          [
+            0.532103215491831,
+            -1.7152505847120516
+          ],
+          [
+            0.532103215491831,
+            -1.6447494152879483
+          ],
+          [
+            0.29450321549183106,
+            -1.6447494152879483
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_display_shelf.shelf_5_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_1_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.433653,
+          0.158961,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.3148532154918313,
+          0.158961,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.5524532154918314,
+          0.26128427910364105,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.3148532154918313,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6047494152879482
+          ],
+          [
+            3.3148532154918313,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_1_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_1_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.866347,
+          0.158961,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.7475472154918315,
+          0.158961,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.9851472154918315,
+          0.26128427910364105,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.7475472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6047494152879482
+          ],
+          [
+            3.7475472154918315,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_1_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_2_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.433653,
+          0.664678,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.3148532154918313,
+          0.664678,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.5524532154918314,
+          0.767001279103641,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.3148532154918313,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6047494152879482
+          ],
+          [
+            3.3148532154918313,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_2_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_2_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.866347,
+          0.664678,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.7475472154918315,
+          0.664678,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.9851472154918315,
+          0.767001279103641,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.7475472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6047494152879482
+          ],
+          [
+            3.7475472154918315,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_2_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_3_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.433653,
+          1.171033,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.3148532154918313,
+          1.171033,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.5524532154918314,
+          1.273356279103641,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.3148532154918313,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6047494152879482
+          ],
+          [
+            3.3148532154918313,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_3_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.866347,
+          1.171033,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.7475472154918315,
+          1.171033,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.9851472154918315,
+          1.273356279103641,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.7475472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6047494152879482
+          ],
+          [
+            3.7475472154918315,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_4_1",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.433653,
+          1.677247,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.3148532154918313,
+          1.677247,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.5524532154918314,
+          1.779570279103641,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.3148532154918313,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6752505847120516
+          ],
+          [
+            3.5524532154918314,
+            -1.6047494152879482
+          ],
+          [
+            3.3148532154918313,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_library_r3_bookshelf_b_shelf_4_2",
+        "asset_id": "book_encyclopedia_set_01",
+        "room_local_xyz": [
+          3.866347,
+          1.677247,
+          -1.64
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.43098366216395156,
+        "bounds_min_m": [
+          3.7475472154918315,
+          1.677247,
+          -1.6752505847120516
+        ],
+        "bounds_max_m": [
+          3.9851472154918315,
+          1.779570279103641,
+          -1.6047494152879482
+        ],
+        "physical_footprint_xz": [
+          [
+            3.7475472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6752505847120516
+          ],
+          [
+            3.9851472154918315,
+            -1.6047494152879482
+          ],
+          [
+            3.7475472154918315,
+            -1.6047494152879482
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "library_r3_bookshelf_b.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      }
+    ],
+    "artifact/R3": [
+      {
+        "instance_id": "conditional_artifact_r3_shelf_a_shelf_3_1",
+        "asset_id": "generic_miniature_ray_replica",
+        "room_local_xyz": [
+          -6.433303,
+          0.43845,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.479290000000001,
+          0.43845,
+          -1.7148109999999999
+        ],
+        "bounds_max_m": [
+          -6.387316,
+          0.515104,
+          -1.645189
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.479290000000001,
+            -1.7148109999999999
+          ],
+          [
+            -6.387316,
+            -1.7148109999999999
+          ],
+          [
+            -6.387316,
+            -1.645189
+          ],
+          [
+            -6.479290000000001,
+            -1.645189
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_a.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_a_shelf_3_2",
+        "asset_id": "generic_small_wooden_elephant",
+        "room_local_xyz": [
+          -5.966697,
+          0.43845,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.021288,
+          0.43845,
+          -1.708778
+        ],
+        "bounds_max_m": [
+          -5.912106,
+          0.534601,
+          -1.651222
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.021288,
+            -1.708778
+          ],
+          [
+            -5.912106,
+            -1.708778
+          ],
+          [
+            -5.912106,
+            -1.651222
+          ],
+          [
+            -6.021288,
+            -1.651222
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_a.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_a_shelf_4_1",
+        "asset_id": "generic_toy_cat",
+        "room_local_xyz": [
+          -6.433303,
+          0.814706,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.456268000000001,
+          0.81471,
+          -1.7175829999999999
+        ],
+        "bounds_max_m": [
+          -6.410296000000001,
+          0.899773,
+          -1.6424649999999998
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.456268000000001,
+            -1.7175829999999999
+          ],
+          [
+            -6.410296000000001,
+            -1.7175829999999999
+          ],
+          [
+            -6.410296000000001,
+            -1.6424649999999998
+          ],
+          [
+            -6.456268000000001,
+            -1.6424649999999998
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_a.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_a_shelf_4_2",
+        "asset_id": "generic_toy_whale",
+        "room_local_xyz": [
+          -5.966697,
+          0.814706,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -5.999109,
+          0.8147040000000001,
+          -1.727506
+        ],
+        "bounds_max_m": [
+          -5.934285,
+          0.889332,
+          -1.632496
+        ],
+        "physical_footprint_xz": [
+          [
+            -5.999109,
+            -1.727506
+          ],
+          [
+            -5.934285,
+            -1.727506
+          ],
+          [
+            -5.934285,
+            -1.632496
+          ],
+          [
+            -5.999109,
+            -1.632496
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_a.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_a_shelf_5_1",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          -6.433303,
+          1.18964,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -6.4544760000000005,
+          1.189689,
+          -1.717617
+        ],
+        "bounds_max_m": [
+          -6.412223,
+          1.234776,
+          -1.642472
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.4544760000000005,
+            -1.717617
+          ],
+          [
+            -6.412223,
+            -1.717617
+          ],
+          [
+            -6.412223,
+            -1.642472
+          ],
+          [
+            -6.4544760000000005,
+            -1.642472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_a.shelf_5_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_a_shelf_5_2",
+        "asset_id": "brass_vase_03",
+        "room_local_xyz": [
+          -5.966697,
+          1.18964,
+          -1.68
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8783793900254032,
+        "bounds_min_m": [
+          -6.002931028217938,
+          1.18964,
+          -1.7162340282179378
+        ],
+        "bounds_max_m": [
+          -5.930462971782062,
+          1.36564,
+          -1.643765971782062
+        ],
+        "physical_footprint_xz": [
+          [
+            -6.002931028217938,
+            -1.7162340282179378
+          ],
+          [
+            -5.930462971782062,
+            -1.7162340282179378
+          ],
+          [
+            -5.930462971782062,
+            -1.643765971782062
+          ],
+          [
+            -6.002931028217938,
+            -1.643765971782062
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_a.shelf_5_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_1_1",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -0.966347,
+          0.158961,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -1.015347,
+          0.158961,
+          -1.6367500000000001
+        ],
+        "bounds_max_m": [
+          -0.9173469999999999,
+          0.21096099999999998,
+          -1.56325
+        ],
+        "physical_footprint_xz": [
+          [
+            -1.015347,
+            -1.6367500000000001
+          ],
+          [
+            -0.9173469999999999,
+            -1.6367500000000001
+          ],
+          [
+            -0.9173469999999999,
+            -1.56325
+          ],
+          [
+            -1.015347,
+            -1.56325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_1_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_1_2",
+        "asset_id": "generic_miniature_ray_replica",
+        "room_local_xyz": [
+          -0.533653,
+          0.158961,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.57964,
+          0.158961,
+          -1.634811
+        ],
+        "bounds_max_m": [
+          -0.48766600000000004,
+          0.235615,
+          -1.5651890000000002
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.57964,
+            -1.634811
+          ],
+          [
+            -0.48766600000000004,
+            -1.634811
+          ],
+          [
+            -0.48766600000000004,
+            -1.5651890000000002
+          ],
+          [
+            -0.57964,
+            -1.5651890000000002
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_1_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_2_1",
+        "asset_id": "generic_small_wooden_elephant",
+        "room_local_xyz": [
+          -0.966347,
+          0.664678,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -1.020938,
+          0.664678,
+          -1.628778
+        ],
+        "bounds_max_m": [
+          -0.911756,
+          0.760829,
+          -1.5712220000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            -1.020938,
+            -1.628778
+          ],
+          [
+            -0.911756,
+            -1.628778
+          ],
+          [
+            -0.911756,
+            -1.5712220000000001
+          ],
+          [
+            -1.020938,
+            -1.5712220000000001
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_2_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_2_2",
+        "asset_id": "generic_toy_cat",
+        "room_local_xyz": [
+          -0.533653,
+          0.664678,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.5566180000000001,
+          0.664682,
+          -1.637583
+        ],
+        "bounds_max_m": [
+          -0.510646,
+          0.749745,
+          -1.562465
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.5566180000000001,
+            -1.637583
+          ],
+          [
+            -0.510646,
+            -1.637583
+          ],
+          [
+            -0.510646,
+            -1.562465
+          ],
+          [
+            -0.5566180000000001,
+            -1.562465
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_2_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_3_1",
+        "asset_id": "generic_toy_whale",
+        "room_local_xyz": [
+          -0.966347,
+          1.171033,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.998759,
+          1.171031,
+          -1.6475060000000001
+        ],
+        "bounds_max_m": [
+          -0.933935,
+          1.245659,
+          -1.552496
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.998759,
+            -1.6475060000000001
+          ],
+          [
+            -0.933935,
+            -1.6475060000000001
+          ],
+          [
+            -0.933935,
+            -1.552496
+          ],
+          [
+            -0.998759,
+            -1.552496
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_3_2",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          -0.533653,
+          1.171033,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.554826,
+          1.171082,
+          -1.637617
+        ],
+        "bounds_max_m": [
+          -0.5125730000000001,
+          1.216169,
+          -1.562472
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.554826,
+            -1.637617
+          ],
+          [
+            -0.5125730000000001,
+            -1.637617
+          ],
+          [
+            -0.5125730000000001,
+            -1.562472
+          ],
+          [
+            -0.554826,
+            -1.562472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_4_1",
+        "asset_id": "brass_vase_03",
+        "room_local_xyz": [
+          -0.966347,
+          1.677247,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8783793900254032,
+        "bounds_min_m": [
+          -1.002581028217938,
+          1.677247,
+          -1.636234028217938
+        ],
+        "bounds_max_m": [
+          -0.9301129717820621,
+          1.8532469999999999,
+          -1.5637659717820622
+        ],
+        "physical_footprint_xz": [
+          [
+            -1.002581028217938,
+            -1.636234028217938
+          ],
+          [
+            -0.9301129717820621,
+            -1.636234028217938
+          ],
+          [
+            -0.9301129717820621,
+            -1.5637659717820622
+          ],
+          [
+            -1.002581028217938,
+            -1.5637659717820622
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_b_shelf_4_2",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -0.533653,
+          1.677247,
+          -1.6
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -0.5826530000000001,
+          1.677247,
+          -1.6367500000000001
+        ],
+        "bounds_max_m": [
+          -0.48465300000000006,
+          1.729247,
+          -1.56325
+        ],
+        "physical_footprint_xz": [
+          [
+            -0.5826530000000001,
+            -1.6367500000000001
+          ],
+          [
+            -0.48465300000000006,
+            -1.6367500000000001
+          ],
+          [
+            -0.48465300000000006,
+            -1.56325
+          ],
+          [
+            -0.5826530000000001,
+            -1.56325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_b.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_1_1",
+        "asset_id": "generic_miniature_ray_replica",
+        "room_local_xyz": [
+          -4.057322,
+          0.127227,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.103309,
+          0.127227,
+          -1.584811
+        ],
+        "bounds_max_m": [
+          -4.011335,
+          0.203881,
+          -1.5151890000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.103309,
+            -1.584811
+          ],
+          [
+            -4.011335,
+            -1.584811
+          ],
+          [
+            -4.011335,
+            -1.5151890000000001
+          ],
+          [
+            -4.103309,
+            -1.5151890000000001
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_1_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_1_2",
+        "asset_id": "generic_small_wooden_elephant",
+        "room_local_xyz": [
+          -3.542678,
+          0.127227,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -3.597269,
+          0.127227,
+          -1.578778
+        ],
+        "bounds_max_m": [
+          -3.488087,
+          0.22337800000000002,
+          -1.521222
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.597269,
+            -1.578778
+          ],
+          [
+            -3.488087,
+            -1.578778
+          ],
+          [
+            -3.488087,
+            -1.521222
+          ],
+          [
+            -3.597269,
+            -1.521222
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_1_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_2_1",
+        "asset_id": "generic_toy_cat",
+        "room_local_xyz": [
+          -4.057322,
+          0.397284,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.080287,
+          0.39728800000000003,
+          -1.587583
+        ],
+        "bounds_max_m": [
+          -4.034315,
+          0.48235100000000003,
+          -1.512465
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.080287,
+            -1.587583
+          ],
+          [
+            -4.034315,
+            -1.587583
+          ],
+          [
+            -4.034315,
+            -1.512465
+          ],
+          [
+            -4.080287,
+            -1.512465
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_2_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_2_2",
+        "asset_id": "generic_toy_whale",
+        "room_local_xyz": [
+          -3.542678,
+          0.397284,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -3.57509,
+          0.397282,
+          -1.597506
+        ],
+        "bounds_max_m": [
+          -3.510266,
+          0.47191000000000005,
+          -1.502496
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.57509,
+            -1.597506
+          ],
+          [
+            -3.510266,
+            -1.597506
+          ],
+          [
+            -3.510266,
+            -1.502496
+          ],
+          [
+            -3.57509,
+            -1.502496
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_2_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_3_1",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          -4.057322,
+          0.66297,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.078495,
+          0.6630189999999999,
+          -1.587617
+        ],
+        "bounds_max_m": [
+          -4.036242,
+          0.7081059999999999,
+          -1.512472
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.078495,
+            -1.587617
+          ],
+          [
+            -4.036242,
+            -1.587617
+          ],
+          [
+            -4.036242,
+            -1.512472
+          ],
+          [
+            -4.078495,
+            -1.512472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_3_2",
+        "asset_id": "brass_vase_03",
+        "room_local_xyz": [
+          -3.542678,
+          0.66297,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8783793900254032,
+        "bounds_min_m": [
+          -3.578912028217938,
+          0.66297,
+          -1.586234028217938
+        ],
+        "bounds_max_m": [
+          -3.506443971782062,
+          0.83897,
+          -1.5137659717820622
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.578912028217938,
+            -1.586234028217938
+          ],
+          [
+            -3.506443971782062,
+            -1.586234028217938
+          ],
+          [
+            -3.506443971782062,
+            -1.5137659717820622
+          ],
+          [
+            -3.578912028217938,
+            -1.5137659717820622
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_4_1",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          -4.057322,
+          0.93743,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.1063220000000005,
+          0.93743,
+          -1.58675
+        ],
+        "bounds_max_m": [
+          -4.008322,
+          0.98943,
+          -1.51325
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.1063220000000005,
+            -1.58675
+          ],
+          [
+            -4.008322,
+            -1.58675
+          ],
+          [
+            -4.008322,
+            -1.51325
+          ],
+          [
+            -4.1063220000000005,
+            -1.51325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_4_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_4_2",
+        "asset_id": "generic_miniature_ray_replica",
+        "room_local_xyz": [
+          -3.542678,
+          0.93743,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -3.5886649999999998,
+          0.93743,
+          -1.584811
+        ],
+        "bounds_max_m": [
+          -3.496691,
+          1.014084,
+          -1.5151890000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.5886649999999998,
+            -1.584811
+          ],
+          [
+            -3.496691,
+            -1.584811
+          ],
+          [
+            -3.496691,
+            -1.5151890000000001
+          ],
+          [
+            -3.5886649999999998,
+            -1.5151890000000001
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_4_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_5_1",
+        "asset_id": "generic_small_wooden_elephant",
+        "room_local_xyz": [
+          -4.057322,
+          1.237697,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.111913,
+          1.237697,
+          -1.578778
+        ],
+        "bounds_max_m": [
+          -4.002731,
+          1.3338480000000001,
+          -1.521222
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.111913,
+            -1.578778
+          ],
+          [
+            -4.002731,
+            -1.578778
+          ],
+          [
+            -4.002731,
+            -1.521222
+          ],
+          [
+            -4.111913,
+            -1.521222
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_5_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_5_2",
+        "asset_id": "generic_toy_cat",
+        "room_local_xyz": [
+          -3.542678,
+          1.237697,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -3.565643,
+          1.237701,
+          -1.587583
+        ],
+        "bounds_max_m": [
+          -3.5196709999999998,
+          1.322764,
+          -1.512465
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.565643,
+            -1.587583
+          ],
+          [
+            -3.5196709999999998,
+            -1.587583
+          ],
+          [
+            -3.5196709999999998,
+            -1.512465
+          ],
+          [
+            -3.565643,
+            -1.512465
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_5_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_6_1",
+        "asset_id": "generic_toy_whale",
+        "room_local_xyz": [
+          -4.057322,
+          1.605214,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -4.089734,
+          1.6052119999999999,
+          -1.597506
+        ],
+        "bounds_max_m": [
+          -4.02491,
+          1.67984,
+          -1.502496
+        ],
+        "physical_footprint_xz": [
+          [
+            -4.089734,
+            -1.597506
+          ],
+          [
+            -4.02491,
+            -1.597506
+          ],
+          [
+            -4.02491,
+            -1.502496
+          ],
+          [
+            -4.089734,
+            -1.502496
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_6_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_c_shelf_6_2",
+        "asset_id": "generic_mini_compass",
+        "room_local_xyz": [
+          -3.542678,
+          1.605214,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          -3.563851,
+          1.6052629999999999,
+          -1.587617
+        ],
+        "bounds_max_m": [
+          -3.521598,
+          1.65035,
+          -1.512472
+        ],
+        "physical_footprint_xz": [
+          [
+            -3.563851,
+            -1.587617
+          ],
+          [
+            -3.521598,
+            -1.587617
+          ],
+          [
+            -3.521598,
+            -1.512472
+          ],
+          [
+            -3.563851,
+            -1.512472
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_c.shelf_6_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_d_shelf_1_1",
+        "asset_id": "brass_vase_03",
+        "room_local_xyz": [
+          3.59948,
+          0.455307,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 0.8783793900254032,
+        "bounds_min_m": [
+          3.5632459717820617,
+          0.455307,
+          -1.586234028217938
+        ],
+        "bounds_max_m": [
+          3.635714028217938,
+          0.6313070000000001,
+          -1.5137659717820622
+        ],
+        "physical_footprint_xz": [
+          [
+            3.5632459717820617,
+            -1.586234028217938
+          ],
+          [
+            3.635714028217938,
+            -1.586234028217938
+          ],
+          [
+            3.635714028217938,
+            -1.5137659717820622
+          ],
+          [
+            3.5632459717820617,
+            -1.5137659717820622
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_1_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_d_shelf_1_2",
+        "asset_id": "generic_closed_trinket_case",
+        "room_local_xyz": [
+          4.00052,
+          0.455307,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          3.95152,
+          0.455307,
+          -1.58675
+        ],
+        "bounds_max_m": [
+          4.04952,
+          0.5073070000000001,
+          -1.51325
+        ],
+        "physical_footprint_xz": [
+          [
+            3.95152,
+            -1.58675
+          ],
+          [
+            4.04952,
+            -1.58675
+          ],
+          [
+            4.04952,
+            -1.51325
+          ],
+          [
+            3.95152,
+            -1.51325
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_1_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_d_shelf_2_1",
+        "asset_id": "generic_miniature_ray_replica",
+        "room_local_xyz": [
+          3.59948,
+          0.945151,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          3.5534929999999996,
+          0.945151,
+          -1.584811
+        ],
+        "bounds_max_m": [
+          3.645467,
+          1.021805,
+          -1.5151890000000001
+        ],
+        "physical_footprint_xz": [
+          [
+            3.5534929999999996,
+            -1.584811
+          ],
+          [
+            3.645467,
+            -1.584811
+          ],
+          [
+            3.645467,
+            -1.5151890000000001
+          ],
+          [
+            3.5534929999999996,
+            -1.5151890000000001
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_2_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_d_shelf_2_2",
+        "asset_id": "generic_small_wooden_elephant",
+        "room_local_xyz": [
+          4.00052,
+          0.945151,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          3.945929,
+          0.945151,
+          -1.578778
+        ],
+        "bounds_max_m": [
+          4.055111,
+          1.041302,
+          -1.521222
+        ],
+        "physical_footprint_xz": [
+          [
+            3.945929,
+            -1.578778
+          ],
+          [
+            4.055111,
+            -1.578778
+          ],
+          [
+            4.055111,
+            -1.521222
+          ],
+          [
+            3.945929,
+            -1.521222
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_2_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_d_shelf_3_1",
+        "asset_id": "generic_toy_cat",
+        "room_local_xyz": [
+          3.59948,
+          1.435102,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          3.5765149999999997,
+          1.435106,
+          -1.587583
+        ],
+        "bounds_max_m": [
+          3.6224869999999996,
+          1.520169,
+          -1.512465
+        ],
+        "physical_footprint_xz": [
+          [
+            3.5765149999999997,
+            -1.587583
+          ],
+          [
+            3.6224869999999996,
+            -1.587583
+          ],
+          [
+            3.6224869999999996,
+            -1.512465
+          ],
+          [
+            3.5765149999999997,
+            -1.512465
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_3_1",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      },
+      {
+        "instance_id": "conditional_artifact_r3_shelf_d_shelf_3_2",
+        "asset_id": "generic_toy_whale",
+        "room_local_xyz": [
+          4.00052,
+          1.435102,
+          -1.55
+        ],
+        "rotation_deg_xyz": [
+          0,
+          0,
+          0
+        ],
+        "uniform_scale": 1,
+        "bounds_min_m": [
+          3.968108,
+          1.4351,
+          -1.597506
+        ],
+        "bounds_max_m": [
+          4.032932,
+          1.5097280000000002,
+          -1.502496
+        ],
+        "physical_footprint_xz": [
+          [
+            3.968108,
+            -1.597506
+          ],
+          [
+            4.032932,
+            -1.597506
+          ],
+          [
+            4.032932,
+            -1.502496
+          ],
+          [
+            3.968108,
+            -1.502496
+          ]
+        ],
+        "placement_policy": "supported",
+        "support_ref": "",
+        "decor_slot_id": "artifact_r3_shelf_d.shelf_3_2",
+        "station_candidates": [],
+        "support_slots": [],
+        "owner_approved": false
+      }
+    ]
+  }
+}

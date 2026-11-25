@@ -12,11 +12,14 @@ var enabled:=false
 var sketchfab_common_enabled:=false
 var live_physical_objects:=false
 var packed_model_cache:Dictionary={}
+var packed_model_lru:Array=[]
+const MODEL_CACHE_LIMIT:=48
 var error:=""
 func initialize(force_review:bool=false) -> bool:
 	layouts.clear()
 	surfaces.clear()
 	packed_model_cache.clear()
+	packed_model_lru.clear()
 	enabled=false
 	sketchfab_common_enabled=false
 	error=""
@@ -91,6 +94,11 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->
 	if scene==null:
 		scene=ResourceLoader.load(_asset_path(asset),"PackedScene") as PackedScene
 		if scene!=null:packed_model_cache[asset]=scene
+	if scene!=null:
+		packed_model_lru.erase(asset)
+		packed_model_lru.append(asset)
+		while packed_model_lru.size()>MODEL_CACHE_LIMIT:
+			packed_model_cache.erase(packed_model_lru.pop_front())
 	if scene==null:
 		return null
 	var wrapper:=Node3D.new()
@@ -107,6 +115,10 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true)->
 	wrapper.set_meta("physical_xyz",position)
 	wrapper.set_meta("owner_approved",false)
 	parent.add_child(wrapper)
+	if str(item.get("decor_slot_id",""))!="":
+		wrapper.set_meta("decor_slot_id",str(item["decor_slot_id"]))
+		wrapper.set_meta("room_id",str(parent.get_meta("room_id","")))
+		wrapper.add_to_group("canonical_conditional_dressing")
 	wrapper.add_child(scene.instantiate())
 	if animate and asset=="sketchfab_fireplace_animated":
 		for player in wrapper.find_children("*","AnimationPlayer",true,false):
@@ -392,6 +404,7 @@ func _apply_social_interiors()->void:
 	_apply_library_gallery_dressing()
 	_apply_media_work_dressing()
 	_apply_guest_display_dressing()
+	_apply_conditional_shelf_dressing()
 
 func _apply_library_gallery_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)
@@ -440,3 +453,16 @@ func _apply_guest_display_dressing()->void:
 		if valid:
 			layouts[key]["instances"].append_array(doc["additions"][key])
 			layouts[key]["guest_display_revision"]="GUEST_DISPLAY_V1"
+
+func _apply_conditional_shelf_dressing()->void:
+	var file:=FileAccess.open("res://data/canonical_conditional_shelves_20261125.json",FileAccess.READ)
+	if file==null:return
+	var doc=JSON.parse_string(file.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)):return
+	for key in doc.get("additions",{}):
+		if not layouts.has(key):continue
+		for item in doc["additions"][key]:
+			if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):
+				push_error("Missing conditional shelf model "+str(item["asset_id"]))
+				continue
+			layouts[key]["instances"].append(item)
