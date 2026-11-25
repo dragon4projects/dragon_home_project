@@ -267,8 +267,12 @@ func apply_architecture_layouts()->void:
 	var items:Array=[]
 	for raw in hearth.get("instances",[]):
 		var item:Dictionary=raw.duplicate(true)
-		if str(item["instance_id"])=="common_r3_p3_plant":
+		if str(item["instance_id"]) in ["common_r3_p3_plant","common_r3_p3_sconce_1"]:
 			continue
+		if str(item["instance_id"])=="common_r3_animated_hearth_review":
+			# Uniform model scale, measured footprint and floor pivot stay in sync.
+			_resize_floor_item(item,1.72)
+			_translate_hearth_item(item,-0.35,-1.02)
 		if str(item["instance_id"])=="common_r3_p3_fur_right":
 			# Translate the rug AND the physical contact point; keep aisle open.
 			var delta:=Vector3(5.36,0.0,0.62)
@@ -283,17 +287,18 @@ func apply_architecture_layouts()->void:
 				station["room_local_xyz"]=[float(p[0])+delta.x,float(p[1]),float(p[2])+delta.z]
 		items.append(item)
 	# Teea normalized to 0.35 x 0.045161 x 0.274673 m at floor pivot.
-	# Provisional 4.5x scale (1.575 m long) makes the sleeping animal legible beside the sofa.
+	# Owner requested a larger dragon. Review scale 6.5x = 2.275 m long.
+	# Refit the nook and its approach points rather than enlarging the mesh alone.
 	# Exact AABB, no pickup, no AI, no animation, no sleeping timer.
 	items.append({
 		"instance_id":"canonical_hearth_sleeping_dragon",
 		"asset_id":"owner_sleeping_dragon",
-		"room_local_xyz":[6.30,0.0,-1.30],
+		"room_local_xyz":[6.02,0.0,-0.98],
 		"rotation_deg_xyz":[0,0,0],
-		"uniform_scale":4.5,
-		"bounds_min_m":[5.5125,0.0,-1.91801425],
-		"bounds_max_m":[7.0875,0.2032245,-0.68198575],
-		"physical_footprint_xz":[[5.5125,-1.91801425],[7.0875,-1.91801425],[7.0875,-0.68198575],[5.5125,-0.68198575]],
+		"uniform_scale":6.5,
+		"bounds_min_m":[4.8825,0.0,-1.87268725],
+		"bounds_max_m":[7.1575,0.2935465,-0.08731275],
+		"physical_footprint_xz":[[4.8825,-1.87268725],[7.1575,-1.87268725],[7.1575,-0.08731275],[4.8825,-0.08731275]],
 		"placement_policy":"floor_fixed","station_candidates":[],"support_slots":[],
 		"support_ref":null,"owner_approved":false
 	})
@@ -324,6 +329,19 @@ func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->i
 		count+=1
 	return count
 
+func _resize_floor_item(item:Dictionary,factor:float)->void:
+	# For station-free measured floor models only. Never scale contact data
+	# or supported children independently of their carrier.
+	var origin:Array=item["room_local_xyz"]
+	for field in ["bounds_min_m","bounds_max_m"]:
+		var p:Array=item[field]
+		for axis in range(3):
+			p[axis]=float(origin[axis])+(float(p[axis])-float(origin[axis]))*factor
+	for p in item.get("physical_footprint_xz",[]):
+		p[0]=float(origin[0])+(float(p[0])-float(origin[0]))*factor
+		p[1]=float(origin[2])+(float(p[1])-float(origin[2]))*factor
+	item["uniform_scale"]=float(item.get("uniform_scale",1.0))*factor
+
 func _translate_hearth_item(item:Dictionary,x:float,z:float)->void:
 	# Move physical bounds, rendered pivot and every world-space contact together.
 	# Local measured seat data stays unchanged; cups/chess/table supports are pinned.
@@ -353,10 +371,10 @@ func _apply_hearth_interior_v1(hearth:Dictionary)->void:
 	# Three islands: coffee/conversation, hearth, sleeping-dragon nook.
 	var positions:Dictionary={
 		"common_r3_p3_fur_left":Vector2(-1.64,0.23),
-		"common_r3_p3_fur_right":Vector2(6.45,0.65),
+		"common_r3_p3_fur_right":Vector2(3.05,0.65),
 		"common_r3_p3_chair_center":Vector2(-2.60,-0.08),
 		"common_r3_p3_sofa_right":Vector2(3.95,-1.37),
-		"common_r3_p3_chair_right":Vector2(5.80,-0.04),
+		"common_r3_p3_chair_right":Vector2(5.90,0.72),
 		"common_r3_p3_rug_right":Vector2(4.45,0.08)
 	}
 	var extra:Dictionary={}
@@ -398,7 +416,14 @@ func _apply_social_interiors()->void:
 	for row in data["variants"]:
 		layouts[str(row["variant_id"])]=row
 	var hearth:Dictionary=layouts["common/R3"]
-	hearth["instances"].append_array(data["hearth_additions"])
+	for raw in data["hearth_additions"]:
+		var item:Dictionary=raw.duplicate(true)
+		# The larger fireplace needs the former bar corner. Translate the
+		# entire supported ensemble together; keep object IDs and heights.
+		if str(item["instance_id"]) in ["hearth_bar_counter","hearth_bar_bottles","hearth_bar_goblets"]:
+			var origin:Array=item["room_local_xyz"]
+			_translate_hearth_item(item,float(origin[0])+0.65,float(origin[2]))
+		hearth["instances"].append(item)
 	hearth["runtime_review_geometry_revision"]=str(data["revision"])
 	layouts["common/R3"]=hearth
 	_apply_library_gallery_dressing()

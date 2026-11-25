@@ -52,7 +52,15 @@ func run()->void:
 	assert(approaches==10,str(approaches))
 	assert(nav.segment_clear(room,Vector2(-7.12,1.5),Vector2(7.12,1.5)))
 	assert(not nav.clear(room,Vector2(6.30,-1.30)))
-	assert(by_id["canonical_hearth_sleeping_dragon"]["station_candidates"].is_empty())
+	var dragon_item:Dictionary=by_id["canonical_hearth_sleeping_dragon"]
+	assert(dragon_item["station_candidates"].is_empty())
+	assert(is_equal_approx(float(dragon_item["bounds_max_m"][0])-float(dragon_item["bounds_min_m"][0]),2.275))
+	var fire_item:Dictionary=by_id["common_r3_animated_hearth_review"]
+	assert(float(fire_item["bounds_max_m"][1])>=2.90 and float(fire_item["bounds_max_m"][1])<=3.0)
+	assert(is_equal_approx(float(fire_item["uniform_scale"]),1.72))
+	assert(is_equal_approx(float(fire_item["bounds_min_m"][1]),0.0))
+	assert(is_equal_approx(float(by_id["hearth_bar_bottles"]["bounds_min_m"][1]),float(by_id["hearth_bar_counter"]["bounds_max_m"][1])))
+	assert(is_equal_approx(float(by_id["hearth_bar_goblets"]["bounds_min_m"][1]),float(by_id["hearth_bar_counter"]["bounds_max_m"][1])))
 	assert(by_id["common_r3_p3_shared_coffee_table"]["room_local_xyz"]==[-4.65,0.025,0.6])
 	assert(by_id["common_r3_p3_mug_red"]["room_local_xyz"]==[-4.99,0.49152,0.6])
 	assert(by_id["common_r3_p3_mug_blue"]["room_local_xyz"]==[-4.33,0.49152,0.6])

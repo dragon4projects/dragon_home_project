@@ -57,6 +57,7 @@ var creature_root: Node3D
 var creature_nodes: Dictionary = {}
 var creature_labels: Dictionary = {}
 var creature_animations: Dictionary = {}
+var creature_hover_clock:float=0.0
 var object_root: Node3D
 var book_root:Node3D
 var book_nodes:Dictionary={}
@@ -1668,7 +1669,12 @@ func make_creatures() -> void:
 		creature_labels[str(creature_id)] = label
 	update_creatures()
 
+func _creature_hover_height(bank_id:String,clock:float)->float:
+	# The magical sphere alone floats; all ordinary animals remain grounded.
+	return 0.95+0.10*sin(clock*2.0) if bank_id=="npc_ai_magic_sphere" else 0.0
+
 func update_creatures(delta: float = 0.0) -> void:
+	creature_hover_clock=fposmod(creature_hover_clock+maxf(0.0,delta),TAU)
 	var active_count := 0
 	for creature_id in world.creatures:
 		if bool(world.creatures[creature_id].get("active",false)):
@@ -1690,16 +1696,22 @@ func update_creatures(delta: float = 0.0) -> void:
 		var creature_z: float = float(creature.get("z",0.25))
 		var creature_x:float=depth_visual_x(
 			str(creature.get("room_id","")),float(creature.get("x",0.0)),creature_z)
-		anchor.position = Vector3(creature_x,y,creature_z)
+		var bank_id := str(creature.get("bank_id",""))
+		anchor.position = Vector3(creature_x,y+_creature_hover_height(bank_id,creature_hover_clock),creature_z)
 		var creature_scale:=depth_visual_scale(creature_z)
 		anchor.scale=Vector3.ONE*creature_scale
 		var body: Sprite3D = anchor.get_node_or_null("Body")
-		var bank_id := str(creature.get("bank_id",""))
 		if body != null and bank_id != "" and body.has_meta("candidate_bank"):
 			var moving_left := str(creature.get("moving_axis","right")) == "left"
 			var state := ("WALK_LEFT" if moving_left else "WALK_RIGHT") if (
 				str(creature.get("phase","idle")) == "travel") else (
 				"IDLE_LEFT" if moving_left else "IDLE_RIGHT")
+			# No floor-walking cycle for a floating entity. Use directional idle
+			# art while its horizontal travel remains owned by simulation.
+			if bank_id=="npc_ai_magic_sphere":
+				state="IDLE_LEFT" if moving_left else "IDLE_RIGHT"
+				if asset_banks.creature_frame_count(bank_id,state)==0:
+					state="IDLE_RIGHT"
 			var anim: Dictionary = creature_animations.get(creature_id,
 				{"state":state,"frame":0,"elapsed":0.0})
 			if str(anim.get("state","")) != state:

@@ -43,6 +43,11 @@ func run()->void:
 	var overview:Node3D=group.get_node("Layer_OverviewCues")
 	assert(overview.find_child("canonical_hearth_sleeping_dragon",true,false)!=null)
 	assert(not overview.visible)
+	# The same visual offset applies while stationary or travelling; physical
+	# room floor/route/ownership remain untouched.
+	assert(scene._creature_hover_height("npc_ai_magic_sphere",0.0)>0.8)
+	assert(scene._creature_hover_height("npc_ai_magic_sphere",PI/4.0)>scene._creature_hover_height("npc_ai_magic_sphere",0.0))
+	assert(scene._creature_hover_height("npc_rat",PI/4.0)==0.0)
 	var nav=scene.life.candidate_navigation
 	assert(not nav.clear(room,Vector2(6.45,-1.40)))
 	assert(nav.clear(room,Vector2(6.45,1.50)))
