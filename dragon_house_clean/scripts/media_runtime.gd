@@ -901,7 +901,7 @@ func reserved_book_ids(ignore_actor:String="")->Dictionary:
 		var a:Dictionary=world.residents[id]
 		if str(id)==ignore_actor or not bool(a.get("active",false)):
 			continue
-		if str(a.get("book_task_stage",""))=="fetch" and str(a.get("phase",""))=="travel":
+		if bool(a.get("autonomy_enabled",true)) and str(a.get("book_task_stage",""))=="fetch" and str(a.get("phase",""))=="travel":
 			var book_id:String=str(a.get("book_task_id",""))
 			if book_id!="":ids[book_id]=str(id)
 	return ids
