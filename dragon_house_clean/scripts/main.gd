@@ -2291,7 +2291,12 @@ func desired_actor_animation(actor: Dictionary) -> String:
 				if str(actor.get("station_kind","")) in ["seat","floor_rest"]:
 					requested = str(actor.get("station_pose_hint","SLEEP"))
 			"TALK_PAIR":
-				requested = "RELAXED_SIT" if str(actor.get("station_kind","")) == "seat" else "TALK"
+				# A participant waiting for the other arrival is not talking.
+				var session:Dictionary=life._pair_session(actor)
+				if str(session.get("phase",""))=="active":
+					requested = "RELAXED_SIT" if str(actor.get("station_kind","")) == "seat" else "TALK"
+				else:
+					requested = "IDLE_S"
 			"GET_COFFEE": requested = "DRINK"
 			"WATCH_FILM", "LISTEN_MUSIC":
 				requested = str(actor.get("station_pose_hint","VIEW")) if (
