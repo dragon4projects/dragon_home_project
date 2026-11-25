@@ -40,7 +40,7 @@ func reserved(ignore:String="")->Dictionary:
 	for id in world.residents:
 		if str(id)==ignore:continue
 		var actor:Dictionary=world.residents[id]
-		if str(actor.get("cup_task_stage","")) in ["fetch","hold"]:
+		if str(actor.get("cup_task_stage","")) in ["fetch","serve","hold"]:
 			result[str(actor.get("cup_task_id",""))]=str(id)
 	return result
 
@@ -83,6 +83,8 @@ func pickup(actor:Dictionary)->bool:
 		return false
 	if reserved(str(actor["id"])).has(id):
 		return false
+	if beverages.enabled and not beverages.can_use(id,str(actor["id"])):return false
+	if beverages.enabled and not at_approach(actor,world.room_by_id(room_id),slot["approach"]):return false
 	var owner:String=str(obj.get("canonical_owner_id",""))
 	if owner!="" and owner!=str(actor["id"]):
 		return false
@@ -96,6 +98,42 @@ func put_back(actor:Dictionary)->bool:
 	var room:Dictionary=world.room_by_id(room_id)
 	for slot in nav.cup_slots(room):
 		if str(slot["id"])==str(actor["cup_task_slot"]):
+			if beverages.enabled and not at_approach(actor,room,slot["approach"]):return false
 			var pos:Array=slot["xyz"]
 			return world.place_physical_object(id,str(actor["id"]),room_id,"PLACED",[float(pos[0]),float(pos[2])])
 	return false
+
+func at_approach(actor:Dictionary,room:Dictionary,offset:Vector2)->bool:
+	if room.is_empty():return false
+	var local:Vector2=world.room_world_to_local(room,Vector3(float(actor.get("x",0)),float(actor.get("visual_y",0)),float(actor.get("z",0))))
+	return local.distance_to(offset)<0.10
+
+func service_sources(actor:Dictionary,room:Dictionary)->Array:
+	var result:Array=[]
+	var occupied:Dictionary={}
+	for other in world.residents.values():
+		if str(other.get("id",""))!=str(actor["id"]) and str(other.get("cup_task_room",""))==str(room["id"]):
+			var sid:String=str(other.get("drink_service_id",""))
+			if sid!="":occupied[sid]=true
+	var row:Dictionary=nav.layouts.get(nav.key(room),{})
+	var items:Dictionary={}
+	for item in row.get("instances",[]):items[str(item["instance_id"])]=item
+	for item in row.get("instances",[]):
+		var id:String=str(item["instance_id"])
+		var source:=""
+		var support:Dictionary=item
+		if str(item["asset_id"])=="sketchfab_steampunk_coffee_machine":
+			source="COFFEE_NOOK"
+			support=items.get(str(item.get("support_ref","")).get_slice(".",0),{})
+		elif id.ends_with("_bar_counter"):
+			source="BAR"
+		if source=="" or support.is_empty() or occupied.has(id):continue
+		var lo:Array=support["bounds_min_m"]
+		var hi:Array=support["bounds_max_m"]
+		var pos:Array=item["room_local_xyz"]
+		var approach_options:Array=[Vector2(float(pos[0]),float(hi[2])+0.38),Vector2(float(lo[0])-0.38,float(pos[2])),Vector2(float(hi[0])+0.38,float(pos[2])),Vector2(float(pos[0]),float(lo[2])-0.38)]
+		for approach in approach_options:
+			if nav.clear(room,approach):
+				result.append({"id":id,"type":source,"approach":approach})
+				break
+	return result

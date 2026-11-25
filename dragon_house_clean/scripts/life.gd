@@ -551,7 +551,7 @@ func reconcile_concrete_media() -> int:
 
 func _assign(actor: Dictionary, task: Dictionary) -> void:
 	if candidate_navigation!=null:
-		if str(actor.get("cup_task_stage",""))=="hold" and str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==str(actor["id"]):
+		if str(actor.get("cup_task_stage","")) in ["hold","serve"] and str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==str(actor["id"]):
 			return
 		if actor.has("held_book") and actor.has("book_task_stage"):
 			return
@@ -890,9 +890,9 @@ func _move(actor: Dictionary, delta: float) -> void:
 					actor["cup_task_stage"]="hold"
 					actor["until"]=clock+12.0
 					if candidate_cups.beverages.enabled:
-						if candidate_cups.beverages.fill_or_resume(str(actor["cup_task_id"]),actor_id,str(actor.get("drink_context","GENERIC")),daypart()):
-							actor["drink_sips_left"]=rng.randi_range(1,4)
-							actor["until"]=clock+3.0
+						if _route_drink_source(actor):
+							return
+						actor["until"]=clock+3.0
 				else:
 					_clear_cup_task(actor)
 					stations.release(actor)
@@ -900,6 +900,11 @@ func _move(actor: Dictionary, delta: float) -> void:
 					actor["until"]=clock+3.0
 				moving_ids.erase(actor_id)
 				_schedule_actor(actor,"CUP_ARRIVAL")
+				return
+			if candidate_navigation!=null and str(actor.get("cup_task_stage",""))=="serve":
+				_complete_drink_service(actor)
+				moving_ids.erase(actor_id)
+				_schedule_actor(actor,"DRINK_SERVICE_ARRIVAL")
 				return
 			if candidate_navigation!=null and str(actor.get("book_task_stage",""))=="read":
 				actor["book_read_started"]=clock
@@ -931,6 +936,12 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 			partner.erase("partner_id")
 			wake_actor(partner_id,"PAIR_RELEASED")
 	if candidate_navigation!=null and actor.has("cup_task_stage"):
+		if str(actor.get("cup_task_stage",""))=="serve":
+			# A restored/replanned non-travelling service route cannot pour
+			# from an arbitrary position. Validate or fail and return the cup.
+			_complete_drink_service(actor)
+			_schedule_actor(actor,"DRINK_SERVICE_RECOVERY")
+			return
 		if str(actor.get("cup_task_stage",""))=="hold":
 			if str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==id:
 				if candidate_cups.beverages.enabled and int(actor.get("drink_sips_left",0))>0:
@@ -940,6 +951,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 						actor["until"]=clock+3.0
 						_schedule_actor(actor,"DRINK_SIP")
 						return
+				actor.erase("drink_service_id")
 				if not candidate_cups.put_back(actor):
 					if _route_cup_return(actor):
 						return
@@ -1155,7 +1167,7 @@ func _continue_book_task(actor:Dictionary)->bool:
 	return false
 
 func _clear_cup_task(actor:Dictionary)->void:
-	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage","drink_sips_left","drink_context"]:
+	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage","drink_sips_left","drink_context","drink_service_id","drink_service_plan","drink_service_approach"]:
 		actor.erase(key)
 
 func _begin_cup_task(actor:Dictionary,room:Dictionary)->void:
@@ -1186,6 +1198,61 @@ func _begin_cup_task(actor:Dictionary,room:Dictionary)->void:
 		_schedule_actor(actor,"CUP_ROUTE")
 		return
 	actor["until"]=clock+8.0
+
+func _route_drink_source(actor:Dictionary)->bool:
+	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
+	var id:String=str(actor["id"])
+	var cup_id:String=str(actor["cup_task_id"])
+	var beverage=candidate_cups.beverages
+	if float(beverage.content(cup_id).get("remaining_ml",0))>0:
+		if beverage.can_use(cup_id,id):actor["drink_sips_left"]=rng.randi_range(1,4)
+		return false
+	var sources:Array=candidate_cups.service_sources(actor,room)
+	var available:Array=[]
+	for source in sources:
+		if not available.has(source["type"]):available.append(source["type"])
+	var choice:Dictionary=beverage.plan_new(cup_id,id,str(actor.get("drink_context","GENERIC")),daypart(),available)
+	if choice.is_empty():return false
+	for source in sources:
+		if str(source["type"])!=str(choice["source_station"]):continue
+		var approach:Vector2=source["approach"]
+		var points:Array=locomotion.build_waypoints(world,actor,[str(room["id"])],"GET_COFFEE",approach)
+		if points.is_empty():continue
+		actor["drink_service_id"]=str(source["id"])
+		actor["drink_service_plan"]=choice
+		actor["drink_service_approach"]=[approach.x,approach.y]
+		actor["cup_task_stage"]="serve"
+		actor["waypoints"]=points
+		actor["waypoint_index"]=0
+		actor["phase"]="travel"
+		actor["until"]=clock+15.0
+		moving_ids[id]=true
+		_schedule_actor(actor,"DRINK_SERVICE_ROUTE")
+		return true
+	beverage.fail_choice(choice,"NO_REACHABLE_SOURCE")
+	return false
+
+func _complete_drink_service(actor:Dictionary)->void:
+	var choice:Dictionary=actor.get("drink_service_plan",{})
+	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
+	var raw:Array=actor.get("drink_service_approach",[])
+	var valid:bool=raw.size()==2 and str(actor.get("room_id",""))==str(room.get("id",""))
+	var beverage=candidate_cups.beverages
+	if valid:
+		valid=candidate_cups.at_approach(actor,room,Vector2(float(raw[0]),float(raw[1])))
+	if valid:
+		valid=beverage.fill_planned(str(actor.get("cup_task_id","")),str(actor["id"]),choice)
+	if valid:
+		actor["drink_sips_left"]=rng.randi_range(1,4)
+	else:
+		beverage.fail_choice(choice,"SERVICE_NOT_REACHED")
+		actor["drink_sips_left"]=0
+		actor.erase("drink_service_id")
+	actor.erase("drink_service_plan")
+	actor.erase("drink_service_approach")
+	actor["cup_task_stage"]="hold"
+	actor["phase"]="perform"
+	actor["until"]=clock+3.0
 
 func _route_cup_return(actor:Dictionary)->bool:
 	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
@@ -1300,7 +1367,14 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 		actor["book_task_stage"]="return_wait"
 	else:
 		_clear_book_task(actor)
-	if str(actor.get("cup_task_stage",""))!="hold":
+	if str(actor.get("cup_task_stage",""))=="serve":
+		candidate_cups.beverages.fail_choice(actor.get("drink_service_plan",{}),"ROUTE_REPLAN")
+		actor.erase("drink_service_plan")
+		actor.erase("drink_service_approach")
+		actor.erase("drink_service_id")
+		actor["cup_task_stage"]="hold"
+		actor["drink_sips_left"]=0
+	elif str(actor.get("cup_task_stage",""))!="hold":
 		_clear_cup_task(actor)
 	actor["phase"]="idle"
 	actor["waypoints"]=[]

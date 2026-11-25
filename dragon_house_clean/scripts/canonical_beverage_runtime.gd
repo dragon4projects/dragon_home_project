@@ -115,12 +115,8 @@ func can_use(cup_id:String,actor_id:String)->bool:
 	var c:=content(cup_id)
 	return c.is_empty() or float(c.get("remaining_ml",0))<=0 or str(c.get("consumer_id",""))==actor_id
 
-func fill_or_resume(cup_id:String,actor_id:String,context:String,daypart:String,available:Array=["COFFEE_NOOK","BAR"],forced:String="")->bool:
-	if not enabled:return false
-	var obj:Dictionary=world.physical_object(cup_id)
-	if str(obj.get("current_holder_id",""))!=actor_id or str(obj.get("viewer_category",""))!="cups":return false
-	var existing:=content(cup_id)
-	if float(existing.get("remaining_ml",0))>0:return can_use(cup_id,actor_id)
+func plan_new(cup_id:String,actor_id:String,context:String,daypart:String,available:Array,forced:String="")->Dictionary:
+	if not enabled or available.is_empty():return {}
 	context=str(forced_contexts.get(actor_id,context))
 	forced=str(forced_drinks.get(actor_id,forced))
 	var prefs:=history(actor_id)
@@ -129,18 +125,44 @@ func fill_or_resume(cup_id:String,actor_id:String,context:String,daypart:String,
 	_store()["rng_state"]=str(rng.state)
 	var selected:=select_weighted(options,roll)
 	if forced!="":
+		selected={}
 		for row in options:
 			if str(row["drink_id"])==forced and float(row["final_weight"])>0:
 				selected=row
 				break
-	if selected.is_empty():return false
+	if selected.is_empty():return {}
 	var drink:Dictionary=by_id[selected["drink_id"]]
 	var serial:int=int(_store()["serial"])+1
 	_store()["serial"]=serial
 	var choice:=selected.duplicate(true)
-	choice.merge({"timestamp":Time.get_datetime_string_from_system(true),"resident_id":actor_id,"event_context":context,"time_bucket":daypart,"cup_id":cup_id,"selected_drink_id":drink["drink_id"],"choice_instance_id":"DRINK_%d"%serial,"top_candidates":_top(options,10),"rng_roll":roll,"first_sip_success":false,"history_count_after":int(selected["history_count_before"])},true)
-	_store()["cups"][cup_id]={"cup_id":cup_id,"content_id":drink["drink_id"],"display_name":drink["display_name_ru"],"serving_ml":drink["default_serving_ml"],"remaining_ml":drink["default_serving_ml"],"temperature_class":drink["temperature"],"alcoholic":drink["alcoholic"],"technical_type":drink["technical_type"],"strength_class":drink["strength_class"],"consumer_id":actor_id,"choice_instance_id":choice["choice_instance_id"],"pending_choice":choice}
+	choice.merge({"timestamp":Time.get_datetime_string_from_system(true),"resident_id":actor_id,"event_context":context,"time_bucket":daypart,"cup_id":cup_id,"selected_drink_id":drink["drink_id"],"choice_instance_id":"DRINK_%d"%serial,"top_candidates":_top(options,10),"rng_roll":roll,"first_sip_success":false,"history_count_after":int(selected["history_count_before"]),"source_station":drink["source_station"]},true)
+	return choice
+
+func fill_planned(cup_id:String,actor_id:String,choice:Dictionary)->bool:
+	if not enabled or choice.is_empty():return false
+	var obj:Dictionary=world.physical_object(cup_id)
+	if str(obj.get("current_holder_id",""))!=actor_id or str(obj.get("viewer_category",""))!="cups":return false
+	if float(content(cup_id).get("remaining_ml",0))>0:return false
+	if str(choice.get("cup_id",""))!=cup_id or str(choice.get("resident_id",""))!=actor_id:return false
+	var drink:Dictionary=by_id.get(str(choice.get("selected_drink_id","")),{})
+	if drink.is_empty():return false
+	_store()["cups"][cup_id]={"cup_id":cup_id,"content_id":drink["drink_id"],"display_name":drink["display_name_ru"],"serving_ml":drink["default_serving_ml"],"remaining_ml":drink["default_serving_ml"],"temperature_class":drink["temperature"],"alcoholic":drink["alcoholic"],"technical_type":drink["technical_type"],"strength_class":drink["strength_class"],"consumer_id":actor_id,"choice_instance_id":choice["choice_instance_id"],"pending_choice":choice.duplicate(true)}
 	return true
+
+func fail_choice(choice:Dictionary,reason:String)->void:
+	if choice.is_empty():return
+	var row:=choice.duplicate(true)
+	row["first_sip_success"]=false
+	row["failure_reason"]=reason
+	_append_choice(row)
+
+func fill_or_resume(cup_id:String,actor_id:String,context:String,daypart:String,available:Array=["COFFEE_NOOK","BAR"],forced:String="")->bool:
+	if not enabled:return false
+	var obj:Dictionary=world.physical_object(cup_id)
+	if str(obj.get("current_holder_id",""))!=actor_id or str(obj.get("viewer_category",""))!="cups":return false
+	if float(content(cup_id).get("remaining_ml",0))>0:return can_use(cup_id,actor_id)
+	var choice:=plan_new(cup_id,actor_id,context,daypart,available,forced)
+	return fill_planned(cup_id,actor_id,choice)
 
 func _append_choice(row:Dictionary)->bool:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(LOG_PATH.get_base_dir()))

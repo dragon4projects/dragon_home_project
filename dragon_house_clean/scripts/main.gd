@@ -1798,7 +1798,7 @@ func update_physical_objects() -> void:
 				var content:Dictionary=life.candidate_cups.beverages.content(str(object_id))
 				var title:String=str(content.get("display_name",""))
 				if beverage_label.text!=title:beverage_label.text=title
-				beverage_label.visible=float(content.get("remaining_ml",0))>0 and zoom_current<44.0
+				beverage_label.visible=float(content.get("remaining_ml",0))>0
 		var holder_id := str(object.get("current_holder_id",""))
 		if holder_id != "":
 			var holder: Dictionary = world._physical_actor(holder_id)
