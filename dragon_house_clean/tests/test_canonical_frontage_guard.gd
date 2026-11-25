@@ -45,6 +45,10 @@ func _initialize()->void:
 		assert(absf(next.x-center.x)<=2.4)
 		traffic.publish("MANJKA",next)
 		a=next
+	var overlap_target:=a+Vector3(0.10,0,0)
+	traffic.positions={"MANJKA":a,"RES_02":overlap_target}
+	if traffic._safe_room(outsider,a,overlap_target):
+		assert(traffic.step(outsider,a,overlap_target,overlap_target,0.1,"candidate_path")==overlap_target)
 	traffic.finish()
 	print("CANONICAL_FRONTAGE_GUARD_PASS private_transit=true bounded_empty_rooms=true monotone_egress=true")
 	quit(0)

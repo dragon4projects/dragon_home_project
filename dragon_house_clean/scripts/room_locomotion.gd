@@ -203,5 +203,8 @@ func _candidate_waypoints(world,actor:Dictionary,room_path:Array,intent:String,o
 		return []
 	# A same-position destination is still a station, not an endless idle path.
 	if not travel.is_empty():
-		travel[-1]["kind"]="station"
+		if world.canonical_house_seed and str(travel[-1]["kind"])=="lift":
+			travel.append(waypoint(target.x,target.y,target.z,str(previous["id"]),"station"))
+		else:
+			travel[-1]["kind"]="station"
 	return travel

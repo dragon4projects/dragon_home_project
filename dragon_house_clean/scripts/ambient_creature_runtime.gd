@@ -7,6 +7,7 @@ const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 var world
 var rng := RandomNumberGenerator.new()
 var locomotion := RoomLocomotion.new()
+var canonical_lifts=null
 var max_actions_per_tick := 1
 const DECISION_MIN := 6.0
 const DECISION_MAX := 18.0
@@ -116,6 +117,18 @@ func advance_travel(creature_id: String, delta: float) -> bool:
 		float(creature.get("x",0.0)),
 		float(creature.get("visual_y",float(creature.get("level",0))*world.FLOOR_H)),
 		float(creature.get("z",0.25)))
+	if canonical_lifts!=null and str(point.get("kind",""))=="lift":
+		var lift_move:Dictionary=canonical_lifts.target(creature,at,target)
+		if bool(lift_move.get("wait",false)):
+			creature["moving_axis"]="wait"
+			return true
+		target=lift_move["target"]
+		if bool(lift_move.get("boarding",false)):
+			var aligned:=at.move_toward(target,2.65*minf(delta,0.15))
+			creature["x"]=aligned.x
+			creature["z"]=aligned.z
+			creature["moving_axis"]="depth"
+			return true
 	var speed := 2.65
 	if str(point.get("kind","")) == "lift":
 		speed = 1.55
@@ -131,6 +144,8 @@ func advance_travel(creature_id: String, delta: float) -> bool:
 		if not current.is_empty():
 			creature["level"] = int(current["level"])
 		creature["waypoint_index"] = index + 1
+		if canonical_lifts!=null and str(point.get("kind",""))=="lift" and (index+1>=points.size() or str(points[index+1]["kind"])!="lift"):
+			canonical_lifts.release(creature)
 		if int(creature["waypoint_index"]) >= points.size():
 			var origin := str(creature.get("route_origin_room_id",""))
 			var destination := str(creature.get("route_target_room_id",creature.get("room_id","")))

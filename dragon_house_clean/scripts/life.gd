@@ -2,6 +2,7 @@ extends RefCounted
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
 const CandidateCupRuntime = preload("res://scripts/teea008_cup_runtime.gd")
 const CandidateTraffic = preload("res://scripts/teea008_traffic.gd")
+const CanonicalLiftCapacity = preload("res://scripts/canonical_lift_capacity.gd")
 const RoomLocomotion = preload("res://scripts/room_locomotion.gd")
 const RoomStations = preload("res://scripts/room_stations.gd")
 const AmbientCreatureRuntime = preload("res://scripts/ambient_creature_runtime.gd")
@@ -35,6 +36,7 @@ var planner_graph_rebuilds:int=0
 var planner_sample_usec:Array=[]
 var candidate_cups=CandidateCupRuntime.new()
 var candidate_traffic=CandidateTraffic.new()
+var canonical_lifts=CanonicalLiftCapacity.new()
 # Deterministic QA may inject a daypart; production uses the system clock.
 var daypart_override: String=""
 var last_cleanup_wall_time := 0
@@ -129,6 +131,9 @@ func setup(p_world) -> void:
 	media_runtime.candidate_navigation=candidate_navigation
 	media_runtime.setup(world)
 	creature_runtime.setup(world)
+	if world.canonical_house_seed:
+		canonical_lifts.setup(world)
+		creature_runtime.canonical_lifts=canonical_lifts
 	rng.seed = 814223
 	clock = world.sim_clock
 	stations.reconcile(world)
@@ -808,6 +813,20 @@ func _move(actor: Dictionary, delta: float) -> void:
 	var at := Vector3(float(actor.get("x",0.0)),
 		float(actor.get("visual_y", float(actor.get("level",0)) * world.FLOOR_H)),
 		float(actor.get("z",0.0)))
+	if world.canonical_house_seed and str(point["kind"])=="lift":
+		var lift_move:Dictionary=canonical_lifts.target(actor,at,authored_target)
+		if bool(lift_move.get("wait",false)):
+			actor["moving_axis"]="wait"
+			return
+		var lift_target:Vector3=lift_move["target"]
+		if bool(lift_move.get("boarding",false)):
+			var aligned:=at.move_toward(lift_target,2.25*minf(delta,0.15))
+			actor["x"]=aligned.x
+			actor["z"]=aligned.z
+			actor["moving_axis"]="depth"
+			return
+		authored_target=lift_target
+		target=lift_target
 	var adjustment:Dictionary=_travel_adjustment(actor,at,target,point)
 	if bool(adjustment.get("wait",false)):
 		actor["moving_axis"]="wait"
@@ -823,7 +842,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 	actor["x"] = next.x
 	actor["visual_y"] = next.y
 	actor["z"] = next.z
-	actor["moving_axis"] = "up" if point["kind"] == "lift" else ("right" if next.x > at.x else "left" if next.x < at.x else "depth")
+	actor["moving_axis"] = ("up" if next.y>=at.y else "down") if point["kind"] == "lift" else ("right" if next.x > at.x else "left" if next.x < at.x else "depth")
 	if next.distance_squared_to(at)<0.000001:
 		actor["moving_axis"]="wait"
 	if candidate_navigation!=null and candidate_traffic.enabled and point["kind"]!="lift" and next.distance_to(authored_target)>0.025:
@@ -838,6 +857,8 @@ func _move(actor: Dictionary, delta: float) -> void:
 		if not current_room.is_empty():
 			actor["level"] = current_room["level"]
 		actor["waypoint_index"] = idx + 1
+		if world.canonical_house_seed and str(point["kind"])=="lift" and (idx+1>=waypoints.size() or str(waypoints[idx+1]["kind"])!="lift"):
+			canonical_lifts.release(actor)
 		if actor.has("teea008_geometry_replan_pending") and candidate_navigation!=null:
 			if _finish_review_geometry_replan(actor,false):
 				return
@@ -935,6 +956,8 @@ func tick(delta: float) -> void:
 		if candidate_navigation!=null:media_runtime.reconcile_book_slots()
 		reconcile_concrete_media()
 		_record("Дом вернул книги на назначенные места: %d" % books_restored)
+	if world.canonical_house_seed:
+		canonical_lifts.sync()
 	creature_runtime.tick(delta)
 	if candidate_navigation!=null:
 		for creature in world.creatures.values():

@@ -1,0 +1,9 @@
+# Architecture owner visual acceptance — 2026-11-25
+
+Owner tested the macOS build f7f9b3d42d17cda2b15376843ae7b3f4eccc2245 and supplied seven screenshots. Visual architecture accepted in principle, macOS performance tolerable. Final owner decisions: characters may pass through one another, no pedestrian collision avoidance; each lift holds six riders, two per each of three depth lanes; finish architecture then proceed to interiors. Immutable room topology unchanged.
+
+Verified preceding hardening run 45599003101: 1430 exact route parity cases, frontage guard, 600 s life, 129768 furniture clearance samples, 1243 routes, zero path failures, six shaft traversals. Planner p95 4290 us (baseline 6605 us), max 6683 us (baseline 15031 us), worst tick 13794 us (baseline 25940 us). These are Linux CI observations, not a controlled hardware benchmark.
+
+Implementation: canonical actor-to-actor collision avoidance disabled, authored geometry and private frontage guard retained; station/object reservations remain exclusive. Six shared rider slots per shaft (two X positions, three Z lanes); resident and ambient actor admission use same controller, seventh waits, slot survives reload, legacy in-flight actors drain without teleport. A shaft is still a continuous connector, not a single synchronized animated cabin. No new rooms or modifications to seed geometry. Dedicated tests and fresh runtime gate required.
+
+Observed visual follow-ups: some seated heads clipped by furniture/scene geometry, one mostly invisible actor in workshop (feet visible), sparse rooms/empty shelving/black wall apertures. Exact causes unverified. Do not count as architectural topology failures; diagnose rendering with reproducible pose/camera before changing assets. Interior staging follows architecture acceptance, no unauthorized archive-only asset publication. 

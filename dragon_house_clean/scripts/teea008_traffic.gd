@@ -19,6 +19,9 @@ func begin(model,navigation)->void:
 	world=model
 	nav=navigation
 	positions.clear()
+	if world.canonical_house_seed:
+		enabled=true
+		return
 	for id in world.residents:
 		var actor:Dictionary=world.residents[id]
 		if bool(actor.get("active",false)):
@@ -32,7 +35,7 @@ func finish()->void:
 	nav=null
 
 func publish(id:String,at:Vector3)->void:
-	if enabled:
+	if enabled and not world.canonical_house_seed:
 		positions[id]=at
 
 func _safe_peer(id:String,a:Vector3,b:Vector3)->bool:
@@ -99,6 +102,14 @@ func step(actor:Dictionary,a:Vector3,target:Vector3,direct:Vector3,distance:floa
 	if absf(direct.y-a.y)>0.001 or kind=="lift":
 		return direct
 	if a.distance_squared_to(direct)<EPS*EPS:return direct
+	if world.canonical_house_seed:
+		# Owner-approved: characters may overlap. Only authored geometry,
+		# privacy and station reservations constrain movement.
+		checked+=1
+		if kind=="connector_in" or _safe_room(actor,a,direct):
+			return direct
+		waits+=1
+		return a
 	if _safe_peer(id,a,direct) and (kind=="connector_in" or _safe_room(actor,a,direct)):
 		_record(id,a,direct)
 		return direct

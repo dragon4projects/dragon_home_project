@@ -70,6 +70,11 @@ func run()->void:
 	# to spontaneous activity. This uses actual mover and authored waypoints,
 	# not just graph reachability. It does not claim simultaneous cabin safety.
 	var traversals:=0
+	print("CANONICAL_LIFT_CAPACITY_METRICS ",life.canonical_lifts.metrics())
+	assert(life.canonical_lifts.peak<=6)
+	assert(life.candidate_traffic.detours==0)
+	life.canonical_lifts.occupied.clear()
+	life.canonical_lifts.legacy.clear()
 	for shaft in [-7,0,7]:
 		for direction in [1,-1]:
 			var floor_order:Array=[-2,-1,0,1,2,3] if direction==1 else [3,2,1,0,-1,-2]
@@ -79,7 +84,7 @@ func run()->void:
 			var first:Dictionary=world.room_by_id(str(route[0]))
 			var center:Vector3=world.room_center_pos(first)
 			var actor:Dictionary=world.residents["RES_01"].duplicate(true)
-			for key in ["cup_task_stage","book_task_stage","held_book","station_contact","teea008_geometry_replan_pending"]:
+			for key in ["cup_task_stage","book_task_stage","held_book","station_contact","teea008_geometry_replan_pending","canonical_lift_slot","canonical_lift_boarded"]:
 				actor.erase(key)
 			actor.merge({"room_id":route[0],"level":first["level"],"x":center.x,"visual_y":center.y,"z":0.0,"phase":"travel"},true)
 			var waypoints:Array=life.locomotion.build_waypoints(world,actor,route,"PURPOSEFUL_EXPLORE",Vector2.ZERO)
