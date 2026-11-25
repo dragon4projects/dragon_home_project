@@ -41,5 +41,21 @@ func run()->void:
 				assert(ResourceLoader.exists("res://"+str(frame),"Texture2D"),str(frame))
 		banks+=1
 	assert(banks==27)
-	print("TEEA008_PACK_AUDIT_PASS assets=",count," layouts=33 media=32 pose_frames=",verified," actor_banks=",banks)
+	var sketchfab:=read_dict("res://data/asset_proposals/SKETCHFAB_20261125/asset_index.json")
+	var new_models:=0
+	for item in sketchfab.get("items",[]):
+		var path:String="res://assets/sketchfab_review/decor_bank/"+str(item["asset_id"])+"/model.gltf"
+		assert(ResourceLoader.exists(path,"PackedScene"),path)
+		new_models+=1
+	assert(new_models==6)
+	var delta:=read_dict("res://data/sketchfab_common_review.json")
+	assert(str(delta.get("variant_id",""))=="common/R3" and delta.get("instances",[]).size()==3)
+	var hands:=read_dict("res://data/teea008_hand_contacts_review.json")
+	assert(hands.get("profiles",{}).size()==27)
+	for id in hands["profiles"]:
+		var hand:Dictionary=hands["profiles"][id]
+		var path:String="res://"+str(hand["path"])
+		assert(str(proof["frames"].get(path,""))==str(hand["sha256"]),id)
+		assert(hand["hand_px"].size()==2)
+	print("TEEA008_PACK_AUDIT_PASS assets=",count," sketchfab=",new_models," layouts=33 media=32 pose_frames=",verified," hand_contacts=27 actor_banks=",banks)
 	quit(0)

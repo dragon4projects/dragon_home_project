@@ -1,0 +1,439 @@
+{
+  "schema": 1,
+  "owner_approved": false,
+  "state": "IDLE_S",
+  "profiles": {
+    "RES_01": {
+      "path": "assets/residents/RES_01/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "f0bf3d63e215b86937bf1925805aa0ceb982c61a0887d7865c05b76b6965a7fe",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_01",
+      "hand_px": [
+        214,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_02": {
+      "path": "assets/residents/RES_02/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "5b24947ba1dc398be10306d0c5b5fc3de50e22d4509d3a7c461796479870940c",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_01",
+      "hand_px": [
+        214,
+        324
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_03": {
+      "path": "assets/residents/RES_03/wardrobes/CITY/IDLE_S/0001.png",
+      "sha256": "62f7c44cd2aa1d0f17050278013e68865af67f384aada88057596d04162bb5da",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "CITY",
+      "appearance_profile": "VALENTA_07",
+      "hand_px": [
+        215,
+        311
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_04": {
+      "path": "assets/residents/RES_04/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "63bedb500e73ac45436fd4b1f228e14bf227daacae86e8ce03a669152e5e3bad",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_02",
+      "hand_px": [
+        214,
+        321
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_05": {
+      "path": "assets/residents/RES_05/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "a2cda152a6e0ec7aabf7c0b35f89ab364003e42a1f3c0a22803fc45eafb06d1b",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_08",
+      "hand_px": [
+        211,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_06": {
+      "path": "assets/residents/RES_06/wardrobes/CITY/IDLE_S/0001.png",
+      "sha256": "c620d40cdd72d917378174a7d734a384f5e4e13829832ec02c70530125153b8d",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "CITY",
+      "appearance_profile": "HELGA_02",
+      "hand_px": [
+        213,
+        316
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_07": {
+      "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "9e40480031cda36b1499fe9c9f1794348c12ebcf33e8170d8bc756c96b65c538",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "EXISTING_EVMOCHKA",
+      "hand_px": [
+        284,
+        317
+      ],
+      "side": "right",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_08": {
+      "path": "assets/residents/RES_08/wardrobes/CITY/IDLE_S/0001.png",
+      "sha256": "97077cdbb815ee05a037cbd96bbb1edae5b37c9838730addcde5947a7a2cd3d7",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "CITY",
+      "appearance_profile": "HELGA_07",
+      "hand_px": [
+        214,
+        314
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_09": {
+      "path": "assets/residents/RES_09/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "eb19ea579cc5d6e94a4dc31407c3a3bf9da5c0cfb1b329a3232103739a420e06",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_03",
+      "hand_px": [
+        215,
+        324
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_10": {
+      "path": "assets/residents/RES_10/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "091b741363995bd42a197414fd46dca89ee3027c5f60496c70e738f367d1118e",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_04",
+      "hand_px": [
+        212,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_11": {
+      "path": "assets/residents/RES_11/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "7695b13e73b4747ddd36360569c12b4a9f0f5a100daeebfb0bf6ccdbe8c0d779",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_02",
+      "hand_px": [
+        216,
+        324
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_12": {
+      "path": "assets/residents/RES_12/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "04f5a98b8db294b929b92e1504bb813aec60f080f58f7a17b0f20efaee691de3",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_06",
+      "hand_px": [
+        215,
+        321
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_13": {
+      "path": "assets/residents/RES_13/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "998c9cd73cb2b3dbcef81e5870104479849f5689a07a71cb1ad4770a6b2b5276",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "HELGA_05",
+      "hand_px": [
+        214,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_14": {
+      "path": "assets/residents/RES_14/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "12dc07e9617146da68d3befdeb46e0528d8750e2f09272e794714a6cb86e7c84",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_08",
+      "hand_px": [
+        216,
+        321
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_15": {
+      "path": "assets/residents/RES_15/wardrobes/CITY/IDLE_S/0001.png",
+      "sha256": "d8387a2fdc5f904f9fe35cfb8e93eecbb7a4cff2c863e7c98305fa3bc7de7ab3",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "CITY",
+      "appearance_profile": "VALENTA_04",
+      "hand_px": [
+        215,
+        316
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_16": {
+      "path": "assets/residents/RES_16/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "fd5a30d5e9b7f1032bf9f6ba2c009376be3b5c02603e5217ab59eb04949adb65",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "LISA_07",
+      "hand_px": [
+        214,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_17": {
+      "path": "assets/residents/RES_17/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "27d6fbc55450ec7abc1425c90bd67d67d6d4f665e861bebb4426d44e58936959",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "LISA_04",
+      "hand_px": [
+        214,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_18": {
+      "path": "assets/residents/RES_18/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "ea0c7983d0961f73463b5b69079c9f5702a88b41e53e92f9ff0702b85e6dd285",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_06",
+      "hand_px": [
+        215,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_19": {
+      "path": "assets/residents/RES_19/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "2e4c4699cbf601389720ff1d738567d7bd6760306b3c1233679bd287c0e1a956",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_05",
+      "hand_px": [
+        214,
+        321
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_20": {
+      "path": "assets/residents/RES_20/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "dfd8f9d4aa858e6b364a55c4639aa1c534bfc0b5e73765dedabe2707d27d1733",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "LISA_08",
+      "hand_px": [
+        214,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_21": {
+      "path": "assets/residents/RES_21/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "9702864d66cded4951c99c82941d0615db2c7a680498dad221af7070258d5ab6",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "VALENTA_05",
+      "hand_px": [
+        213,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_22": {
+      "path": "assets/residents/RES_22/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "3a1e551525d2a281cd639b795427a1d8afc2ca29ca60b0cbf4f0b956b95125cf",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_03",
+      "hand_px": [
+        214,
+        321
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_23": {
+      "path": "assets/residents/RES_23/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "5cd177ee97afcf70a0ba5444cfc56304a6b790949a38716a01a89f78e9511280",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "VALENTA_03",
+      "hand_px": [
+        211,
+        321
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "RES_24": {
+      "path": "assets/residents/RES_24/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "81668a56cab24bc086e1d7e20a4b747169084358f81555360e926819e8c6079a",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "LISA_01",
+      "hand_px": [
+        213,
+        316
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "NPC_VAMPIRE_GIRL": {
+      "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "0bda2282b93143aa96e8e7a4f1c1dbcaf7e07be96889195a9fe29a3a77795e61",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "NPC_VAMPIRE_GIRL",
+      "hand_px": [
+        214,
+        322
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "NPC_CENTAUR": {
+      "path": "assets/residents/NPC_CENTAUR/wardrobes/HOME/IDLE_S/0001.png",
+      "sha256": "ffdc00850cc5c266e205ff728f37a5f1a1641dc5a0c801cb0c645702bd0eddf4",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "HOME",
+      "appearance_profile": "NPC_CENTAUR",
+      "hand_px": [
+        214,
+        322
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    },
+    "NPC_GINGER_CAT_GUEST": {
+      "path": "assets/residents/NPC_GINGER_CAT_GUEST/wardrobes/SHORT/IDLE_S/0001.png",
+      "sha256": "5f3eb9dc8efef0c14a96de47887a099e9dec90d9cb0f14cb65162b5e66e05804",
+      "canvas": [
+        512,
+        512
+      ],
+      "wardrobe": "SHORT",
+      "appearance_profile": "NPC_GINGER_CAT_GUEST",
+      "hand_px": [
+        213,
+        319
+      ],
+      "side": "left",
+      "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
+    }
+  }
+}

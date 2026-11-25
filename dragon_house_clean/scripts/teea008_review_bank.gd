@@ -225,5 +225,6 @@ func _apply_sketchfab_common_delta()->void:
 			preserved.append(item)
 	row["preserve_existing_runtime_geometry"]=preserved
 	row["instances"].append_array(doc["instances"])
+	row["runtime_review_geometry_revision"]="SKETCHFAB_COMMON_R3_20261125_V1"
 	layouts["common/R3"]=row
 	sketchfab_common_enabled=true

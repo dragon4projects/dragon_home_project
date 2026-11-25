@@ -1,0 +1,59 @@
+name: TEEA008 live review clean checkout
+on:
+  push:
+    branches: [integration/teea008-sketchfab-common-20261125]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify TEEA008 and Sketchfab delivery from Git LFS
+        run: python3 dragon_house_clean/tools/verify_teea008_delivery.py
+      - name: Hydrate earlier review assets
+        run: |
+          set -euo pipefail
+          bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
+          find dragon_house_clean/assets/props -maxdepth 1 -type f -name '*.blend' -delete
+          python3 -m pip install --disable-pip-version-check --quiet pillow scipy
+          python3 dragon_house_clean/tools/build_room_visual_components_review.py
+      - name: Install Godot 4.7.2
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x /tmp/Godot_v4.7.2-stable_linux.x86_64
+      - name: Import all candidate resources
+        working-directory: dragon_house_clean
+        run: |
+          set -euo pipefail
+          timeout 900 /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --import > godot_teea008_import.log 2>&1
+          test "$(find assets/teea008_review/decor_bank -name model.gltf.import | wc -l)" -eq 243
+          test "$(find assets/sketchfab_review/decor_bank -name model.gltf.import | wc -l)" -eq 6
+          ! grep -Eq 'SCRIPT ERROR|Parse Error' godot_teea008_import.log
+      - name: Focused live-review regression suite
+        working-directory: dragon_house_clean
+        run: |
+          set -euo pipefail
+          for t in test_teea008_geometry_migration test_teea008_cup_route test_teea008_book_route test_teea008_artifact_support test_sketchfab_common_review test_sketchfab_common_scene test_teea008_seat_render test_teea008_hand_contact_scene test_teea008_traffic test_teea008_live_scene
+          do
+            echo "RUN $t" | tee -a godot_teea008_tests.log
+            XDG_DATA_HOME="$RUNNER_TEMP/qa-$t" timeout 180 /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
+            grep -q "_PASS" "$t.log"
+            ! grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' "$t.log"
+          done
+      - name: Upload QA logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TEEA008-live-review-logs
+          path: |
+            dragon_house_clean/godot_teea008_*.log
+            dragon_house_clean/test_*.log

@@ -119,6 +119,7 @@ const INTENTS := {
 
 func setup(p_world) -> void:
 	world = p_world
+	var previously_initialized:bool=bool(world.runtime_state.get("teea008_navigation_initialized",false))
 	if candidate_navigation!=null:
 		stations.candidate_navigation=candidate_navigation
 		locomotion.candidate_navigation=candidate_navigation
@@ -147,6 +148,8 @@ func setup(p_world) -> void:
 	active_ids.sort()
 	var saved_scheduler: Dictionary = world.runtime_state.get("life_scheduler",{})
 	life_scheduler.restore(saved_scheduler,active_ids,clock,idle_retry_seconds,3.0)
+	if candidate_navigation!=null:
+		_migrate_review_geometry(previously_initialized)
 	# Existing pre-scheduler saves retain their commitments. First wake only
 	# reconciles/schedules them; it does not cancel an unexpired action.
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
@@ -828,6 +831,9 @@ func _move(actor: Dictionary, delta: float) -> void:
 		if not current_room.is_empty():
 			actor["level"] = current_room["level"]
 		actor["waypoint_index"] = idx + 1
+		if actor.has("teea008_geometry_replan_pending") and candidate_navigation!=null:
+			if _finish_review_geometry_replan(actor,false):
+				return
 		if int(actor["waypoint_index"]) >= waypoints.size():
 			# Consume only the travel interval before switching need semantics.
 			var actor_id := str(actor.get("id",""))
@@ -923,6 +929,10 @@ func tick(delta: float) -> void:
 		reconcile_concrete_media()
 		_record("Дом вернул книги на назначенные места: %d" % books_restored)
 	creature_runtime.tick(delta)
+	if candidate_navigation!=null:
+		for creature in world.creatures.values():
+			if creature.has("teea008_geometry_replan_pending"):
+				_finish_review_geometry_replan(creature,true)
 	# Movement stays frame-driven, but only actors actually travelling are touched.
 	if candidate_navigation!=null and not moving_ids.is_empty():
 		candidate_traffic.begin(world,candidate_navigation)
@@ -1230,4 +1240,72 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 	actor["until"]=clock+2.0+float(id.hash()%7)*0.35
 	moving_ids.erase(id)
 	_schedule_actor(actor,"TRAFFIC_REPLAN")
+	return true
+
+func _migrate_review_geometry(previously_initialized:bool)->int:
+	var revision:String=str(candidate_navigation.layouts.get("common/R3",{}).get("runtime_review_geometry_revision",""))
+	if revision=="" or str(world.runtime_state.get("teea008_geometry_revision",""))==revision:
+		return 0
+	var affected:Dictionary={}
+	for room in world.rooms:
+		if candidate_navigation.key(room)=="common/R3":
+			affected[str(room["id"])]=true
+	var count:=0
+	if previously_initialized:
+		for is_creature in [false,true]:
+			var collection:Dictionary=world.creatures if is_creature else world.residents
+			for actor in collection.values():
+				if not bool(actor.get("active",false)):continue
+				var relevant:bool=affected.has(str(actor.get("room_id",""))) or affected.has(str(actor.get("station_room_id","")))
+				if not relevant and str(actor.get("phase",""))=="travel":
+					var points:Array=actor.get("waypoints",[])
+					for i in range(int(actor.get("waypoint_index",0)),points.size()):
+						if affected.has(str(points[i].get("room_id",""))):
+							relevant=true
+							break
+				if not relevant:continue
+				actor["teea008_geometry_replan_pending"]=revision
+				# A snapshot may be between floors. Keep that connector leg
+				# and defer invalidation to the next accessible floor waypoint.
+				_finish_review_geometry_replan(actor,is_creature)
+				count+=1
+	world.runtime_state["teea008_geometry_revision"]=revision
+	return count
+
+func _finish_review_geometry_replan(actor:Dictionary,is_creature:bool)->bool:
+	if not actor.has("teea008_geometry_replan_pending"):return false
+	var id:String=str(actor["id"])
+	var y:float=float(actor.get("visual_y",float(actor.get("level",0))*world.FLOOR_H))
+	var level:int=roundi(y/world.FLOOR_H)
+	if absf(y-float(level)*world.FLOOR_H)>0.05:return false
+	var at:=Vector3(float(actor.get("x",0)),y,float(actor.get("z",0)))
+	var room:Dictionary=world.get_room(roundi(at.x/world.MODULE_W),level)
+	if room.is_empty() or (is_creature and not world.public_cutaway_allowed(room)) or (not is_creature and not world.is_accessible(room,id)):
+		return false
+	var old:Vector3=at
+	if candidate_navigation.has_layout(room):
+		var local:Vector2=world.room_space.world_to_local(room,at)
+		if not candidate_navigation.clear(room,local):
+			var safe:Vector2=candidate_navigation.nearest_clear(room,local)
+			if not candidate_navigation.clear(room,safe):return false
+			var center:Vector3=world.room_center_pos(room)
+			at=Vector3(center.x+safe.x,center.y,safe.y)
+			actor["x"]=at.x
+			actor["z"]=at.z
+			actor["visual_y"]=at.y
+	var old_room:String=str(actor.get("room_id",""))
+	actor["room_id"]=str(room["id"])
+	actor["level"]=level
+	if is_creature:
+		actor["phase"]="idle"
+		actor["waypoints"]=[]
+		actor["waypoint_index"]=0
+		actor.erase("route_target_room_id")
+		actor.erase("route_origin_room_id")
+		actor["next_decision_at"]=clock+1.0
+	else:
+		if not _recover_traffic_stall(actor,at):return false
+	var revision:String=str(actor["teea008_geometry_replan_pending"])
+	actor.erase("teea008_geometry_replan_pending")
+	world._append_journal("TEEA008_REVIEW_GEOMETRY_MIGRATED",id,id,old_room,str(room["id"]),{"revision":revision,"from_xyz":[old.x,old.y,old.z],"to_xyz":[at.x,at.y,at.z],"relocated":old.distance_squared_to(at)>0.000001})
 	return true

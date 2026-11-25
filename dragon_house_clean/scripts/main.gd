@@ -1738,13 +1738,19 @@ func update_physical_objects() -> void:
 			anchor.scale=Vector3.ONE*held_scale
 			if teea008_live and str(object.get("viewer_category",""))=="cups":
 				# Actual cup mesh, not the unrelated cup baked into DRINK art.
+				anchor.rotation=Vector3.ZERO
 				anchor.position=Vector3(holder_x+0.24*held_scale,float(holder.get("visual_y",0.0))+0.92*held_scale,holder_z+0.16)
+				anchor.set_meta("hand_contact_status","UNCALIBRATED_MOVING_OR_NONMODEL")
+				_place_cup_at_verified_hand(anchor,holder)
 			continue
 		if str(object.get("state","")) == "STASHED":
 			# Hidden means hidden: the canonical location remains in world state,
 			# but the normal renderer and hover hit-test expose no visible copy.
 			anchor.visible = false
 			continue
+		if teea008_live and str(object.get("viewer_category",""))=="cups":
+			anchor.rotation=Vector3.ZERO
+			anchor.set_meta("hand_contact_status","NOT_HELD")
 		var room_id := str(object.get("current_room_id",""))
 		var room: Dictionary = world.room_by_id(room_id)
 		if not world.public_cutaway_allowed(room):
@@ -1895,7 +1901,17 @@ func update_residents(delta: float = 0.0) -> void:
 				var inst:Array=contact["instance_xyz"]
 				# Same transform as the real model wrapper, not the approach point.
 				actor_scale=depth_visual_scale(float(inst[2]))
-				actor_sprites[id].position=Vector3(c.x+float(pos[0])*actor_scale,c.y+float(inst[1])+(float(pos[1])-float(inst[1]))*actor_scale,float(inst[2])+(float(pos[2])-float(inst[2]))*actor_scale)
+				var physical_contact:=Vector3(c.x+float(pos[0])*actor_scale,c.y+float(inst[1])+(float(pos[1])-float(inst[1]))*actor_scale,float(inst[2])+(float(pos[2])-float(inst[2]))*actor_scale)
+				actor_sprites[id].position=physical_contact
+				# A flat sprite at the pelvis plane gets its entire legs cut by
+				# a deep cushion. Move only its render plane forward, along the
+				# camera ray, and preserve the projected contact and body scale.
+				# Other foreground objects still depth-test normally.
+				if contact.has("seat_front_z") and detailed_room_groups.has(str(room["id"])):
+					var front:float=float(inst[2])+(float(contact["seat_front_z"])-float(inst[2]))*actor_scale
+					var projected:Dictionary=_seat_render_projection(physical_contact,front,actor_scale)
+					actor_sprites[id].position=projected["position"]
+					actor_scale=float(projected["scale"])
 		actor_sprites[id].scale=Vector3.ONE*actor_scale
 		var actor_room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
 		# An accessible private owner room is still not a public cutaway.
@@ -3100,12 +3116,13 @@ func _process(delta: float) -> void:
 	# actor footprint paths are bound. Do not simulate against stale furniture.
 	if not teea008_review.enabled or teea008_live:
 		life.tick(delta)
+	# Seat projection must use the actual camera transform of this frame.
+	apply_camera(delta)
 	update_residents(delta)
 	update_creatures(delta)
 	update_physical_objects()
 	if teea008_live:
 		_update_physical_books()
-	apply_camera(delta)
 	save_timer += delta
 	if save_timer > 20.0:
 		world.save_world()
@@ -3324,3 +3341,48 @@ func _place_teea008_artifact(room_id:String,surface_id:String,item_id:String)->v
 	update_physical_objects()
 	_update_teea008_media_previews()
 	notice.text="Дом предмета назначен на измеренной опоре"
+
+func _seat_render_projection(contact:Vector3,front_z:float,base_scale:float)->Dictionary:
+	if camera==null or not camera.is_inside_tree():
+		return {"position":contact,"scale":base_scale}
+	var origin:Vector3=camera.global_position
+	var target_z:float=front_z+0.035
+	var depth:float=origin.z-contact.z
+	if depth<=0.1 or target_z<=contact.z or target_z>=origin.z-0.1:
+		return {"position":contact,"scale":base_scale}
+	var ratio:float=(origin.z-target_z)/depth
+	return {"position":origin+(contact-origin)*ratio,"scale":base_scale*ratio}
+
+func _place_cup_at_verified_hand(anchor:Node3D,holder:Dictionary)->bool:
+	var id:String=str(holder.get("id",""))
+	var animation:Dictionary=actor_animations.get(id,{})
+	if life.candidate_navigation==null or camera==null:return false
+	var contact:Dictionary=life.candidate_navigation.hand_contact(holder,str(animation.get("state","")),int(animation.get("frame",-1)))
+	if contact.is_empty():return false
+	var actor_node:Node3D=actor_sprites.get(id)
+	if not is_instance_valid(actor_node) or not actor_node.is_visible_in_tree():return false
+	var sprite:Sprite3D=actor_node.get_node_or_null("Body")
+	var pickup:Node3D=anchor.find_child("PICKUP_ANCHOR",true,false)
+	if sprite==null or sprite.texture==null or pickup==null:return false
+	var canvas:Array=contact["canvas"]
+	if sprite.texture.get_width()!=int(canvas[0]) or sprite.texture.get_height()!=int(canvas[1]):return false
+	var px:Array=contact["hand_px"]
+	# Fixed-Y billboard uses the camera's horizontal right axis. Project the
+	# marked source pixel into the rendered sprite plane, not a generic hip.
+	var right:Vector3=camera.global_transform.basis.x
+	right.y=0
+	right=right.normalized()
+	if right.length_squared()<0.99:return false
+	var facing:Vector3=right.cross(Vector3.UP).normalized()
+	var scale_value:float=actor_node.scale.x
+	var meters_per_pixel:float=sprite.pixel_size*scale_value
+	var hand:Vector3=sprite.global_position+right*(float(px[0])-float(canvas[0])*0.5)*meters_per_pixel+Vector3.UP*(float(canvas[1])*0.5-float(px[1]))*meters_per_pixel
+	var marker:Vector3=anchor.to_local(pickup.global_position)
+	var angle:float=atan2(facing.x,facing.z)+(PI if str(contact.get("side",""))=="right" else 0.0)
+	var cup_basis:=Basis(Vector3.UP,angle).scaled(Vector3.ONE*scale_value)
+	# A small camera-facing offset keeps the handle out of the flat sprite.
+	var target:Vector3=hand+facing*0.035*scale_value
+	anchor.global_transform=Transform3D(cup_basis,target-cup_basis*marker)
+	anchor.set_meta("hand_contact_status","IDLE_FRAME_MARKED")
+	anchor.set_meta("hand_contact_target",target)
+	return true

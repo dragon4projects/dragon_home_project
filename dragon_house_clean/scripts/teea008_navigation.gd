@@ -18,6 +18,7 @@ const PATH_CACHE_LIMIT:=1024
 const POSE_PATH:="res://data/teea008_pose_contacts_review.json"
 const CANVAS_HEIGHT:=2.45
 var pose_profiles:Dictionary={}
+var hand_profiles:Dictionary={}
 var static_spots:Dictionary={}
 var display_cache:Dictionary={}
 var cup_slot_cache:Dictionary={}
@@ -49,6 +50,25 @@ func configure(rows:Dictionary)->void:
 					if not _pose_source_valid(path,entry):
 						profile["states"].erase(state)
 				pose_profiles[id]=profile
+	hand_profiles.clear()
+	var hand_file:=FileAccess.open("res://data/teea008_hand_contacts_review.json",FileAccess.READ)
+	if hand_file!=null:
+		var hand_doc=JSON.parse_string(hand_file.get_as_text())
+		if typeof(hand_doc)==TYPE_DICTIONARY and not bool(hand_doc.get("owner_approved",true)) and str(hand_doc.get("state",""))=="IDLE_S":
+			for id in hand_doc.get("profiles",{}):
+				var record:Dictionary=hand_doc["profiles"][id]
+				var validated:Dictionary=pose_profiles.get(id,{}).get("states",{}).get("IDLE_S",{})
+				var point:Array=record.get("hand_px",[])
+				var canvas:Array=record.get("canvas",[])
+				if not validated.is_empty() and record.get("path","")==validated.get("path","") and record.get("sha256","")==validated.get("sha256","") and canvas==validated.get("canvas",[]) and point.size()==2 and canvas.size()==2 and float(point[0])>=0 and float(point[1])>=0 and float(point[0])<float(canvas[0]) and float(point[1])<float(canvas[1]):
+					hand_profiles[id]=record
+
+func hand_contact(actor:Dictionary,state:String,frame:int)->Dictionary:
+	if state!="IDLE_S" or frame!=0:return {}
+	var record:Dictionary=hand_profiles.get(str(actor.get("id","")),{})
+	if str(record.get("appearance_profile",""))!=str(actor.get("appearance_profile","")) or str(record.get("wardrobe",""))!=str(actor.get("visual_wardrobe","")):
+		return {}
+	return record
 
 func key(room:Dictionary)->String:
 	var kind:String=str(room.get("type",""))
@@ -324,7 +344,7 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 					spot["kind"]="work"
 					spot["pose_hint"]="USE"
 			elif kind=="seat":
-				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0)}
+				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0),"front_z":float(item["bounds_max_m"][2])}
 				var facing:Array=spot["candidate_contact"]["facing"]
 				if facing.size()==3 and float(facing[2])>0.5:
 					spot["kind"]="seat"
@@ -411,7 +431,10 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 		var foot_gap:float=float(anchor[1])-float(feet[1])-(float(bbox[3])-float(px[1]))*ratio
 		if absf(foot_gap)>0.15 or float(profile["contact_span_px"])*ratio>float(raw.get("width_m",0.0))+0.06:
 			return {}
-	return {"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":exclusive,"book_baked":bool(profile.get("book_baked",false)),"evidence":"VISUAL_ESTIMATE_REVIEW_ONLY"}
+	var result:Dictionary={"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":exclusive,"book_baked":bool(profile.get("book_baked",false)),"evidence":"VISUAL_ESTIMATE_REVIEW_ONLY"}
+	if state in ["RELAXED_SIT","READ"] and raw.has("front_z"):
+		result["seat_front_z"]=float(raw["front_z"])
+	return result
 
 func prepare_rooms(rooms:Array)->void:
 	# Build each existing variant once, off the live planner's hot path.
