@@ -989,14 +989,20 @@ func save_world() -> bool:
 	var absolute_save := ProjectSettings.globalize_path(save_path)
 	var absolute_tmp := ProjectSettings.globalize_path(scratch)
 	var absolute_backup := ProjectSettings.globalize_path(backup)
-	if FileAccess.file_exists(backup):
-		DirAccess.remove_absolute(absolute_backup)
+	# Never rotate a corrupt primary over the last readable generation.
+	# If interrupted after rotation, load_or_seed can still read .bak.
 	if FileAccess.file_exists(save_path):
-		if DirAccess.rename_absolute(absolute_save,absolute_backup) != OK:
-			return false
-	if DirAccess.rename_absolute(absolute_tmp,absolute_save) != OK:
-		if FileAccess.file_exists(backup):
-			DirAccess.rename_absolute(absolute_backup,absolute_save)
+		if not _read_snapshot(save_path).is_empty():
+			if FileAccess.file_exists(backup) and DirAccess.remove_absolute(absolute_backup)!=OK:
+				return false
+			if DirAccess.rename_absolute(absolute_save,absolute_backup)!=OK:
+				return false
+		else:
+			# Recovery from .bak: retain it until a later VALID primary can
+			# replace it. A failed promotion must not consume that backup.
+			if DirAccess.remove_absolute(absolute_save)!=OK:
+				return false
+	if DirAccess.rename_absolute(absolute_tmp,absolute_save)!=OK:
 		return false
 	return true
 
