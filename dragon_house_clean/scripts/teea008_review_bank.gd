@@ -205,6 +205,8 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true,in
 		mesh_node.mesh=compact
 		mesh_node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		wrapper.add_child(mesh_node)
+	elif asset=="owner_theatre_riser_trim" and item.has("seat_plinth_height_m"):
+		_mount_theatre_plinth(wrapper,scene,item,depth)
 	else:
 		wrapper.add_child(scene.instantiate())
 	if animate and asset=="sketchfab_fireplace_animated":
@@ -216,6 +218,45 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true,in
 				wrapper.set_meta("fire_playing",true)
 				break
 	return wrapper
+
+# A raised base under each rear seat pair, not a step in the walkable aisle.
+# The physical height is not depth-scaled: the seat's base pivot uses room Y.
+# The owner trim is inset into the front edge; the plain timber block fills
+# its support volume. X/Z remain inside the existing chair obstacle.
+func _mount_theatre_plinth(wrapper:Node3D,scene:PackedScene,item:Dictionary,depth:float)->void:
+	var width:float=float(item["seat_plinth_width_m"])
+	var length:float=float(item["seat_plinth_depth_m"])
+	var height:float=float(item["seat_plinth_height_m"])/maxf(depth,0.01)
+	var trim_scale:float=width/3.899817
+	var trim_depth:float=0.190024*trim_scale
+	var trim_height:float=0.138397*trim_scale
+	var block:=MeshInstance3D.new()
+	block.name="RaisedSeatBase"
+	var mesh:=BoxMesh.new()
+	mesh.size=Vector3(width,height,length-trim_depth)
+	block.mesh=mesh
+	block.position=Vector3(0,height*0.5,-trim_depth*0.5)
+	var material:=StandardMaterial3D.new()
+	material.albedo_color=Color("#55382c")
+	material.roughness=0.86
+	block.material_override=material
+	wrapper.add_child(block)
+	var edge:=Node3D.new()
+	edge.name="OriginalRiserTrim"
+	edge.position=Vector3(0,height-trim_height,length*0.5-trim_depth*0.5)
+	edge.scale=Vector3.ONE*trim_scale
+	wrapper.add_child(edge)
+	edge.add_child(scene.instantiate())
+	# Fill the lower edge under the taller rear-row trim.
+	if height>trim_height+0.001:
+		var lower:=MeshInstance3D.new()
+		lower.name="RiserLowerSupport"
+		var lower_mesh:=BoxMesh.new()
+		lower_mesh.size=Vector3(width,height-trim_height,trim_depth)
+		lower.mesh=lower_mesh
+		lower.position=Vector3(0,(height-trim_height)*0.5,length*0.5-trim_depth*0.5)
+		lower.material_override=material
+		wrapper.add_child(lower)
 
 func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 	var row:Dictionary=variant(kind,width)

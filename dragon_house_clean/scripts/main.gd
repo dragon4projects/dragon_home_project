@@ -786,7 +786,7 @@ func _add_canonical_interior_lighting(parent:Node3D,group:Dictionary)->void:
 		"library": specs=[[-0.30,2.10,-0.55,"#f5d5a5",0.65,3.8],[0.38,2.10,-0.45,"#ffe6bd",0.65,3.8]]
 		"kitchen": specs=[[-0.30,2.30,-0.60,"#fff0d4",0.75,4.0],[0.30,2.20,-0.60,"#e5b278",0.62,3.8]]
 		"rest": specs=[[-0.29,1.90,-0.25,"#ffc08a",0.58,3.6],[0.30,2.05,-0.40,"#f1d4a1",0.48,3.6]]
-		"cinema": specs=[[-0.26,2.15,-0.65,"#9aa8d2",0.23,3.2],[0.29,1.75,-0.20,"#d6a58e",0.24,3.2]]
+		"cinema": specs=[[-0.19,2.15,0.20,"#b5bfe5",0.42,4.0],[0.30,2.12,-0.28,"#e8b69b",0.35,3.8]]
 		"music": specs=[[-0.28,2.15,-0.55,"#e9b3a3",0.55,3.6],[0.28,1.95,-0.35,"#d4bcf5",0.42,3.6]]
 		"study","workshop": specs=[[-0.26,2.20,-0.30,"#f6e7ca",0.67,3.8],[0.30,2.20,-0.35,"#f3d4a9",0.56,3.6]]
 		"artifact": specs=[[-0.28,2.10,-0.50,"#f9e4b9",0.58,3.6],[0.29,2.10,-0.50,"#dce5f0",0.55,3.6]]
@@ -2403,7 +2403,11 @@ func desired_actor_animation(actor: Dictionary) -> String:
 		if not contact.is_empty():
 			return str(contact["state"])
 		if str(actor.get("intent",""))=="WATCH_FILM":
-			return AssetBankResolverScript.social_idle_state(Vector2(0,-1),effective_camera_yaw())
+			var facing:=Vector2(0,-1)
+			if life.candidate_navigation!=null and life.candidate_navigation.layouts.get("cinema/R3",{}).get("theatre_revision","")=="OWNER_THEATRE_V1":
+				var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+				if str(room.get("type",""))=="cinema":facing=Vector2(1,0)
+			return AssetBankResolverScript.social_idle_state(facing,effective_camera_yaw())
 		if str(actor.get("intent",""))=="VIEW_ART":
 			var object:Dictionary=world.objects.get(str(actor.get("viewing_object_id","")),{})
 			var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
