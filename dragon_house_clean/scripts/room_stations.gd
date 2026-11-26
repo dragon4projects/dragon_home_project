@@ -516,7 +516,7 @@ func release(actor: Dictionary) -> void:
 	actor.erase("station_contact")
 	actor.erase("station_exclusive_furniture")
 
-func reconcile(world) -> int:
+func reconcile(world, before_invalidate:Callable=Callable()) -> int:
 	# Restore station invariants after loading a snapshot, without new life.
 	# Prefer the lexicographically first existing claim if an old save has
 	# duplicates; later actors replan normally instead of overlapping.
@@ -558,6 +558,8 @@ func reconcile(world) -> int:
 			restored_claim=_candidate_claim(actor,room,slot,spot,str(actor.get("intent","")))
 			invalid=restored_claim.is_empty() or prior.size()!=2 or offset.distance_to(Vector2(float(prior[0]),float(prior[1])))>0.01
 		if invalid:
+			# Settle a verified saved activity before erasing its station proof.
+			if before_invalidate.is_valid() and not claimed.has(key):before_invalidate.call(actor)
 			release(actor)
 			# A rider between floors must drain the current physical lift leg.
 			var waypoints:Array=actor.get("waypoints",[])
