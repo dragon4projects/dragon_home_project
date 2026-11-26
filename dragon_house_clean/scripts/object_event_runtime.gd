@@ -316,8 +316,10 @@ func _publish_projection(projection: Dictionary) -> void:
 		var projected: Dictionary = projection[raw_id]
 		if world.objects.has(object_id):
 			var current: Dictionary = world.objects[object_id]
-			current.clear()
-			current.merge(projected.duplicate(true),true)
+			# Keep live references and do not deep-copy unrelated histories.
+			if current!=projected:
+				current.clear()
+				current.merge(projected.duplicate(true),true)
 		else:
 			world.objects[object_id] = projected.duplicate(true)
 		# Reconcile cleanup after a crash between the durable object event

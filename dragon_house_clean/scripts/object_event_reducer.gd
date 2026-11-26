@@ -36,7 +36,12 @@ func _legacy_anchor(object_id: String) -> Array:
 
 func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 	last_error = ""
-	var next: Dictionary = projection.duplicate(true)
+	# Public reducer result stays fully detached from the caller.
+	return _apply_owned(projection.duplicate(true),event)
+
+# Replay owns this working dictionary exclusively. Mutate it without cloning
+# the accumulated projection on every historical event; discard it on error.
+func _apply_owned(next:Dictionary,event:Dictionary)->Dictionary:
 	var event_type: String = str(event.get("event_type",""))
 	var payload: Dictionary = event.get("payload",{})
 	var event_id: String = str(event.get("event_id",""))
@@ -87,7 +92,7 @@ func reduce(projection: Dictionary, event: Dictionary) -> Dictionary:
 			"display_mode":str(metadata.get("display_mode","")),
 			"display_anchor":display_anchor.duplicate(true),
 			"interaction_station_id":str(metadata.get("interaction_station_id","")),
-			"interaction_point":metadata.get("interaction_point",[]),
+			"interaction_point":metadata.get("interaction_point",[]).duplicate(true) if typeof(metadata.get("interaction_point",[])) in [TYPE_ARRAY,TYPE_DICTIONARY] else metadata.get("interaction_point",[]),
 			"interaction_approach_z":float(metadata.get("interaction_approach_z",0.95)),
 			"display_world_height":float(metadata.get("display_world_height",0.8)),
 			"history":history,
@@ -215,7 +220,7 @@ func replay(events: Array) -> Dictionary:
 	for raw_event in events:
 		if typeof(raw_event) != TYPE_DICTIONARY:
 			return _fail("event stream contains non-object row")
-		var next: Dictionary = reduce(projection,raw_event)
+		var next: Dictionary = _apply_owned(projection,raw_event)
 		if next.is_empty() and not projection.is_empty():
 			return {}
 		if next.is_empty() and str((raw_event as Dictionary).get("event_type","")) != "":
