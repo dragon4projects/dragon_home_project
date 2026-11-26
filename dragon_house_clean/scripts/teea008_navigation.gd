@@ -239,14 +239,31 @@ func segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
 	return true
 
 func sampled_segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
+	# Preserve the exact 2.5cm samples and passage exceptions. Resolve
+	# immutable room bounds and broad-phase obstacles ONCE, not per sample.
+	if not has_layout(room):return true
+	var hw:float=float(room.get("size_modules",1))*2.4
+	var min_z:float=_back(room)+RADIUS-0.001
+	for p in [a,b]:
+		if absf(p.x)>hw+0.001 or p.y<min_z or p.y>FRONT+0.001:return false
+	var sweep:=Rect2(Vector2(minf(a.x,b.x),minf(a.y,b.y)),Vector2(absf(a.x-b.x),absf(a.y-b.y))).grow(RADIUS+.00001)
+	var relevant:Array=[]
+	for box:Rect2 in _obstacles(room):
+		if sweep.intersects(box,true):relevant.append(box)
+	if relevant.is_empty():return true
+	var depth7:bool=DEPTH7.enabled_for(room)
+	var threshold:float=RADIUS*RADIUS-0.000001
 	var steps:int=maxi(1,ceili(a.distance_to(b)/0.025))
 	for i in range(steps+1):
-		if not clear(room,a.lerp(b,float(i)/float(steps))):
-			return false
+		var p:Vector2=a.lerp(b,float(i)/float(steps))
+		if depth7 and DEPTH7.passage(p.y):continue
+		for box:Rect2 in relevant:
+			var near:=Vector2(clampf(p.x,box.position.x,box.end.x),clampf(p.y,box.position.y,box.end.y))
+			if p.distance_squared_to(near)<threshold:return false
 	return true
 
 func _grid(room:Dictionary)->AStarGrid2D:
-	var k:=key(room)
+	var k:=key(room)+"|"+str(DEPTH7.enabled_for(room))
 	if grids.has(k):
 		return grids[k]
 	var hw:float=float(room.get("size_modules",1))*2.4
@@ -302,7 +319,7 @@ func nearest_clear(room:Dictionary,p:Vector2)->Vector2:
 
 func path(room:Dictionary,a:Vector2,b:Vector2)->Array:
 	path_calls+=1
-	var cache_key:String="%s|%.5f,%.5f|%.5f,%.5f" % [key(room),a.x,a.y,b.x,b.y]
+	var cache_key:String="%s|%s|%.5f,%.5f|%.5f,%.5f" % [key(room),str(DEPTH7.enabled_for(room)),a.x,a.y,b.x,b.y]
 	if path_cache.has(cache_key):
 		var entry:Dictionary=path_cache[cache_key]
 		if a==entry["a"] and b==entry["b"]:
