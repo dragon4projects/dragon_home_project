@@ -169,7 +169,7 @@ func setup(p_world) -> void:
 	# Restore catalogue possession before station reconciliation can invalidate
 	# a route or erase its presentation cache.
 	reconcile_book_possession()
-	stations.reconcile(world)
+	stations.reconcile(world,_settle_invalidated_reading)
 	stations.migrate_legacy_positions(world)
 	reconcile_book_possession()
 	reconcile_concrete_media()
@@ -211,6 +211,22 @@ func setup(p_world) -> void:
 	# Existing pre-scheduler saves retain their commitments. First wake only
 	# reconciles/schedules them; it does not cancel an unexpired action.
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
+
+# Credit only a valid, previously seated reading session at the saved
+# physical station. Geometry may have changed after the snapshot was written.
+# Never manufacture attendance for a corrupt or merely travelling actor.
+func _settle_invalidated_reading(actor:Dictionary)->void:
+	if not bool(actor.get("active",false)) or not actor.has("reading_session"):return
+	if not media_runtime.reading_session_valid(actor,clock):return
+	var point=actor.get("station_point",[])
+	if typeof(point)!=TYPE_ARRAY or point.size()!=2 or str(actor.get("station_anchor_id",""))=="":return
+	for v in point:
+		if typeof(v) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(v)):return
+	var room:Dictionary=world.room_by_id(str(actor.get("station_room_id","")))
+	var expected:Vector3=world.room_local_to_world(room,Vector2(float(point[0]),float(point[1])))
+	var actual:=Vector3(float(actor.get("x",INF)),float(actor.get("visual_y",INF)),float(actor.get("z",INF)))
+	if not actual.is_finite() or actual.distance_to(expected)>0.12:return
+	media_runtime.pause_reading(actor,clock)
 
 func daypart() -> String:
 	if daypart_override in ["night","morning","day","evening"]:
@@ -479,6 +495,16 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 	if candidate_navigation!=null:
 		_begin_candidate_plan(actor)
 	var scored: Dictionary = _utilities(actor)
+	# A rare random opportunity remains appropriate for ordinary social need.
+	# At high need, don't discard a real available invitation by lottery.
+	var eager_group:bool=false
+	if scored.has("TALK_GROUP") and float(actor.get("needs",{}).get("social",0.0))>=0.85:
+		var available:int=0
+		for other in world.residents.values():
+			if str(other.get("id",""))!=str(actor["id"]) and _group_recruitable(other):available+=1
+			if available>=2:
+				eager_group=true
+				break
 	var best := ""
 	var best_score := -999.0
 	var best_room: Dictionary = {}
@@ -523,7 +549,7 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 		var repeat_bonus := minf(float(habits.get(intent, 0.0)), 0.3)
 		var path_cost: float = maxf(0.0, float(path.size() - 1) * 0.045)
 		var score: float = float(scored[intent]) + repeat_bonus - path_cost + rng.randf_range(-0.2, 0.2)
-		if intent in ["TALK_PAIR","TALK_GROUP"] and rng.randf() > (0.10 if intent=="TALK_GROUP" else 0.15):
+		if intent in ["TALK_PAIR","TALK_GROUP"] and not (intent=="TALK_GROUP" and eager_group) and rng.randf() > (0.10 if intent=="TALK_GROUP" else 0.15):
 			# Reserve actual social sessions later; do not fake dialogue.
 			continue
 		if score > best_score:
@@ -873,16 +899,27 @@ func reconcile_pair_sessions()->void:
 
 # The same persistent table drives pair and group sessions; its legacy name
 # is retained so existing saved pair IDs and test fixtures remain compatible.
+# An expired simple solo action is available for a new social reservation,
+# even if its own next scheduler wake has not yet converted it to idle.
+# Never recruit a travelling actor or interrupt independent commitments.
+func _group_recruitable(other:Dictionary)->bool:
+	if not bool(other.get("active",false)) or not bool(other.get("autonomy_enabled",true)) or str(other.get("id",""))=="MANJKA":return false
+	if not _social_start_allowed(other):return false
+	# Idle until is a planner retry deadline, not an activity commitment.
+	if str(other.get("phase","idle"))!="idle" and float(other.get("until",0.0))>clock:return false
+	if float(other.get("needs",{}).get("social",0.0))<0.25:return false
+	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","book_task_stage","held_book","reading_session","watch_session","listen_session","viewing_object_id","activity_media_id"]:
+		if other.has(key):return false
+	var phase:String=str(other.get("phase","idle"))
+	return phase=="idle" or (phase=="perform" and str(other.get("intent","")) in ["REST","SLEEP","WATCH_FIRE","WORK_CREATE","PURPOSEFUL_EXPLORE","BROWSE_BOOK_CATALOG","BROWSE_FILMS","BROWSE_AUDIO"])
+
 func _begin_group_session(actor:Dictionary,room:Dictionary)->bool:
 	if actor.has("social_session_id") or room.is_empty() or str(room.get("privacy",""))!="public":return false
 	var candidates:Array=[]
 	for raw_id in world.residents:
 		var id:String=str(raw_id)
 		var other:Dictionary=world.residents[id]
-		if id==str(actor["id"]) or id=="MANJKA" or not bool(other.get("active",false)) or not bool(other.get("autonomy_enabled",true)):continue
-		if str(other.get("phase",""))!="idle" or float(other.get("until",0.0))>clock or other.has("social_session_id") or other.has("social_join_session_id") or other.has("partner_id"):continue
-		if other.has("cup_task_stage") or other.has("book_task_stage") or other.has("held_book") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):continue
-		if float(other.get("needs",{}).get("social",0.0))<0.25 or not _social_start_allowed(other):continue
+		if id==str(actor["id"]) or not _group_recruitable(other):continue
 		var route:Array=world.find_route(str(other.get("room_id","")),str(room["id"]),id)
 		if not route.is_empty():candidates.append({"actor":other,"route":route})
 	candidates.sort_custom(func(a,b):
@@ -915,6 +952,8 @@ func _begin_group_session(actor:Dictionary,room:Dictionary)->bool:
 		var deadline:float=clock+PAIR_TRAVEL_TIMEOUT_SECONDS+float(longest)*15.0
 		for member in members:
 			var id:String=str(member["id"])
+			# Settle the completed solo interval before changing its semantics.
+			if id!=str(actor["id"]):_advance_needs(member,life_scheduler.consume_elapsed(id,clock))
 			stations.release(member)
 			end_catalog_browse(member)
 			end_concrete_media(member)
