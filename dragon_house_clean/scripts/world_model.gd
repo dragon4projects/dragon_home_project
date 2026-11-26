@@ -54,6 +54,38 @@ var load_error:String=""
 const CHECKPOINT_INTERVAL_SECONDS:=20.0
 var last_checkpoint_clock:float=-1.0
 
+# Each simulation domain owns a separate random stream. The world keeps
+# the live generators so every checkpoint (including explicit saves) captures
+# the exact state, without depending on an end-of-frame copy.
+const RNG_STREAM_SEEDS:Dictionary={"life":814223,"creatures":923118,"beverages":10520261125}
+var _rng_streams:Dictionary={}
+
+static func _valid_rng_state(value:Variant)->bool:
+	# JSON numbers cannot exactly encode arbitrary signed 64-bit PCG states.
+	return typeof(value)==TYPE_STRING and str(value).is_valid_int() and str(int(value))==str(value)
+
+func decision_rng(domain:String)->RandomNumberGenerator:
+	assert(RNG_STREAM_SEEDS.has(domain))
+	if _rng_streams.has(domain):return _rng_streams[domain]
+	var generator:=RandomNumberGenerator.new()
+	generator.seed=int(RNG_STREAM_SEEDS[domain])
+	var saved=runtime_state.get("decision_rng_v1",{}).get(domain,null)
+	if saved==null and domain=="beverages":
+		# Compatibility with the pre-registry beverage-only checkpoint.
+		saved=runtime_state.get("beverages",{}).get("rng_state",null)
+	if _valid_rng_state(saved):generator.state=int(saved)
+	_rng_streams[domain]=generator
+	return generator
+
+func _capture_decision_rng()->void:
+	var saved:Dictionary=runtime_state.get("decision_rng_v1",{}).duplicate(true)
+	for domain in _rng_streams:
+		saved[domain]=str(_rng_streams[domain].state)
+	runtime_state["decision_rng_v1"]=saved
+	# Preserve the older beverage state field for compatible readers.
+	if saved.has("beverages") and runtime_state.has("beverages"):
+		runtime_state["beverages"]["rng_state"]=saved["beverages"]
+
 func _ensure_object_events() -> bool:
 	if recovery_blocked:return false
 	if object_events_initialized and object_events_save_path == save_path:
@@ -1138,6 +1170,7 @@ func sync_resident_profiles() -> void:
 				actor["production_visual_ready"] = false # asset validation is separate
 
 func seed_world() -> void:
+	_rng_streams.clear()
 	rooms.clear()
 	residents.clear()
 	creatures.clear()
@@ -1330,6 +1363,15 @@ func _read_snapshot(path: String) -> Dictionary:
 	for key in ["media","objects","creatures","runtime_state"]:
 		if (int(schema)==2 or parsed.has(key)) and typeof(parsed.get(key,null))!=TYPE_DICTIONARY:return {}
 	if (int(schema)==2 or parsed.has("journal")) and typeof(parsed.get("journal",null))!=TYPE_ARRAY:return {}
+	var state:Dictionary=parsed.get("runtime_state",{})
+	var streams=state.get("decision_rng_v1",{})
+	if typeof(streams)!=TYPE_DICTIONARY:return {}
+	for domain in streams:
+		if not RNG_STREAM_SEEDS.has(domain) or not _valid_rng_state(streams[domain]):return {}
+	var drinks=state.get("beverages",{})
+	if typeof(drinks)!=TYPE_DICTIONARY:return {}
+	if drinks.has("rng_state") and not _valid_rng_state(drinks["rng_state"]):return {}
+	if streams.has("beverages") and drinks.has("rng_state") and streams["beverages"]!=drinks["rng_state"]:return {}
 	var saved_clock=parsed.get("sim_clock",0.0)
 	if typeof(saved_clock) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(saved_clock)) or float(saved_clock)<0.0:return {}
 	if int(schema)==2 and not parsed.has("sim_clock"):return {}
@@ -1380,6 +1422,7 @@ func load_or_seed() -> bool:
 	load_status="LOADING"
 	load_error=""
 	last_checkpoint_clock=-1.0
+	_rng_streams.clear()
 	var parsed: Dictionary = _read_snapshot(save_path)
 	var from_backup:bool=false
 	if parsed.is_empty():
@@ -1444,6 +1487,7 @@ func save_world() -> bool:
 	return true
 
 func _write_snapshot() -> bool:
+	_capture_decision_rng()
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
 	var data: Dictionary = {"schema": 2,"rooms": rooms,"residents": residents,
