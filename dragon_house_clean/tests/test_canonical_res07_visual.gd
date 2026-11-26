@@ -29,7 +29,7 @@ func run()->void:
  for creature in w.creatures.values():creature.active=false
  var cinema:Dictionary=w.matching_rooms(["cinema"])[0]
  var claim:Dictionary=s.life.stations.single(w,a,cinema,"WATCH_FILM")
- assert(not claim.is_empty() and not claim.has("contact"))
+ assert(claim.get("contact",{}).get("state","")=="SIT_E_OCCLUDED")
  s.life.stations.commit_claim(a,claim)
  var c:Vector3=w.room_local_to_world(cinema,claim.offset)
  a.merge({"active":true,"room_id":cinema.id,"level":cinema.level,"x":c.x,"visual_y":c.y,"z":c.z,"phase":"perform","intent":"WATCH_FILM"},true)
@@ -38,13 +38,13 @@ func run()->void:
  s.apply_camera(1.0)
  s.update_render_lod()
  s.update_residents()
- assert(s.actor_animations[a.id].state=="IDLE_N")
+ assert(s.actor_animations[a.id].state=="SIT_E_OCCLUDED")
  var sprite:Sprite3D=s.actor_sprites[a.id].get_node("Body")
- assert(sprite.texture==s.asset_banks.texture_for(a.id,"HOME","IDLE_N",0))
- assert(s._active_station_render_contact(a).is_empty())
+ assert(sprite.texture==s._side_seated_texture(a,nav.pose_profile(a,"SIT_E_OCCLUDED")))
+ assert(s._active_station_render_contact(a).state=="SIT_E_OCCLUDED")
  for id in s.actor_sprites:
   if id!=a.id:assert(not s.actor_sprites[id].visible)
- await capture(s,"res07_cinema_rear_standing")
+ await capture(s,"res07_cinema_side_seated")
  # Real cup from the canonical world, not a prop duplicated in the sprite.
  var kitchen:Dictionary=w.matching_rooms(["kitchen"])[0]
  var cup_id:String=""
@@ -93,5 +93,5 @@ func run()->void:
  s.update_residents()
  s.update_physical_objects()
  assert(s.object_nodes[cup_id].get_meta("hand_contact_status")=="UNCALIBRATED_MOVING_OR_NONMODEL")
- print("CANONICAL_RES07_VISUAL_PASS rear_standing=true hand_yaw_samples=3 world_truth_unchanged=true unverified_walk_denied=true")
+ print("CANONICAL_RES07_VISUAL_PASS side_seated=true hand_yaw_samples=3 world_truth_unchanged=true unverified_walk_denied=true")
  quit(0)

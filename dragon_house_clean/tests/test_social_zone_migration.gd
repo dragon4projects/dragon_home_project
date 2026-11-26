@@ -17,7 +17,7 @@ func run()->void:
  var nav=N.new()
  nav.configure(bank.layouts)
  var kitchen:Dictionary=w.matching_rooms(["kitchen"])[0]
- var cinema:Dictionary=w.matching_rooms(["cinema"])[0]
+ var cinema:Dictionary=w.matching_rooms(["artifact"])[0]
  for a in w.residents.values():a.active=false
  var actor:Dictionary=w.residents.RES_01
  var other:Dictionary=w.residents.RES_02

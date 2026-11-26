@@ -250,6 +250,8 @@ func populate(parent:Node3D, kind:String, width:int, scale_at:Callable)->int:
 		var anchor:=Node3D.new()
 		anchor.name="Aperture_"+str(id).validate_node_name()
 		anchor.position=Vector3(float(center[0]),float(center[1]),float(center[2]))
+		var rotation:Array=aperture.get("rotation_deg_xyz",[0,0,0])
+		anchor.rotation_degrees=Vector3(float(rotation[0]),float(rotation[1]),float(rotation[2]))
 		anchor.set_meta("surface_id",str(id))
 		anchor.set_meta("surface_category",str(spec["legacy_runtime_category"]))
 		anchor.set_meta("carrier_hit_only",bool(spec.get("carrier_hit_only",false)))
@@ -314,7 +316,7 @@ func _review_layout_delta(raw:Dictionary)->Dictionary:
 	return row
 
 func _asset_path(asset:String)->String:
-	if asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
+	if asset.begins_with("owner_theatre_") or asset.begins_with("blendkit_") or asset=="owner_hp_notebook_lowpoly" or asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
 		return "res://assets/decor_bank/"+asset+"/model.gltf"
 	var base:String=SKETCHFAB_ROOT if asset.begins_with("sketchfab_") else ROOT
 	return base+asset+"/model.gltf"
@@ -398,7 +400,27 @@ func apply_architecture_layouts()->void:
 	hearth["runtime_review_geometry_revision"]="CANONICAL_HEARTH_INTERIOR_20261125_V1"
 	layouts["common/R3"]=hearth
 	_apply_social_interiors()
+	_apply_owner_theatre()
 	_apply_canonical_device_bindings()
+
+func _apply_owner_theatre()->void:
+	var file:=FileAccess.open("res://data/canonical_owner_theatre_20261126.json",FileAccess.READ)
+	if file==null:return
+	var data=JSON.parse_string(file.get_as_text())
+	if typeof(data)!=TYPE_DICTIONARY or bool(data.get("owner_approved",true)):return
+	var row:Dictionary=data["variant"]
+	for item in row["instances"]:
+		if not ResourceLoader.exists(_asset_path(str(item["asset_id"])),"PackedScene"):
+			push_error("Owner theatre missing "+str(item["asset_id"]))
+			return
+	layouts["cinema/R3"]=row
+	var surface:Dictionary=surfaces["cinema.r3.film.screen"]
+	surface["holder_asset_id"]="owner_theatre_screen"
+	surface["aperture"]["center_xyz"]=[0,0.89795,-0.026]
+	surface["aperture"]["width_m"]=2.926616
+	surface["aperture"]["height_m"]=1.661989
+	surface["aperture"]["rotation_deg_xyz"]=[0,180,0]
+	surface["aperture"]["measurement"]="Measured Material.031 screen face"
 
 func _apply_canonical_device_bindings()->void:
 	# Preserve surface IDs (saved room-instance assignments). The canonical
@@ -467,7 +489,7 @@ func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->i
 	for item in row.get("instances",[]):
 		var asset:String=str(item["asset_id"])
 		var policy:String=str(item.get("placement_policy",""))
-		if policy not in ["floor_fixed","soft_floor"] and asset not in ["media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
+		if policy not in ["floor_fixed","soft_floor"] and asset not in ["owner_theatre_screen","owner_theatre_side_panel","media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
 			continue
 		var wrapper:Node3D=_mount(parent,item,scale_at,false,instances)
 		if wrapper==null:continue
@@ -586,6 +608,66 @@ func _apply_social_interiors()->void:
 	_apply_conditional_shelf_dressing()
 	_apply_hearth_conversation_v2()
 	_apply_social_zones_v3()
+	_apply_owner_decor_refresh()
+	_apply_owner_room_clusters()
+
+# Supported, noninteractive replacements only. Preserve existing table/support
+# IDs and skip any candidate which cannot fit its real carrier or peers.
+func _apply_owner_decor_refresh()->void:
+	var f:=FileAccess.open("res://data/canonical_new_decor_20261126.json",FileAccess.READ)
+	if f==null:return
+	var doc=JSON.parse_string(f.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)):return
+	for key in doc["replacements"]:
+		var row:Dictionary=layouts.get(key,{})
+		if row.is_empty():continue
+		var items:Array=row["instances"]
+		for spec in doc["replacements"][key]:
+			var matches:Array=items.filter(func(item):return item["instance_id"]==spec["instance_id"])
+			if matches.size()!=1:continue
+			var item:Dictionary=matches[0]
+			var host_id:String=_support_host_id(item)
+			var hosts:Array=items.filter(func(other):return other["instance_id"]==host_id)
+			if hosts.size()!=1 or not item.get("station_candidates",[]).is_empty() or not item.get("support_slots",[]).is_empty():continue
+			if not ResourceLoader.exists(_asset_path(spec["asset_id"]),"PackedScene"):continue
+			var host:Dictionary=hosts[0]
+			var pos:Array=item["room_local_xyz"]
+			var d:Array=spec["dimensions_m"]
+			var scale_value:float=float(spec["uniform_scale"])
+			var lo:Array=[float(pos[0])-float(d[0])*scale_value*0.5,float(pos[1]),float(pos[2])-float(d[2])*scale_value*0.5]
+			var hi:Array=[float(pos[0])+float(d[0])*scale_value*0.5,float(pos[1])+float(d[1])*scale_value,float(pos[2])+float(d[2])*scale_value*0.5]
+			if float(lo[0])<float(host["bounds_min_m"][0]) or float(hi[0])>float(host["bounds_max_m"][0]) or float(lo[2])<float(host["bounds_min_m"][2]) or float(hi[2])>float(host["bounds_max_m"][2]):continue
+			if absf(float(lo[1])-float(host["bounds_max_m"][1]))>0.015:continue
+			var collision:=false
+			for other in items:
+				if other["instance_id"]==item["instance_id"] or _support_host_id(other)!=host_id:continue
+				var a:Array=other["bounds_min_m"]
+				var b:Array=other["bounds_max_m"]
+				if minf(float(hi[0]),float(b[0]))>maxf(float(lo[0]),float(a[0])) and minf(float(hi[2]),float(b[2]))>maxf(float(lo[2]),float(a[2])) and minf(float(hi[1]),float(b[1]))>maxf(float(lo[1]),float(a[1])):collision=true
+			if collision:continue
+			item["asset_id"]=spec["asset_id"]
+			item["uniform_scale"]=scale_value
+			item["rotation_deg_xyz"]=[0,0,0]
+			item["bounds_min_m"]=lo
+			item["bounds_max_m"]=hi
+			item["physical_footprint_xz"]=[[lo[0],lo[2]],[hi[0],lo[2]],[hi[0],hi[2]],[lo[0],hi[2]]]
+			item["decor_refresh_revision"]="OWNER_DECOR_V1"
+
+# Functional clusters, not extra catalogue display. All moving hosts have
+# no persistent support slots. Translate their decorative children and
+# station approaches as one measured ensemble.
+func _apply_owner_room_clusters()->void:
+	var changes:Dictionary={
+		"library/R3":{"library_reading_table":Vector2(-3.7,-1.3),"library_side_table":Vector2(5.05,0.10)},
+		"music/R3":{"music_record_table":Vector2(2.30,-1.42),"music_listening_chair":Vector2(4.20,-1.37)},
+		"study/R3":{"study_reference_table":Vector2(-3.2,-1.33),"study_reading_chair":Vector2(-4.7,-0.40)},
+		"workshop/R3":{"workshop_tool_cart":Vector2(-3.55,-1.36),"workshop_lab_table":Vector2(4.30,-1.34)}
+	}
+	for key in changes:
+		var row:Dictionary=layouts.get(key,{})
+		if row.is_empty():continue
+		for id in changes[key]:_move_social_ensemble(row,id,changes[key][id])
+		row["owner_cluster_revision"]="OWNER_ROOM_CLUSTERS_V1"
 
 # Owner permits furniture relocation. Only two unsupported chairs move;
 # preserve support IDs, cup homes, dragon and the authored shell.

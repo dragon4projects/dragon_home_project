@@ -50,7 +50,10 @@
           ],
           "contact_method": "VISUALLY_ESTIMATED_SEAT_CONTACT",
           "contact_span_px": 74,
-          "book_px": [256, 344],
+          "book_px": [
+            256,
+            344
+          ],
           "book_baked": false
         },
         "LIE_SIDE_CURLED": {
@@ -93,6 +96,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 98,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_01/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "d7beaf03eafba8fbb24ac09b70847b029fcf341ae75bb2b1c2bc01c4f6b70691",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            243,
+            289,
+            394
+          ],
+          "contact_px": [
+            256.0,
+            394
+          ],
+          "contact_span_px": 66,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            287
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -184,6 +214,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 90,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_02/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "88e4176782b1b0767feb5f025ff977a99cf6fef189d82e5f6613759bca524972",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            222,
+            242,
+            290,
+            398
+          ],
+          "contact_px": [
+            256.0,
+            398
+          ],
+          "contact_span_px": 68,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            292
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -273,6 +330,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 89,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/IDLE_E/0001.png",
+          "sha256": "8cd259a4f79cded8dc4cd502e7494ec5bb15578ae297b12a73011da88d7a4e6f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            222,
+            243,
+            291,
+            387
+          ],
+          "contact_px": [
+            256.5,
+            387
+          ],
+          "contact_span_px": 69,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            280
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -364,6 +448,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 99,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/IDLE_E/0001.png",
+          "sha256": "d260dc3a3be21e07ac72da7a967db5cc6b73c459f68d6e339d463faeb93c9c13",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            224,
+            243,
+            289,
+            395
+          ],
+          "contact_px": [
+            256.5,
+            395
+          ],
+          "contact_span_px": 65,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            288
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -453,6 +564,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 99,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_05/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "ef49d9da3692c1303ef774899d6ba0c076cce9d5a01707334c6428407a89a789",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            243,
+            287,
+            395
+          ],
+          "contact_px": [
+            256.5,
+            395
+          ],
+          "contact_span_px": 63,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            288
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -544,6 +682,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 94,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/IDLE_E/0001.png",
+          "sha256": "cc6b78a45f459efcabacfb0fe607256118700980d4c04cfdcfc06bc4b351d253",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            242,
+            283,
+            399
+          ],
+          "contact_px": [
+            256.0,
+            399
+          ],
+          "contact_span_px": 54,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            293
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -600,10 +765,45 @@
             512,
             512
           ],
-          "alpha_bbox": [209, 136, 304, 480],
-          "contact_px": [256.5, 480],
+          "alpha_bbox": [
+            209,
+            136,
+            304,
+            480
+          ],
+          "contact_px": [
+            256.5,
+            480
+          ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 95,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_NW/0001.png",
+          "sha256": "8818d03479f11c9f3c82203317dc92e7b0762cd703367e63ce1f2d2f19ad8429",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            214,
+            233,
+            285,
+            387
+          ],
+          "contact_px": [
+            249.5,
+            387
+          ],
+          "contact_span_px": 71,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            290
+          ],
+          "destination_top_y": 233,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -695,6 +895,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 91,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/IDLE_E/0001.png",
+          "sha256": "a0a7c2d6b48005ce5667c39af8f792412c8fc07a28d2da5b808c0c894641455b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            243,
+            286,
+            397
+          ],
+          "contact_px": [
+            256.5,
+            397
+          ],
+          "contact_span_px": 59,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            290
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -784,6 +1011,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 96,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_09/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "387dc6cc9f5effbc17fc2487aad01bcc78fb0a158a68f6059e594c776c4620d5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            242,
+            292,
+            405
+          ],
+          "contact_px": [
+            256.5,
+            405
+          ],
+          "contact_span_px": 71,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            299
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -875,6 +1129,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 109,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_10/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "690c693248eb588e9712f64c38c736a28e6e4adf060f811e9ae3ee817f38b9e3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            242,
+            292,
+            405
+          ],
+          "contact_px": [
+            256.5,
+            405
+          ],
+          "contact_span_px": 71,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            299
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -964,6 +1245,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 95,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_11/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "11ab3e1e5fe445c2b7e3fa8cd6043a151963acb4adba835e7168e299d26acf9b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            243,
+            287,
+            400
+          ],
+          "contact_px": [
+            256.0,
+            400
+          ],
+          "contact_span_px": 62,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            293
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -1055,6 +1363,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 97,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "38ad1e2c0173dd2a53c8431b4a4a01b535c5096ffbc44797eec404a98bf56215",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            220,
+            242,
+            288,
+            404
+          ],
+          "contact_px": [
+            256.0,
+            404
+          ],
+          "contact_span_px": 72,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            298
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -1144,6 +1479,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 95,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_13/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "6bbcbb085b87c4041a818a27f494b0b4d6f06123396525c0e939b4b84c571264",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            243,
+            285,
+            401
+          ],
+          "contact_px": [
+            256.5,
+            401
+          ],
+          "contact_span_px": 57,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            294
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -1235,6 +1597,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 93,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_14/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "15dab8841d948449950d06fa1eebf186f286d53fcfd2ec1242f6e30b8f4cc87a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            224,
+            243,
+            288,
+            397
+          ],
+          "contact_px": [
+            256.0,
+            397
+          ],
+          "contact_span_px": 64,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            290
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -1324,6 +1713,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 92,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_15/wardrobes/CITY/IDLE_E/0001.png",
+          "sha256": "fd48ad7dd9d38212634d5e336087b70ddcf87275d152cea02df574a356eb0a29",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            243,
+            284,
+            393
+          ],
+          "contact_px": [
+            256.5,
+            393
+          ],
+          "contact_span_px": 55,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            286
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -1415,6 +1831,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 93,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_16/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "eb372124c579e6ea9338d79501207e38a0c4efdc01e44fdd5af193fee3463760",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            243,
+            288,
+            392
+          ],
+          "contact_px": [
+            256.5,
+            392
+          ],
+          "contact_span_px": 71,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            285
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -1504,6 +1947,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 91,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_17/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "7c48e94129e6368c9d6325e026143c4ba43185c35ea1888cd49a6b79e8852af2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            243,
+            287,
+            395
+          ],
+          "contact_px": [
+            256.5,
+            395
+          ],
+          "contact_span_px": 61,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            288
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -1595,6 +2065,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 97,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_18/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "92cba01ed05832cbcb4f7a51e41a99a4410ef575dde802b1457907531acbb4a5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            243,
+            285,
+            398
+          ],
+          "contact_px": [
+            256.0,
+            398
+          ],
+          "contact_span_px": 60,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            291
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -1684,6 +2181,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 101,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/IDLE_E/0001.png",
+          "sha256": "6e6a9295641b0b269a12b76a168b362977256250d564107d465b7fe137779fe5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            243,
+            287,
+            405
+          ],
+          "contact_px": [
+            256.5,
+            405
+          ],
+          "contact_span_px": 61,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            298
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -1775,6 +2299,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 96,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_20/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "b5aacd619784727dec2a1765ce2bb841a0ef86c47f3cd5f1d89a3c81dcb1daa2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            220,
+            243,
+            290,
+            397
+          ],
+          "contact_px": [
+            256.0,
+            397
+          ],
+          "contact_span_px": 72,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            290
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -1864,6 +2415,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 105,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/IDLE_E/0001.png",
+          "sha256": "f0d1a9f99f987caf986b8bbaedc31640636826a74e288af50a72ceca13edb790",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            220,
+            243,
+            293,
+            407
+          ],
+          "contact_px": [
+            256.5,
+            407
+          ],
+          "contact_span_px": 73,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            300
+          ],
+          "destination_top_y": 243,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }
@@ -1955,6 +2533,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 99,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/IDLE_E/0001.png",
+          "sha256": "bdc0fd2f012229eaedc11223f9a1b9d55ce081a2c803efda5411c66ab15c2891",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            242,
+            288,
+            400
+          ],
+          "contact_px": [
+            256.5,
+            400
+          ],
+          "contact_span_px": 67,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            294
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -2045,6 +2650,33 @@
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 95,
           "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/IDLE_E/0001.png",
+          "sha256": "1f3176e0032579badfa3e598c0eabd0b89f64b8735488db106a949056af47088",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            242,
+            290,
+            403
+          ],
+          "contact_px": [
+            256.5,
+            403
+          ],
+          "contact_span_px": 67,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            297
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
+          "book_baked": false
         }
       }
     },
@@ -2134,6 +2766,33 @@
           ],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
           "contact_span_px": 99,
+          "book_baked": false
+        },
+        "SIT_E_OCCLUDED": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/IDLE_E/0001.png",
+          "sha256": "eaa558518c078be2fca68ec875cb823f3447b5975567feceda1b4684487f594f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            242,
+            288,
+            398
+          ],
+          "contact_px": [
+            256.5,
+            398
+          ],
+          "contact_span_px": 71,
+          "source_state": "IDLE_E",
+          "crop_source_y": [
+            136,
+            292
+          ],
+          "destination_top_y": 242,
+          "contact_method": "OCCLUDED_SIDE_CROP_NOT_FULL_BODY",
           "book_baked": false
         }
       }

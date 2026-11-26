@@ -56,6 +56,7 @@ var validated_visual_banks := 0
 var qa_visual_preview := false
 var preview_visual_banks := 0
 var actor_animations: Dictionary = {}
+var side_seated_textures:Dictionary={}
 var camera: Camera3D
 var room_root: Node3D
 var actor_root: Node3D
@@ -2334,14 +2335,20 @@ func _active_station_render_contact(actor:Dictionary)->Dictionary:
 	var calibrated_wardrobe:String=str(actor.get("teea008_pose_wardrobe",wardrobe))
 	if calibrated_wardrobe!=wardrobe:
 		return {}
-	if state=="" or asset_banks.frame_count(str(actor.get("id","")),wardrobe,state)<1:
-		return {}
+	if state=="":return {}
 	if contact.get("local_xyz",[]).size()!=3 or contact.get("instance_xyz",[]).size()!=3 or contact.get("contact_px",[]).size()!=2:
 		return {}
 	if life.candidate_navigation==null:return {}
 	var profile:Dictionary=life.candidate_navigation.pose_profile(actor,state)
 	if profile.is_empty() or profile.get("contact_px",[])!=contact.get("contact_px",[]) or profile.get("canvas",[])!=contact.get("canvas",[]):return {}
 	if not _calibrated_frame_matches(actor,state,profile):return {}
+	if state=="SIT_E_OCCLUDED":
+		if str(actor.get("intent",""))!="WATCH_FILM":return {}
+		var room:Dictionary=world.room_by_id(room_id)
+		var matches:Array=life.candidate_navigation.candidate_spots(room).filter(func(spot):return str(spot["id"])==str(actor.get("station_anchor_id","")))
+		if matches.size()!=1 or life.candidate_navigation.pose_contact(actor,matches[0],"WATCH_FILM")!=contact:return {}
+		if _side_seated_texture(actor,profile)==null:return {}
+	elif asset_banks.frame_count(str(actor.get("id","")),wardrobe,state)<1:return {}
 	if bool(contact.get("book_baked",false))!=bool(profile.get("book_baked",false)):return {}
 	return contact
 
@@ -2349,8 +2356,27 @@ func _active_station_render_contact(actor:Dictionary)->Dictionary:
 func _calibrated_frame_matches(actor:Dictionary,state:String,profile:Dictionary)->bool:
 	var id:String=str(actor.get("id",""))
 	var wardrobe:String=str(actor.get("visual_wardrobe","HOME"))
-	var frames:Array=asset_banks._entry(id,wardrobe,state).get("frames",[])
+	var frames:Array=asset_banks._entry(id,wardrobe,str(profile.get("source_state",state))).get("frames",[])
 	return frames.size()>0 and asset_banks._normalize_frame(frames[0])==str(profile.get("path",""))
+
+func _side_seated_texture(actor:Dictionary,profile:Dictionary)->Texture2D:
+	var key:String=str(profile.get("sha256",""))
+	if side_seated_textures.has(key):return side_seated_textures[key]
+	var source:Texture2D=asset_banks.texture_for(str(actor["id"]),str(actor["visual_wardrobe"]),str(profile.get("source_state","")),0)
+	if source==null:return null
+	var image:Image=source.get_image()
+	if image==null or image.get_size()!=Vector2i(512,512):return null
+	if image.is_compressed() and image.decompress()!=OK:return null
+	image.convert(Image.FORMAT_RGBA8)
+	var ys:Array=profile.get("crop_source_y",[])
+	var y:int=int(profile.get("destination_top_y",-1))
+	if ys.size()!=2 or y<0 or int(ys[0])<0 or int(ys[1])>512 or int(ys[1])<=int(ys[0]) or y+int(ys[1])-int(ys[0])>512:return null
+	var region:=Rect2i(0,int(ys[0]),512,int(ys[1])-int(ys[0]))
+	var crop:=Image.create_empty(512,512,false,Image.FORMAT_RGBA8)
+	crop.blit_rect(image,region,Vector2i(0,y))
+	var tex:=ImageTexture.create_from_image(crop)
+	side_seated_textures[key]=tex
+	return tex
 
 func _sprite_camera_right()->Vector3:
 	if camera==null:return Vector3.RIGHT
@@ -2433,7 +2459,7 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 	# Visual state does not change life and cannot assume a real chair exists.
 	var requested: String = desired_actor_animation(actor)
 	var wardrobe: String = str(actor.get("visual_wardrobe","HOME"))
-	if asset_banks.frame_count(id,wardrobe,requested) < 1:
+	if requested!="SIT_E_OCCLUDED" and asset_banks.frame_count(id,wardrobe,requested) < 1:
 		requested = "IDLE_S"
 	var state: Dictionary = actor_animations.get(id,{"state":"","frame":0,"elapsed":0.0})
 	var old_state:String=str(state["state"])
@@ -2456,7 +2482,9 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 	var sprite: Sprite3D = actor_sprites[id].get_node("Body")
 	var texture:Texture2D=sprite.texture
 	if wardrobe_changed or old_state!=requested or old_frame!=int(state["frame"]) or texture==null:
-		texture=asset_banks.texture_for(id,wardrobe,requested,int(state["frame"]))
+		if requested=="SIT_E_OCCLUDED":
+			texture=_side_seated_texture(actor,life.candidate_navigation.pose_profile(actor,requested))
+		else:texture=asset_banks.texture_for(id,wardrobe,requested,int(state["frame"]))
 	if texture != null and (texture != sprite.texture or teea008_live):
 		if texture!=sprite.texture:
 			sprite.texture=texture
@@ -3547,6 +3575,8 @@ func effective_camera_yaw() -> float:
 	# Close rooms need a genuinely oblique Shelter-like view so X/Z reads as
 	# volume. HOUSE fades toward frontal readability; Q/E remains additive.
 	var close_bias: float=clampf((48.0-zoom_current)/34.0,0.0,1.0)*0.18
+	if current_mode in ["ROOM","FOLLOW"] and world.room_by_id(selected_room).get("type","")=="cinema" and teea008_review.layouts.get("cinema/R3",{}).get("theatre_revision","")=="OWNER_THEATRE_V1":
+		close_bias=-close_bias
 	return clampf(yaw+close_bias,-0.42,0.42)
 
 func effective_camera_height_ratio() -> float:

@@ -709,7 +709,7 @@ func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary
 		if not rear_contact.is_empty():
 			claim["contact"]=rear_contact
 			claim["kind"]="seat"
-			claim["pose_hint"]="SIT_N"
+			claim["pose_hint"]=str(rear_contact["state"])
 			return claim
 		claim["pose_hint"]="IDLE_N"
 	elif intent=="WORK_CREATE" and kind!="work":

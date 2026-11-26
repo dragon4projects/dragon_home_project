@@ -21,7 +21,7 @@ func run()->void:
 	assert(count==243,str(count))
 	var proof:=read_dict("res://data/integration_candidates/TEEA008_POSE_EXPORT_PROOF.json")
 	var poses:=read_dict("res://data/teea008_pose_contacts_review.json")
-	assert(proof.get("frames",{}).size()==103)
+	assert(proof.get("frames",{}).size()==127)
 	var verified:=0
 	for profile in poses["profiles"].values():
 		for entry in profile["states"].values():

@@ -1,0 +1,155 @@
+{
+  "owner_approved": false,
+  "replacements": {
+    "library/R3": [
+      {
+        "instance_id": "library_reading_lamp",
+        "asset_id": "blendkit_vintage_brass_oil_lamp",
+        "uniform_scale": 1.0,
+        "dimensions_m": [
+          0.082195,
+          0.206961,
+          0.081353
+        ]
+      }
+    ],
+    "artifact/R3": [
+      {
+        "instance_id": "gallery_lantern",
+        "asset_id": "blendkit_vintage_brass_oil_lamp",
+        "uniform_scale": 1.0,
+        "dimensions_m": [
+          0.082195,
+          0.206961,
+          0.081353
+        ]
+      },
+      {
+        "instance_id": "gallery_vase",
+        "asset_id": "blendkit_dome_01_glass",
+        "uniform_scale": 0.9,
+        "dimensions_m": [
+          0.158846,
+          0.167743,
+          0.158846
+        ]
+      }
+    ],
+    "kitchen/R3": [
+      {
+        "instance_id": "kitchen_bar_bottles",
+        "asset_id": "blendkit_jack_daniel_s_whiskey",
+        "uniform_scale": 0.9,
+        "dimensions_m": [
+          0.164336,
+          0.300905,
+          0.199628
+        ]
+      },
+      {
+        "instance_id": "kitchen_pot",
+        "asset_id": "blendkit_kitchen_set_6_glass_conteiner_2",
+        "uniform_scale": 0.72,
+        "dimensions_m": [
+          0.256568,
+          0.132061,
+          0.237439
+        ]
+      }
+    ],
+    "rest_social_upper/R3": [
+      {
+        "instance_id": "rest_social_upper_bar_bottles",
+        "asset_id": "blendkit_jack_daniel_s_whiskey",
+        "uniform_scale": 0.9,
+        "dimensions_m": [
+          0.164336,
+          0.300905,
+          0.199628
+        ]
+      }
+    ],
+    "rest_social_lower/R3": [
+      {
+        "instance_id": "rest_social_lower_bar_bottles",
+        "asset_id": "blendkit_jack_daniel_s_whiskey",
+        "uniform_scale": 0.9,
+        "dimensions_m": [
+          0.164336,
+          0.300905,
+          0.199628
+        ]
+      }
+    ],
+    "study/R3": [
+      {
+        "instance_id": "study_notebook",
+        "asset_id": "owner_hp_notebook_lowpoly",
+        "uniform_scale": 1.0,
+        "dimensions_m": [
+          0.2378,
+          0.243449,
+          0.34
+        ]
+      },
+      {
+        "instance_id": "study_reference_books",
+        "asset_id": "blendkit_34_inch_curved_ultrawide_monitor_black",
+        "uniform_scale": 1.0,
+        "dimensions_m": [
+          0.804095,
+          0.473054,
+          0.237187
+        ]
+      }
+    ],
+    "workshop/R3": [
+      {
+        "instance_id": "workshop_lab_set",
+        "asset_id": "blendkit_glass_ceramic_and_glass_pots",
+        "uniform_scale": 0.8,
+        "dimensions_m": [
+          1.188071,
+          0.450233,
+          0.350686
+        ]
+      }
+    ],
+    "guest_centaur/R2": [
+      {
+        "instance_id": "centaur_lantern",
+        "asset_id": "blendkit_vintage_brass_oil_lamp",
+        "uniform_scale": 1.0,
+        "dimensions_m": [
+          0.082195,
+          0.206961,
+          0.081353
+        ]
+      }
+    ],
+    "guest_vampire/R1": [
+      {
+        "instance_id": "vampire_brass_vase",
+        "asset_id": "blendkit_glass_block",
+        "uniform_scale": 0.65,
+        "dimensions_m": [
+          0.095596,
+          0.187599,
+          0.185754
+        ]
+      }
+    ],
+    "guest_miu/R1": [
+      {
+        "instance_id": "miu_plant",
+        "asset_id": "blendkit_plant_decoration",
+        "uniform_scale": 1.0,
+        "dimensions_m": [
+          0.099723,
+          0.142163,
+          0.107775
+        ]
+      }
+    ]
+  }
+}

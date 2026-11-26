@@ -475,7 +475,7 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 		state="READ"
 		anchor=raw.get("pelvis",[])
 	elif intent=="WATCH_FILM":
-		state="SIT_N"
+		state="SIT_E_OCCLUDED" if str(spot.get("candidate_asset_id",""))=="owner_theatre_seat_pair" else "SIT_N"
 		anchor=raw.get("pelvis",[])
 	else:
 		anchor=raw.get("pelvis",[])
@@ -494,6 +494,9 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 	else:
 		var facing:Array=raw.get("facing",[])
 		if facing.size()!=3:return {}
+		if state=="SIT_E_OCCLUDED":
+			if float(facing[0])<0.9:return {}
+			return {"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":false,"book_baked":false,"evidence":"OCCLUDED_SIDE_CROP_NOT_FULL_BODY"}
 		if state=="SIT_N":
 			if float(facing[2])> -0.5:return {}
 		elif float(facing[2])<0.5:return {}

@@ -10,7 +10,6 @@ func run()->void:
  assert(banks.initialize())
  var bank=B.new()
  assert(bank.initialize(true))
- bank.apply_architecture_layouts()
  var nav=N.new()
  nav.configure(bank.layouts)
  var w=W.new()

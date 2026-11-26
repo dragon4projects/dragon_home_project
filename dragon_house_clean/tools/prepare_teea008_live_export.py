@@ -13,7 +13,7 @@ for profile in manifest["profiles"].values():
         digest=hashlib.file_digest(path.open("rb"),"sha256").hexdigest()
         if digest!=state["sha256"]:raise SystemExit(f"frame hash mismatch {path}")
         frames["res://"+state["path"]]=digest
-if len(frames)!=103:raise SystemExit(f"expected 103 original frames, got {len(frames)}")
+if len(frames)!=127:raise SystemExit(f"expected 127 original frames, got {len(frames)}")
 (data/"TEEA008_POSE_EXPORT_PROOF.json").write_text(json.dumps({"owner_approved":False,"frames":frames},indent=2)+"\n")
 (data/"TEEA008_LIVE_REVIEW.enabled").write_text("OWNER_REVIEW_ONLY\n")
 print("TEEA008_EXPORT_STAGE_PASS original_pose_frames=",len(frames))
