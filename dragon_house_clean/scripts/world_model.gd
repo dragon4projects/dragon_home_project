@@ -47,6 +47,12 @@ var next_room_id := 1
 var recovery_blocked:bool=false
 var load_status:String="NOT_LOADED"
 var load_error:String=""
+# Engineering checkpoint cadence, measured on the authoritative simulation
+# clock, not wall time. A failed write freezes life instead of accumulating
+# unbounded unsaved state. This watermark describes the last valid snapshot,
+# not the (independently durable) object-event stream.
+const CHECKPOINT_INTERVAL_SECONDS:=20.0
+var last_checkpoint_clock:float=-1.0
 
 func _ensure_object_events() -> bool:
 	if recovery_blocked:return false
@@ -1373,6 +1379,7 @@ func load_or_seed() -> bool:
 	recovery_blocked=false
 	load_status="LOADING"
 	load_error=""
+	last_checkpoint_clock=-1.0
 	var parsed: Dictionary = _read_snapshot(save_path)
 	var from_backup:bool=false
 	if parsed.is_empty():
@@ -1398,6 +1405,7 @@ func load_or_seed() -> bool:
 	runtime_state = parsed.get("runtime_state", {})
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
+	last_checkpoint_clock=sim_clock
 	for saved_room in rooms:
 		if saved_room.get("type", "") == "private" and not saved_room.has("public_frontage"):
 			saved_room["public_frontage"] = true
@@ -1422,8 +1430,20 @@ func load_or_seed() -> bool:
 	load_status="RECOVERED_BACKUP" if from_backup else "LOADED"
 	return true
 
+func checkpoint_if_due() -> bool:
+	if recovery_blocked:return false
+	if last_checkpoint_clock<0.0 or sim_clock-last_checkpoint_clock>=CHECKPOINT_INTERVAL_SECONDS:
+		return save_world()
+	return true
+
 func save_world() -> bool:
 	if recovery_blocked:return false
+	if not _write_snapshot():
+		return _block_world_recovery("CHECKPOINT_WRITE_FAILED","Cannot commit world checkpoint; simulation stopped and recovery files retained.")
+	last_checkpoint_clock=sim_clock
+	return true
+
+func _write_snapshot() -> bool:
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
 	var data: Dictionary = {"schema": 2,"rooms": rooms,"residents": residents,
