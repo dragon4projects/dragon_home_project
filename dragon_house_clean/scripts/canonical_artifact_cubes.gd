@@ -59,6 +59,8 @@ func title(id:String)->String:
 	return str(row.get("title","Артефакт"))
 
 func slot_available(room:Dictionary,slot:Dictionary,id:String)->bool:
+	if slot.get("physical_grid",false):
+		return world.dense_artifact_world!=null and world.dense_artifact_world.available(world.objects,id,str(slot.id))
 	var dims:Array=slot.get("unscaled_dimensions",slot.get("dimensions",[]))
 	if dims.size()!=3:return false
 	for axis in range(3):

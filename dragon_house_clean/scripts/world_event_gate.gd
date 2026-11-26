@@ -178,9 +178,18 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 		if location!="" and not _valid_anchor(
 				world,location,payload.get("current_anchor",payload.get("home_anchor",[]))):
 			return reject("registered object requires valid current anchor")
+		var size_meta:Dictionary=payload.get("metadata",{})
+		if size_meta.has("artifact_size"):
+			var size:String=str(size_meta.artifact_size)
+			if not size in ["S","M","L"] or size_meta.get("viewer_category","")!="artifacts":
+				return reject("invalid explicit artifact size")
+			if size!="S" and (object_class=="small_artifact" or bool(payload.get("ambient_move_allowed",false))):
+				return reject("only small cubes may be ambient-carried")
 		var initial_support=payload.get("home_support_id","")
 		if typeof(initial_support)!=TYPE_STRING or str(initial_support).length()>180:
 			return reject("invalid initial support identity")
+		if str(initial_support).begins_with("DG:") and world.dense_artifact_world==null:
+			return reject("grid support registry unavailable")
 		if str(initial_support)!="":
 			var meta:Dictionary=payload.get("metadata",{})
 			if holder!="" or location!=home_room_id or state!="PLACED" or not bool(payload.get("movable",false)) or str(meta.get("display_mode",""))=="wall" or str(meta.get("viewer_category",""))!="artifacts":
@@ -291,6 +300,8 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 		var support_id=payload.get("home_support_id","")
 		if typeof(support_id)!=TYPE_STRING or str(support_id).length()>180:
 			return reject("invalid support identity")
+		if str(support_id).begins_with("DG:") and world.dense_artifact_world==null:
+			return reject("grid support registry unavailable")
 		if str(support_id)!="" and (wall or str(object.get("viewer_category",""))!="artifacts"):
 			return reject("support home is only for movable artifacts")
 		if payload.has("wall_height"):

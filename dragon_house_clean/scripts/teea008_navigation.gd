@@ -739,6 +739,9 @@ func artifact_slots(room:Dictionary)->Array:
 	var out:Array=[]
 	if str(room.get("type",""))!="artifact":return out
 	var row:Dictionary=layouts.get(variant,{})
+	if row.has("artifact_grid_slots"):
+		artifact_slot_cache[variant]=row["artifact_grid_slots"]
+		return artifact_slot_cache[variant]
 	var used:Dictionary={}
 	for item in row.get("instances",[]):
 		var ref:String=str(item.get("support_ref",""))

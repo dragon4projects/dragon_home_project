@@ -615,6 +615,17 @@ func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 	if candidate.is_empty():
 		last_error = reducer.last_error
 		return {"ok":false,"error":last_error}
+	# Validate cell overlap against the complete candidate before the
+	# durable append. Replay uses the same projection, not a second save.
+	if world.dense_artifact_world!=null and str(event.get("event_type",""))=="OBJECT_HOME_ASSIGNED":
+		var oid:String=str(event.get("payload",{}).get("object_id",""))
+		var previous:Dictionary=world.objects.get(oid,{})
+		var proposed:Dictionary=candidate.get(oid,{})
+		if str(previous.get("home_support_id","")).begins_with("DG:") and not str(proposed.get("home_support_id","")).begins_with("DG:"):
+			return {"ok":false,"error":"Grid artifact requires compatible measured home"}
+	if world.dense_artifact_world!=null and not world.dense_artifact_world.validate_projection(candidate):
+		last_error=world.dense_artifact_world.error
+		return {"ok":false,"error":last_error}
 	var committed: Dictionary = store.append_with_projection(event,candidate) if store.has_method("append_with_projection") else store.append(event)
 	if committed.is_empty():
 		last_error = store.last_error
@@ -692,6 +703,8 @@ func register_object(object_id: String, display_name: String,
 	}
 	# Optional measured initial support belongs to registration itself,
 	# not to a synthetic owner assignment event.
+	for field in ["artifact_size","full_image_path","artifact_source_sha256"]:
+		if metadata.has(field):payload["metadata"][field]=metadata[field]
 	if metadata.has("home_support_id"):
 		payload["home_support_id"]=metadata["home_support_id"]
 	var event := _base_event(

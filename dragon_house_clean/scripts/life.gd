@@ -1490,6 +1490,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 			if not displays.is_empty():
 				viewing_object=displays[rng.randi_range(0,displays.size()-1)]
 				actor_claim=stations.display_claim(world,actor,room,viewing_object)
+				if actor_claim.is_empty() and str(viewing_object.get("current_support_id","")).begins_with("DG:"):viewing_object={}
 		if actor_claim.is_empty():
 			actor_claim = stations.single(world,actor,room,intent)
 		if actor_claim.is_empty():

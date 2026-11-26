@@ -39,6 +39,7 @@ var media: Dictionary = {"books": [], "films": [], "tracks": []}
 # invent owner artifacts merely because the lifecycle exists.
 var objects: Dictionary = {}
 var object_events = ObjectEventRuntime.new()
+var dense_artifact_world = null
 var object_events_initialized := false
 var object_events_save_path := ""
 var next_room_id := 1
@@ -636,6 +637,8 @@ func housekeeping_age(object:Dictionary)->float:
 
 func housekeeping_slot_free(object:Dictionary,room_id:String,anchor:Array,support_id:String)->bool:
 	if anchor.size()!=2:return false
+	if dense_artifact_world!=null and support_id.begins_with("DG:"):
+		if not dense_artifact_world.available(objects,str(object.get("id","")),support_id):return false
 	if support_id!="":
 		# Books, cups and other objects cannot share one physical support.
 		for book_id in runtime_state.get("teea008_book_slot_assignments",{}):
@@ -703,6 +706,7 @@ func housekeeping_target(object:Dictionary)->Dictionary:
 
 func _housekeeping_slot_fits(object:Dictionary,slot:Dictionary)->bool:
 	if str(object.get("viewer_category",""))=="cups":return true
+	if slot.get("physical_grid",false):return dense_artifact_world!=null and dense_artifact_world.size_for(object)==slot.size
 	var dims:Array=slot.get("dimensions",[])
 	var size:float=float(object.get("display_world_height",0.0))
 	return size>0 and dims.size()==3 and float(dims[0])>=size and float(dims[1])>=size and float(dims[2])>=size

@@ -8,6 +8,11 @@ const Depth7Hearth=preload("res://scripts/depth7_hearth.gd")
 const DenseV2Runtime=preload("res://scripts/dense_v2_runtime.gd")
 var dense_v2=DenseV2Runtime.new()
 var dense_v2_qa:bool=false
+var dense_artifact_qa:bool=false
+const DenseArtifactWorld=preload("res://scripts/dense_v2_artifact_world.gd")
+const DenseArtifactImport=preload("res://scripts/dense_v2_artifact_import.gd")
+var dense_artifact_empty_nodes:Dictionary={}
+var dense_artifact_visual_signature:String=""
 var dense_v2_artwork_picker:FileDialog
 var dense_v2_pending_frame:String=""
 const WorldScript = preload("res://scripts/world_model.gd")
@@ -227,6 +232,7 @@ func _ensure_canonical_artifact_cube()->bool:
 		slots.erase(preferred)
 		slots.push_front(preferred)
 	for slot in slots:
+		if slot.get("physical_grid",false) and (slot.size!="S" or not world.dense_artifact_world.available(world.objects,OBJECT_ID,slot.id)):continue
 		var p:Array=slot["xyz"]
 		var dims:Array=slot.get("unscaled_dimensions",slot["dimensions"])
 		if float(p[1])<0.35*depth_scale_for_room(rid,float(slot["instance_xyz"][2])) or float(p[1])>1.70:continue
@@ -279,6 +285,7 @@ func _restore_zna_artifact_sources()->int:
 		# or empty proxy if the binary assets were not hydrated.
 		if not ResourceLoader.exists(source,"Texture2D") or not ResourceLoader.exists(preview,"Texture2D"):continue
 		for slot in slots:
+			if slot.get("physical_grid",false) and (slot.size!="S" or not world.dense_artifact_world.available(world.objects,id,slot.id)):continue
 			var sid:String=str(slot["id"])
 			var p:Array=slot["xyz"]
 			var dims:Array=slot.get("unscaled_dimensions",slot["dimensions"])
@@ -328,6 +335,8 @@ func _ready() -> void:
 	if dense_v2_qa:
 		# QA state is deliberately independent of the owner's existing world.
 		world.save_path="user://dragon_house_dense_v2_qa.json"
+		dense_artifact_qa=OS.get_environment("DRAGON_DENSE_ARTIFACT_QA")=="1"
+		if dense_artifact_qa:world.save_path="user://dragon_house_dense_artifact_qa_v1.json"
 	if not world.load_or_seed():
 		_show_recovery_blocked()
 		return
@@ -370,6 +379,15 @@ func _ready() -> void:
 			_show_recovery_blocked()
 			return
 		print("DENSE_V2_QA_LIVE_ROOMS ",dense_v2.by_room.size())
+		if dense_artifact_qa:
+			var gallery:=_artifact_room()
+			var adapter=DenseArtifactWorld.new()
+			if gallery.is_empty() or not adapter.initialize(str(gallery.id)) or not adapter.validate_projection(world.objects):
+				world.load_status="DENSE_ARTIFACT_GRID_RECOVERY_REQUIRED"
+				_show_recovery_blocked()
+				return
+			world.dense_artifact_world=adapter
+			teea008_review.layouts[dense_v2.by_room[gallery.id].variant]["artifact_grid_slots"]=adapter.choices()
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
@@ -2138,24 +2156,35 @@ func _object_offset(object_id: String) -> Vector3:
 	var oz := (float(int(code / 7) % 5) - 2.0) * 0.12
 	return Vector3(ox,0.0,oz)
 
-func _make_artifact_cube(anchor:Node3D,texture:Texture2D)->bool:
+func _make_artifact_cube(anchor:Node3D,texture:Texture2D,object:Dictionary={})->bool:
 	# The physical artifact IS a glass cube, not a loose picture next to a cube.
 	# Measured source model: 0.20 m, floor pivot. Uniformly fit shelf clearance.
-	var model:PackedScene=ResourceLoader.load(ARTIFACT_CUBE_MODEL,"PackedScene") as PackedScene
+	var measured:bool=dense_artifact_qa and world.dense_artifact_world!=null and str(object.get("home_support_id","")).begins_with("DG:")
+	var size:String=world.dense_artifact_world.size_for(object) if measured else "S"
+	var side:float=ARTIFACT_CUBE_SIDE
+	var height:float=side
+	var path:String=ARTIFACT_CUBE_MODEL
+	if measured:
+		var dims:Vector3=world.dense_artifact_world.registry.sizes[size]
+		side=dims.x
+		height=dims.y
+		path=world.dense_artifact_world.registry.MODELS[size]
+	var model:PackedScene=ResourceLoader.load(path,"PackedScene") as PackedScene
 	if model==null:return false
 	var glass:Node3D=Node3D.new()
 	glass.name="ArtifactGlassCube"
-	glass.scale=Vector3.ONE*(ARTIFACT_CUBE_SIDE/0.20)
+	glass.scale=Vector3.ONE if measured else Vector3.ONE*(ARTIFACT_CUBE_SIDE/0.20)
 	glass.add_child(model.instantiate())
 	anchor.add_child(glass)
-	anchor.set_meta("artifact_cube_side",ARTIFACT_CUBE_SIDE)
+	anchor.set_meta("artifact_cube_side",side)
+	anchor.set_meta("artifact_cube_height",height)
 	if texture!=null:
 		var face:=Sprite3D.new()
 		face.name="Visual"
 		face.texture=texture
 		face.billboard=BaseMaterial3D.BILLBOARD_DISABLED
-		face.pixel_size=ARTIFACT_CUBE_SIDE*0.80/maxf(float(texture.get_width()),float(texture.get_height()))
-		face.position=Vector3(0,ARTIFACT_CUBE_SIDE*0.5,ARTIFACT_CUBE_SIDE*0.5+0.002)
+		face.pixel_size=side*0.80/maxf(float(texture.get_width()),float(texture.get_height()))
+		face.position=Vector3(0,height*0.5,side*0.5+0.002)
 		face.alpha_cut=SpriteBase3D.ALPHA_CUT_DISCARD
 		face.no_depth_test=false
 		anchor.add_child(face)
@@ -2173,7 +2202,7 @@ func _artifact_cube_hotspot(point:Vector2)->Dictionary:
 			continue
 		var side:float=float(anchor.get_meta("artifact_cube_side"))
 		var inverse:Transform3D=anchor.global_transform.affine_inverse()
-		var bounds:=AABB(Vector3(-side*0.5,0,-side*0.5),Vector3.ONE*side)
+		var bounds:=AABB(Vector3(-side*0.5,0,-side*0.5),Vector3(side,float(anchor.get_meta("artifact_cube_height",side)),side))
 		var hit:Variant=bounds.intersects_ray(inverse*ray_origin,inverse.basis*ray_direction)
 		if hit==null:continue
 		var distance:float=ray_origin.distance_squared_to(anchor.to_global(hit))
@@ -2188,6 +2217,8 @@ func make_physical_objects() -> void:
 	for child in object_root.get_children():
 		child.queue_free()
 	object_nodes.clear()
+	dense_artifact_empty_nodes.clear()
+	dense_artifact_visual_signature=""
 	clear_content_hotspots()
 	for object_id in world.objects:
 		var object: Dictionary = world.objects[object_id]
@@ -2210,7 +2241,7 @@ func make_physical_objects() -> void:
 		if texture==null and content_viewer!=null:
 			texture=content_viewer._load_preview(str(object.get("preview_path","")))
 		if architecture_review and str(object.get("viewer_category",""))=="artifacts" and str(object.get("display_mode",""))!="wall":
-			if _make_artifact_cube(anchor,texture):
+			if _make_artifact_cube(anchor,texture,object):
 				object_nodes[str(object_id)]=anchor
 				register_content_hotspot(anchor,"artifacts",str(object_id),str(object.get("display_name",object_id)))
 				continue
@@ -2358,7 +2389,7 @@ func update_physical_objects() -> void:
 					var inst:Array=support["instance_xyz"]
 					var scale_value:float=depth_scale_for_room(room_id,float(inst[2]))
 					anchor.position=Vector3(room_center.x+float(pos[0]),room_center.y+float(pos[1]),float(pos[2])) if Depth7Space.enabled_for(room) else Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
-					anchor.scale=Vector3.ONE*scale_value
+					anchor.scale=Vector3.ONE if support.get("physical_grid",false) else Vector3.ONE*scale_value
 					var sprite:Sprite3D=anchor.get_node_or_null("Visual")
 					if sprite!=null and not cube:
 						sprite.position.y=float(object.get("display_world_height",0.48))*0.5
@@ -2370,6 +2401,42 @@ func update_physical_objects() -> void:
 					var scale_value:float=depth_scale_for_room(room_id,float(inst[2]))
 					anchor.position=Vector3(room_center.x+float(pos[0]),room_center.y+float(pos[1]),float(pos[2])) if Depth7Space.enabled_for(room) else Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
 					anchor.scale=Vector3.ONE*scale_value
+
+	_refresh_dense_artifact_holders()
+
+# Empty holders are visual affordances, not fabricated artifact identities.
+func _refresh_dense_artifact_holders()->void:
+	if not dense_artifact_qa or world.dense_artifact_world==null or object_root==null:return
+	var adapter=world.dense_artifact_world
+	var room:Dictionary=world.room_by_id(adapter.room_id)
+	var visible:bool=world.public_cutaway_allowed(room) and detailed_room_groups.has(adapter.room_id) and semantic_view.group_visible(room)
+	var signature:Array=[]
+	for obj in world.objects.values():
+		for prefix in ["home","current"]:
+			var sid:String=str(obj.get(prefix+"_support_id",""))
+			if sid.begins_with("DG:"):signature.append(sid)
+	signature.sort()
+	var next:String=str(signature)
+	if next!=dense_artifact_visual_signature:
+		for n in dense_artifact_empty_nodes.values():
+			if is_instance_valid(n):
+				content_hotspots=content_hotspots.filter(func(entry):return entry.get("anchor")!=n)
+				n.queue_free()
+		dense_artifact_empty_nodes.clear()
+		dense_artifact_visual_signature=next
+		var center:Vector3=world.room_center_pos(room)
+		for slot in adapter.free_visual_slots(world.objects):
+			var n:=Node3D.new()
+			n.name=("Empty_"+str(slot.id)).validate_node_name()
+			object_root.add_child(n)
+			if not _make_artifact_cube(n,null,{"home_support_id":slot.id,"artifact_size":slot.size}):
+				n.queue_free();continue
+			n.position=center+Vector3(float(slot.xyz[0]),float(slot.xyz[1]),float(slot.xyz[2]))
+			n.set_meta("empty_grid_slot",slot.id)
+			n.visible=visible
+			dense_artifact_empty_nodes[slot.id]=n
+			register_content_hotspot(n,"dense_artifact_empty",slot.id,"Пустой куб "+str(slot.size))
+	for n in dense_artifact_empty_nodes.values():n.visible=visible
 
 func make_residents() -> void:
 	var resident_tex := make_sprite_texture(false)
@@ -3082,6 +3149,12 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	var item_id := str(entry.get("item_id",""))
 	var record: Dictionary = {}
 	if category=="hearth_picture":return _open_hearth_picture(entry)
+	if category=="dense_artifact_empty":
+		var n:Node3D=dense_artifact_empty_nodes.get(item_id)
+		if not is_instance_valid(n) or not n.is_visible_in_tree():return false
+		var slot:Dictionary=world.dense_artifact_world.slots.get(item_id,{})
+		if slot.is_empty():return false
+		return content_viewer.open_record("artifacts",{"id":item_id,"title":"Пустой куб "+str(slot.size),"description":"Свободная измеренная ячейка. Изображение ещё не назначено.","dense_v2_assignable":true})
 	if category=="dense_v2_frame":
 		var frame:MeshInstance3D=_dense_v2_find_frame(item_id)
 		if frame==null:return false
@@ -3146,6 +3219,15 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 		if master=="":image_record["description"]="Оригинал не установлен или не прошёл проверку SHA-256."
 		return content_viewer.open_record(category,image_record)
 	if category=="artifacts":
+		var checksum:String=str(record.get("artifact_source_sha256",""))
+		if checksum!="":
+			var local_master:String=str(record.get("full_image_path",""))
+			record=record.duplicate(true)
+			if not local_master.begins_with(DenseArtifactImport.ROOT) or not FileAccess.file_exists(local_master) or FileAccess.get_sha256(local_master)!=checksum:
+				record["preview_path"]=""
+				record["description"]="Оригинал отсутствует или не прошёл проверку SHA-256."
+			else:record["preview_path"]=local_master
+			return content_viewer.open_record(category,record)
 		var full_path:String=str(record.get("full_image_path",""))
 		if full_path!="":
 			record=record.duplicate(true)
@@ -4644,13 +4726,31 @@ func _dense_v2_frame_hit(point:Vector2)->Dictionary:
 	return found
 
 func _choose_dense_v2_artwork(id:String)->void:
-	if _dense_v2_find_frame(id)==null or dense_v2_artwork_picker==null:return
+	if dense_v2_artwork_picker==null:return
+	if id.begins_with("DG:"):
+		var holder:Node3D=dense_artifact_empty_nodes.get(id)
+		if not is_instance_valid(holder) or not holder.is_visible_in_tree():return
+	elif _dense_v2_find_frame(id)==null:return
 	dense_v2_pending_frame=id
 	dense_v2_artwork_picker.popup_centered_ratio(.75)
 
 func _assign_dense_v2_artwork(path:String)->void:
 	var id:String=dense_v2_pending_frame
 	dense_v2_pending_frame=""
+	if id.begins_with("DG:"):
+		if not dense_artifact_qa or world.dense_artifact_world==null:return
+		var holder:Node3D=dense_artifact_empty_nodes.get(id)
+		if not is_instance_valid(holder) or not holder.is_visible_in_tree():return
+		var importer=DenseArtifactImport.new()
+		var assigned:String=importer.assign(world,id,path)
+		if assigned=="":
+			notice.text=importer.error
+			return
+		var saved:bool=world.save_world()
+		make_physical_objects()
+		notice.text="Артефакт назначен" if saved else "Артефакт записан в журнал; контрольное сохранение не удалось"
+		open_content_hotspot({"category":"artifacts","item_id":assigned})
+		return
 	var frame:MeshInstance3D=_dense_v2_find_frame(id)
 	if frame==null or not FileAccess.file_exists(path):return
 	var file:=FileAccess.open(path,FileAccess.READ)

@@ -106,6 +106,8 @@ func _apply_owned(next:Dictionary,event:Dictionary)->Dictionary:
 			"last_interaction_at":float(payload.get("sim_clock",0.0)),
 			"updated_event_id":event_id
 		}
+		for field in ["artifact_size","artifact_source_sha256"]:
+			if metadata.has(field):next[object_id][field]=str(metadata[field])
 		var initial_support:String=str(payload.get("home_support_id",""))
 		if initial_support!="":
 			next[object_id]["home_support_id"]=initial_support

@@ -153,6 +153,11 @@ func _display_anchor_data(world, room: Dictionary) -> Array:
 			continue
 		var station_id:String=str(object.get("interaction_station_id",""))
 		var point=object.get("interaction_point",[])
+		if world.dense_artifact_world!=null:
+			var grid:Dictionary=world.dense_artifact_world.slots.get(str(object.get("current_support_id","")),{})
+			if not grid.is_empty():
+				station_id="DG_VIEW:"+str(grid.grid_id)
+				point=grid.approach
 		if station_id=="" or seen.has(station_id) or typeof(point)!=TYPE_ARRAY or point.size()<2:
 			continue
 		seen[station_id]=true
@@ -189,7 +194,8 @@ func display_objects(world, room: Dictionary) -> Array:
 		var object:Dictionary=world.objects[object_id]
 		if str(object.get("current_room_id",""))!=str(room.get("id","")) or str(object.get("state",""))!="PLACED":
 			continue
-		if str(object.get("display_mode",""))!="wall" or str(object.get("interaction_station_id",""))=="":
+		var grid:Dictionary=world.dense_artifact_world.slots.get(str(object.get("current_support_id","")),{}) if world.dense_artifact_world!=null else {}
+		if grid.is_empty() and (str(object.get("display_mode",""))!="wall" or str(object.get("interaction_station_id",""))==""):
 			continue
 		result.append(object)
 	result.sort_custom(func(a,b): return str(a.get("id",""))<str(b.get("id","")))
@@ -198,6 +204,9 @@ func display_objects(world, room: Dictionary) -> Array:
 func display_claim(world, actor: Dictionary, room: Dictionary,
 		object: Dictionary) -> Dictionary:
 	var station_id:String=str(object.get("interaction_station_id",""))
+	if world.dense_artifact_world!=null:
+		var grid:Dictionary=world.dense_artifact_world.slots.get(str(object.get("current_support_id","")),{})
+		if not grid.is_empty():station_id="DG_VIEW:"+str(grid.grid_id)
 	if station_id=="":
 		return {}
 	var id:String=str(actor.get("id",""))
