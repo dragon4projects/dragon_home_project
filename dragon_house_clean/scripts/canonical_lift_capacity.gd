@@ -25,7 +25,12 @@ func _vertical(actor:Dictionary)->bool:
 
 func _shaft(actor:Dictionary)->String:
 	var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
-	return str(room["x"]) if str(room.get("type",""))=="lift" else ""
+	return str(int(room["x"])) if str(room.get("type",""))=="lift" else ""
+
+# JSON restores integral room coordinates as floats. Accept the historical
+# integral-float spelling, but never a fractional or invalid shaft identity.
+func _same_shaft(raw:String,shaft:String)->bool:
+	return shaft!="" and raw.is_valid_float() and is_finite(float(raw)) and float(raw)==float(shaft)
 
 func _in_air(actor:Dictionary)->bool:
 	var y:float=float(actor.get("visual_y",0))
@@ -46,7 +51,8 @@ func sync()->void:
 			var row:Dictionary=actor.get("canonical_lift_slot",{})
 			var slot:int=int(row.get("index",-1))
 			var holders:Dictionary=occupied.get(shaft,{})
-			if str(row.get("shaft",""))==shaft and slot>=0 and slot<CAPACITY and not holders.has(slot):
+			if _same_shaft(str(row.get("shaft","")),shaft) and slot>=0 and slot<CAPACITY and not holders.has(slot):
+				actor["canonical_lift_slot"]={"shaft":shaft,"index":slot}
 				holders[slot]=str(actor["id"])
 				occupied[shaft]=holders
 				peak=maxi(peak,holders.size())
