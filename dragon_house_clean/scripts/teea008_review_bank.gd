@@ -14,12 +14,20 @@ var live_physical_objects:=false
 var packed_model_cache:Dictionary={}
 var packed_model_lru:Array=[]
 const MODEL_CACHE_LIMIT:=48
+# One decorative set contains 20 separate books / 40 material surfaces.
+# Compact only this static model. Each placement retains its own wrapper,
+# support transform and conditional visibility; catalogue books are separate.
+var compact_encyclopedia_enabled:=true
+var _encyclopedia_mesh:ArrayMesh
+var _encyclopedia_attempted:=false
 var error:=""
 func initialize(force_review:bool=false) -> bool:
 	layouts.clear()
 	surfaces.clear()
 	packed_model_cache.clear()
 	packed_model_lru.clear()
+	_encyclopedia_mesh=null
+	_encyclopedia_attempted=false
 	enabled=false
 	sketchfab_common_enabled=false
 	error=""
@@ -109,6 +117,55 @@ func _mount_pose(item:Dictionary,scale_at:Callable,instances:Dictionary)->Dictio
 		projected=Vector3(physical.x*depth,h.y+(physical.y-h.y)*depth,h.z+(physical.z-h.z)*depth)
 	return {"position":projected,"depth":depth,"support_host_id":host_id if not host.is_empty() else ""}
 
+func _collect_encyclopedia_surfaces(node:Node,xf:Transform3D,groups:Dictionary)->bool:
+	if node is AnimationPlayer or node is Skeleton3D:return false
+	if node is Node3D:
+		if not node.visible:return false
+		xf=xf*node.transform
+	if node is MeshInstance3D:
+		var source:MeshInstance3D=node
+		if not source.mesh is ArrayMesh or source.skin!=null or source.get_blend_shape_count()!=0 or source.material_overlay!=null or source.transparency!=0.0 or source.layers!=1:return false
+		var scale_value:Vector3=xf.basis.get_scale()
+		if xf.basis.determinant()<=0.0 or not is_equal_approx(scale_value.x,scale_value.y) or not is_equal_approx(scale_value.x,scale_value.z):return false
+		for surface in range(source.mesh.get_surface_count()):
+			if source.mesh.surface_get_primitive_type(surface)!=Mesh.PRIMITIVE_TRIANGLES:return false
+			var mat:Material=source.get_active_material(surface)
+			if not mat is StandardMaterial3D or mat.transparency!=BaseMaterial3D.TRANSPARENCY_DISABLED or mat.next_pass!=null or mat.billboard_mode!=BaseMaterial3D.BILLBOARD_DISABLED:return false
+			var fmt:int=source.mesh.surface_get_format(surface)
+			if fmt & (Mesh.ARRAY_FORMAT_CUSTOM0|Mesh.ARRAY_FORMAT_CUSTOM1|Mesh.ARRAY_FORMAT_CUSTOM2|Mesh.ARRAY_FORMAT_CUSTOM3|Mesh.ARRAY_FORMAT_BONES|Mesh.ARRAY_FORMAT_WEIGHTS):return false
+			var key:String=str(mat.get_instance_id())+"|"+str(fmt)
+			if not groups.has(key):groups[key]=[]
+			groups[key].append({"mesh":source.mesh,"surface":surface,"transform":xf,"material":mat})
+	for child in node.get_children():
+		if not _collect_encyclopedia_surfaces(child,xf,groups):return false
+	return true
+
+func _compact_encyclopedia(scene:PackedScene)->ArrayMesh:
+	if _encyclopedia_attempted:return _encyclopedia_mesh
+	_encyclopedia_attempted=true
+	var model:Node=scene.instantiate()
+	var groups:Dictionary={}
+	var ok:bool=_collect_encyclopedia_surfaces(model,Transform3D.IDENTITY,groups)
+	if not ok or groups.size()!=3:
+		model.free()
+		return null
+	var result:=ArrayMesh.new()
+	var count:=0
+	for records in groups.values():
+		var tool:=SurfaceTool.new()
+		tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+		for row in records:
+			tool.append_from(row["mesh"],int(row["surface"]),row["transform"])
+			count+=1
+		tool.set_material(records[0]["material"])
+		tool.commit(result)
+	model.free()
+	# The known source has exactly forty surfaces. A changed or unsupported
+	# source falls back to the original scene instead of silently losing art.
+	if count!=40 or result.get_surface_count()!=3:return null
+	_encyclopedia_mesh=result
+	return result
+
 func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true,instances:Dictionary={})->Node3D:
 	var asset:String=str(item["asset_id"])
 	var position:Array=item["room_local_xyz"]
@@ -141,7 +198,15 @@ func _mount(parent:Node3D,item:Dictionary,scale_at:Callable,animate:bool=true,in
 		wrapper.set_meta("decor_slot_id",str(item["decor_slot_id"]))
 		wrapper.set_meta("room_id",str(parent.get_meta("room_id","")))
 		wrapper.add_to_group("canonical_conditional_dressing")
-	wrapper.add_child(scene.instantiate())
+	var compact:ArrayMesh=_compact_encyclopedia(scene) if compact_encyclopedia_enabled and asset=="book_encyclopedia_set_01" else null
+	if compact!=null:
+		var mesh_node:=MeshInstance3D.new()
+		mesh_node.name="CompactEncyclopedia"
+		mesh_node.mesh=compact
+		mesh_node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		wrapper.add_child(mesh_node)
+	else:
+		wrapper.add_child(scene.instantiate())
 	if animate and asset=="sketchfab_fireplace_animated":
 		for player in wrapper.find_children("*","AnimationPlayer",true,false):
 			if player.has_animation("Fire"):

@@ -742,6 +742,34 @@ func _add_warm_room_light(parent: Node3D, at: Vector3, energy: float = 0.42) -> 
 	light.shadow_enabled=false
 	parent.add_child(light)
 
+# Detail-only, shadowless lighting pools: give the measured furniture a
+# readable value hierarchy without touching collision or adding fixtures.
+func _add_canonical_interior_lighting(parent:Node3D,group:Dictionary)->void:
+	var kind:String=str(group.get("type",""))
+	var width:float=float(group.get("width",1))*W
+	var specs:Array=[]
+	match kind:
+		"library": specs=[[-0.30,2.10,-0.55,"#f5d5a5",0.65,3.8],[0.38,2.10,-0.45,"#ffe6bd",0.65,3.8]]
+		"kitchen": specs=[[-0.30,2.30,-0.60,"#fff0d4",0.75,4.0],[0.30,2.20,-0.60,"#e5b278",0.62,3.8]]
+		"rest": specs=[[-0.29,1.90,-0.25,"#ffc08a",0.58,3.6],[0.30,2.05,-0.40,"#f1d4a1",0.48,3.6]]
+		"cinema": specs=[[-0.26,2.15,-0.65,"#9aa8d2",0.23,3.2],[0.29,1.75,-0.20,"#d6a58e",0.24,3.2]]
+		"music": specs=[[-0.28,2.15,-0.55,"#e9b3a3",0.55,3.6],[0.28,1.95,-0.35,"#d4bcf5",0.42,3.6]]
+		"study","workshop": specs=[[-0.26,2.20,-0.30,"#f6e7ca",0.67,3.8],[0.30,2.20,-0.35,"#f3d4a9",0.56,3.6]]
+		"artifact": specs=[[-0.28,2.10,-0.50,"#f9e4b9",0.58,3.6],[0.29,2.10,-0.50,"#dce5f0",0.55,3.6]]
+		_: return
+	var rig:=Node3D.new()
+	rig.name="CanonicalInteriorLightRig"
+	parent.add_child(rig)
+	for spec in specs:
+		var light:=OmniLight3D.new()
+		light.position=Vector3(float(spec[0])*width,float(spec[1]),float(spec[2]))
+		light.light_color=Color(str(spec[3]))
+		light.light_energy=float(spec[4])
+		light.omni_range=float(spec[5])
+		light.omni_attenuation=1.6
+		light.shadow_enabled=false
+		rig.add_child(light)
+
 func _add_authored_room_atmosphere(root: Node3D, kind: String, span: float,
 		has_decor_art: bool = false) -> void:
 	# When photorealistic furniture exists, procedural geometry must not
@@ -1464,6 +1492,8 @@ func _populate_furniture(group_node: Node3D) -> void:
 			furnish(root,str(group["type"]),int(group["x_start"]),int(group["level"]))
 			_ensure_fallback_anchor_furniture(
 				root,life.stations.layout_for_world(world,physical_room))
+	if architecture_review and bool(group.get("teea008_review",false)):
+		_add_canonical_interior_lighting(decoration_layer,group)
 	if bool(group.get("teea008_review",false)):
 		# Retain the current Common hearth, without duplicate legacy rugs/sconces.
 		if str(group["type"])=="common":
@@ -3547,6 +3577,18 @@ func _refresh_conditional_dressing()->void:
 # Bound costly mounted interiors, including legacy fallback furniture; shells and real
 # overview models stay visible. Rank by physical camera focus, not actor AI.
 func _canonical_detail_budget()->Dictionary:
+	# ROOM is an explicit inspection of a single logical room. Neighboring
+	# shells and overview cues stay visible; FREE/FOLLOW retain two rich
+	# rooms for continuous motion. Never make a private room detailed.
+	if current_mode=="ROOM" and selected_room!="" and zoom_current<44.0:
+		var selected:Dictionary=world.room_by_id(selected_room)
+		if not selected.is_empty():
+			var group:Dictionary=world.merged_group(int(selected["x"]),int(selected["level"]))
+			var id:String=str(group.get("primary_id",""))
+			var node:Node3D=room_root.get_node_or_null(NodePath(id)) if id!="" else null
+			if node!=null and node.get_node_or_null("LocalFurniture")!=null and not _group_facade_only(group) and semantic_view.group_visible(group):
+				return {id:true}
+			return {}
 	var candidates:Array=[]
 	for node in room_root.get_children():
 		var group:Dictionary=visual_room_groups.get(node.name,{})
@@ -3911,10 +3953,16 @@ func _update_physical_books()->void:
 	for book in world.media.get("books",[]):
 		if not bool(book.get("physical",true)):continue
 		var id:String=str(book["id"])
-		var slot:Dictionary=life.media_runtime.book_slot(id)
 		var holder_id:String=str(book.get("holder_id",""))
 		# Possession is authoritative even if a shelf assignment needs repair.
-		if slot.is_empty() and holder_id=="":continue
+		# Only resolve the measured support for a visible, unheld book.
+		var slot:Dictionary={}
+		if holder_id=="":
+			var stored:Dictionary=world.runtime_state.get("teea008_book_slot_assignments",{}).get(id,{})
+			var stored_room:String=str(stored.get("room_id",""))
+			if stored_room=="" or not detailed_room_groups.has(stored_room) or str(book.get("location_room_id",""))!=stored_room:continue
+			slot=life.media_runtime.book_slot(id)
+			if slot.is_empty():continue
 		var room:Dictionary={}
 		var position_value:=Vector3.ZERO
 		var scale_value:=1.0
