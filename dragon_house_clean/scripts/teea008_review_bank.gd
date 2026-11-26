@@ -548,6 +548,36 @@ func _apply_library_gallery_dressing()->void:
 		if valid:
 			layouts[key]["instances"].append_array(doc["additions"][key])
 			layouts[key]["canonical_dressing_revision"]="LIBRARY_GALLERY_V1"
+			if key=="library/R3":
+				# The two existing reading chairs faced the rear wall, so
+				# neither could bind the measured front-facing READ pose.
+				# Rotate the complete contact/footprint contract in place.
+				for chair in layouts[key]["instances"]:
+					if str(chair.get("instance_id","")) in ["library_r3_reading_chair","library_r3_reading_chair_b"]:
+						_face_library_chair_front(chair)
+				layouts[key]["canonical_dressing_revision"]="LIBRARY_GALLERY_V2_READING"
+
+func _face_library_chair_front(chair:Dictionary)->void:
+	var p:Array=chair["room_local_xyz"]
+	var lo:Array=chair["bounds_min_m"].duplicate()
+	var hi:Array=chair["bounds_max_m"].duplicate()
+	chair["rotation_deg_xyz"][1]=0.0
+	chair["bounds_min_m"]=[2.0*float(p[0])-float(hi[0]),lo[1],2.0*float(p[2])-float(hi[2])]
+	chair["bounds_max_m"]=[2.0*float(p[0])-float(lo[0]),hi[1],2.0*float(p[2])-float(lo[2])]
+	for point in chair.get("physical_footprint_xz",[]):
+		point[0]=2.0*float(p[0])-float(point[0])
+		point[1]=2.0*float(p[2])-float(point[1])
+	for station in chair.get("station_candidates",[]):
+		for field in ["room_pelvis_contact_xyz","room_feet_contact_xyz"]:
+			var point:Array=station[field]
+			point[0]=2.0*float(p[0])-float(point[0])
+			point[2]=2.0*float(p[2])-float(point[2])
+		var approach:Array=station["room_approach_xz"]
+		approach[0]=2.0*float(p[0])-float(approach[0])
+		approach[1]=2.0*float(p[2])-float(approach[1])
+		var facing:Array=station["room_facing_xyz"]
+		facing[0]=-float(facing[0])
+		facing[2]=-float(facing[2])
 
 func _apply_media_work_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_media_work_interiors_20261125.json",FileAccess.READ)
