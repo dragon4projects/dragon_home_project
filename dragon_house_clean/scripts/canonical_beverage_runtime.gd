@@ -25,13 +25,13 @@ func setup(model)->void:
 		entries=doc.get("entries",[])
 		for row in entries:by_id[str(row["drink_id"])]=row
 		enabled=entries.size()==105 and by_id.size()==105
-		rng.seed=10520261125
 	if not enabled:return
+	rng=world.decision_rng("beverages")
 	var store:Dictionary=world.runtime_state.get("beverages",{})
 	if store.is_empty():
 		store={"cups":{},"preferences":{},"serial":0,"rng_state":str(rng.state)}
 		world.runtime_state["beverages"]=store
-	rng.state=int(str(store.get("rng_state",str(rng.state))))
+	store["rng_state"]=str(rng.state)
 
 func _store()->Dictionary:
 	return world.runtime_state["beverages"]
