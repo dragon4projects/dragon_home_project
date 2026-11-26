@@ -398,7 +398,7 @@ func _append_journal(event_name: String, actor_id: String = "", subject_id: Stri
 		"from": from_value,
 		"to": to_value,
 		"details": details.duplicate(true),
-		"sim_clock": sim_clock
+		"sim_clock": float(details.get("event_sim_clock",sim_clock))
 	})
 	while journal.size() > 256:
 		journal.pop_front()
@@ -573,9 +573,9 @@ func object_active_use(object:Dictionary)->bool:
 		if str(actor.get("phase","")) in ["travel","perform"] and (str(actor.get("activity_media_id",""))==id or str(actor.get("viewing_object_id",""))==id):return true
 	return false
 
-func record_object_view(object_id:String,actor_id:String)->bool:
+func record_object_view(object_id:String,actor_id:String,context:String)->bool:
 	if not _ensure_object_events():return false
-	return object_events.record_view(object_id,actor_id)
+	return object_events.record_view(object_id,actor_id,context)
 
 func object_needs_housekeeping(object:Dictionary)->bool:
 	if object.is_empty() or not bool(object.get("movable",false)) or not bool(object.get("recoverable",false)) or not bool(object.get("reset_eligible",true)):return false
