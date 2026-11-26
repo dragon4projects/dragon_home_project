@@ -38,16 +38,16 @@ func run()->void:
   if library.type!="library":continue
   var node:Node3D=scene.room_root.get_node(str(library.id))
   assert(node.get_node_or_null("Layer_Structure/LibraryRearFinish/WalnutWainscot")!=null)
-  assert(scene.life.candidate_navigation.book_slots(library).size()==10)
+  assert(scene.life.candidate_navigation.book_slots(library).size()==50)
   lib_count+=1
   if lib_count==1:
    scene.selected_room=library.id;scene.set_mode("ROOM")
    scene.zoom_current=scene.zoom;scene.smooth_focus=scene.desired_focus;scene.apply_camera(1.0);scene.update_render_lod()
    if DisplayServer.get_name()!="headless":
     for i in range(3):await process_frame;await RenderingServer.frame_post_draw
-    assert(root.get_texture().get_image().save_png("/home/user/dragon_qa/iter69_library.png")==OK)
+    assert(root.get_texture().get_image().save_png("/home/user/dragon_qa/iter70_library.png")==OK)
  assert(lib_count==2)
  assert(scene._hearth_picture_hit(Vector2(0,0)).is_empty())
  DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
- print("DEPTH7_PICTURE_PASS slots=10 filled=1 empty=9 invalid_rejected=true libraries=2 book_slots=10 each")
+ print("DEPTH7_PICTURE_PASS slots=10 filled=1 empty=9 invalid_rejected=true libraries=2 book_slots=50 each")
  quit(0)

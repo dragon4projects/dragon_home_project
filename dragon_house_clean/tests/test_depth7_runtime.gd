@@ -68,7 +68,7 @@ func run()->void:
   for sid in scene.teea008_review.surfaces:
    if scene.teea008_review.surfaces[sid].room_variant==key:expected+=1
   assert(layer.find_children("Aperture_*","Node3D",true,false).size()==expected,key)
-  if key=="library/R3":assert(nav.book_slots(r).size()==10)
+  if key=="library/R3":assert(nav.book_slots(r).size()==50)
   if key=="artifact/R3":assert(nav.artifact_slots(r).size()==28)
   if DisplayServer.get_name()!="headless":
    for i in range(2):await process_frame;await RenderingServer.frame_post_draw

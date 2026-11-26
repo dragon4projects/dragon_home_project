@@ -108,6 +108,7 @@ static func convert(row:Dictionary,key:String)->Dictionary:
   var g:Dictionary=groups.get(h if h!="" else id,{})
   if g.is_empty():return {}
   transform_item(item,g["origin"],g["target"],float(g["scale"]))
+ if key=="library/R3":extend_library(result)
  result["depth7_measured"]=true
  result["playable_z_m"]=[D.BACK,D.FRONT]
  result["front_transit_band_z_m"]=[D.EDGES[1],D.FRONT]
@@ -124,3 +125,33 @@ static func move_media(surfaces:Dictionary,keys:Array)->void:
   var p:=v(item["room_local_xyz"])
   var q:=Vector3(p.x,p.y,-7.96)
   transform_item(item,p,q,D.scale_at(q.z))
+
+
+# Duplicate a measured shelf cluster, including its conditional display books.
+# Existing shelf/station IDs and coordinates never change.
+static func extend_library(row:Dictionary)->void:
+ var original:String="library_r3_bookshelf"
+ var source:Array=[]
+ for item in row["instances"]:
+  if str(item["instance_id"])==original or host_id(item)==original:source.append(item)
+ if source.is_empty():return
+ for i in range(4):
+  var replacement:String="library_depth7_shelf_%02d"%(i+1)
+  var x:float=[-4.85,-3.54,-2.23,4.85][i]
+  var dx:float=x-(-6.16)
+  for item in source:
+   var clone:Dictionary=item.duplicate(true)
+   var origin:=v(clone["room_local_xyz"])
+   transform_item(clone,origin,origin+Vector3(dx,0,0),1.0)
+   # transform_item normally initializes original fit values; for an already
+   # measured clone preserve the actual unscaled opening dimensions.
+   for j in range(clone.get("support_slots",[]).size()):
+    var slot:Dictionary=clone["support_slots"][j]
+    slot["unscaled_dimensions_m"]=item["support_slots"][j]["unscaled_dimensions_m"].duplicate(true)
+    slot["room_slot_id"]=str(slot["room_slot_id"]).replace(original,replacement)
+   clone["instance_id"]=str(clone["instance_id"]).replace(original,replacement)
+   for field in ["support_ref","decor_slot_id"]:
+    if clone.get(field)!=null:clone[field]=str(clone[field]).replace(original,replacement)
+   for station in clone.get("station_candidates",[]):
+    station["station_candidate_id"]=str(station["station_candidate_id"]).replace(original,replacement)
+   row["instances"].append(clone)
