@@ -53,6 +53,13 @@ var load_error:String=""
 # not the (independently durable) object-event stream.
 const CHECKPOINT_INTERVAL_SECONDS:=20.0
 var last_checkpoint_clock:float=-1.0
+# Cache only the digest of exact bytes that passed full snapshot validation.
+# A changed primary always takes the full validation path before rotation.
+var _verified_primary_path:String=""
+var _verified_primary_sha:String=""
+var _last_validated_snapshot_sha:String=""
+var _snapshot_full_validation_count:int=0
+var _snapshot_digest_hits:int=0
 
 # Each simulation domain owns a separate random stream. The world keeps
 # the live generators so every checkpoint (including explicit saves) captures
@@ -1344,13 +1351,19 @@ func _migrate_legacy_topology() -> bool:
 	return true
 
 func _read_snapshot(path: String) -> Dictionary:
+	_last_validated_snapshot_sha=""
+	_snapshot_full_validation_count+=1
 	if not FileAccess.file_exists(path):
 		return {}
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return {}
+	var expected_length:int=file.get_length()
+	var bytes:PackedByteArray=file.get_buffer(expected_length)
+	file.close()
+	if bytes.size()!=expected_length:return {}
 	var parser := JSON.new()
-	if parser.parse(file.get_as_text()) != OK:
+	if parser.parse(bytes.get_string_from_utf8()) != OK:
 		return {}
 	var parsed = parser.data
 	if typeof(parsed) != TYPE_DICTIONARY:
@@ -1394,7 +1407,16 @@ func _read_snapshot(path: String) -> Dictionary:
 	var catalog:Dictionary=parsed.get("media",{})
 	for key in ["books","films","tracks"]:
 		if catalog.has(key) and typeof(catalog[key])!=TYPE_ARRAY:return {}
+	var hashing:=HashingContext.new()
+	if hashing.start(HashingContext.HASH_SHA256)!=OK or hashing.update(bytes)!=OK:return {}
+	_last_validated_snapshot_sha=hashing.finish().hex_encode()
 	return parsed
+
+func _primary_is_valid_for_rotation()->bool:
+	if _verified_primary_path==save_path and _verified_primary_sha!="" and FileAccess.get_sha256(save_path)==_verified_primary_sha:
+		_snapshot_digest_hits+=1
+		return true
+	return not _read_snapshot(save_path).is_empty()
 
 func _existing_world_evidence()->bool:
 	# Scratch files and sidecars are evidence too. Never automatically adopt
@@ -1422,8 +1444,13 @@ func load_or_seed() -> bool:
 	load_status="LOADING"
 	load_error=""
 	last_checkpoint_clock=-1.0
+	_verified_primary_path=""
+	_verified_primary_sha=""
 	_rng_streams.clear()
 	var parsed: Dictionary = _read_snapshot(save_path)
+	if not parsed.is_empty():
+		_verified_primary_path=save_path
+		_verified_primary_sha=_last_validated_snapshot_sha
 	var from_backup:bool=false
 	if parsed.is_empty():
 		parsed = _read_snapshot(save_path + ".bak")
@@ -1496,7 +1523,9 @@ func _write_snapshot() -> bool:
 	var file := FileAccess.open(scratch,FileAccess.WRITE)
 	if file == null:
 		return false
-	file.store_string(JSON.stringify(data,"\t"))
+	# Same schema and numeric encoding; no presentation whitespace needed
+	# in the frequently written machine checkpoint.
+	file.store_string(JSON.stringify(data))
 	file.flush()
 	var write_error:Error=file.get_error()
 	file.close()
@@ -1505,13 +1534,14 @@ func _write_snapshot() -> bool:
 	if _read_snapshot(scratch).is_empty():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(scratch))
 		return false
+	var scratch_sha:String=_last_validated_snapshot_sha
 	var absolute_save := ProjectSettings.globalize_path(save_path)
 	var absolute_tmp := ProjectSettings.globalize_path(scratch)
 	var absolute_backup := ProjectSettings.globalize_path(backup)
 	# Never rotate a corrupt primary over the last readable generation.
 	# If interrupted after rotation, load_or_seed can still read .bak.
 	if FileAccess.file_exists(save_path):
-		if not _read_snapshot(save_path).is_empty():
+		if _primary_is_valid_for_rotation():
 			if FileAccess.file_exists(backup) and DirAccess.remove_absolute(absolute_backup)!=OK:
 				return false
 			if DirAccess.rename_absolute(absolute_save,absolute_backup)!=OK:
@@ -1523,6 +1553,8 @@ func _write_snapshot() -> bool:
 				return false
 	if DirAccess.rename_absolute(absolute_tmp,absolute_save)!=OK:
 		return false
+	_verified_primary_path=save_path
+	_verified_primary_sha=scratch_sha
 	return true
 
 func import_catalog(path: String) -> bool:

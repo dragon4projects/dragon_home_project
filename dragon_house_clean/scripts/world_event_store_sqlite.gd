@@ -9,6 +9,7 @@ extends RefCounted
 
 var path: String = ""
 var events: Array = []
+var event_ids:Dictionary={}
 var sequence: int = 0
 var status: String = "UNINITIALIZED"
 var last_error: String = ""
@@ -174,8 +175,8 @@ func _load_events() -> bool:
 		FROM events ORDER BY seq;"""):
 		return false
 	events.clear()
+	event_ids.clear()
 	sequence = 0
-	var seen: Dictionary = {}
 	for raw_row in _rows():
 		if typeof(raw_row) != TYPE_DICTIONARY:
 			last_error = "SQLite event row is not a dictionary"
@@ -183,10 +184,10 @@ func _load_events() -> bool:
 		var event: Dictionary = _decode_event(raw_row)
 		var event_id: String = str(event.get("event_id",""))
 		var seq: int = int(event.get("seq",0))
-		if event_id == "" or seq != sequence+1 or seen.has(event_id):
+		if event_id == "" or seq != sequence+1 or event_ids.has(event_id):
 			last_error = "SQLite event order/identity is invalid"
 			return false
-		seen[event_id] = true
+		event_ids[event_id] = true
 		sequence = seq
 		events.append(event)
 	return true
@@ -218,6 +219,7 @@ func _quarantine_primary() -> void:
 func setup(base_save_path: String) -> bool:
 	path = base_save_path + ".world_events_v1.sqlite"
 	events.clear()
+	event_ids.clear()
 	sequence = 0
 	status = "INITIALIZING"
 	last_error = ""
@@ -271,12 +273,33 @@ func setup(base_save_path: String) -> bool:
 	return false
 
 func has_event(event_id: String) -> bool:
-	if event_id == "":
-		return false
-	for raw_event in events:
-		if str((raw_event as Dictionary).get("event_id","")) == event_id:
-			return true
-	return false
+	return event_id!="" and event_ids.has(event_id)
+
+# Read back only rows appended by this transaction. Validate them before
+# COMMIT, so a malformed or concurrent tail cannot be published in memory.
+# The full ordered stream is still loaded/validated on setup and migration.
+func _read_appended_tail(input_events:Array)->Array:
+	if not _query("""SELECT seq,event_id,created_at,source_type,source_id,authority,
+		truth_class,visibility,event_type,subject_id,object_id,room_id,
+		from_value,to_value,expires_at,reversibility,provenance,notes,payload_json
+		FROM events WHERE seq>? ORDER BY seq;""",[sequence]):
+		return []
+	var rows:Array=_rows()
+	if rows.size()!=input_events.size():
+		last_error="SQLite append tail length mismatch"
+		return []
+	var tail:Array=[]
+	for i in range(rows.size()):
+		if typeof(rows[i])!=TYPE_DICTIONARY:
+			last_error="SQLite append tail row invalid"
+			return []
+		var event:Dictionary=_decode_event(rows[i])
+		var id:String=str(event.get("event_id",""))
+		if int(event.get("seq",0))!=sequence+i+1 or id!=str(input_events[i].get("event_id","")) or event_ids.has(id):
+			last_error="SQLite append tail order/identity mismatch"
+			return []
+		tail.append(event)
+	return tail
 
 func _insert_event(event: Dictionary, preserve_seq: bool = false) -> bool:
 	var payload_json := JSON.stringify(event.get("payload",{}))
@@ -467,14 +490,12 @@ func append_many_with_projection(input_events: Array, projection: Dictionary) ->
 	if input_events.is_empty():
 		return []
 	var ids: Dictionary = {}
-	for existing in events:
-		ids[str((existing as Dictionary).get("event_id",""))] = true
 	for raw_event in input_events:
 		if typeof(raw_event) != TYPE_DICTIONARY:
 			last_error = "Cannot append non-object event"
 			return []
 		var id := str((raw_event as Dictionary).get("event_id",""))
-		if id == "" or ids.has(id):
+		if id == "" or event_ids.has(id) or ids.has(id):
 			last_error = "duplicate/empty event_id: " + id
 			return []
 		ids[id] = true
@@ -490,25 +511,23 @@ func append_many_with_projection(input_events: Array, projection: Dictionary) ->
 		_query("ROLLBACK;")
 		status = "WRITE_FAILED"
 		return []
+	var committed:Array=_read_appended_tail(input_events)
+	if committed.size()!=input_events.size():
+		_query("ROLLBACK;")
+		status="WRITE_FAILED"
+		return []
 	if not _query("COMMIT;"):
 		_query("ROLLBACK;")
 		status = "WRITE_FAILED"
 		return []
-	if not _load_events():
-		status = "WRITE_FAILED"
-		return []
+	for event in committed:
+		events.append(event)
+		event_ids[str(event["event_id"])]=true
+		sequence=int(event["seq"])
 	var backup_ok: bool = _backup()
 	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
-	var committed: Array = []
-	var wanted: Dictionary = {}
-	for raw_event in input_events:
-		wanted[str((raw_event as Dictionary).get("event_id",""))] = true
-	for raw_event in events:
-		var event: Dictionary = raw_event
-		if wanted.has(str(event.get("event_id",""))):
-			committed.append(event.duplicate(true))
-	return committed
+	return committed.duplicate(true)
 
 func append(event: Dictionary) -> Dictionary:
 	last_error = "SQLite backend requires append_with_projection() transaction"
