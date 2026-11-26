@@ -2430,7 +2430,7 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 	# A public frontage is legal transit, not private interior access.
 	if not world.is_accessible(room,str(actor["id"])) and not (world.allows_transit(room) and at.z>=1.35):
 		return false
-	if candidate_navigation.has_layout(room) and not candidate_navigation.clear(room,world.room_space.world_to_local(room,at)):
+	if candidate_navigation!=null and candidate_navigation.has_layout(room) and not candidate_navigation.clear(room,world.room_space.world_to_local(room,at)):
 		return false
 	var id:String=str(actor["id"])
 	actor["room_id"]=str(room["id"])
