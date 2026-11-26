@@ -75,6 +75,40 @@ func run()->void:
    assert(root.get_texture().get_image().save_png("/home/user/dragon_qa/iter63_"+str(r["id"])+"_"+key.get_slice("/",0)+".png")==OK)
   functional_count+=1
  assert(functional_count==8,str(functional_count))
+ var guests:=0
+ var shafts:=0
+ var private_count:=0
+ for r in scene.world.rooms:
+  assert(D.enabled_for(r),str(r["id"]))
+  var node:Node3D=scene.room_root.get_node(str(r["id"]))
+  match str(r["type"]):
+   "guest":
+    guests+=1
+    assert(node.get_node_or_null("Layer_OverviewCues")!=null)
+    var before:Dictionary=r.duplicate(true)
+    assert(scene.world.set_guest_room_open(str(r["id"]),false))
+    assert(scene._refresh_guest_facades())
+    var closed:Node3D=scene.room_root.get_node(str(r["id"]))
+    assert(closed.get_node_or_null("PrivateFacadeWall")!=null)
+    assert(closed.get_node_or_null("Layer_OverviewCues")==null)
+    assert(closed.get_node_or_null("LocalFurniture")==null)
+    assert(not scene.world.is_accessible(r,"QA_OTHER"))
+    assert(scene.world.set_guest_room_open(str(r["id"]),true))
+    assert(scene._refresh_guest_facades())
+    var reopened:Node3D=scene.room_root.get_node(str(r["id"]))
+    assert(reopened.get_node_or_null("Layer_OverviewCues")!=null)
+   "lift":
+    shafts+=1
+    for i in [1,3,5]:assert(node.get_node_or_null("Layer_Structure/LiftLane_%d"%i)!=null)
+   "private":
+    private_count+=1
+    assert(node.get_node_or_null("PrivateFacadeWall")!=null)
+    assert(node.get_node_or_null("LocalFurniture")==null)
+    assert(node.get_node_or_null("Layer_OverviewCues")==null)
+    assert(is_equal_approx(node.get_node("Layer_Structure/CutawayFloorSlab").mesh.size.z,9.7))
+ assert(guests==3 and shafts==18 and private_count==32,str([guests,shafts,private_count]))
+ print("DEPTH7_ALL_SHELLS_PASS guests=",guests," lift_segments=",shafts," private=",private_count)
+
  print("DEPTH7_FUNCTION_RUNTIME_PASS rooms=",functional_count)
  # Canonical traffic must not avoid or reserve positions of other walkers.
  var Traffic=load("res://scripts/teea008_traffic.gd")

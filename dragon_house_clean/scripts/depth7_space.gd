@@ -19,4 +19,4 @@ static func passage(z:float)->bool:
 static func scale_at(z:float)->float:
  return lerpf(FAR_SCALE,NEAR_SCALE,clampf((z-FAR_CENTER)/(NEAR_CENTER-FAR_CENTER),0.0,1.0))
 static func enabled_for(room:Dictionary)->bool:
- return bool(room.get("depth7",false)) and str(room.get("type",""))!="lift"
+ return bool(room.get("depth7",false))

@@ -338,16 +338,20 @@ func _ready() -> void:
 					if str(room.get("type",""))=="common" and int(room.get("size_modules",1))==3:
 						room["depth7"]=true
 	if architecture_review and teea008_review.enabled:
-		for key in Depth7Layout.SOCIAL_KEYS+Depth7Layout.FUNCTION_KEYS:
+		for key in Depth7Layout.SOCIAL_KEYS+Depth7Layout.FUNCTION_KEYS+Depth7Layout.GUEST_KEYS:
 			var previous:Dictionary=teea008_review.layouts.get(key,{})
 			if previous.is_empty():continue
 			var converted:=Depth7Layout.convert(previous,key)
 			if converted.is_empty():continue
 			teea008_review.layouts[key]=converted
 			for room in world.rooms:
-				if "%s/R%d"%[str(room.get("interior_variant",room.get("type",""))),int(room.get("size_modules",1))]==key:
+				var kind:String=str(room.get("interior_variant",room.get("type","")))
+				if kind=="guest":kind=str(room.get("candidate_room_id","")).trim_suffix("_01")
+				if "%s/R%d"%[kind,int(room.get("size_modules",1))]==key:
 					room["depth7"]=true
 		Depth7Layout.move_media(teea008_review.surfaces,Depth7Layout.FUNCTION_KEYS)
+		for room in world.rooms:
+			if str(room.get("type","")) in ["private","lift"]:room["depth7"]=true
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
@@ -1625,6 +1629,19 @@ func make_room(group: Dictionary) -> void:
 		var roof_label:=label3(n,str(live_room.get("display_name","Каминная")),Vector3(0,3.35,.40),24,Color("#f4d9b9"))
 		roof_label.name="RoomRoofLabel"
 		return
+	if architecture_review and t=="lift" and Depth7Space.enabled_for(live_room):
+		var structure:=Node3D.new();structure.name="Layer_Structure";n.add_child(structure)
+		box(structure,Vector3(0,1.50,-8.14),Vector3(span,3.0,.18),palette["rock"]).name="StructuralRearBackup"
+		for side in [-1,1]:
+			var xx:float=float(side)*(span*.5-.10)
+			box(structure,Vector3(xx,1.50,-4.18),Vector3(.14,3.0,7.72),palette["rock"]).name="ConnectorRearReturn_%s"%("L" if side<0 else "R")
+			for band in [1,3,5]:
+				box(structure,Vector3(float(side)*1.48,1.9,Depth7Space.center(band)),Vector3(.11,3.8,.12),palette["bronze"]).name="LiftRail_%d_%d"%[side,band]
+		for band in [1,3,5]:
+			box(structure,Vector3(0,-.04,Depth7Space.center(band)),Vector3(span-.2,.08,.82),palette["copper"]).name="LiftLane_%d"%band
+		box(structure,Vector3(0,-.04,1.5),Vector3(span,.08,.30),palette["floor"]).name="FrontConnector"
+		label3(n,"Лифт",Vector3(0,3.35,.40),24,Color("#f4d9b9")).name="RoomRoofLabel"
+		return
 	var art_type := _review_room_art_type(group)
 	visual_room_groups[n.name]["art_type"] = art_type
 	if architecture_review and not facade_only and Depth7Space.enabled_for(live_room):
@@ -1638,7 +1655,7 @@ func make_room(group: Dictionary) -> void:
 		box(structure,Vector3(0,1.50,-8.14),Vector3(span,3.0,.18),palette["rock"]).name="StructuralRearBackup"
 		box(structure,Vector3(0,3.07,-7.60),Vector3(span,.14,1.05),palette["wood"]).name="CutawayCeilingSlab"
 		for side in [-1,1]:
-			box(structure,Vector3(float(side)*(span*.5-.10),1.45,-4.2),Vector3(.16,2.9,7.7),palette["rock"])
+			box(structure,Vector3(float(side)*(span*.5-.10),1.45,-4.2),Vector3(.16,2.9,7.7),palette["rock"]).name="ConnectorRearReturn_%s"%("L" if side<0 else "R")
 		for z in [Depth7Space.center(1),Depth7Space.center(3),Depth7Space.center(5)]:
 			box(structure,Vector3(0,-.004,z),Vector3(span-.22,.008,.06),palette["floor"])
 		var overview:=Node3D.new();overview.name="Layer_OverviewCues";n.add_child(overview)
@@ -1681,15 +1698,16 @@ func make_room(group: Dictionary) -> void:
 	# Back wall at -Z, gameplay and furniture in the middle, low foreground at +Z.
 	# Structural slabs are deliberately thin: they frame the cutaway instead of
 	# competing with the room artwork at close zoom.
-	var floor_slab:=box(structure,Vector3(0,-0.040,-0.15),
-		Vector3(span*1.01,0.055,3.60),palette["floor"])
+	var hidden_deep:bool=facade_only and Depth7Space.enabled_for(live_room)
+	var floor_slab:=box(structure,Vector3(0,-0.040,-3.20 if hidden_deep else -0.15),
+		Vector3(span*1.01,0.055,9.70 if hidden_deep else 3.60),palette["floor"])
 	floor_slab.name="CutawayFloorSlab"
 	if not facade_only:
 		var cutaway_depth:=Node3D.new()
 		cutaway_depth.name="Stage_CutawayDepth"
 		structure.add_child(cutaway_depth)
 		add_cutaway_depth(cutaway_depth,group)
-	var rear_backup:=box(background,Vector3(0,1.45,-2.14),
+	var rear_backup:=box(background,Vector3(0,1.45,-8.14 if hidden_deep else -2.14),
 		Vector3(span*1.01,3.25,0.16),palette["rock"])
 	rear_backup.name="StructuralRearBackup"
 	if not facade_only:
@@ -1697,8 +1715,8 @@ func make_room(group: Dictionary) -> void:
 		rear_stage.name = "Stage_Backwall"
 		background.add_child(rear_stage)
 		add_backwall_stage(rear_stage,group)
-	var ceiling_slab:=box(structure,Vector3(0,3.055,-0.62),
-		Vector3(span*1.01,0.09,2.72),palette["border"])
+	var ceiling_slab:=box(structure,Vector3(0,3.055,-3.57 if hidden_deep else -0.62),
+		Vector3(span*1.01,0.09,9.0 if hidden_deep else 2.72),palette["border"])
 	ceiling_slab.name="CutawayCeilingSlab"
 	if not facade_only and t not in ["cinema","lift"]:
 		var beams:=Node3D.new()
@@ -1722,16 +1740,16 @@ func make_room(group: Dictionary) -> void:
 		var connected:bool=not physical_room.is_empty() and not neighbour.is_empty() and (
 			not world.connection_between(physical_room,neighbour).is_empty())
 		if not connected:
-			box(structure,Vector3(edge,1.42,-0.42),
-				Vector3(0.16,2.75,3.08),palette["rock"])
+			box(structure,Vector3(edge,1.42,-3.36 if hidden_deep else -0.42),
+				Vector3(0.16,2.75,9.4 if hidden_deep else 3.08),palette["rock"])
 			box(overlay,Vector3(edge,0.18,1.31),
 				Vector3(0.16,0.34,0.14),palette["rock"])
 		else:
 			# The explicit connector occupies the front aisle. Keep a solid
 			# rear-side return so the room still reads as a cutaway volume,
 			# while z≈1.5 remains fully traversable between rooms.
-			var rear_return:=box(structure,Vector3(edge,1.40,-0.58),
-				Vector3(0.14,2.68,2.18),palette["rock"])
+			var rear_return:=box(structure,Vector3(edge,1.40,-3.55 if hidden_deep else -0.58),
+				Vector3(0.14,2.68,8.9 if hidden_deep else 2.18),palette["rock"])
 			rear_return.name="ConnectorRearReturn_%s" % ("L" if side<0 else "R")
 			var header:=box(structure,Vector3(edge,2.84,0.73),
 				Vector3(0.16,0.34,0.92),palette["rock_light"])

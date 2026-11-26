@@ -2,6 +2,7 @@ extends RefCounted
 ## Six independent rider slots per physical shaft. Capacity is shared across
 ## residents and ambient creatures. The shaft is not a simulated single cabin.
 ## Slot assignment persists on the actor; old centerline trips drain unchanged.
+const D=preload("res://scripts/depth7_space.gd")
 const CAPACITY:=6
 const SLOT_X:=0.52
 const LANES:=[-0.75,0.0,0.75]
@@ -61,7 +62,7 @@ func sync()->void:
 			var slot:int=int(row.get("index",-1))
 			var holders:Dictionary=occupied.get(shaft,{})
 			if _same_shaft(str(row.get("shaft","")),shaft) and slot>=0 and slot<CAPACITY and not holders.has(slot):
-				actor["canonical_lift_slot"]={"shaft":shaft,"index":slot}
+				actor["canonical_lift_slot"]={"shaft":shaft,"index":slot,"depth_revision":int(row.get("depth_revision",0))}
 				actor.erase("canonical_lift_wait")
 				holders[slot]=str(actor["id"])
 				occupied[shaft]=holders
@@ -112,8 +113,9 @@ func _first_waiter(shaft:String)->String:
 			serial=value
 	return first
 
-func slot_position(shaft:String,slot:int,y:float)->Vector3:
-	return Vector3(float(shaft)*world.MODULE_W+(-SLOT_X if slot%2==0 else SLOT_X),y,float(LANES[slot/2]))
+func slot_position(shaft:String,slot:int,y:float,revision:int=0)->Vector3:
+	var z:float=D.center([1,3,5][slot/2]) if revision==7 else float(LANES[slot/2])
+	return Vector3(float(shaft)*world.MODULE_W+(-SLOT_X if slot%2==0 else SLOT_X),y,z)
 
 func target(actor:Dictionary,at:Vector3,authored:Vector3)->Dictionary:
 	var shaft:=_shaft(actor)
@@ -137,16 +139,18 @@ func target(actor:Dictionary,at:Vector3,authored:Vector3)->Dictionary:
 		while holders.has(slot):slot+=1
 		holders[slot]=id
 		occupied[shaft]=holders
-		actor["canonical_lift_slot"]={"shaft":shaft,"index":slot}
+		var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+		actor["canonical_lift_slot"]={"shaft":shaft,"index":slot,"depth_revision":7 if D.enabled_for(room) else 0}
 		actor["canonical_lift_boarded"]=false
 		boarded+=1
 		peak=maxi(peak,holders.size())
+	var revision:int=int(actor["canonical_lift_slot"].get("depth_revision",0))
 	if not bool(actor.get("canonical_lift_boarded",false)):
-		var boarding:=slot_position(shaft,slot,at.y)
+		var boarding:=slot_position(shaft,slot,at.y,revision)
 		if at.distance_to(boarding)>0.025:
 			return {"target":boarding,"boarding":true}
 		actor["canonical_lift_boarded"]=true
-	return {"target":slot_position(shaft,slot,authored.y)}
+	return {"target":slot_position(shaft,slot,authored.y,revision)}
 
 func release(actor:Dictionary)->void:
 	_dequeue(actor)

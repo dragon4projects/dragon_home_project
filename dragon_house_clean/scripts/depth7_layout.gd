@@ -4,6 +4,7 @@ extends RefCounted
 const D=preload("res://scripts/depth7_space.gd")
 const SOCIAL_KEYS=["rest_social_upper/R3","rest_social_lower/R3","kitchen/R3"]
 
+const GUEST_KEYS=["guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]
 const FUNCTION_KEYS=["library/R3","artifact/R3","study/R3","workshop/R3","music/R3","cinema/R3"]
 
 static func v(p:Array)->Vector3:
@@ -27,6 +28,12 @@ static func target_z(item:Dictionary,key:String)->float:
   if id.contains("arcade"):return D.center(6)
   return D.center(7)
  if policy=="wall_mount":return -8.02
+ if key in GUEST_KEYS:
+  if id.contains("rest_mat"):return D.center(4)
+  if policy=="soft_floor":return D.center(4)
+  if id.contains("chair") or id.contains("ottoman"):return D.center(2)
+  if id.contains("daybed") or id.ends_with("_sofa"):return D.center(6)
+  return D.center(7)
  if policy=="soft_floor":return D.center(4)
  if key in FUNCTION_KEYS:
   if key=="library/R3":
@@ -104,7 +111,7 @@ static func convert(row:Dictionary,key:String)->Dictionary:
  result["depth7_measured"]=true
  result["playable_z_m"]=[D.BACK,D.FRONT]
  result["front_transit_band_z_m"]=[D.EDGES[1],D.FRONT]
- result["station_cap"]=maxi(24,int(result.get("station_cap",16)))
+ result["station_cap"]=maxi(24,int(result.get("station_cap",16))) if not key in GUEST_KEYS else [0,4,8,16][int(key.get_slice("/R",1))]
  result["depth7_revision"]="DEPTH7_FUNCTION_V1" if key in FUNCTION_KEYS else "DEPTH7_SOCIAL_V1"
  return result
 
