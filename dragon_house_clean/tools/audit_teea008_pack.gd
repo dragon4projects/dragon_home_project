@@ -33,7 +33,18 @@ func run()->void:
 			var tex:=ResourceLoader.load(p,"Texture2D") as Texture2D
 			assert(tex!=null and tex.get_width()==int(rec["canvas"][0]) and tex.get_height()==int(rec["canvas"][1]),p)
 			intake_count+=1
-	assert(proof.get("frames",{}).size()==127+intake_count)
+	var expected_paths:Dictionary={}
+	for profile in poses.get("profiles",{}).values():
+		for entry in profile.get("states",{}).values():expected_paths["res://"+str(entry.path)]=true
+	if intake_count>0:
+		var old=JSON.parse_string(FileAccess.get_file_as_string(intake_path))
+		for rec in old:expected_paths["res://"+str(rec.path)]=true
+	var complete_path:="res://data/asset_proposals/DH_SPRITE_20261126_COMPLETE/frames.json"
+	if FileAccess.file_exists(complete_path):
+		var complete=JSON.parse_string(FileAccess.get_file_as_string(complete_path))
+		assert(complete.size()==204)
+		for rec in complete:expected_paths["res://"+str(rec.path)]=true
+	assert(proof.get("frames",{}).size()==expected_paths.size())
 	var verified:=0
 	for profile in poses["profiles"].values():
 		for entry in profile["states"].values():

@@ -37,6 +37,21 @@ if intake_path.is_file():
             for frame in state:
                 if frames.get("res://"+frame["path"])!=frame["sha256"]:
                     raise SystemExit("cup hand contact hash mismatch")
+complete=root/"data/asset_proposals/DH_SPRITE_20261126_COMPLETE"
+if (complete/"frames.json").is_file():
+    records=json.loads((complete/"frames.json").read_text())
+    if len(records)!=204 or len({r["path"] for r in records})!=204:
+        raise SystemExit("complete sprite coverage mismatch")
+    for rec in records:
+        path=root/rec["path"]
+        digest=hashlib.file_digest(path.open("rb"),"sha256").hexdigest()
+        if digest!=rec["sha256"]:raise SystemExit(f"complete frame hash mismatch {path}")
+        key="res://"+rec["path"]
+        if key in frames and frames[key]!=digest:raise SystemExit(f"existing sprite proof conflict {path}")
+        frames[key]=digest
+    for profile in json.loads((complete/"pose_contacts.json").read_text())["profiles"].values():
+        for state in profile["states"].values():
+            if frames.get("res://"+state["path"])!=state["sha256"]:raise SystemExit("complete contact hash mismatch")
 (data/"TEEA008_POSE_EXPORT_PROOF.json").write_text(json.dumps({"owner_approved":False,"frames":frames},indent=2)+"\n")
 (data/"TEEA008_LIVE_REVIEW.enabled").write_text("OWNER_REVIEW_ONLY\n")
 print("TEEA008_EXPORT_STAGE_PASS verified_source_frames=",len(frames))

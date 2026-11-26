@@ -1,0 +1,1 @@
+I90 candidate intake of 204 PNGs. Existing originals must not be overwritten. All source SHA-256, canvas and alpha verified independently. Pose contact landmarks are conservative silhouette estimates pending real furniture fit; no owner approval inferred. Alternate wardrobes remain recorded but are not selected automatically.

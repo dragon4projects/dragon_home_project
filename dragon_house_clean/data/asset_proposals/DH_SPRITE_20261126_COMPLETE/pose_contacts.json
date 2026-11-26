@@ -1,0 +1,3831 @@
+{
+  "schema": 1,
+  "status": "CANDIDATE_CONTACT_ESTIMATES",
+  "profiles": {
+    "NPC_VAMPIRE_GIRL": {
+      "appearance_profile": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "be9c9b687442c775137ff5aefaa5de2b34c98c6e047f1d6753b0888261f49e30",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            232,
+            350,
+            480
+          ],
+          "contact_px": [
+            276,
+            402
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "8cc9a35c2d6c76ba1ffbee9f5a6eec10d36f9711f8e4a7ff102035ab079016c6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            217,
+            233,
+            294,
+            479
+          ],
+          "contact_px": [
+            255,
+            399
+          ],
+          "contact_span_px": 73,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "752a80f48e6a84e2ace94eae7fa4568abd6b553e4404ad5fa3ece6104a7d2eab",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            233,
+            346,
+            479
+          ],
+          "contact_px": [
+            278,
+            403
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "99dd2b7a584f283b6cd11acc55a7530f22b151e4d65fbb59aab8bef23e3061ac",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            173,
+            232,
+            284,
+            479
+          ],
+          "contact_px": [
+            238,
+            403
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "1cf9ebb9a8e2a6619dc684979adce5120f9a01c59ac02dcbe3d220fb3fd7989c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            222,
+            230,
+            328,
+            479
+          ],
+          "contact_px": [
+            266,
+            410
+          ],
+          "contact_span_px": 92,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "289327f49e427f95b2238f079249e751fec04fd6eb0d31a81a5845df3ac83e0d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            175,
+            230,
+            291,
+            479
+          ],
+          "contact_px": [
+            245,
+            400
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "74e51276faf53a517191d46adb6bd999dca9ed17dc5530f0134d98f396a298da",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            159,
+            232,
+            285,
+            480
+          ],
+          "contact_px": [
+            234,
+            403
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_01": {
+      "appearance_profile": "HELGA_01",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "85b3c27a748b83e0b1ce96c242314323eb407a778cfd7b008093ea0fc26beada",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            234,
+            341,
+            479
+          ],
+          "contact_px": [
+            275,
+            395
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "ae47c59ad715aa07b56872c8f2a8b62c7048931240e95da4e617de493e4bf45a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            218,
+            232,
+            294,
+            480
+          ],
+          "contact_px": [
+            255,
+            390
+          ],
+          "contact_span_px": 74,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "73b216b559a2dc49057b3770aee9e21ff6e1e367b4643a14c6df34be881f94e9",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            230,
+            235,
+            333,
+            480
+          ],
+          "contact_px": [
+            274,
+            396
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "05cd00d43db1d8d47e48c6fe3964de8295fd07aed154c154e8629aa3b532ed6e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            185,
+            233,
+            280,
+            479
+          ],
+          "contact_px": [
+            239,
+            396
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "0ae70eed362296a8e3f1701e16a9fff6a07206b78d0f6541364a498eff6bd6a0",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            233,
+            319,
+            479
+          ],
+          "contact_px": [
+            265,
+            394
+          ],
+          "contact_span_px": 87,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "1096598825b0f12b15233eb2053ca320676012016b17b70f52f284d1d9ab0990",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            183,
+            232,
+            286,
+            480
+          ],
+          "contact_px": [
+            242,
+            394
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_01/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "d2ea22d418e5e200957d50f415c841cfefe16fd72caefb4996de8fed52449505",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            172,
+            232,
+            282,
+            479
+          ],
+          "contact_px": [
+            237,
+            395
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_02": {
+      "appearance_profile": "VALENTA_01",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "ae3d36d8e36f290d24d04d3baf7114c706f2001dd8efb9d58983d430b98eb837",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            231,
+            343,
+            479
+          ],
+          "contact_px": [
+            270,
+            395
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "c92a155b09fbc17bb90372422838160558353ccf2106ffaa4283bfcd437c426e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            218,
+            232,
+            294,
+            479
+          ],
+          "contact_px": [
+            255,
+            390
+          ],
+          "contact_span_px": 65,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "852be3303db44d12d4b3faa4a13984286a7cf7d84744e99863a350a7743a6a3e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            231,
+            234,
+            330,
+            480
+          ],
+          "contact_px": [
+            271,
+            398
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "dc27d93c37fbf6458cf3fb679db00c04928a76040d32810d99e986c8d6d62501",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            181,
+            232,
+            281,
+            479
+          ],
+          "contact_px": [
+            241,
+            397
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "f02e4bc3bf8dde484cdd8e4b479f18533131fc0782f82d2e889b409beb9ae6ba",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            229,
+            314,
+            479
+          ],
+          "contact_px": [
+            262,
+            393
+          ],
+          "contact_span_px": 80,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "e63bf704c5b40d042ba689289b0d304ae49a8f32abb1a8574b19d1b1a980a830",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            189,
+            229,
+            284,
+            479
+          ],
+          "contact_px": [
+            243,
+            393
+          ],
+          "contact_span_px": 88,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_02/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "65f16fe128fd320dd901db77908ed717ee9c7a74f161d4769d902fceea1746f1",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            164,
+            231,
+            283,
+            480
+          ],
+          "contact_px": [
+            234,
+            396
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_03": {
+      "appearance_profile": "VALENTA_07",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "63b0e068faa0dca87fced711a1ec3acaf43eed8d54c237e7d3e05c70ec10d79f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            232,
+            349,
+            480
+          ],
+          "contact_px": [
+            273,
+            393
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "36ae78befbe647ad6ad5ebcd222240969f7bb3d61d1f8d2e36d346e7d25c12cc",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            216,
+            231,
+            296,
+            479
+          ],
+          "contact_px": [
+            255,
+            390
+          ],
+          "contact_span_px": 70,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "34272d2a9c0fc2b367bc2035ca43b24a867b4c96bfd56b5f810d6ba8e817e7cc",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            230,
+            233,
+            334,
+            479
+          ],
+          "contact_px": [
+            271,
+            395
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "60f5d8eaae9ce57cabfbb0e89acf86bbef7fda0b755ab624b87ece3387f39c7c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            176,
+            230,
+            282,
+            479
+          ],
+          "contact_px": [
+            238,
+            394
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "c74acfa33fe8d8cee1e28aec7ee4ae587a57478a9fa360cb0015d6cee2e08a2f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            224,
+            231,
+            317,
+            479
+          ],
+          "contact_px": [
+            263,
+            392
+          ],
+          "contact_span_px": 86,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "7f9eb4e3c32380d5f88fc49265d2dd74a2ea20ae782ba8edd4a4fe05361a8510",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            187,
+            229,
+            289,
+            479
+          ],
+          "contact_px": [
+            244,
+            392
+          ],
+          "contact_span_px": 91,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_03/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "b0ace45f3ee0ac427de60bdc6fe28c84345f5f5d3b7446d207999adca8d4ba11",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            162,
+            230,
+            286,
+            479
+          ],
+          "contact_px": [
+            240,
+            392
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_04": {
+      "appearance_profile": "LISA_02",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "69d49d01cd3c22e39ad94f4ed20cb477ca690216223692db3b75711fddbd2640",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            234,
+            348,
+            479
+          ],
+          "contact_px": [
+            270,
+            401
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "a26f908593e7d84c06304c36e3e5046764093bacb1a1fe9ed182c29db94cdeac",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            233,
+            301,
+            480
+          ],
+          "contact_px": [
+            255,
+            396
+          ],
+          "contact_span_px": 76,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "3b9ccc693277c3db7013a4e4f2091cd86f6f2b1a7d97bc862160ab1494f60771",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            237,
+            348,
+            480
+          ],
+          "contact_px": [
+            272,
+            405
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "ff520209d4e943c2eb29a750601d75f2489222a77bb86f477880dd15282cbf62",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            172,
+            234,
+            286,
+            480
+          ],
+          "contact_px": [
+            240,
+            403
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "d9a086d7cbcdc4fa02ea2ba7456384e30b9964728a8603ac3ff9f79d24efb600",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            231,
+            324,
+            479
+          ],
+          "contact_px": [
+            267,
+            410
+          ],
+          "contact_span_px": 94,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "5acaf1790e586a1bc991d48966f861df839629b8102659980b28b3b5dabcadb1",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            184,
+            232,
+            294,
+            480
+          ],
+          "contact_px": [
+            245,
+            410
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "fb9407ff8b5ffcc90330b1426c39a20ba7f5747b7434bfd78b83f4fe84f3d8b1",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            165,
+            232,
+            289,
+            480
+          ],
+          "contact_px": [
+            242,
+            401
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_05": {
+      "appearance_profile": "HELGA_08",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "b7e4cf83cbe4b347e674d0ba8eee19aaaccca50f28a62eab123c598c68ac70a3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            229,
+            338,
+            479
+          ],
+          "contact_px": [
+            267,
+            396
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "3fbf8a4acbf52ce9e4af89a226563e367042088f3a67aad23957b5f0ed4b6b48",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            214,
+            229,
+            298,
+            479
+          ],
+          "contact_px": [
+            256,
+            392
+          ],
+          "contact_span_px": 73,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "eecd1732eca3a987f376252b59aca4a21e66e4efc54139d4adbe8f349c2358e0",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            231,
+            336,
+            479
+          ],
+          "contact_px": [
+            272,
+            398
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "c089ebd16fed004883f1011a0828b83bb2c6384aac5f7b07ca3d61dd5b1806a5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            177,
+            230,
+            282,
+            479
+          ],
+          "contact_px": [
+            238,
+            397
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "875cc05d8bf3aa0931e15b36e6da672b4f9714f6e0d8a390731831baab4ab993",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            229,
+            323,
+            479
+          ],
+          "contact_px": [
+            266,
+            396
+          ],
+          "contact_span_px": 90,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "1dcc4f16871c5c7101092f1ad3092ad1acfd0e7cb51925f5205d2cd2f4496e4d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            183,
+            229,
+            286,
+            480
+          ],
+          "contact_px": [
+            241,
+            396
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_05/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "b1476a63ebd2706a6c6abe00786ad8f6fd103cdc81c960cbe7cdae873ab59725",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            167,
+            229,
+            282,
+            479
+          ],
+          "contact_px": [
+            240,
+            396
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_06": {
+      "appearance_profile": "HELGA_02",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "a2cd248d4fb31067a0d3cb7059ff62ccdcdd81cbb68fe1796c2bbee811fa4420",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            229,
+            338,
+            479
+          ],
+          "contact_px": [
+            270,
+            402
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "37c5fbda5afe7e75364510fddc46b7e2d23bd84c8a987b9b8836b32496ac898e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            214,
+            232,
+            297,
+            479
+          ],
+          "contact_px": [
+            254,
+            399
+          ],
+          "contact_span_px": 79,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "651fada176ada38d642b253fad3e5989828662ae4aa5c7a1d1f34bc20f59e562",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            232,
+            335,
+            480
+          ],
+          "contact_px": [
+            277,
+            407
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "aebebd7b35d8b601cc6289fc1a618561897d705f7f56c1650e59c9c615524b6c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            176,
+            230,
+            282,
+            479
+          ],
+          "contact_px": [
+            233,
+            405
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "9aec412c968fee66130075ec19b6cf78f1b241fbc9bc8786911cd251da44d277",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            229,
+            329,
+            479
+          ],
+          "contact_px": [
+            271,
+            410
+          ],
+          "contact_span_px": 101,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "2a11139e314293d8c9d4a7082414ea8e2005f4a7274bf14a15eed3d955f9cbec",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            181,
+            230,
+            286,
+            479
+          ],
+          "contact_px": [
+            238,
+            410
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_06/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "abe30b5c0a2ebf7611bf5eb159d6b44978eef664b96e4292485e2447bf368340",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            172,
+            230,
+            282,
+            479
+          ],
+          "contact_px": [
+            239,
+            403
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_07": {
+      "appearance_profile": "EXISTING_EVMOCHKA",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "74f264baff4521a6d72b1b5fa9133f6d79fe5ca1a005b30561f825e755e5c242",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            235,
+            339,
+            480
+          ],
+          "contact_px": [
+            271,
+            394
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "98fadf8c603548eb2e3e954b3db9853c8b5356ce800930f6d84b2013c6278594",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            219,
+            235,
+            293,
+            480
+          ],
+          "contact_px": [
+            255,
+            390
+          ],
+          "contact_span_px": 72,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "1a023c3b0b95a862258ca5eed9f16f16b180704aa29f35aeceb3fc5430d9cc99",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            232,
+            235,
+            328,
+            480
+          ],
+          "contact_px": [
+            272,
+            396
+          ],
+          "contact_span_px": 91,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "5c185e323c85ff6cabcfae20f740e202c974d6a7b9fe3b51076cfe46106a9d43",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            191,
+            235,
+            278,
+            480
+          ],
+          "contact_px": [
+            233,
+            390
+          ],
+          "contact_span_px": 85,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "43c8e94782cf661996e0b409adab60136f65303f23f31a3fc30b7d8c40cfbd1b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            235,
+            321,
+            480
+          ],
+          "contact_px": [
+            265,
+            394
+          ],
+          "contact_span_px": 88,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "2144957289b209b94931aeb68df688a95a725bc9facf0b99c4d7fb7aa9c09071",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            194,
+            235,
+            286,
+            480
+          ],
+          "contact_px": [
+            251,
+            388
+          ],
+          "contact_span_px": 87,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_07/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "5966b29f5ecb6fe1f7e6166dc901959affeb56e1c8d7c757e4da154c6329ba57",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            168,
+            235,
+            283,
+            480
+          ],
+          "contact_px": [
+            242,
+            391
+          ],
+          "contact_span_px": 96,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_08": {
+      "appearance_profile": "HELGA_07",
+      "wardrobe": "CITY",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_E/0001.png",
+          "sha256": "37ffe26a1e378e48a037c9ae4e0a96638d76e44eaef42ced02f1a7ea28dc9dd6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            232,
+            348,
+            480
+          ],
+          "contact_px": [
+            268,
+            400
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_N/0001.png",
+          "sha256": "3fb508836e3e51d93fbea3e74106506a633273ba02330e60155be034d5f59500",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            214,
+            231,
+            298,
+            480
+          ],
+          "contact_px": [
+            255,
+            394
+          ],
+          "contact_span_px": 72,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_NE/0001.png",
+          "sha256": "8eac25e5b3763073e10826cf5c3d00153977bec81c5db7a67d8b081c047e0b1b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            230,
+            341,
+            480
+          ],
+          "contact_px": [
+            274,
+            399
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_NW/0001.png",
+          "sha256": "a254631f842834fe04f6251bc67647215c7434d8cc080a1d59984dc61ca59bad",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            179,
+            230,
+            294,
+            480
+          ],
+          "contact_px": [
+            244,
+            399
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_SE/0001.png",
+          "sha256": "f7607595c8885338bb2fa1b60834057d55533f49dff67e807dbed2bd68986e03",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            228,
+            327,
+            480
+          ],
+          "contact_px": [
+            258,
+            395
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_SW/0001.png",
+          "sha256": "dd9c3207afefae0d627fea28cb0152501c09ae33bda7759bfaf65e262706bf47",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            187,
+            230,
+            289,
+            478
+          ],
+          "contact_px": [
+            247,
+            388
+          ],
+          "contact_span_px": 88,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_08/wardrobes/CITY/SIT_W/0001.png",
+          "sha256": "27428f6121285200ed721a72ad3286ef76491ff06239b1c9072145bf809f2efa",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            167,
+            232,
+            292,
+            480
+          ],
+          "contact_px": [
+            246,
+            400
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_09": {
+      "appearance_profile": "HELGA_03",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "06c7cb12cf868430131ec01384f3b6f82d37140bf463958b9aa0408b6401c27b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            233,
+            347,
+            479
+          ],
+          "contact_px": [
+            277,
+            410
+          ],
+          "contact_span_px": 108,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "70a307a358d2c1520b73966ea0cb95920516a8beb42bb57c0c07dba41d0a239a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            233,
+            300,
+            479
+          ],
+          "contact_px": [
+            255,
+            406
+          ],
+          "contact_span_px": 78,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "4256194dc497c4a9ea601beb37ce6dbbfce39e24adab0380238dde449202c9d4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            236,
+            337,
+            479
+          ],
+          "contact_px": [
+            273,
+            410
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "8d81c972a0a2561e70ed24e29904aa927b8c34181c65de47a27dea8337772f86",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            179,
+            235,
+            282,
+            480
+          ],
+          "contact_px": [
+            236,
+            410
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "ae4652d05d0855b45d216db92d7f29e1ff0d521a957151142bcb2e626c54ae1b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            224,
+            231,
+            325,
+            479
+          ],
+          "contact_px": [
+            269,
+            409
+          ],
+          "contact_span_px": 94,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "03a8dd932b54dab89fde634320bcd05a7e91d87007161842cc54530eef1033d5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            183,
+            231,
+            288,
+            479
+          ],
+          "contact_px": [
+            240,
+            409
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_09/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "ffbb4b717145fcf419a78b48cdd2bcf42c845b1f8f41b153fedb9da6ea16eddb",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            163,
+            233,
+            284,
+            479
+          ],
+          "contact_px": [
+            232,
+            410
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_10": {
+      "appearance_profile": "HELGA_04",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "cda62225f7586cdc09cb04010d6fb6cc81c7d10a512dfeb3264553cce47d9a58",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            232,
+            353,
+            479
+          ],
+          "contact_px": [
+            271,
+            410
+          ],
+          "contact_span_px": 113,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "937c344d693d03e3572003bdd61c279e27b56a0f225740ab3e777974ede6bb8c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            210,
+            232,
+            303,
+            479
+          ],
+          "contact_px": [
+            256,
+            402
+          ],
+          "contact_span_px": 83,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "72837d1ba7f51bedb7801694aa1e53083a2d49b5e515fdb5855c26ebb6df0c57",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            224,
+            234,
+            350,
+            479
+          ],
+          "contact_px": [
+            271,
+            410
+          ],
+          "contact_span_px": 113,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "2e4075a2c4054aae4d2d601113d3e2753fa8934d129e379e439106564cf58d98",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            166,
+            233,
+            286,
+            479
+          ],
+          "contact_px": [
+            237,
+            410
+          ],
+          "contact_span_px": 111,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "494278c3bd8d40b64e8a9d55ef3f3daa6e4daf1b970b524bbc6c5df458f2d5e4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            230,
+            331,
+            479
+          ],
+          "contact_px": [
+            269,
+            410
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "f457f474e945ed1a640b3542e7cb2c53552ddace39172cdf177f264d77936de6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            178,
+            231,
+            290,
+            480
+          ],
+          "contact_px": [
+            240,
+            410
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_10/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "dbf4ae8b909fd464d1ede8668a15b78331e02f2cea46bd2d12dc26f4c75cb3b8",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            156,
+            231,
+            286,
+            479
+          ],
+          "contact_px": [
+            236,
+            410
+          ],
+          "contact_span_px": 114,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_11": {
+      "appearance_profile": "VALENTA_02",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "c8dedb52c5fa3bf555fee6da6145ee7c464dabca6eb6f9c2471b6663b807b3d6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            230,
+            350,
+            479
+          ],
+          "contact_px": [
+            266,
+            402
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "d221da00eb5b31108cff74a79180408f5e0093a230482260be9057b8788a56a6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            210,
+            230,
+            302,
+            479
+          ],
+          "contact_px": [
+            255,
+            397
+          ],
+          "contact_span_px": 81,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "8e02f6d41ae881d04a8b914f17e6fd9ce4d1348c50e241002e1feab33bd1c31c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            231,
+            344,
+            479
+          ],
+          "contact_px": [
+            271,
+            404
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "04a2d8756869b72f0dbdd39f5ae71202f19ef491cb4d9303324fb761bcdca6c5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            164,
+            229,
+            287,
+            479
+          ],
+          "contact_px": [
+            238,
+            402
+          ],
+          "contact_span_px": 108,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "f5be900200027614477fe1b1625456799d38964f5595d526d378332f1b54e228",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            229,
+            330,
+            480
+          ],
+          "contact_px": [
+            267,
+            410
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "1616dc4ac839143761ae1fb887981bad74e318d2b11a7c28b756973aa92e9077",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            169,
+            228,
+            293,
+            479
+          ],
+          "contact_px": [
+            240,
+            403
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_11/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "d4187787a68d7524597ed10ac2475110bd8831c743b337807f58f6b4f6d595ab",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            156,
+            227,
+            285,
+            479
+          ],
+          "contact_px": [
+            241,
+            401
+          ],
+          "contact_span_px": 110,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_12": {
+      "appearance_profile": "HELGA_06",
+      "wardrobe": "SHORT",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_E/0001.png",
+          "sha256": "dbf23abdd8bd1994c22557642c78e3f188cb5e74d00d5d6f740337b461c600ee",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            230,
+            345,
+            478
+          ],
+          "contact_px": [
+            268,
+            406
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_N/0001.png",
+          "sha256": "d55ca91cd0bcfd2c6babc8bef89072a60ade936831b3c4bccc9a238c80283a7d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            215,
+            230,
+            298,
+            478
+          ],
+          "contact_px": [
+            256,
+            400
+          ],
+          "contact_span_px": 79,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_NE/0001.png",
+          "sha256": "9a997334b21670402b28c1bb867459e4f51b7fe07c4b982debb241d53d5331b3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            230,
+            230,
+            334,
+            479
+          ],
+          "contact_px": [
+            275,
+            407
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_NW/0001.png",
+          "sha256": "dfbef370e0cf08a4f1dd50d48eee26aa60417c0799b0c1684dadaeb579a66531",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            176,
+            230,
+            283,
+            479
+          ],
+          "contact_px": [
+            224,
+            408
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_SE/0001.png",
+          "sha256": "cf0411a4cc1fd1af09c74573bba167abd6b9da19b280664b3c51af3456c0dc3c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            222,
+            230,
+            321,
+            478
+          ],
+          "contact_px": [
+            266,
+            403
+          ],
+          "contact_span_px": 92,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_SW/0001.png",
+          "sha256": "4d9800a038ac43a3ed20c35e7520454b60c91fad20a6021afb1678932ecf164b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            187,
+            230,
+            288,
+            479
+          ],
+          "contact_px": [
+            239,
+            410
+          ],
+          "contact_span_px": 94,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_12/wardrobes/SHORT/SIT_W/0001.png",
+          "sha256": "92c458824149d53887495e86211d4a5c580363487e76ef3785e9669b4eb4fd96",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            162,
+            230,
+            285,
+            479
+          ],
+          "contact_px": [
+            223,
+            405
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_13": {
+      "appearance_profile": "HELGA_05",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "e2d7d4dd0e8254c9263a56995ecbca577604de36ae659dd64ad4a700b272d090",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            232,
+            349,
+            479
+          ],
+          "contact_px": [
+            270,
+            403
+          ],
+          "contact_span_px": 109,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "09c22dac9932b2cbf5f88cffc28363a5e33f7f279efd4034fc992146ec70c2a5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            234,
+            300,
+            479
+          ],
+          "contact_px": [
+            255,
+            400
+          ],
+          "contact_span_px": 82,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "a45141fdac521401bc3ef293cf30484a1de05e71c22ad53f884a185c93d096f3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            233,
+            348,
+            479
+          ],
+          "contact_px": [
+            271,
+            404
+          ],
+          "contact_span_px": 109,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "e3e7f908e516f7604be0c07b0686e4465125b0c421bd3d6414604630150c90fa",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            168,
+            234,
+            286,
+            479
+          ],
+          "contact_px": [
+            241,
+            404
+          ],
+          "contact_span_px": 108,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "6cc909d2e77e51a51c2f4a2701bed187926b65bed5fe8027db4789eeaceff2b3",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            219,
+            230,
+            335,
+            479
+          ],
+          "contact_px": [
+            263,
+            403
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "888eda0473592b856f238ebf921c60c77790615325cb06fd42884ec765b75127",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            172,
+            232,
+            292,
+            480
+          ],
+          "contact_px": [
+            245,
+            403
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_13/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "141dd95389720963bf3fa38ebc5db0118eb55b830fc3e8a43ed42dd3d06dff15",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            161,
+            233,
+            284,
+            479
+          ],
+          "contact_px": [
+            242,
+            403
+          ],
+          "contact_span_px": 110,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_14": {
+      "appearance_profile": "VALENTA_08",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "e61cebf34bfa8e83f6ed1e968122c477d79dbaa73e077bf7a3b34d1256d6e01c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            230,
+            346,
+            479
+          ],
+          "contact_px": [
+            267,
+            405
+          ],
+          "contact_span_px": 108,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "a9b6c3a7a8e5f1a9be0c864ed1ba093f5cc5af6ed9a4069c086b975be2b20039",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            230,
+            300,
+            479
+          ],
+          "contact_px": [
+            255,
+            400
+          ],
+          "contact_span_px": 80,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "0699bb81f2f72e2562c9fae02b9843cd8734a5331b0f93afb157fe86697f5eb2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            230,
+            343,
+            479
+          ],
+          "contact_px": [
+            273,
+            405
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "15fcc35f384e98d6a2cf4852d396faebd65fcd8cc515ee2dd39dd048aeec1477",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            165,
+            230,
+            287,
+            479
+          ],
+          "contact_px": [
+            240,
+            407
+          ],
+          "contact_span_px": 108,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "58386bc21956903bdf4fb3ad795ca807528a21d8e063a7f9a8f9c9d01e7f39d0",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            216,
+            230,
+            333,
+            478
+          ],
+          "contact_px": [
+            261,
+            405
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "67111e90cc5246bc5f3945aa2e799945097ffdaecf73a5ec5d44a4e4b184ee90",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            174,
+            230,
+            295,
+            479
+          ],
+          "contact_px": [
+            246,
+            404
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_14/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "9b4172368f379e5aef2a986e9768eb1a8c679b744d45d184dec90001ac108aff",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            156,
+            230,
+            286,
+            479
+          ],
+          "contact_px": [
+            243,
+            405
+          ],
+          "contact_span_px": 110,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_15": {
+      "appearance_profile": "VALENTA_04",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "bf7e79e423028a17d0b29bf09aff52a6efe3b16ddc4047b7e9c806b6a60a03f8",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            232,
+            350,
+            480
+          ],
+          "contact_px": [
+            278,
+            406
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "db66938890045c206eb9fe06430f343e02ce301da1dbb614a9bfe38963149201",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            215,
+            233,
+            297,
+            479
+          ],
+          "contact_px": [
+            256,
+            399
+          ],
+          "contact_span_px": 74,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "7c40cba4e39759dc0823361fa209dea9fb9b1d9e428fe904f38ba717d3496b00",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            234,
+            340,
+            479
+          ],
+          "contact_px": [
+            273,
+            407
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "057fad3240a27b8d7e403ae68eeb6e2dca8e9f5049fac073d182e9945e236fb0",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            176,
+            233,
+            283,
+            479
+          ],
+          "contact_px": [
+            240,
+            407
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "b85d110296e83f523545d75473598b8fb7c481f2aabd71af87462c1c96b1a537",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            230,
+            321,
+            479
+          ],
+          "contact_px": [
+            267,
+            402
+          ],
+          "contact_span_px": 89,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "3c5f1eaa99d6669aa47f33e6bb72124c0b6b8756186ec759d3eab2b4b422841a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            183,
+            232,
+            288,
+            479
+          ],
+          "contact_px": [
+            240,
+            404
+          ],
+          "contact_span_px": 94,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_15/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "585c79a54f733fe5e6dd9a70e22b294ff9b762b6f1871ec4098909791c9a934d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            160,
+            233,
+            285,
+            479
+          ],
+          "contact_px": [
+            230,
+            406
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_16": {
+      "appearance_profile": "LISA_07",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "724179869cbba809dd53022419223cd45ccc05429e3ebf872721089734095675",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            232,
+            347,
+            480
+          ],
+          "contact_px": [
+            271,
+            400
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "c1a00fd014a1428a3f83b8ab39c56555b83cb324504e62d68892d84df9d06580",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            231,
+            301,
+            479
+          ],
+          "contact_px": [
+            255,
+            398
+          ],
+          "contact_span_px": 76,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "0d3d6612259b9edf8c080c2a1898576518dcc9670f14c915e34dab4f646d7bba",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            233,
+            338,
+            479
+          ],
+          "contact_px": [
+            273,
+            400
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "e5d5a92bf23bef3d1e6a7f8dfd0a08cdce3fed1822962e9c886f9cf7c5ec8237",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            171,
+            233,
+            284,
+            479
+          ],
+          "contact_px": [
+            234,
+            400
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "7a938ddb02314e5470642b69dbe5eaa21c3cec00d813808092decc8288d93cc1",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            230,
+            326,
+            479
+          ],
+          "contact_px": [
+            268,
+            410
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "3bd599b18d2355ca9436e6ab8e3e6b1872053e5b85dd21584446924b4451c467",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            177,
+            230,
+            290,
+            479
+          ],
+          "contact_px": [
+            241,
+            408
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_16/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "8c0403a2415545c8c4c8521e6dd245bb48ab8e196a68381c8d5b2b521a277c7e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            161,
+            231,
+            285,
+            479
+          ],
+          "contact_px": [
+            238,
+            398
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_17": {
+      "appearance_profile": "LISA_04",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "f564a5b91ed7ecc82fcbe0993dc1859346ef098b2b5ff5b4d09910fcbc08bb9b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            232,
+            344,
+            480
+          ],
+          "contact_px": [
+            266,
+            406
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "9fadbdb54c08d2b9974d7143d9b698021f285071a84c8ce63ed4f854690cdf6c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            212,
+            233,
+            300,
+            479
+          ],
+          "contact_px": [
+            255,
+            398
+          ],
+          "contact_span_px": 74,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "2a38002281279911a1dd83ec39c1abc1d61fa2fd9ba9ce54fd06f0d32ce1763d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            234,
+            340,
+            479
+          ],
+          "contact_px": [
+            272,
+            407
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "3b06bad9261abf64eef035aedce791e2c9d29cf41e6d86cbb6c1d00b5debfd96",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            174,
+            233,
+            284,
+            479
+          ],
+          "contact_px": [
+            238,
+            405
+          ],
+          "contact_span_px": 101,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "5535f324a4dd7efbdad5a829ae9e92205f2780d2725f42b118660eb04089b363",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            222,
+            230,
+            329,
+            479
+          ],
+          "contact_px": [
+            268,
+            410
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "0e2f61c1ac22d00a0a19e054fd6adefb6b9bd24fd27451e2efa7ffad566fb6e7",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            177,
+            232,
+            290,
+            479
+          ],
+          "contact_px": [
+            241,
+            406
+          ],
+          "contact_span_px": 101,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_17/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "ef60851b10ffd0578ccfacaddcb5e963ea2e783b48572c8ab2cfe426534d05b4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            163,
+            232,
+            284,
+            479
+          ],
+          "contact_px": [
+            242,
+            404
+          ],
+          "contact_span_px": 109,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_18": {
+      "appearance_profile": "VALENTA_06",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "0169d0608515f6cbf1d02546be74b20fc0e5df09f22ebb52a641035c817262b4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            231,
+            343,
+            479
+          ],
+          "contact_px": [
+            265,
+            398
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "0b8210315d10f35125ee6348383aa56e6dc6d7ac3df660bf922b95c4414a1439",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            213,
+            229,
+            299,
+            479
+          ],
+          "contact_px": [
+            256,
+            393
+          ],
+          "contact_span_px": 75,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "f7c2d5a2b5b74da587cec057b4143d465d334bcfe423e7ca91f48c0c2b0f2776",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            233,
+            341,
+            479
+          ],
+          "contact_px": [
+            271,
+            401
+          ],
+          "contact_span_px": 101,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "adcc9233384fa85e50d08596454c2ef2d2a7c7e1e937e0b65864378455d47bf0",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            171,
+            232,
+            284,
+            480
+          ],
+          "contact_px": [
+            240,
+            400
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "2ec8aa9bead90d3bf65e0977b2bdb9843b8b18780d71574333447876727abb3c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            230,
+            327,
+            479
+          ],
+          "contact_px": [
+            265,
+            410
+          ],
+          "contact_span_px": 95,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "c1565f6680d2d3f83aee8191be19119f4cc3340b38f47e49a556e4d9542db572",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            174,
+            229,
+            291,
+            480
+          ],
+          "contact_px": [
+            243,
+            399
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_18/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "18823b32c25b88bc138b1fec6a5b4f77f276f5641174426c1bb1d65067007693",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            164,
+            230,
+            284,
+            479
+          ],
+          "contact_px": [
+            248,
+            398
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_19": {
+      "appearance_profile": "LISA_05",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "8cd3b4e857fb3944b33065ed5748ef29586b587aa6f297818d5baf8f2104226c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            229,
+            230,
+            346,
+            480
+          ],
+          "contact_px": [
+            271,
+            405
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "a42c12d1f4a27487281ddf73afffad978fa9425006b00df72910207e21099673",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            230,
+            301,
+            480
+          ],
+          "contact_px": [
+            255,
+            401
+          ],
+          "contact_span_px": 79,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "29a102ae3def247b7f03ec04c596039bdde6369755887a7405120d2aeb18a703",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            233,
+            344,
+            480
+          ],
+          "contact_px": [
+            272,
+            409
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "ff8b953810b544229d81358852b0b6c4d18ce5de977af064ef12e4e572d8883f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            175,
+            230,
+            285,
+            480
+          ],
+          "contact_px": [
+            241,
+            407
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "ed92129fc8843d742a26cded166f06a0f18d9307902bb70a34a98d7564e57c37",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            222,
+            228,
+            326,
+            480
+          ],
+          "contact_px": [
+            265,
+            410
+          ],
+          "contact_span_px": 95,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "25ad29bd820b15b2095fbcf91b16a0a99f9ea6330f441986adc463d4d82c8214",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            181,
+            228,
+            294,
+            480
+          ],
+          "contact_px": [
+            247,
+            410
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_19/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "0daf18f71afe8ca9f41cfc94bec73aa12042c33675832a26d34521625be86a42",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            167,
+            229,
+            283,
+            481
+          ],
+          "contact_px": [
+            242,
+            407
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_20": {
+      "appearance_profile": "LISA_08",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "07d63d30a3ed1596c32d46b4bcd8ea4a6dc028eaaa9df6b270da0e7488cc293c",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            230,
+            356,
+            479
+          ],
+          "contact_px": [
+            275,
+            404
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "cef94341d57c3bf1d69ed1b781c93690f8c19cc8247960b04dab9d5904904252",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            230,
+            301,
+            479
+          ],
+          "contact_px": [
+            256,
+            401
+          ],
+          "contact_span_px": 79,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "f367e7a5ab395176145fdfc64035fdb51d2a4876c4590e5a98a5cd16a43919e0",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            232,
+            342,
+            479
+          ],
+          "contact_px": [
+            275,
+            407
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "cf0e899cf3d43e9259cb58bb71ed838c6210a00fd2ed622d7f5f079bb460bca8",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            166,
+            231,
+            286,
+            479
+          ],
+          "contact_px": [
+            237,
+            406
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "ca6107c2a52207f68693b7dcfd71bcbefa63bd1cc7af4b2a5a600e1207762b77",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            227,
+            329,
+            479
+          ],
+          "contact_px": [
+            265,
+            410
+          ],
+          "contact_span_px": 96,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "af9a8e42e09b1b6346dd250340869101926264e6b4246b20ce3a7e1a6bb7c24b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            178,
+            229,
+            290,
+            480
+          ],
+          "contact_px": [
+            241,
+            410
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_20/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "2aa1f0a2b9467056db8c7e24710dce5a83c1f6fcdabfd9f5640b61b668c1a547",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            155,
+            230,
+            287,
+            479
+          ],
+          "contact_px": [
+            231,
+            405
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_21": {
+      "appearance_profile": "VALENTA_05",
+      "wardrobe": "SHORT",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_E/0001.png",
+          "sha256": "ba5a7cfcd5d3f73be613dc4e452c11eda0b831b1c2db26770936a37effe4db31",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            224,
+            233,
+            353,
+            479
+          ],
+          "contact_px": [
+            272,
+            403
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_N/0001.png",
+          "sha256": "cfac4faee827453176632c2998f60c374a62226978d86a0884a28bae2cbbedc5",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            208,
+            234,
+            305,
+            479
+          ],
+          "contact_px": [
+            256,
+            400
+          ],
+          "contact_span_px": 74,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_NE/0001.png",
+          "sha256": "4ba62f538478a4764c0d5c5a7e29b759875c3afbc601f54b4007078184bfcf7f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            238,
+            341,
+            480
+          ],
+          "contact_px": [
+            273,
+            409
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_NW/0001.png",
+          "sha256": "4eb5c06ca428401b2fe4aef4202e4c35f6723b49b41122e1055ceb962d8b2a55",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            171,
+            236,
+            284,
+            479
+          ],
+          "contact_px": [
+            236,
+            408
+          ],
+          "contact_span_px": 101,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_SE/0001.png",
+          "sha256": "15fdaef8e540fd9df0216f982ed122f69f54c49d6016248b8a925d19c55262cb",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            220,
+            230,
+            331,
+            479
+          ],
+          "contact_px": [
+            267,
+            399
+          ],
+          "contact_span_px": 89,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_SW/0001.png",
+          "sha256": "e50a3057e7ce8d06014916944357e0d94c7a7d0fa46c2e94ea8afd0732b757a2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            171,
+            231,
+            293,
+            479
+          ],
+          "contact_px": [
+            241,
+            400
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_21/wardrobes/SHORT/SIT_W/0001.png",
+          "sha256": "6096c777a4fc42790f1a6a2d510dc65cca9d6831f81afbe011c43d477942229f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            157,
+            233,
+            286,
+            479
+          ],
+          "contact_px": [
+            236,
+            404
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_22": {
+      "appearance_profile": "LISA_03",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "b8a6c3c42b35f23c4a9ecb6f57e193e550d2bf293d8ede02002d6acf8188d2af",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            232,
+            343,
+            479
+          ],
+          "contact_px": [
+            266,
+            402
+          ],
+          "contact_span_px": 105,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "c45a679f3a94f944ed532ae8773e1d6d3875ebd85787617b44dbafeedc7cca8e",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            213,
+            234,
+            299,
+            479
+          ],
+          "contact_px": [
+            256,
+            396
+          ],
+          "contact_span_px": 78,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "9c901f0eaf68929eb03acd72c892d1c37da98e9a83106adbada93c3c21afa418",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            227,
+            234,
+            341,
+            479
+          ],
+          "contact_px": [
+            272,
+            404
+          ],
+          "contact_span_px": 103,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "3426f2c989245a1a00c31885dace63a93cc68cd4a02eb94957d65541d3d18825",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            171,
+            233,
+            284,
+            479
+          ],
+          "contact_px": [
+            238,
+            402
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "7607cdf9abac66d03aae5f3d5fdf959814b498bb92566565c855543cf635d25f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            230,
+            321,
+            479
+          ],
+          "contact_px": [
+            266,
+            410
+          ],
+          "contact_span_px": 92,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "e9c223eda8c619c3456c114693e62a79b2c1769f0f225ae6d71e50d7f653b020",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            181,
+            232,
+            288,
+            480
+          ],
+          "contact_px": [
+            242,
+            405
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_22/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "2beabe83cca1b76c6915ee9df558d62a9e4fd3179922c8a833eb315ef49b27d8",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            167,
+            233,
+            282,
+            479
+          ],
+          "contact_px": [
+            241,
+            402
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_23": {
+      "appearance_profile": "VALENTA_03",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "ba29a5eaee3a6957b95d6359d1e693076bac641ec6bb57ea0d8d6b331ddac95b",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            229,
+            345,
+            480
+          ],
+          "contact_px": [
+            269,
+            406
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "20f2cbc8a741ba4f581274e6e8100a76c4d3d693bb1ba89cd228c93b0e55ac21",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            211,
+            229,
+            300,
+            480
+          ],
+          "contact_px": [
+            255,
+            399
+          ],
+          "contact_span_px": 83,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "308e73bad144b474fc680bf7a7e7a2f363171c82a5b113570625c71a48e71796",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            228,
+            229,
+            340,
+            480
+          ],
+          "contact_px": [
+            274,
+            407
+          ],
+          "contact_span_px": 106,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "fcc6bb5b9f8de90825a580dd9fe70df048e6ef9bd22eead790bf324b1900d363",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            170,
+            229,
+            285,
+            480
+          ],
+          "contact_px": [
+            237,
+            410
+          ],
+          "contact_span_px": 107,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "3e35a714691ef2ba4f820b943ab2eb0997b2f8c560b73074a45a2ae69e183e3d",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            221,
+            229,
+            324,
+            480
+          ],
+          "contact_px": [
+            267,
+            405
+          ],
+          "contact_span_px": 98,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "7463f77107d9f766204e9632b8647dcd7636156805fb5c1bf48071e8ab862c9a",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            180,
+            229,
+            292,
+            480
+          ],
+          "contact_px": [
+            244,
+            410
+          ],
+          "contact_span_px": 104,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_23/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "8e3f63305a8635335c16b07eb9f1540da2de934ac3a21d75f344ca49317dc86f",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            164,
+            229,
+            285,
+            480
+          ],
+          "contact_px": [
+            239,
+            410
+          ],
+          "contact_span_px": 108,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    },
+    "RES_24": {
+      "appearance_profile": "LISA_01",
+      "wardrobe": "HOME",
+      "states": {
+        "SIT_E": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_E/0001.png",
+          "sha256": "3eebb05fce347131544aecd04d5409a015659543ed40057539dc11ea2691b3c8",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            225,
+            230,
+            349,
+            479
+          ],
+          "contact_px": [
+            270,
+            396
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_N": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_N/0001.png",
+          "sha256": "5f3cc77fcb06e0dade87cedfce40648e44554f6adfc1bc5eaca925ed7504a372",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            213,
+            232,
+            300,
+            480
+          ],
+          "contact_px": [
+            256,
+            394
+          ],
+          "contact_span_px": 76,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NE": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_NE/0001.png",
+          "sha256": "ae1e1c05db61a750bae79960dd8b4b5fb1c3af1928bd5ad551637c097a5110f6",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            226,
+            234,
+            342,
+            479
+          ],
+          "contact_px": [
+            273,
+            400
+          ],
+          "contact_span_px": 102,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_NW": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_NW/0001.png",
+          "sha256": "e61817bce1fd2b9545b701f71e9d3cd4e3ea6b993f981d5f55c94ab4241eccd2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            170,
+            232,
+            285,
+            479
+          ],
+          "contact_px": [
+            238,
+            398
+          ],
+          "contact_span_px": 100,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SE": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_SE/0001.png",
+          "sha256": "e46a81281e6b10294b9b3975935f67861f1b3665c83fa3494f5c1108f1284ea2",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            223,
+            229,
+            327,
+            479
+          ],
+          "contact_px": [
+            268,
+            410
+          ],
+          "contact_span_px": 93,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_SW": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_SW/0001.png",
+          "sha256": "a5a0c881c06e12b1ebb34736e280026f5fb01273d6f99321d274462a0dbab0c4",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            177,
+            229,
+            291,
+            480
+          ],
+          "contact_px": [
+            242,
+            398
+          ],
+          "contact_span_px": 97,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        },
+        "SIT_W": {
+          "path": "assets/residents/RES_24/wardrobes/HOME/SIT_W/0001.png",
+          "sha256": "f83f38b67372cc5d5666e4d870848b6a61a2a55008bf0590df697cce2fb02894",
+          "canvas": [
+            512,
+            512
+          ],
+          "alpha_bbox": [
+            159,
+            230,
+            286,
+            479
+          ],
+          "contact_px": [
+            241,
+            396
+          ],
+          "contact_span_px": 99,
+          "contact_method": "SILHOUETTE_HIP_ESTIMATE_PENDING_SCENE_FIT",
+          "book_baked": false
+        }
+      }
+    }
+  }
+}

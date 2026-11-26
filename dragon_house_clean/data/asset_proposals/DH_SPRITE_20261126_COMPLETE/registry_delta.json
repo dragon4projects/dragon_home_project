@@ -1,0 +1,1867 @@
+{
+  "schema": 1,
+  "base_commit": "ade387c43d87e9b31b4d3e7eb62e9f8cffd44967",
+  "archive_sha256": "f17224424bbec7c00516972cc7509a55cf877325d2e193a1cb25f12b454c9522",
+  "entries": [
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "NPC_VAMPIRE_GIRL",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/NPC_VAMPIRE_GIRL/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_01/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_02/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_03/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_05/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_06/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "CARRY_USE",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/CARRY_USE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "DRINK",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/DRINK/0001.png",
+        "assets/residents/RES_07/wardrobes/HOME/DRINK/0002.png",
+        "assets/residents/RES_07/wardrobes/HOME/DRINK/0003.png",
+        "assets/residents/RES_07/wardrobes/HOME/DRINK/0004.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "IDLE_NW_CORRECTED",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/IDLE_NW_CORRECTED/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "READ",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/READ/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_07/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_08/wardrobes/CITY/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_09/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_10/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_11/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_12/wardrobes/SHORT/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_13/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_14/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_15/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_16/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_17/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_18/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_19/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_20/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_21/wardrobes/SHORT/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_22/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_23/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_E/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_N/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_NE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_NW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_SE/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_SW/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "frames": [
+        "assets/residents/RES_24/wardrobes/HOME/SIT_W/0001.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "manjka",
+      "wardrobe": null,
+      "state": "CHASE_RIGHT",
+      "frames": [
+        "assets/creatures/manjka/chase_right/chase_right_0001.png",
+        "assets/creatures/manjka/chase_right/chase_right_0002.png",
+        "assets/creatures/manjka/chase_right/chase_right_0003.png",
+        "assets/creatures/manjka/chase_right/chase_right_0004.png",
+        "assets/creatures/manjka/chase_right/chase_right_0005.png",
+        "assets/creatures/manjka/chase_right/chase_right_0006.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_IDLE",
+      "frames": [
+        "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0001.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0002.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0003.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0004.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_MOVE_E",
+      "frames": [
+        "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0001.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0002.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0003.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0004.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_MOVE_W",
+      "frames": [
+        "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0001.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0002.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0003.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0004.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_REST",
+      "frames": [
+        "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0001.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0002.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0003.png",
+        "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0004.png"
+      ],
+      "status": "PASS",
+      "runtime_bound": false
+    }
+  ]
+}

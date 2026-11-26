@@ -10,6 +10,9 @@ var dense_v2=DenseV2Runtime.new()
 var dense_v2_qa:bool=false
 var dense_artifact_qa:bool=false
 var dense_services_qa:bool=false
+const CompleteSpriteIntake=preload("res://scripts/complete_sprite_intake.gd")
+var complete_sprite_intake=CompleteSpriteIntake.new()
+var complete_sprite_ready:bool=false
 const DenseArtifactWorld=preload("res://scripts/dense_v2_artifact_world.gd")
 const DenseArtifactImport=preload("res://scripts/dense_v2_artifact_import.gd")
 var dense_artifact_empty_nodes:Dictionary={}
@@ -332,11 +335,12 @@ func _ready() -> void:
 	if architecture_review:
 		# Do not reinterpret or overwrite the legacy world or its event stores.
 		world.save_path="user://dragon_house_canonical_architecture_20261125.json"
-	dense_v2_qa=architecture_review and OS.get_environment("DRAGON_DENSE_V2_QA")=="1"
+	var owner_dense_export:bool=FileAccess.file_exists("res://data/integration_candidates/DENSE_V2_SERVICES_OWNER_QA.enabled")
+	dense_v2_qa=architecture_review and (owner_dense_export or OS.get_environment("DRAGON_DENSE_V2_QA")=="1")
 	if dense_v2_qa:
 		# QA state is deliberately independent of the owner's existing world.
 		world.save_path="user://dragon_house_dense_v2_qa.json"
-		dense_services_qa=OS.get_environment("DRAGON_DENSE_SERVICES_QA")=="1"
+		dense_services_qa=owner_dense_export or OS.get_environment("DRAGON_DENSE_SERVICES_QA")=="1"
 		dense_artifact_qa=dense_services_qa or OS.get_environment("DRAGON_DENSE_ARTIFACT_QA")=="1"
 		if dense_artifact_qa:world.save_path="user://dragon_house_dense_artifact_qa_v1.json"
 		if dense_services_qa:world.save_path="user://dragon_house_dense_services_qa_v1.json"
@@ -395,6 +399,14 @@ func _ready() -> void:
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
 	if architecture_review:print("DEPTH7_SPRITE_STATES ",asset_banks.install_depth7_intake())
+	if architecture_review and FileAccess.file_exists(CompleteSpriteIntake.ROOT+"registry_delta.json"):
+		complete_sprite_ready=complete_sprite_intake.install(asset_banks)
+		if complete_sprite_ready:print("COMPLETE_SPRITE_INTAKE ",complete_sprite_intake.report)
+		else:
+			world.load_status="SPRITE_INTAKE_RECOVERY_REQUIRED"
+			push_error(complete_sprite_intake.last_error)
+			_show_recovery_blocked()
+			return
 	asset_banks.begin_validation_pass()
 	world.merge_zna_media_previews()
 	world.load_private_cinema_catalog()
@@ -414,6 +426,7 @@ func _ready() -> void:
 		life.candidate_navigation.configure(teea008_review.layouts)
 		if architecture_review:
 			print("DEPTH7_POSE_CONTACTS ",life.candidate_navigation.install_depth7_pose_intake())
+			if complete_sprite_ready:print("COMPLETE_SPRITE_POSES ",complete_sprite_intake.install_poses(life.candidate_navigation,asset_banks))
 			print("DEPTH7_CUP_HANDS ",life.candidate_navigation.install_depth7_cup_hands())
 		if architecture_review and not legacy_depth_layouts.is_empty():
 			var old_nav=TEEA008NavigationScript.new()
