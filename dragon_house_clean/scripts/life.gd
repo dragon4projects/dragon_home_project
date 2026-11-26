@@ -1,4 +1,5 @@
 extends RefCounted
+const LearnedHabits=preload("res://scripts/learned_habits.gd")
 const MediaRuntime = preload("res://scripts/media_runtime.gd")
 const CandidateCupRuntime = preload("res://scripts/teea008_cup_runtime.gd")
 const CandidateTraffic = preload("res://scripts/teea008_traffic.gd")
@@ -545,8 +546,7 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 			continue
 		var destination:Dictionary=selected["room"]
 		var path:Array=selected["path"]
-		var habits: Dictionary = actor.get("habits", {})
-		var repeat_bonus := minf(float(habits.get(intent, 0.0)), 0.3)
+		var repeat_bonus := LearnedHabits.strength(actor,intent,clock)
 		var path_cost: float = maxf(0.0, float(path.size() - 1) * 0.045)
 		var score: float = float(scored[intent]) + repeat_bonus - path_cost + rng.randf_range(-0.2, 0.2)
 		if intent in ["TALK_PAIR","TALK_GROUP"] and not (intent=="TALK_GROUP" and eager_group) and rng.randf() > (0.10 if intent=="TALK_GROUP" else 0.15):
@@ -765,10 +765,8 @@ func _finish_pair(sid:String,completed:bool,reason:String)->void:
 		actor.erase("social_facing_xz")
 		var late=row.get("late_members",{})
 		if completed and typeof(late)==TYPE_DICTIONARY and not late.has(str(raw_id)):
-			var habits:Dictionary=actor.get("habits",{})
 			var habit:String="TALK_GROUP" if str(row.get("kind","pair"))=="group" else "TALK_PAIR"
-			habits[habit]=minf(0.3,float(habits.get(habit,0.0))+0.012)
-			actor["habits"]=habits
+			LearnedHabits.record(actor,habit,clock,"",",".join(members))
 		elif completed and typeof(late)==TYPE_DICTIONARY and late.has(str(raw_id)):
 			var joined:float=float(late[str(raw_id)])
 			var attended:float=maxf(0.0,float(row.get("ends_at",clock))-joined)
@@ -953,7 +951,9 @@ func _begin_group_session(actor:Dictionary,room:Dictionary)->bool:
 		for member in members:
 			var id:String=str(member["id"])
 			# Settle the completed solo interval before changing its semantics.
-			if id!=str(actor["id"]):_advance_needs(member,life_scheduler.consume_elapsed(id,clock))
+			if id!=str(actor["id"]):
+				_advance_needs(member,life_scheduler.consume_elapsed(id,clock))
+				_finish_solo_habit_commitment(member)
 			stations.release(member)
 			end_catalog_browse(member)
 			end_concrete_media(member)
@@ -1572,10 +1572,6 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 		clock + rng.randf_range(20.0,40.0)+float(route.size())*2.0)
 	if intent=="TALK_PAIR":
 		_create_pair_session(actor,partner,room,end_time)
-	else:
-		var habits: Dictionary = actor.get("habits",{})
-		habits[intent] = minf(0.3,float(habits.get(intent,0.0))+0.012)
-		actor["habits"] = habits
 	if intent != "TALK_PAIR":
 		_record("%s — %s" % [actor.get("name",actor["id"]),status(actor)])
 	steps += 1
@@ -1795,8 +1791,54 @@ func _move(actor: Dictionary, delta: float) -> void:
 				return
 			world._append_journal("PUBLIC_ACTIVITY_STARTED",actor_id,actor_id,"",str(actor["room_id"]),{"intent":str(actor.get("intent",""))})
 			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
+			_begin_solo_habit_commitment(actor)
 			moving_ids.erase(actor_id)
 			life_scheduler.schedule_at(actor_id,float(actor["until"]),"ACTION_COMMITMENT")
+
+const SOLO_HABIT_INTENTS=["REST","SLEEP","WORK_CREATE","WATCH_FIRE","PURPOSEFUL_EXPLORE","BROWSE_BOOK_CATALOG","BROWSE_FILMS","BROWSE_AUDIO","VIEW_ART"]
+
+func _solo_habit_station_valid(actor:Dictionary)->bool:
+	if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)) or str(actor.get("phase",""))!="perform":return false
+	var id:String=str(actor.get("id",""))
+	var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+	if room.is_empty() or not world.is_accessible(room,id) or str(actor.get("station_room_id",""))!=str(room["id"]):return false
+	if str(actor.get("intent",""))=="SLEEP" and str(actor.get("home_room_id",""))!=str(room["id"]):return false
+	var index:int=int(actor.get("station_slot",-1))
+	var points:Array=stations.layout_for_world(world,room)
+	if index<0 or index>=points.size() or stations.used_slots(world,str(room["id"]),[id]).has(index):return false
+	var spot:Dictionary=points[index]
+	if str(spot.get("id",""))!=str(actor.get("station_anchor_id","")):return false
+	var point:Vector2=spot["offset"]
+	var actual:=Vector3(float(actor.get("x",INF)),float(actor.get("visual_y",INF)),float(actor.get("z",INF)))
+	return actual.is_finite() and actual.distance_to(world.room_local_to_world(room,point))<=0.12
+
+func _begin_solo_habit_commitment(actor:Dictionary)->void:
+	actor.erase("solo_habit_commitment")
+	var intent:String=str(actor.get("intent",""))
+	if intent not in SOLO_HABIT_INTENTS or not _solo_habit_station_valid(actor):return
+	actor["solo_habit_commitment"]={"intent":intent,"room_id":str(actor["room_id"]),"station_id":str(actor["station_anchor_id"]),"started_at":clock,"ends_at":float(actor["until"])}
+
+func _finish_solo_habit_commitment(actor:Dictionary)->bool:
+	var raw=actor.get("solo_habit_commitment",{})
+	if typeof(raw)!=TYPE_DICTIONARY or raw.is_empty():return false
+	if clock<float(raw.get("ends_at",INF)):return false
+	# Consume before applying effects. A second wake or reload cannot repeat.
+	actor.erase("solo_habit_commitment")
+	var intent:String=str(raw.get("intent",""))
+	var start:float=float(raw.get("started_at",-1))
+	var end:float=float(raw.get("ends_at",-1))
+	if intent not in SOLO_HABIT_INTENTS or intent!=str(actor.get("intent","")) or not is_finite(start) or not is_finite(end) or start<0 or end<=start or end!=float(actor.get("until",-1)):return false
+	if str(raw.get("room_id",""))!=str(actor.get("room_id","")) or str(raw.get("station_id",""))!=str(actor.get("station_anchor_id","")) or not _solo_habit_station_valid(actor):return false
+	var subject:String=""
+	if intent=="VIEW_ART":
+		subject=str(actor.get("viewing_object_id",""))
+		var item:Dictionary=world.physical_object(subject)
+		if item.is_empty() or str(item.get("current_room_id",""))!=str(actor["room_id"]) or str(item.get("interaction_station_id",""))!=str(actor["station_anchor_id"]) or not world.record_object_view(subject,str(actor["id"])):return false
+	elif intent.begins_with("BROWSE_"):
+		subject=str(actor.get("browsing_item_id",""))
+		if media_runtime._lookup(str(actor.get("browsing_category","")),subject).is_empty():return false
+	LearnedHabits.record(actor,intent,clock,subject,daypart())
+	return true
 
 func _start_cinema_commitment(actor:Dictionary)->void:
 	var id:String=str(actor["id"])
@@ -1818,7 +1860,9 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 	var actor: Dictionary = world.residents.get(id,{})
 	if actor.is_empty() or not bool(actor.get("active",false)) or \
 			not bool(actor.get("autonomy_enabled",true)):
-		if not actor.is_empty():_cancel_pair_for(actor,"PARTICIPANT_UNAVAILABLE")
+		if not actor.is_empty():
+			actor.erase("solo_habit_commitment")
+			_cancel_pair_for(actor,"PARTICIPANT_UNAVAILABLE")
 		life_scheduler.cancel(id)
 		moving_ids.erase(id)
 		return
@@ -1923,9 +1967,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 			return
 		actor.erase("held_book")
 		_record("%s — вернула книгу" % actor.get("name",id))
-	if str(actor.get("intent",""))=="VIEW_ART" and str(actor.get("phase",""))=="perform":
-		var viewing_id:String=str(actor.get("viewing_object_id",""))
-		if viewing_id!="":world.record_object_view(viewing_id,id)
+	_finish_solo_habit_commitment(actor)
 	# Only a due, uncommitted resident in the same room may opt in.
 	# No per-frame all-pairs encounter scan and no interrupted media.
 	if _may_join_group(actor) and rng.randf()<0.18:
