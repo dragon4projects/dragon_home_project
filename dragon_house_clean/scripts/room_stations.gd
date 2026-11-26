@@ -563,8 +563,8 @@ func reconcile(world) -> int:
 			var waypoints:Array=actor.get("waypoints",[])
 			var waypoint_index:int=int(actor.get("waypoint_index",0))
 			var y:float=float(actor.get("visual_y",0))
-			if world.canonical_house_seed and str(actor.get("phase",""))=="travel" and waypoint_index>=0 and waypoint_index<waypoints.size() and str(waypoints[waypoint_index].get("kind",""))=="lift" and absf(y-roundf(y/world.FLOOR_H)*world.FLOOR_H)>0.035 and actor.has("book_task_stage"):
-				actor["book_recovery_lift_drain"]=true
+			if world.canonical_house_seed and str(actor.get("phase",""))=="travel" and waypoint_index>=0 and waypoint_index<waypoints.size() and str(waypoints[waypoint_index].get("kind",""))=="lift" and absf(y-roundf(y/world.FLOOR_H)*world.FLOOR_H)>0.035:
+				actor["station_replan_lift_pending"]=true
 				fixed+=1
 				continue
 			# Old/corrupt reservations cannot continue a phantom activity
@@ -614,7 +614,7 @@ func migrate_legacy_positions(world) -> int:
 	sorted_ids.sort()
 	for id in sorted_ids:
 		var actor: Dictionary=world.residents[id]
-		if not bool(actor.get("active",false)) or actor.has("station_slot"):
+		if not bool(actor.get("active",false)) or actor.has("station_slot") or actor.has("station_replan_lift_pending"):
 			continue
 		var phase: String=str(actor.get("phase","idle"))
 		if not phase in ["travel","perform"]:
