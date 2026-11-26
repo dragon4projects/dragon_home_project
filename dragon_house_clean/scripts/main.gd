@@ -691,7 +691,14 @@ func make_mountain() -> void:
 	shell.name = "MountainMassBehindRooms"
 	add_child(shell)
 	var bounds:Rect2=camera_world_bounds()
-	var rock := box(shell, Vector3(bounds.get_center().x,bounds.get_center().y,-5.6), Vector3(maxf(83.0,bounds.size.x+12.0),maxf(26.0,bounds.size.y+8.0),0.8), Color("#6f696a"))
+	# The backdrop must stay behind the deepest physical room. The legacy
+	# -5.6 slab occludes bands 6/7 in the new nine-metre cutaway.
+	var background_z:float=-5.6
+	for room in world.rooms:
+		if Depth7Space.enabled_for(room):
+			background_z=minf(background_z,Depth7Space.BACK-1.0)
+	var rock := box(shell, Vector3(bounds.get_center().x,bounds.get_center().y,background_z), Vector3(maxf(83.0,bounds.size.x+12.0),maxf(26.0,bounds.size.y+8.0),0.8), Color("#6f696a"))
+	rock.name="MountainBackdrop"
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Color("#655d5e")
 	material.albedo_texture = _texture_from_source("res://assets/textures/basalt.jpg")

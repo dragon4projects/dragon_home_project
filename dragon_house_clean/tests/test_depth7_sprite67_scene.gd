@@ -33,12 +33,14 @@ func capture(scene,room:Dictionary,actor:Dictionary,intent:String,preferred:Arra
   for id in scene.actor_sprites:
    if id!=actor.id:scene.actor_sprites[id].visible=false
   for i in range(3):await process_frame;await RenderingServer.frame_post_draw
-  assert(root.get_texture().get_image().save_png("/home/user/dragon_qa/iter67_"+str(actor.id)+".png")==OK)
+  assert(root.get_texture().get_image().save_png("/home/user/dragon_qa/iter68_"+str(actor.id)+".png")==OK)
  scene.life.stations.release(actor);actor["phase"]="idle"
 func run()->void:
  var scene=load("res://scenes/main.tscn").instantiate()
  root.add_child(scene);current_scene=scene;scene.set_process(false)
  await process_frame
+ var rock:MeshInstance3D=scene.get_node("MountainMassBehindRooms/MountainBackdrop")
+ assert(rock.position.z+rock.mesh.size.z*.5<-8.33)
  var hearth:Dictionary=scene.world.get_room(-3,1)
  var cinema:Dictionary={};var library:Dictionary={}
  for room in scene.world.rooms:
