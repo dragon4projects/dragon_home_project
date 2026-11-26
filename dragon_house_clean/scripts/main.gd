@@ -103,6 +103,8 @@ var hud_main_body: VBoxContainer
 var hud_toggle_button: Button
 var hud_brief: Label
 var hud_expanded := false
+var shutdown_requested:=false
+var recovery_screen_visible:=false
 var media_label: Label
 var notice: Label
 var menu: OptionButton
@@ -2407,6 +2409,12 @@ func build_interface() -> void:
 	hud_toggle_button.text = "☰ Меню"
 	hud_toggle_button.pressed.connect(toggle_hud)
 	header.add_child(hud_toggle_button)
+	var exit_button:=Button.new()
+	exit_button.name="SaveAndExit"
+	exit_button.text="Выйти"
+	exit_button.tooltip_text="Сохранить состояние Дома и штатно завершить программу"
+	exit_button.pressed.connect(_request_shutdown)
+	header.add_child(exit_button)
 	hud_brief = Label.new()
 	hud_brief.text = "Обзор"
 	col.add_child(hud_brief)
@@ -3632,6 +3640,8 @@ func update_render_lod() -> void:
 			node.visible = micro_detail_visible
 
 func _show_recovery_blocked()->void:
+	if recovery_screen_visible:return
+	recovery_screen_visible=true
 	# No life setup, content import, camera or autosave on failed startup.
 	set_process(false)
 	set_process_input(false)
@@ -3653,7 +3663,14 @@ func _show_recovery_blocked()->void:
 	message.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	message.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	message.custom_minimum_size=Vector2(480,0)
-	center.add_child(message)
+	var column:=VBoxContainer.new()
+	column.add_theme_constant_override("separation",18)
+	center.add_child(column)
+	column.add_child(message)
+	var exit_button:=Button.new()
+	exit_button.text="Закрыть без новой записи"
+	exit_button.pressed.connect(_request_shutdown)
+	column.add_child(exit_button)
 
 func _process(delta: float) -> void:
 	if world.recovery_blocked:
@@ -3686,12 +3703,22 @@ func _process(delta: float) -> void:
 		if journal_open:
 			update_journal()
 
+func _request_shutdown()->void:
+	# Window close and visible exit button share exactly one checkpoint path.
+	if shutdown_requested:return
+	shutdown_requested=true
+	if not world.recovery_blocked and not world.save_world():
+		shutdown_requested=false
+		_show_recovery_blocked()
+		return
+	set_process(false)
+	set_process_input(false)
+	set_process_unhandled_input(false)
+	get_tree().quit()
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		if not world.recovery_blocked and not world.save_world():
-			_show_recovery_blocked()
-			return
-		get_tree().quit()
+		_request_shutdown()
 
 
 func _activate_teea008_roster()->void:
