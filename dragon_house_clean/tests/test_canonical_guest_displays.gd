@@ -75,12 +75,13 @@ func run()->void:
 	assert(node.visible and node.get_node_or_null("ArtifactGlassCube")!=null)
 	assert(is_equal_approx(float(node.get_meta("artifact_cube_side")),0.18))
 	assert(is_equal_approx(float(node.get_node("Visual").position.y),scene.ARTIFACT_CUBE_SIDE*0.5))
-	var hidden_empty:=false
+	var visible_substitutes:=0
 	for sample in get_nodes_in_group("canonical_conditional_dressing"):
 		if str(sample.get_meta("room_id",""))==rid and str(sample.get_meta("decor_slot_id",""))==str(slot["id"]):
-			assert(not sample.visible)
-			hidden_empty=true
-	assert(hidden_empty)
+			if sample.visible:visible_substitutes+=1
+	# Empty decorative cubes were removed: absence of a placeholder is
+	# valid, but any visible substitute occupying the real cube is not.
+	assert(visible_substitutes==0)
 	var screen:Vector2=scene.camera.unproject_position(node.to_global(Vector3(0,0.09,0.0)))
 	var hit:Dictionary=scene.content_hotspot_at_screen(screen)
 	assert(str(hit.get("item_id",""))==aid)

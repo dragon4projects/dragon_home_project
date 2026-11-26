@@ -582,6 +582,7 @@ func _apply_social_interiors()->void:
 	_apply_library_gallery_dressing()
 	_apply_media_work_dressing()
 	_apply_guest_display_dressing()
+	_apply_guest_composition_v2()
 	_apply_conditional_shelf_dressing()
 	_apply_hearth_conversation_v2()
 	_apply_social_zones_v3()
@@ -733,6 +734,25 @@ func _apply_guest_display_dressing()->void:
 		if valid:
 			layouts[key]["instances"].append_array(doc["additions"][key])
 			layouts[key]["guest_display_revision"]="GUEST_DISPLAY_V1"
+
+func _apply_guest_composition_v2()->void:
+	# Keep the larger body space open: enlarge only the soft mat, and
+	# relocate the table plus its decorative children toward the storage.
+	var centaur:Dictionary=layouts.get("guest_centaur/R2",{})
+	if centaur.is_empty():return
+	_move_social_ensemble(centaur,"guest_centaur_01_table",Vector2(1.85,-1.55))
+	for item in centaur["instances"]:
+		if str(item["instance_id"])=="guest_centaur_01_rest_mat":
+			# This textile already owns a real floor-rest candidate from
+			# the R1 review delta. Scale its top contact as well.
+			_resize_floor_item(item,1.55)
+			for station in item["station_candidates"]:
+				assert(station["kind"]=="floor_rest")
+				station["room_local_xyz"][1]=item["bounds_max_m"][1]
+			_translate_hearth_item(item,-2.05,-0.65)
+		if str(item["instance_id"])=="centaur_textile":
+			_translate_hearth_item(item,1.85,0.05)
+	centaur["guest_composition_revision"]="CENTAUR_COMPOSITION_V2"
 
 func _apply_conditional_shelf_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_conditional_shelves_20261125.json",FileAccess.READ)

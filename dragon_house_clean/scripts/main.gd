@@ -677,6 +677,39 @@ func label3(parent: Node3D, content: String, pos: Vector3, size: int, color: Col
 	parent.add_child(l)
 	return l
 
+# Explicit word-boundary wrapping: Label3D autowrap interprets width
+# differently from Font measurement on the compatibility renderer.
+func _fit_door_plaque(label:Label3D,width_m:float,height_m:float)->void:
+	var full_name:String=label.text
+	label.set_meta("public_full_name",full_name)
+	var font:Font=ThemeDB.fallback_font
+	label.font=font
+	label.font_size=48
+	label.outline_size=5
+	label.autowrap_mode=TextServer.AUTOWRAP_OFF
+	label.line_spacing=0.0
+	var words:PackedStringArray=full_name.split(" ",false)
+	var options:Array=[full_name]
+	for i in range(1,words.size()):
+		options.append(" ".join(words.slice(0,i))+"\n"+" ".join(words.slice(i)))
+		for j in range(i+1,words.size()):
+			options.append(" ".join(words.slice(0,i))+"\n"+" ".join(words.slice(i,j))+"\n"+" ".join(words.slice(j)))
+	var best:float=0.0
+	var chosen:String=full_name
+	for option in options:
+		var lines:PackedStringArray=str(option).split("\n")
+		var max_width:float=0.0
+		for line in lines:
+			max_width=maxf(max_width,font.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,label.font_size).x)
+		var height:float=font.get_height(label.font_size)*float(lines.size())
+		var scale_value:float=minf(width_m/(max_width+12.0),height_m/(height+12.0))
+		if scale_value>best:
+			best=scale_value
+			chosen=str(option)
+	label.text=chosen
+	label.pixel_size=best
+	label.modulate=Color("#fff2d5")
+
 func add_shelf(parent: Node3D, at: Vector3, width: float = 1.6) -> void:
 	box(parent, at + Vector3(0.0, 0.55, 0.0), Vector3(width, 0.10, 0.36), palette["wood"])
 	box(parent, at + Vector3(0.0, 1.2, 0.0), Vector3(width, 0.10, 0.36), palette["wood"])
@@ -756,6 +789,13 @@ func _add_canonical_interior_lighting(parent:Node3D,group:Dictionary)->void:
 		"music": specs=[[-0.28,2.15,-0.55,"#e9b3a3",0.55,3.6],[0.28,1.95,-0.35,"#d4bcf5",0.42,3.6]]
 		"study","workshop": specs=[[-0.26,2.20,-0.30,"#f6e7ca",0.67,3.8],[0.30,2.20,-0.35,"#f3d4a9",0.56,3.6]]
 		"artifact": specs=[[-0.28,2.10,-0.50,"#f9e4b9",0.58,3.6],[0.29,2.10,-0.50,"#dce5f0",0.55,3.6]]
+		"guest":
+			var room:Dictionary=world.room_by_id(str(group.get("primary_id","")))
+			match str(room.get("owner_id","")):
+				"NPC_CENTAUR": specs=[[-0.28,2.15,-0.60,"#d5e5c3",0.80,3.2],[0.28,2.05,-0.65,"#f4c08a",0.80,3.2]]
+				"NPC_VAMPIRE_GIRL": specs=[[-0.24,2.0,-0.45,"#a9a7d8",0.55,2.5],[0.24,1.85,-0.65,"#e5aa77",0.62,2.4]]
+				"NPC_GINGER_CAT_GUEST": specs=[[-0.24,2.10,-0.55,"#ffe0a8",0.85,2.8],[0.24,2.10,-0.55,"#f5c48b",0.68,2.5]]
+				_: return
 		_: return
 	var rig:=Node3D.new()
 	rig.name="CanonicalInteriorLightRig"
@@ -1667,13 +1707,13 @@ func make_room(group: Dictionary) -> void:
 		if t=="private" and owner_id!="":
 			# The name and paper belong on the wall beside the door, not on its leaf.
 			var sign_x:float=-(span*0.5+1.04)*0.5
-			var sign_width:float=minf(1.18,span*0.5-1.12)
-			var plaque:=box(n,Vector3(sign_x,2.25,1.115),Vector3(sign_width,0.34,0.055),palette["wood"])
+			var sign_width:float=minf(1.24,span*0.5-1.12)
+			var plaque:=box(n,Vector3(sign_x,2.35,1.115),Vector3(sign_width,0.60,0.055),Color("#352824"))
 			plaque.name="DoorNamePlaque"
-			var wall_label:=label3(n,sign,Vector3(sign_x,2.25,1.155),24,Color("#eadfc8"))
+			var wall_label:=label3(n,sign,Vector3(sign_x,2.35,1.155),48,Color("#fff2d5"))
 			wall_label.name="DoorWallName"
 			wall_label.billboard=BaseMaterial3D.BILLBOARD_DISABLED
-			wall_label.pixel_size=minf(0.0037,sign_width/(24.0*maxf(1.0,float(sign.length())*0.65)))
+			_fit_door_plaque(wall_label,sign_width-0.10,0.50)
 			# Every assigned room has a sheet; missing notes stay genuinely blank.
 			var frame:=box(n,Vector3(sign_x,1.67,1.115),Vector3(0.52,0.70,0.055),palette["bronze"])
 			frame.name="DoorNoteFrame"
@@ -2563,7 +2603,10 @@ func build_interface() -> void:
 	content_hover_label = Label.new()
 	content_hover_label.visible = false
 	content_hover_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	content_hover_label.add_theme_color_override("font_color",Color("#f4ddc4"))
+	content_hover_label.add_theme_color_override("font_color",Color("#fff2d5"))
+	content_hover_label.add_theme_color_override("font_outline_color",Color("#18141a"))
+	content_hover_label.add_theme_constant_override("outline_size",6)
+	content_hover_label.add_theme_font_size_override("font_size",18)
 	root.add_child(content_hover_label)
 	catalog_picker = FileDialog.new()
 	catalog_picker.access = FileDialog.ACCESS_FILESYSTEM
@@ -2783,6 +2826,18 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 func update_content_hover(point: Vector2) -> void:
 	if content_hover_label == null or content_viewer == null or content_viewer.visible:
 		return
+	if door_note_panel!=null and door_note_panel.visible:
+		content_hover_label.visible=false
+		return
+	var door_id:String=door_note_at_screen(point)
+	if door_id=="":
+		door_id=_door_plaque_at_screen(point)
+	if door_id!="":
+		var room:Dictionary=world.room_by_id(door_id)
+		content_hover_label.visible=true
+		content_hover_label.text=door_registry.sign_text(str(room.get("owner_id","")),world.read_resident_profiles())
+		_position_public_hover(point)
+		return
 	var entry := content_hotspot_at_screen(point)
 	content_hover_label.visible = not entry.is_empty()
 	if entry.is_empty():
@@ -2791,7 +2846,32 @@ func update_content_hover(point: Vector2) -> void:
 	var hovered_object:Dictionary=world.physical_object(str(entry.get("item_id","")))
 	if bool(hovered_object.get("movable",false)) or str(hovered_object.get("display_mode",""))=="wall":
 		content_hover_label.text += "  ·  Shift+ЛКМ: переставить/дом"
-	content_hover_label.position = point + Vector2(14,12)
+	_position_public_hover(point)
+
+func _position_public_hover(point:Vector2)->void:
+	var extent:Vector2=content_hover_label.get_combined_minimum_size()
+	var screen:Vector2=get_viewport().get_visible_rect().size
+	content_hover_label.position=Vector2(clampf(point.x+14.0,0.0,maxf(0.0,screen.x-extent.x-8.0)),clampf(point.y+12.0,0.0,maxf(0.0,screen.y-extent.y-8.0)))
+
+func _door_plaque_at_screen(point:Vector2)->String:
+	if camera==null:return ""
+	var best:float=INF
+	var found:String=""
+	for room_id in door_note_anchors:
+		var anchor:Node3D=door_note_anchors[room_id]
+		if not is_instance_valid(anchor) or not anchor.is_visible_in_tree():continue
+		var plaque:MeshInstance3D=anchor.get_parent().get_node_or_null("DoorNamePlaque")
+		if plaque==null or camera.is_position_behind(plaque.global_position):continue
+		var center:Vector2=camera.unproject_position(plaque.global_position)
+		var bounds:=Rect2(center,Vector2.ZERO)
+		var half:Vector3=plaque.mesh.size*0.5
+		for dx in [-half.x,half.x]:
+			for dy in [-half.y,half.y]:
+				bounds=bounds.expand(camera.unproject_position(plaque.to_global(Vector3(dx,dy,half.z))))
+		if bounds.has_point(point) and center.distance_to(point)<best:
+			best=center.distance_to(point)
+			found=str(room_id)
+	return found
 
 func close_door_note()->void:
 	if door_note_panel!=null:
@@ -3166,8 +3246,10 @@ func update_hud() -> void:
 		var r: Dictionary = world.room_by_id(selected_room)
 		if not r.is_empty():
 			var merged: int = world.merged_run_length(int(r["x"]),int(r["level"]))
-			hud_status.text += "\n%s  R%d  |  уровень %d" % [
-				room_names.get(r["type"],r["type"]),merged,int(r["level"])]
+			var room_title:String=str(r.get("display_name",room_names.get(r["type"],r["type"])))
+			if str(r.get("type",""))=="private" and str(r.get("owner_id",""))!="":
+				room_title=door_registry.sign_text(str(r["owner_id"]),world.read_resident_profiles())
+			hud_status.text += "\n%s  R%d  |  уровень %d" % [room_title,merged,int(r["level"])]
 			var group: Dictionary = world.merged_group(int(r["x"]),int(r["level"]))
 			if world.public_cutaway_allowed(r):
 				var occupied := 0
