@@ -3,6 +3,7 @@ const JsonEventStore = preload("res://scripts/world_event_store.gd")
 const SQLiteEventStore = preload("res://scripts/world_event_store_sqlite.gd")
 const EventGate = preload("res://scripts/world_event_gate.gd")
 const ObjectReducer = preload("res://scripts/object_event_reducer.gd")
+const LearnedHabits=preload("res://scripts/learned_habits.gd")
 
 ## Strangler facade: keeps current WorldModel object APIs stable while moving
 ## their durable truth path to gate -> append-only event -> reducer projection.
@@ -245,9 +246,38 @@ func setup(p_world) -> bool:
 			status = "SQLITE_MARKER_WRITE_FAILED"
 			_update_runtime_state()
 			return false
+	# The snapshot revision and habit projection are written in one snapshot.
+	# Durable view events newer than that checkpoint must project their credit
+	# before the event revision is advanced. Legacy events lack completion IDs.
+	for event in store.events:
+		if int(event.get("seq",0))>saved_revision:
+			_apply_view_completion(event,true)
 	ready = true
 	_update_runtime_state()
 	return true
+
+func _apply_view_completion(event:Dictionary,recovering:bool)->void:
+	if str(event.get("event_type",""))!="OBJECT_INTERACTED":return
+	var payload:Dictionary=event.get("payload",{})
+	var completion_id:String=str(payload.get("view_completion_id",""))
+	if completion_id=="" or completion_id!=str(event.get("event_id","")) or not completion_id.begins_with("view-v1-"):return
+	var actor:Dictionary=world.residents.get(str(payload.get("actor_id","")),{})
+	var seq:int=int(event.get("seq",0))
+	if actor.is_empty() or seq<=int(actor.get("last_view_credit_seq",0)):return
+	var event_time:float=float(payload.get("sim_clock",-1))
+	if not is_finite(event_time) or event_time<0:return
+	var subject:String=str(payload.get("object_id",""))
+	var matched:bool=EventGate.view_completion_id(actor,subject)==completion_id
+	# A post-checkpoint fact can be newer than the restored world. Preserve
+	# its real timestamp as provenance, but do not age unrelated activities.
+	LearnedHabits.record(actor,"VIEW_ART",minf(event_time,world.sim_clock),subject,str(payload.get("context","")),{"event_id":completion_id,"event_sim_clock":event_time,"room_id":str(event.get("room_id","")),"station_id":str(payload.get("station_id",""))})
+	actor["last_view_credit_seq"]=seq
+	if matched:
+		actor.erase("solo_habit_commitment")
+		if recovering and str(actor.get("intent",""))=="VIEW_ART" and str(actor.get("phase",""))=="perform" and str(actor.get("viewing_object_id",""))==subject:
+			# Life.setup releases this exact already-completed station/route.
+			# Never cancel a different commitment on the same resident.
+			actor["recovered_view_completion"]=completion_id
 
 func _update_runtime_state() -> void:
 	if world == null:
@@ -460,6 +490,9 @@ func _journal_accepted(event: Dictionary) -> void:
 		"visibility":str(event.get("visibility","")),
 		"event_room_id":str(event.get("room_id",""))
 	}
+	var event_time=payload.get("sim_clock",null)
+	if typeof(event_time) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(event_time)) and float(event_time)>=0:
+		details["event_sim_clock"]=float(event_time)
 	if event_type == "OBJECT_REGISTERED":
 		details["canonical_owner_id"] = str(object.get("canonical_owner_id",""))
 		world._append_journal("OBJECT_REGISTERED","",object_id,
@@ -508,7 +541,7 @@ func _reconcile_journal_from_store() -> void:
 	for raw_event in store.events:
 		var event: Dictionary = raw_event
 		if str(event.get("source_type","")) != "migration_import":
-			canonical_ids[str(event.get("event_id",""))] = true
+			canonical_ids[str(event.get("event_id",""))] = event
 	for index in range(world.journal.size()-1,-1,-1):
 		var entry: Dictionary = world.journal[index]
 		if not str(entry.get("event","")).begins_with("OBJECT_"):
@@ -517,6 +550,11 @@ func _reconcile_journal_from_store() -> void:
 		var event_id: String = str(details.get("event_id",""))
 		if event_id != "" and not canonical_ids.has(event_id):
 			world.journal.remove_at(index)
+		elif canonical_ids.has(event_id):
+			var event_time=canonical_ids[event_id].get("payload",{}).get("sim_clock",null)
+			if typeof(event_time) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(event_time)) and float(event_time)>=0:
+				entry["sim_clock"]=float(event_time)
+				details["event_sim_clock"]=float(event_time)
 	# Then fill missing accepted object events; migration rows remain provenance,
 	# not fresh household activity.
 	for raw_event in store.events:
@@ -577,6 +615,7 @@ func submit(event: Dictionary, write_journal: bool = true) -> Dictionary:
 		_update_runtime_state()
 		return {"ok":false,"error":last_error}
 	_publish_projection(candidate)
+	_apply_view_completion(committed,false)
 	# Live creature carrier cache follows the same committed movement that
 	# owns possession. A rejected event cannot change the actor cache.
 	if str(committed.get("event_type",""))=="OBJECT_MOVED":
@@ -810,14 +849,19 @@ func restore_home(object_id: String, reset_day: int = -1) -> bool:
 		"Daily home reset" if reset_day>=0 else "Explicit restore to canonical home",payload)
 	return bool(submit(event).get("ok",false))
 
-func record_view(object_id:String,actor_id:String)->bool:
+func record_view(object_id:String,actor_id:String,context:String)->bool:
 	var obj:Dictionary=world.physical_object(object_id)
 	if obj.is_empty():return false
 	var room_id:String=str(obj.get("current_room_id",""))
+	var actor:Dictionary=world.residents.get(actor_id,{})
+	var marker:Dictionary=actor.get("solo_habit_commitment",{})
+	var completion_id:String=EventGate.view_completion_id(actor,object_id)
+	if completion_id=="":return false
 	var event:=_base_event("OBJECT_INTERACTED","AMBIENT_SIMULATION","system","world_model","SYSTEM_RULE",
 		_visibility_for_room(room_id),"AMBIENT_REVERTIBLE",actor_id,object_id,room_id,room_id,room_id,
-		"OBJECT_VIEW_COMPLETED_V023","Resident completed an object view",
-		{"object_id":object_id,"actor_id":actor_id,"sim_clock":float(world.sim_clock)})
+		"OBJECT_VIEW_COMPLETED_V024","Resident completed an object view",
+		{"object_id":object_id,"actor_id":actor_id,"sim_clock":float(world.sim_clock),"view_completion_id":completion_id,"station_id":str(marker.get("station_id","")),"started_at":float(marker.get("started_at",-1)),"ends_at":float(marker.get("ends_at",-1)),"context":context})
+	event["event_id"]=completion_id
 	return bool(submit(event).get("ok",false))
 
 func housekeeping_return(object_id:String,target:Dictionary)->bool:
