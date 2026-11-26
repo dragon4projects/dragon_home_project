@@ -5,7 +5,7 @@ const B=preload("res://scripts/teea008_review_bank.gd")
 const L=preload("res://scripts/depth7_layout.gd")
 func _initialize()->void:call_deferred("run")
 func run()->void:
- var r=R.new();assert(r.initialize());assert(r.install_depth7_intake()==21)
+ var r=R.new();assert(r.initialize());assert(r.install_depth7_intake()==22)
  var b=B.new();assert(b.initialize(true));b.apply_architecture_layouts()
  for key in L.SOCIAL_KEYS+L.FUNCTION_KEYS+L.GUEST_KEYS:b.layouts[key]=L.convert(b.layouts[key],key)
  var file:=FileAccess.open("res://data/depth7_hearth_layout.json",FileAccess.READ);b.layouts["common/R3"]=JSON.parse_string(file.get_as_text())

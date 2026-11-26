@@ -83,7 +83,7 @@ func install_depth7_intake()->int:
 		var w=u.get("wardrobe")
 		var states:Dictionary={}
 		if w==null:
-			if a!="npc_ai_magic_sphere" or not state.begins_with("HOVER_"):continue
+			if not ((a=="npc_ai_magic_sphere" and state.begins_with("HOVER_")) or (a=="manjka" and state=="CHASE_RIGHT")):continue
 			states=manifest.get("creatures",{}).get(a,{}).get("states",{})
 		else:
 			if not ((a in ["RES_04","RES_08"] and state.begins_with("SIT_")) or (a=="RES_07" and state in ["READ","IDLE_NW_CORRECTED","DRINK","CARRY_USE"])):continue

@@ -1525,7 +1525,10 @@ func _write_snapshot() -> bool:
 		return false
 	# Same schema and numeric encoding; no presentation whitespace needed
 	# in the frequently written machine checkpoint.
-	file.store_string(JSON.stringify(data))
+	# Object key order is not part of the checkpoint schema. Sorting every
+	# nested catalogue row costs CPU and adds no integrity protection.
+	# Keep the complete parse/readback and SHA-256 backup validation.
+	file.store_string(JSON.stringify(data,"",false))
 	file.flush()
 	var write_error:Error=file.get_error()
 	file.close()

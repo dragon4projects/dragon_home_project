@@ -1,0 +1,599 @@
+{
+  "schema": 1,
+  "status": "REQUESTED_NOT_GENERATED",
+  "note": "Only calibrated destination poses in current live review wardrobe. Existing contacts remain source of truth. No transition may be marked ready without independent frame and scene fit.",
+  "rows": [
+    {
+      "actor_id": "RES_01",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_01/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_01/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        252,
+        394
+      ],
+      "seat_contact_sha256": "9cc23413770fd687d3dcfba41996ba745ea91aad81d8fd5264cc99e267cd3701",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_02",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_02/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_02/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        253,
+        398
+      ],
+      "seat_contact_sha256": "8cef972d0a5ca67e6dfc2d3336e84ec325e89bb8e4e600648d9635d15fb02756",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_03",
+      "wardrobe": "CITY",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_03/wardrobes/CITY/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_03/wardrobes/CITY/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        250,
+        387
+      ],
+      "seat_contact_sha256": "63773d46dde32da692eb5aced1b29f93695b56585a671876dddc47e3be26acaa",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        247,
+        395
+      ],
+      "seat_contact_sha256": "59201bf9445befea84b4c982154c709bd3f337261648bc043a0d381eaddc0bb1",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_N",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_N/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_N/0001.png",
+      "seat_contact_px": [
+        256,
+        398
+      ],
+      "seat_contact_sha256": "a26f908593e7d84c06304c36e3e5046764093bacb1a1fe9ed182c29db94cdeac",
+      "sit_down_state": "SIT_DOWN_N",
+      "stand_up_state": "STAND_UP_N",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_NE",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_NE/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_NE/0001.png",
+      "seat_contact_px": [
+        252,
+        403
+      ],
+      "seat_contact_sha256": "3b9ccc693277c3db7013a4e4f2091cd86f6f2b1a7d97bc862160ab1494f60771",
+      "sit_down_state": "SIT_DOWN_NE",
+      "stand_up_state": "STAND_UP_NE",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_NW",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_NW/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_NW/0001.png",
+      "seat_contact_px": [
+        264,
+        398
+      ],
+      "seat_contact_sha256": "ff520209d4e943c2eb29a750601d75f2489222a77bb86f477880dd15282cbf62",
+      "sit_down_state": "SIT_DOWN_NW",
+      "stand_up_state": "STAND_UP_NW",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_E",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_E/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png",
+      "seat_contact_px": [
+        248,
+        401
+      ],
+      "seat_contact_sha256": "69d49d01cd3c22e39ad94f4ed20cb477ca690216223692db3b75711fddbd2640",
+      "sit_down_state": "SIT_DOWN_E",
+      "stand_up_state": "STAND_UP_E",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_W",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_W/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png",
+      "seat_contact_px": [
+        273,
+        399
+      ],
+      "seat_contact_sha256": "fb9407ff8b5ffcc90330b1426c39a20ba7f5747b7434bfd78b83f4fe84f3d8b1",
+      "sit_down_state": "SIT_DOWN_W",
+      "stand_up_state": "STAND_UP_W",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_SE",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_SE/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_SE/0001.png",
+      "seat_contact_px": [
+        252,
+        398
+      ],
+      "seat_contact_sha256": "d9a086d7cbcdc4fa02ea2ba7456384e30b9964728a8603ac3ff9f79d24efb600",
+      "sit_down_state": "SIT_DOWN_SE",
+      "stand_up_state": "STAND_UP_SE",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "destination_pose": "SIT_SW",
+      "standing_reference": "assets/residents/RES_04/wardrobes/HOME/IDLE_SW/0001.png",
+      "seated_reference": "assets/residents/RES_04/wardrobes/HOME/SIT_SW/0001.png",
+      "seat_contact_px": [
+        256,
+        399
+      ],
+      "seat_contact_sha256": "5acaf1790e586a1bc991d48966f861df839629b8102659980b28b3b5dabcadb1",
+      "sit_down_state": "SIT_DOWN_SW",
+      "stand_up_state": "STAND_UP_SW",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_05",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_05/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_05/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        250,
+        395
+      ],
+      "seat_contact_sha256": "bae56b74a9bdea472798df6e82ecdc4d211aeae7f36a75af6fc8e291642dce85",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_06",
+      "wardrobe": "CITY",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_06/wardrobes/CITY/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_06/wardrobes/CITY/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        246,
+        399
+      ],
+      "seat_contact_sha256": "b8d1b8cac83f05aa644901c42bd2c0336a5cccefaacabe84d04bf1034227fbfa",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_07/wardrobes/HOME/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_07/wardrobes/HOME/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        250,
+        387
+      ],
+      "seat_contact_sha256": "e4bc8802baa1ed91099d9836fc598b730972a091dbd5b2a74551b67b851c7e3b",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        251,
+        397
+      ],
+      "seat_contact_sha256": "85faedddb7c7cdb38b7fc0b278ebf8e1a8f5c4010a058d8a947381caeebe211d",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "SIT_N",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_N/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/SIT_N/0001.png",
+      "seat_contact_px": [
+        256,
+        400
+      ],
+      "seat_contact_sha256": "3fb508836e3e51d93fbea3e74106506a633273ba02330e60155be034d5f59500",
+      "sit_down_state": "SIT_DOWN_N",
+      "stand_up_state": "STAND_UP_N",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "SIT_NE",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_NE/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/SIT_NE/0001.png",
+      "seat_contact_px": [
+        255,
+        400
+      ],
+      "seat_contact_sha256": "8eac25e5b3763073e10826cf5c3d00153977bec81c5db7a67d8b081c047e0b1b",
+      "sit_down_state": "SIT_DOWN_NE",
+      "stand_up_state": "STAND_UP_NE",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "SIT_NW",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_NW/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/SIT_NW/0001.png",
+      "seat_contact_px": [
+        267,
+        400
+      ],
+      "seat_contact_sha256": "a254631f842834fe04f6251bc67647215c7434d8cc080a1d59984dc61ca59bad",
+      "sit_down_state": "SIT_DOWN_NW",
+      "stand_up_state": "STAND_UP_NW",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "SIT_E",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_E/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/SIT_E/0001.png",
+      "seat_contact_px": [
+        246,
+        399
+      ],
+      "seat_contact_sha256": "37ffe26a1e378e48a037c9ae4e0a96638d76e44eaef42ced02f1a7ea28dc9dd6",
+      "sit_down_state": "SIT_DOWN_E",
+      "stand_up_state": "STAND_UP_E",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "SIT_W",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_W/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/SIT_W/0001.png",
+      "seat_contact_px": [
+        270,
+        399
+      ],
+      "seat_contact_sha256": "27428f6121285200ed721a72ad3286ef76491ff06239b1c9072145bf809f2efa",
+      "sit_down_state": "SIT_DOWN_W",
+      "stand_up_state": "STAND_UP_W",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "destination_pose": "SIT_SE",
+      "standing_reference": "assets/residents/RES_08/wardrobes/CITY/IDLE_SE/0001.png",
+      "seated_reference": "assets/residents/RES_08/wardrobes/CITY/SIT_SE/0001.png",
+      "seat_contact_px": [
+        247,
+        396
+      ],
+      "seat_contact_sha256": "f7607595c8885338bb2fa1b60834057d55533f49dff67e807dbed2bd68986e03",
+      "sit_down_state": "SIT_DOWN_SE",
+      "stand_up_state": "STAND_UP_SE",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_09",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_09/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_09/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        248,
+        405
+      ],
+      "seat_contact_sha256": "ab83568f3128985414a8e3cbc4ce655d96bb506658a992b3f2bb6f059f5e3c9f",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_10",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_10/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_10/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        245,
+        405
+      ],
+      "seat_contact_sha256": "086b861cc0822ed1492087158f8537c383090c67b6b6d46462fa29167757269a",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_11",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_11/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_11/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        267,
+        400
+      ],
+      "seat_contact_sha256": "3a03b53f9b0dc2beaeed9dc3f4023e7b1deaea709bc16b20203f58e95e42fa58",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_12",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_12/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_12/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        248,
+        404
+      ],
+      "seat_contact_sha256": "156d06d06319f90c101b3e118f1d67ec4d8bbbf02039c68dfbb8003f24f29282",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_13",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_13/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_13/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        251,
+        401
+      ],
+      "seat_contact_sha256": "b1c62b84c0c55722316842858d9fee06b877619b84f1ef2c78bded79f93d1a2f",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_14",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_14/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_14/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        252,
+        397
+      ],
+      "seat_contact_sha256": "41f781d7fa5c7b64ed13cd7e127eb93356fccb9f26652a137e762d1318be4f84",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_15",
+      "wardrobe": "CITY",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_15/wardrobes/CITY/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_15/wardrobes/CITY/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        252,
+        393
+      ],
+      "seat_contact_sha256": "93151c9999cb261aa7a30f7e480ef2476d890ba4bdd20e1783bdd8972c7028bf",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_16",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_16/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_16/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        254,
+        392
+      ],
+      "seat_contact_sha256": "55e946e45c10d9a34a04568f9ed6ded684cc3b1b0733cf2156ca06d774a5997e",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_17",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_17/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_17/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        251,
+        395
+      ],
+      "seat_contact_sha256": "5d6d727fc573b2ee2b4d459953d8ef2ba51893c8046e43fdce269583f2899855",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_18",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_18/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_18/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        252,
+        398
+      ],
+      "seat_contact_sha256": "53028fe09d192a998ef8afe44c46fc0da33fe94bcb6e7123ac8a3359dc8d2b29",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_19",
+      "wardrobe": "HOME",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_19/wardrobes/HOME/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_19/wardrobes/HOME/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        248,
+        405
+      ],
+      "seat_contact_sha256": "b12c2eac5254b25c62f84bd44eb972a3d200cbc57bbf4191d014a5fad7a92c9c",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_20",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_20/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_20/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        253,
+        397
+      ],
+      "seat_contact_sha256": "2fbe865f67c2258ac903bcc2088b1e05f59738e97ab63b5fd3de07f6c56c895b",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_21",
+      "wardrobe": "SHORT",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_21/wardrobes/SHORT/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_21/wardrobes/SHORT/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        248,
+        407
+      ],
+      "seat_contact_sha256": "89bfa2d3ef5bbf2896fd1ff02e80012b8b4c904ffbe5f6825831773626fec4e5",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_22",
+      "wardrobe": "HOME",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_22/wardrobes/HOME/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_22/wardrobes/HOME/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        251,
+        400
+      ],
+      "seat_contact_sha256": "331506aa400d9931eaf18a9f67e1f5976472c82d656665c25a2e918aded55711",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_23",
+      "wardrobe": "HOME",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_23/wardrobes/HOME/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_23/wardrobes/HOME/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        252,
+        403
+      ],
+      "seat_contact_sha256": "071de8dabd263a4cb525b4b3f470321fe3a541dad795f500bdb69e627890c412",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    },
+    {
+      "actor_id": "RES_24",
+      "wardrobe": "HOME",
+      "destination_pose": "RELAXED_SIT",
+      "standing_reference": "assets/residents/RES_24/wardrobes/HOME/IDLE_S/0001.png",
+      "seated_reference": "assets/residents/RES_24/wardrobes/HOME/RELAXED_SIT/0001.png",
+      "seat_contact_px": [
+        251,
+        398
+      ],
+      "seat_contact_sha256": "6201712870efa972b9d15d4ca091c8b03445cc7df58ceb2efc1afaf4934b2ba9",
+      "sit_down_state": "SIT_DOWN_S",
+      "stand_up_state": "STAND_UP_S",
+      "intermediate_frames_per_direction": 4,
+      "status": "NEEDS_AUTHORED_FRAMES"
+    }
+  ]
+}

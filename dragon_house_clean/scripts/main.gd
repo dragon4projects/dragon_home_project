@@ -2044,7 +2044,7 @@ func update_creatures(delta: float = 0.0) -> void:
 		if body != null and bank_id != "" and body.has_meta("candidate_bank"):
 			var moving_left := str(creature.get("moving_axis","right")) == "left"
 			var state := ("WALK_LEFT" if moving_left else "WALK_RIGHT") if (
-				str(creature.get("phase","idle")) == "travel") else (
+				str(creature.get("phase","idle")) in ["travel","flee"]) else (
 				"IDLE_LEFT" if moving_left else "IDLE_RIGHT")
 			# No floor-walking cycle for a floating entity. Use directional idle
 			# art while its horizontal travel remains owned by simulation.
@@ -2446,7 +2446,9 @@ func update_residents(delta: float = 0.0) -> void:
 
 func animate_manka(actor: Dictionary, delta: float) -> void:
 	var state := "IDLE_LEFT" if str(actor.get("moving_axis","")) == "left" else "IDLE_RIGHT"
-	if actor.get("phase","idle") == "travel":
+	if actor.get("phase")=="hunt" and actor.get("hunt_stage")=="chase":
+		state="CHASE_RIGHT" if str(actor.get("moving_axis",""))!="left" else "WALK_LEFT"
+	elif actor.get("phase","idle") == "travel":
 		state = "WALK_LEFT" if str(actor.get("moving_axis","")) == "left" else "WALK_RIGHT"
 	elif actor.get("intent","") == "REST" and actor.get("phase","") == "perform":
 		state = "REST"

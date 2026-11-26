@@ -485,6 +485,13 @@ func next_watch_unit(actor_id:String,item:Dictionary,now:float=-1.0)->Dictionary
 	if duration<=0 or not is_finite(duration):return {}
 	return {"item_id":id,"season":season,"episode":episode,"seconds":duration,"restart_cycle":restart_cycle}
 
+# The utility planner needs only existence, not a newly allocated list
+# of every eligible item in the large media catalogues.
+func has_watch_choice(actor_id:String,now:float=-1.0)->bool:
+	for item in world.media.get("films",[]):
+		if not next_watch_unit(actor_id,item,now).is_empty():return true
+	return false
+
 func watch_candidates(actor_id:String,now:float=-1.0)->Array:
 	var result:Array=[]
 	for item in world.media.get("films",[]):
@@ -841,6 +848,12 @@ func listen_repeat_eligible(actor_id:String,item_id:String,now:float)->bool:
 	if int(history.get("completed_count",0))<=0:return true
 	var last:float=float(history.get("last_completed_at",0))
 	return is_finite(now) and is_finite(last) and now-last>=world.GAME_DAY_SECONDS
+
+func has_listen_choice(actor_id:String="",now:float=-1.0)->bool:
+	var at:float=world.sim_clock if now<0.0 else now
+	for item in world.media.get("tracks",[]):
+		if track_duration(item)>0 and (actor_id=="" or listen_repeat_eligible(actor_id,str(item["id"]),at)):return true
+	return false
 
 func listen_candidates(actor_id:String="",now:float=-1.0)->Array:
 	var at:float=world.sim_clock if now<0.0 else now

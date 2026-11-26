@@ -449,9 +449,9 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores.erase("BROWSE_FILMS")
 	if world.media.get("tracks",[]).is_empty():
 		scores.erase("BROWSE_AUDIO")
-	if media_runtime.watch_candidates(str(actor["id"]),clock).is_empty() and not media_runtime.has_joinable_device(str(actor["id"]),"films",clock):
+	if not media_runtime.has_watch_choice(str(actor["id"]),clock) and not media_runtime.has_joinable_device(str(actor["id"]),"films",clock):
 		scores.erase("WATCH_FILM")
-	if media_runtime.listen_candidates(str(actor["id"]),clock).is_empty() and not media_runtime.has_joinable_device(str(actor["id"]),"tracks",clock):
+	if not media_runtime.has_listen_choice(str(actor["id"]),clock) and not media_runtime.has_joinable_device(str(actor["id"]),"tracks",clock):
 		scores.erase("LISTEN_MUSIC")
 	return scores
 
@@ -1994,6 +1994,21 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		actor.erase("held_book")
 		_record("%s — вернула книгу" % actor.get("name",id))
 	_finish_solo_habit_commitment(actor)
+	if id=="MANJKA" and candidate_navigation!=null:
+		if actor.get("phase")=="hunt":
+			life_scheduler.schedule_in(id,clock,1.0,"HUNT_ACTIVE")
+			return
+		if creature_runtime.try_begin_hunt(actor):
+			stations.release(actor)
+			moving_ids.erase(id)
+			life_scheduler.schedule_in(id,clock,1.0,"HUNT_ACTIVE")
+			return
+		var mouse_room:Dictionary=creature_runtime.hunt_target_room(actor)
+		if not mouse_room.is_empty():
+			actor["hunt_next_at"]=clock+20.0
+			_assign(actor,{"room":mouse_room,"intent":"PURPOSEFUL_EXPLORE"})
+			_schedule_actor(actor,"HUNT_SEEK")
+			return
 	# Only a due, uncommitted resident in the same room may opt in.
 	# No per-frame all-pairs encounter scan and no interrupted media.
 	if _may_join_group(actor) and rng.randf()<0.18:
