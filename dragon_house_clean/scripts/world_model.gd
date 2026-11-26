@@ -53,6 +53,14 @@ var load_error:String=""
 # not the (independently durable) object-event stream.
 const CHECKPOINT_INTERVAL_SECONDS:=20.0
 var last_checkpoint_clock:float=-1.0
+# Only the interactive scene opts in. Explicit saves and crash/recovery
+# callers keep their original synchronous contract.
+var async_checkpoint_enabled:bool=false
+var _checkpoint_thread:Thread=null
+var _checkpoint_worker:RefCounted=null
+var _checkpoint_pending_clock:float=-1.0
+var checkpoint_capture_usec:int=0
+var checkpoint_worker_usec:int=0
 # Cache only the digest of exact bytes that passed full snapshot validation.
 # A changed primary always takes the full validation path before rotation.
 var _verified_primary_path:String=""
@@ -1440,6 +1448,7 @@ func _block_world_recovery(status:String,message:String)->bool:
 	return false
 
 func load_or_seed() -> bool:
+	if _checkpoint_thread!=null and not poll_checkpoint(true):return false
 	recovery_blocked=false
 	load_status="LOADING"
 	load_error=""
@@ -1500,26 +1509,82 @@ func load_or_seed() -> bool:
 	load_status="RECOVERED_BACKUP" if from_backup else "LOADED"
 	return true
 
+func poll_checkpoint(wait:bool=false)->bool:
+	if _checkpoint_thread!=null:
+		if not wait and _checkpoint_thread.is_alive():return not recovery_blocked
+		var result:Dictionary=_checkpoint_thread.wait_to_finish()
+		_checkpoint_thread=null
+		_checkpoint_worker=null
+		checkpoint_worker_usec=int(result.get("elapsed",0))
+		_snapshot_full_validation_count+=int(result.get("validations",0))
+		_snapshot_digest_hits+=int(result.get("digest_hits",0))
+		if not result.get("ok",false):
+			return _block_world_recovery("CHECKPOINT_WRITE_FAILED","Cannot commit world checkpoint; simulation stopped and recovery files retained.")
+		_verified_primary_path=str(result["path"])
+		_verified_primary_sha=str(result["sha"])
+		last_checkpoint_clock=_checkpoint_pending_clock
+		_checkpoint_pending_clock=-1.0
+	return not recovery_blocked
+
+func _capture_snapshot_payload()->Dictionary:
+	_capture_decision_rng()
+	return {"schema":2,"rooms":rooms,"residents":residents,"creatures":creatures,
+		"journal":journal,"runtime_state":runtime_state,"media":media,"objects":objects,
+		"next_room_id":next_room_id,"sim_clock":sim_clock}
+
+func _write_detached_checkpoint(payload:Dictionary)->Dictionary:
+	# Runs on an independent WorldModel instance. No live simulation, RNG,
+	# SQLite handle, scene nodes, or mutable shared containers are accessed.
+	var started:=Time.get_ticks_usec()
+	var ok:bool=_write_snapshot_payload(payload)
+	return {"ok":ok,"elapsed":Time.get_ticks_usec()-started,"path":save_path,
+		"sha":_verified_primary_sha,"validations":_snapshot_full_validation_count,
+		"digest_hits":_snapshot_digest_hits}
+
+func _start_async_checkpoint()->bool:
+	var started:=Time.get_ticks_usec()
+	var payload:Dictionary=_capture_snapshot_payload().duplicate(true)
+	_checkpoint_pending_clock=sim_clock
+	_checkpoint_worker=get_script().new()
+	_checkpoint_worker.save_path=save_path
+	_checkpoint_worker._verified_primary_path=_verified_primary_path
+	_checkpoint_worker._verified_primary_sha=_verified_primary_sha
+	_checkpoint_thread=Thread.new()
+	var status:Error=_checkpoint_thread.start(_checkpoint_worker._write_detached_checkpoint.bind(payload),Thread.PRIORITY_LOW)
+	checkpoint_capture_usec=Time.get_ticks_usec()-started
+	if status!=OK:
+		_checkpoint_thread=null
+		_checkpoint_worker=null
+		_checkpoint_pending_clock=-1.0
+		return save_world()
+	return true
+
 func checkpoint_if_due() -> bool:
-	if recovery_blocked:return false
+	if not poll_checkpoint():return false
+	if _checkpoint_thread!=null:
+		# Bound unsaved simulation time even if disk IO stalls. Drain only
+		# after an entire additional checkpoint interval, not every frame.
+		if sim_clock-_checkpoint_pending_clock>=CHECKPOINT_INTERVAL_SECONDS:return poll_checkpoint(true)
+		return true
+	if async_checkpoint_enabled and (last_checkpoint_clock<0.0 or sim_clock-last_checkpoint_clock>=CHECKPOINT_INTERVAL_SECONDS):
+		return _start_async_checkpoint()
 	if last_checkpoint_clock<0.0 or sim_clock-last_checkpoint_clock>=CHECKPOINT_INTERVAL_SECONDS:
 		return save_world()
 	return true
 
 func save_world() -> bool:
-	if recovery_blocked:return false
+	if not poll_checkpoint(true):return false
 	if not _write_snapshot():
 		return _block_world_recovery("CHECKPOINT_WRITE_FAILED","Cannot commit world checkpoint; simulation stopped and recovery files retained.")
 	last_checkpoint_clock=sim_clock
 	return true
 
 func _write_snapshot() -> bool:
-	_capture_decision_rng()
+	return _write_snapshot_payload(_capture_snapshot_payload())
+
+func _write_snapshot_payload(data:Dictionary)->bool:
 	var scratch: String = save_path + ".tmp"
 	var backup: String = save_path + ".bak"
-	var data: Dictionary = {"schema": 2,"rooms": rooms,"residents": residents,
-		"creatures":creatures,"journal":journal,"runtime_state":runtime_state,"media": media,"objects": objects,
-		"next_room_id": next_room_id,"sim_clock": sim_clock}
 	var file := FileAccess.open(scratch,FileAccess.WRITE)
 	if file == null:
 		return false

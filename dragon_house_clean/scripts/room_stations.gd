@@ -344,7 +344,7 @@ func social_pair_geometry(room:Dictionary,positions:Array)->bool:
 	if not a.is_finite() or not b.is_finite():return false
 	var distance:float=a.distance_to(b)
 	if distance<0.65 or distance>2.2:return false
-	return candidate_navigation==null or not candidate_navigation.has_layout(room) or candidate_navigation.segment_clear(room,a,b)
+	return candidate_navigation==null or not candidate_navigation.has_layout(room) or candidate_navigation.social_segment_clear(room,a,b)
 
 func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Dictionary:
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,str(actor.get("id",""))) or not world.is_accessible(room,str(partner.get("id",""))):
@@ -396,7 +396,7 @@ func group_geometry(room:Dictionary,positions:Array)->bool:
 		for j in range(i):
 			var q:Vector2=positions[j]
 			if p.distance_to(q)<0.65 or p.distance_to(q)>3.6:return false
-			if candidate_navigation!=null and candidate_navigation.has_layout(room) and not candidate_navigation.segment_clear(room,p,q):return false
+			if candidate_navigation!=null and candidate_navigation.has_layout(room) and not candidate_navigation.social_segment_clear(room,p,q):return false
 	angles.sort()
 	for i in range(angles.size()):
 		var gap:float=float(angles[(i+1)%angles.size()])-float(angles[i])

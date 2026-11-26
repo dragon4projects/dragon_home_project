@@ -15,6 +15,9 @@ var path_failures:=0
 var path_cache:Dictionary={}
 var path_cache_order:Array=[]
 var path_cache_hits:=0
+var social_segment_cache:Dictionary={}
+var social_segment_hits:int=0
+const SOCIAL_SEGMENT_LIMIT:=4096
 const PATH_CACHE_LIMIT:=1024
 const POSE_PATH:="res://data/teea008_pose_contacts_review.json"
 const CANVAS_HEIGHT:=2.45
@@ -34,6 +37,8 @@ func configure(rows:Dictionary)->void:
 	path_cache.clear()
 	path_cache_order.clear()
 	path_cache_hits=0
+	social_segment_cache.clear()
+	social_segment_hits=0
 	static_spots.clear()
 	display_cache.clear()
 	cup_slot_cache.clear()
@@ -189,6 +194,21 @@ func _segment_box_intersects(a:Vector2,b:Vector2,box:Rect2)->bool:
 		if lo>hi:
 			return false
 	return true
+
+# Only authored standing-station pairs call this. Geometry does not
+# depend on current occupancy, and configure() invalidates the cache.
+func social_segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
+	var left:Vector2=a
+	var right:Vector2=b
+	if a.x>b.x or (a.x==b.x and a.y>b.y):left=b;right=a
+	var cache_key:Array=[key(room),DEPTH7.enabled_for(room),left,right]
+	if social_segment_cache.has(cache_key):
+		social_segment_hits+=1
+		return social_segment_cache[cache_key]
+	var result:bool=segment_clear(room,left,right)
+	if social_segment_cache.size()>=SOCIAL_SEGMENT_LIMIT:social_segment_cache.clear()
+	social_segment_cache[cache_key]=result
+	return result
 
 func segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
 	if not has_layout(room):

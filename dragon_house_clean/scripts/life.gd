@@ -18,6 +18,7 @@ var life_scheduler = LifeScheduler.new()
 var rng := RandomNumberGenerator.new()
 var clock := 0.0
 var max_jobs_per_tick := 2
+var interactive_planner_budget_usec:int=0
 var idle_retry_seconds := 8.0
 var moving_ids: Dictionary = {}
 var planner_calls := 0
@@ -538,6 +539,7 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 				types.append("common")
 		var candidates: Array = []
 		for room in world.matching_rooms(types, actor["id"]):
+			if candidate_navigation!=null and not planning_routes.has(str(room["id"])):continue
 			if (str(room.get("type","")) == "guest"
 					and intent in ["REST","SLEEP"]
 					and str(room.get("owner_id","")) != str(actor.get("id",""))):
@@ -2064,10 +2066,22 @@ func tick(delta: float) -> void:
 		_move(actor,delta)
 	if candidate_traffic.enabled:
 		candidate_traffic.finish()
-	for due in life_scheduler.pop_due(clock,max_jobs_per_tick):
-		_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
+	if interactive_planner_budget_usec<=0:
+		for due in life_scheduler.pop_due(clock,max_jobs_per_tick):
+			_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
+	else:
+		_process_budgeted_jobs()
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
 	world.runtime_state["life_scheduler_metrics"] = scheduler_metrics()
+
+func _process_budgeted_jobs()->void:
+	var planning_started:=Time.get_ticks_usec()
+	for job in range(max_jobs_per_tick):
+		if job>0 and interactive_planner_budget_usec>0 and Time.get_ticks_usec()-planning_started>=interactive_planner_budget_usec:break
+		var batch:Array=life_scheduler.pop_due(clock,1)
+		if batch.is_empty():break
+		var due:Dictionary=batch[0]
+		_process_due_actor(str(due.get("id","")),str(due.get("reason","PERIODIC_LOW_CADENCE")))
 
 func _prepare_candidate_positions()->void:
 	# One-time migration in the separate live-review save. Never teleport a

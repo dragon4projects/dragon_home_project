@@ -4071,16 +4071,18 @@ func _show_recovery_blocked()->void:
 	column.add_child(exit_button)
 
 func _process(delta: float) -> void:
-	if world.recovery_blocked:
+	if not world.poll_checkpoint() or world.recovery_blocked:
 		_show_recovery_blocked()
 		return
 	# The camera never chooses activities. Life is a separate simulation clock.
 	# Candidate layouts are deliberately visual-only until measured stations and
 	# actor footprint paths are bound. Do not simulate against stale furniture.
 	if not teea008_review.enabled or teea008_live:
+		life.interactive_planner_budget_usec=4000
 		life.tick(delta)
 	# A save can also fail inside a life action. Never advance another tick
 	# or reset the checkpoint deadline after an unsuccessful write.
+	world.async_checkpoint_enabled=true
 	if not world.checkpoint_if_due():
 		_show_recovery_blocked()
 		return
@@ -4113,6 +4115,10 @@ func _request_shutdown()->void:
 	set_process_input(false)
 	set_process_unhandled_input(false)
 	get_tree().quit()
+
+func _exit_tree()->void:
+	# External tree shutdown must not abandon a running filesystem commit.
+	world.poll_checkpoint(true)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
