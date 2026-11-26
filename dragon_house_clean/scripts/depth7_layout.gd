@@ -108,7 +108,9 @@ static func convert(row:Dictionary,key:String)->Dictionary:
   var g:Dictionary=groups.get(h if h!="" else id,{})
   if g.is_empty():return {}
   transform_item(item,g["origin"],g["target"],float(g["scale"]))
- if key=="library/R3":extend_library(result)
+ if key=="library/R3":
+  extend_library(result)
+  add_reading_islands(result)
  result["depth7_measured"]=true
  result["playable_z_m"]=[D.BACK,D.FRONT]
  result["front_transit_band_z_m"]=[D.EDGES[1],D.FRONT]
@@ -155,3 +157,63 @@ static func extend_library(row:Dictionary)->void:
    for station in clone.get("station_candidates",[]):
     station["station_candidate_id"]=str(station["station_candidate_id"]).replace(original,replacement)
    row["instances"].append(clone)
+
+# Two middle-depth individual reading places. Existing furniture stays
+# unchanged. New table, lamp and book contacts move as one measured cluster.
+static func add_reading_islands(row:Dictionary)->void:
+ var source:Dictionary={}
+ for item in row["instances"]:
+  if str(item["instance_id"]) in ["library_r3_reading_chair","library_reading_table","library_reference_books","library_reading_lamp","library_reading_rug"]:
+   source[str(item["instance_id"])]=item
+ if source.size()!=5:return
+ for i in range(2):
+  var prefix:String="library_island_%02d_"%(i+1)
+  var x:float=[-.45,2.80][i]
+  var z:float=D.center(4)
+  for id in source:
+   var item:Dictionary=source[id]
+   var clone:Dictionary=item.duplicate(true)
+   var origin:=v(item["room_local_xyz"])
+   var target:Vector3=Vector3(x,origin.y,z)
+   var factor:float=D.scale_at(z)/D.scale_at(origin.z)
+   if id=="library_reading_rug":
+    target.x+=.42
+   elif id in ["library_reading_table","library_reference_books","library_reading_lamp"]:
+    # Measured table and children are a single affine translation/scale.
+    var table_origin:=v(source["library_reading_table"]["room_local_xyz"])
+    factor=D.scale_at(z)/D.scale_at(table_origin.z)
+    target=Vector3(x+.98,table_origin.y,z)+(origin-table_origin)*factor
+   transform_item(clone,origin,target,factor)
+   clone["instance_id"]=prefix+str(id)
+   for field in ["support_ref","decor_slot_id"]:
+    if clone.get(field)!=null and str(clone[field])!="":clone[field]=prefix+str(clone[field])
+   for station in clone.get("station_candidates",[]):
+    station["station_candidate_id"]=prefix+str(station["station_candidate_id"])
+   row["instances"].append(clone)
+
+# Restore the three real beverage clusters omitted when the hearth pilot
+# replaced the original common layout. Keep the legacy mug/support IDs
+# for deterministic save migration; never relocate the approved seating.
+static func append_hearth_services(row:Dictionary,legacy:Dictionary)->void:
+ var homes:Dictionary={
+  "common_r3_p3_shared_coffee_table":Vector3(-.9,.025,D.center(2)),
+  "hearth_bar_counter":Vector3(1.35,.025,D.center(2)),
+  "common_r3_service_table_review":Vector3(4.65,.025,D.center(2))
+ }
+ var sources:Dictionary={}
+ for item in legacy.get("instances",[]):
+  var id:String=str(item["instance_id"])
+  if homes.has(id):sources[id]=item
+ for item in legacy.get("instances",[]):
+  var id:String=str(item["instance_id"])
+  var host:String=host_id(item)
+  if not homes.has(id) and not homes.has(host):continue
+  var parent_id:String=id if homes.has(id) else host
+  if not sources.has(parent_id):continue
+  var parent:=v(sources[parent_id]["room_local_xyz"])
+  var target:Vector3=homes[parent_id]
+  var factor:float=D.scale_at(target.z)
+  var clone:Dictionary=item.duplicate(true)
+  transform_item(clone,parent,target,factor)
+  clone["depth7_hearth_service"]=true
+  row["instances"].append(clone)

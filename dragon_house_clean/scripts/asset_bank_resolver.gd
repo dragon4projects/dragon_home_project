@@ -86,7 +86,7 @@ func install_depth7_intake()->int:
 			if a!="npc_ai_magic_sphere" or not state.begins_with("HOVER_"):continue
 			states=manifest.get("creatures",{}).get(a,{}).get("states",{})
 		else:
-			if not ((a in ["RES_04","RES_08"] and state.begins_with("SIT_")) or (a=="RES_07" and state in ["READ","IDLE_NW_CORRECTED"])):continue
+			if not ((a in ["RES_04","RES_08"] and state.begins_with("SIT_")) or (a=="RES_07" and state in ["READ","IDLE_NW_CORRECTED","DRINK","CARRY_USE"])):continue
 			states=manifest.get("residents",{}).get(a,{}).get("wardrobes",{}).get(str(w),{}).get("states",{})
 		if states.is_empty() or states.get(state)!=u.get("expected_previous_entry"):continue
 		var entry:Dictionary=u.get("entry",{})

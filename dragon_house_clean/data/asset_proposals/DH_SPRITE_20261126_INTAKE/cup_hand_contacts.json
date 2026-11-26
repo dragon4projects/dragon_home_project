@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "status": "VISUALLY_ESTIMATED_GRIP",
+  "actor_id": "RES_07",
+  "wardrobe": "HOME",
+  "appearance_profile": "EXISTING_EVMOCHKA",
+  "states": {
+    "DRINK": [
+      {
+        "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0001.png",
+        "sha256": "d5838d0155a96ce51681417f64b4a09aeaedb92ba55defe3683ad889c23ad690",
+        "canvas": [
+          512,
+          512
+        ],
+        "hand_px": [
+          239,
+          232
+        ],
+        "side": "right",
+        "feet_px": 479
+      },
+      {
+        "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0002.png",
+        "sha256": "fc6b9391faada70883b6ab1c21866c267b52e6d604704c6013aed9938648a824",
+        "canvas": [
+          512,
+          512
+        ],
+        "hand_px": [
+          240,
+          208
+        ],
+        "side": "right",
+        "feet_px": 479
+      },
+      {
+        "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0003.png",
+        "sha256": "007d690431bdf2ceec8e58d5efb256a6bc926d4d0d7db301f6a53f53916c88e0",
+        "canvas": [
+          512,
+          512
+        ],
+        "hand_px": [
+          239,
+          194
+        ],
+        "side": "right",
+        "feet_px": 478
+      },
+      {
+        "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0004.png",
+        "sha256": "53b9abb32c329e8213f3b39eb89032795c4f827e1f1b0bfd1329c6672e24c9d3",
+        "canvas": [
+          512,
+          512
+        ],
+        "hand_px": [
+          239,
+          218
+        ],
+        "side": "right",
+        "feet_px": 479
+      }
+    ],
+    "CARRY_USE": [
+      {
+        "path": "assets/residents/RES_07/wardrobes/HOME/CARRY_USE/0001.png",
+        "sha256": "8ebb7690348f1d6f5a3a63332a46f86b8178d8481e18ef870499ff175b763362",
+        "canvas": [
+          512,
+          512
+        ],
+        "hand_px": [
+          225,
+          255
+        ],
+        "side": "right",
+        "feet_px": 479
+      }
+    ]
+  }
+}

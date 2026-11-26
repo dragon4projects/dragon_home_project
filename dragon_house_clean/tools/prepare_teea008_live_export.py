@@ -31,6 +31,12 @@ if intake_path.is_file():
             for state in profile["states"].values():
                 if frames.get("res://"+state["path"])!=state["sha256"]:
                     raise SystemExit("new contact hash mismatch")
+    hands=intake/"cup_hand_contacts.json"
+    if hands.is_file():
+        for state in json.loads(hands.read_text())["states"].values():
+            for frame in state:
+                if frames.get("res://"+frame["path"])!=frame["sha256"]:
+                    raise SystemExit("cup hand contact hash mismatch")
 (data/"TEEA008_POSE_EXPORT_PROOF.json").write_text(json.dumps({"owner_approved":False,"frames":frames},indent=2)+"\n")
 (data/"TEEA008_LIVE_REVIEW.enabled").write_text("OWNER_REVIEW_ONLY\n")
 print("TEEA008_EXPORT_STAGE_PASS verified_source_frames=",len(frames))

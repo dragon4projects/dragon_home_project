@@ -20,6 +20,7 @@ const POSE_PATH:="res://data/teea008_pose_contacts_review.json"
 const CANVAS_HEIGHT:=2.45
 var pose_profiles:Dictionary={}
 var hand_profiles:Dictionary={}
+var cup_hand_profiles:Dictionary={}
 var static_spots:Dictionary={}
 var display_cache:Dictionary={}
 var cup_slot_cache:Dictionary={}
@@ -52,6 +53,7 @@ func configure(rows:Dictionary)->void:
 						profile["states"].erase(state)
 				pose_profiles[id]=profile
 	hand_profiles.clear()
+	cup_hand_profiles.clear()
 	var hand_file:=FileAccess.open("res://data/teea008_hand_contacts_review.json",FileAccess.READ)
 	if hand_file!=null:
 		var hand_doc=JSON.parse_string(hand_file.get_as_text())
@@ -80,6 +82,34 @@ func install_depth7_pose_intake()->int:
 				existing["states"][state]=p.duplicate(true)
 				count+=1
 	return count
+
+func install_depth7_cup_hands()->int:
+	var f:=FileAccess.open("res://data/asset_proposals/DH_SPRITE_20261126_INTAKE/cup_hand_contacts.json",FileAccess.READ)
+	if f==null:return 0
+	var doc=JSON.parse_string(f.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or doc.get("actor_id")!="RES_07":return 0
+	var count:=0
+	for state in ["DRINK","CARRY_USE"]:
+		var frames:Array=doc.get("states",{}).get(state,[])
+		var valid:bool=frames.size()==(4 if state=="DRINK" else 1)
+		for record in frames:
+			var pt:Array=record.get("hand_px",[])
+			var canvas:Array=record.get("canvas",[])
+			if not _pose_source_valid("res://"+str(record.get("path","")),record) or pt.size()!=2 or canvas.size()!=2 or int(canvas[0])!=512 or int(canvas[1])!=512 or not Rect2(0,0,512,512).has_point(Vector2(pt[0],pt[1])):
+				valid=false;break
+		if valid:
+			cup_hand_profiles[state]={"appearance_profile":doc["appearance_profile"],"wardrobe":doc["wardrobe"],"frames":frames}
+			count+=frames.size()
+	return count
+
+func cup_hand_contact(actor:Dictionary,state:String,frame:int)->Dictionary:
+	if state=="IDLE_S":return hand_contact(actor,state,frame)
+	if actor.get("id")!="RES_07":return {}
+	var p:Dictionary=cup_hand_profiles.get(state,{})
+	if p.get("appearance_profile")!=actor.get("appearance_profile") or p.get("wardrobe")!=actor.get("visual_wardrobe"):return {}
+	var frames:Array=p.get("frames",[])
+	if frame<0 or frame>=frames.size():return {}
+	return frames[frame]
 
 func hand_contact(actor:Dictionary,state:String,frame:int)->Dictionary:
 	if state!="IDLE_S" or frame!=0:return {}

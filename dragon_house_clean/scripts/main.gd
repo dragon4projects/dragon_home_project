@@ -335,6 +335,7 @@ func _ready() -> void:
 		if f!=null:
 			var row=JSON.parse_string(f.get_as_text())
 			if typeof(row)==TYPE_DICTIONARY and bool(row.get("depth7_measured",false)):
+				Depth7Layout.append_hearth_services(row,legacy_depth_layouts.get("common/R3",{}))
 				teea008_review.layouts["common/R3"]=row
 				for room in world.rooms:
 					if str(room.get("type",""))=="common" and int(room.get("size_modules",1))==3:
@@ -375,7 +376,9 @@ func _ready() -> void:
 		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
-		if architecture_review:print("DEPTH7_POSE_CONTACTS ",life.candidate_navigation.install_depth7_pose_intake())
+		if architecture_review:
+			print("DEPTH7_POSE_CONTACTS ",life.candidate_navigation.install_depth7_pose_intake())
+			print("DEPTH7_CUP_HANDS ",life.candidate_navigation.install_depth7_cup_hands())
 		if architecture_review and not legacy_depth_layouts.is_empty():
 			var old_nav=TEEA008NavigationScript.new()
 			old_nav.configure(legacy_depth_layouts)
@@ -1670,6 +1673,16 @@ func make_room(group: Dictionary) -> void:
 		overview.name="Layer_OverviewCues"
 		n.add_child(overview)
 		Depth7Hearth.new().populate(overview)
+		var services:=Node3D.new()
+		services.name="HearthBeverageFurniture"
+		overview.add_child(services)
+		var row:Dictionary=teea008_review.layouts.get("common/R3",{})
+		var items:Dictionary={}
+		for item in row.get("instances",[]):items[str(item["instance_id"])]=item
+		for item in row.get("instances",[]):
+			if not bool(item.get("depth7_hearth_service",false)):continue
+			if str(item.get("asset_id","")) in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:continue
+			teea008_review._mount(services,item,Callable(self,"depth_visual_scale"),true,items)
 		var roof_label:=label3(n,str(live_room.get("display_name","Каминная")),Vector3(0,3.35,.40),24,Color("#f4d9b9"))
 		roof_label.name="RoomRoofLabel"
 		return
@@ -2498,11 +2511,11 @@ func _active_station_render_contact(actor:Dictionary)->Dictionary:
 	return contact
 
 # A contact measured on one source frame cannot be applied to another bank.
-func _calibrated_frame_matches(actor:Dictionary,state:String,profile:Dictionary)->bool:
+func _calibrated_frame_matches(actor:Dictionary,state:String,profile:Dictionary,frame:int=0)->bool:
 	var id:String=str(actor.get("id",""))
 	var wardrobe:String=str(actor.get("visual_wardrobe","HOME"))
 	var frames:Array=asset_banks._entry(id,wardrobe,str(profile.get("source_state",state))).get("frames",[])
-	return frames.size()>0 and asset_banks._normalize_frame(frames[0])==str(profile.get("path",""))
+	return frame>=0 and frames.size()>frame and asset_banks._normalize_frame(frames[frame])==str(profile.get("path",""))
 
 func _side_seated_texture(actor:Dictionary,profile:Dictionary)->Texture2D:
 	var key:String=str(profile.get("sha256",""))
@@ -2533,6 +2546,16 @@ func _sprite_pixel_world(actor_node:Node3D,sprite:Sprite3D,px:Array)->Vector3:
 	var m:float=sprite.pixel_size*actor_node.scale.x
 	return sprite.global_position+_sprite_camera_right()*(float(px[0])-float(sprite.texture.get_width())*0.5)*m+Vector3.UP*(float(sprite.texture.get_height())*0.5-float(px[1]))*m
 
+func _held_cup_animation(actor:Dictionary)->String:
+	if not teea008_live or actor.get("id")!="RES_07" or actor.get("phase")!="perform" or actor.get("intent")!="GET_COFFEE" or actor.get("cup_task_stage")!="hold":return ""
+	var cup:Dictionary=world.physical_object(str(actor.get("cup_task_id","")))
+	if cup.get("viewer_category")!="cups" or cup.get("current_holder_id")!=actor.get("id"):return ""
+	# Do not mime sipping a dry cup; world beverage events remain authoritative.
+	var content:Dictionary=life.candidate_cups.beverages.content(str(cup["id"]))
+	var state:String="DRINK" if int(actor.get("drink_sips_left",0))>0 and float(content.get("remaining_ml",0))>0 else "CARRY_USE"
+	if life.candidate_navigation.cup_hand_contact(actor,state,0).is_empty() or asset_banks.frame_count(str(actor["id"]),str(actor.get("visual_wardrobe","HOME")),state)==0:return ""
+	return state
+
 func desired_actor_animation(actor: Dictionary) -> String:
 	# Pure pose selection. A sofa station is an actual authored seat, not
 	# simply two actors standing at the same arbitrary position in a room.
@@ -2547,6 +2570,8 @@ func desired_actor_animation(actor: Dictionary) -> String:
 		var contact:Dictionary=_active_station_render_contact(actor)
 		if not contact.is_empty():
 			return str(contact["state"])
+		var cup_pose:String=_held_cup_animation(actor)
+		if cup_pose!="":return cup_pose
 		if str(actor.get("intent",""))=="WATCH_FILM":
 			var facing:=Vector2(0,-1)
 			if life.candidate_navigation!=null and life.candidate_navigation.layouts.get("cinema/R3",{}).get("theatre_revision","")=="OWNER_THEATRE_V1":
@@ -2645,6 +2670,9 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 			sprite.position=_sprite_camera_right()*(float(texture.get_width())*0.5-float(px[0]))*sprite.pixel_size+Vector3.UP*(float(px[1])-float(texture.get_height())*0.5)*sprite.pixel_size
 		else:
 			var feet:float=float(texture.get_height())*480.0/512.0 if teea008_live else asset_banks.feet_anchor(id,wardrobe,texture.get_height())
+			if teea008_live and requested in ["DRINK","CARRY_USE"]:
+				var grip:Dictionary=life.candidate_navigation.cup_hand_contact(actor,requested,int(state["frame"]))
+				if not grip.is_empty():feet=float(grip.get("feet_px",feet))
 			sprite.position=Vector3(0,maxf(0.15,(feet-float(texture.get_height())*0.5)*sprite.pixel_size),0)
 
 func build_interface() -> void:
@@ -4401,8 +4429,10 @@ func _place_cup_at_verified_hand(anchor:Node3D,holder:Dictionary)->bool:
 	var id:String=str(holder.get("id",""))
 	var animation:Dictionary=actor_animations.get(id,{})
 	if life.candidate_navigation==null or camera==null:return false
-	var contact:Dictionary=life.candidate_navigation.hand_contact(holder,str(animation.get("state","")),int(animation.get("frame",-1)))
-	if contact.is_empty() or not _calibrated_frame_matches(holder,"IDLE_S",contact):return false
+	var state:String=str(animation.get("state",""))
+	var frame:int=int(animation.get("frame",-1))
+	var contact:Dictionary=life.candidate_navigation.cup_hand_contact(holder,state,frame)
+	if contact.is_empty() or not _calibrated_frame_matches(holder,state,contact,frame):return false
 	var actor_node:Node3D=actor_sprites.get(id)
 	if not is_instance_valid(actor_node) or not actor_node.is_visible_in_tree():return false
 	var sprite:Sprite3D=actor_node.get_node_or_null("Body")
@@ -4427,7 +4457,7 @@ func _place_cup_at_verified_hand(anchor:Node3D,holder:Dictionary)->bool:
 	# A small camera-facing offset keeps the handle out of the flat sprite.
 	var target:Vector3=hand+facing*0.035*scale_value
 	anchor.global_transform=Transform3D(cup_basis,target-cup_basis*marker)
-	anchor.set_meta("hand_contact_status","IDLE_FRAME_MARKED")
+	anchor.set_meta("hand_contact_status",state+"_FRAME_MARKED" if state!="IDLE_S" else "IDLE_FRAME_MARKED")
 	anchor.set_meta("hand_contact_target",target)
 	return true
 
