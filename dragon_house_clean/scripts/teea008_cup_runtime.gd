@@ -133,8 +133,20 @@ func service_sources(actor:Dictionary,room:Dictionary)->Array:
 		var hi:Array=support["bounds_max_m"]
 		var pos:Array=item["room_local_xyz"]
 		var approach_options:Array=[Vector2(float(pos[0]),float(hi[2])+0.38),Vector2(float(lo[0])-0.38,float(pos[2])),Vector2(float(hi[0])+0.38,float(pos[2])),Vector2(float(pos[0]),float(lo[2])-0.38)]
+		# A chair can block the centre of a real bar without blocking the
+		# entire service edge. Sample the measured counter perimeter before
+		# declaring the source unavailable. Do not move furniture or shrink
+		# the navigation clearance to obtain a service point.
+		if source=="BAR":
+			for fraction in [0.25,0.75,0.1,0.9,0.0,1.0]:
+				var edge_x:float=lerpf(float(lo[0]),float(hi[0]),float(fraction))
+				var edge_z:float=lerpf(float(lo[2]),float(hi[2]),float(fraction))
+				approach_options.append(Vector2(edge_x,float(hi[2])+0.38))
+				approach_options.append(Vector2(float(lo[0])-0.38,edge_z))
+				approach_options.append(Vector2(float(hi[0])+0.38,edge_z))
+		var aisle:=Vector2(-float(room.get("size_modules",1))*2.4+0.08,1.50)
 		for approach in approach_options:
-			if nav.clear(room,approach):
+			if nav.clear(room,approach) and not nav.path(room,aisle,approach).is_empty():
 				result.append({"id":id,"type":source,"approach":approach})
 				break
 	return result
