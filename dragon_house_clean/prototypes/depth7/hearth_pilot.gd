@@ -8,6 +8,8 @@ var stage:Node3D
 var bank=BANK.new()
 var blockers:Array[AABB]=[]
 var placements:Array=[]
+var seat_candidates:Array=[]
+var picture_slots:Array=[]
 var mats:Dictionary={}
 var cam:Camera3D
 func _initialize()->void:call_deferred("run")
@@ -50,7 +52,56 @@ func asset(id:String,at:Vector3,scale_value:float=1.0,yaw:float=0,blocking:bool=
    assert(minf(b.end.x,bounds.end.x)-maxf(b.position.x,bounds.position.x)<.005 or minf(b.end.z,bounds.end.z)-maxf(b.position.z,bounds.position.z)<.005,str(["overlap",id,b,bounds]))
   blockers.append(bounds)
  placements.append({"asset":id,"position":[at.x,at.y,at.z],"scale":scale_value,"yaw":yaw,"bounds_min":[bounds.position.x,bounds.position.y,bounds.position.z],"bounds_max":[bounds.end.x,bounds.end.y,bounds.end.z],"blocking":blocking})
+ if id in ["sofa_03","blendkit_sofa_repaired","ArmChair_01"]:
+  var xs:Array=[-.45,.45] if id!="ArmChair_01" else [0.0]
+  for sx in xs:
+   var local:=Vector3(sx,0,.15)
+   var world:Vector3=n.to_global(local)
+   var surface_y:float=mesh_top(n,Vector2(world.x,world.z))
+   assert(surface_y>.30 and surface_y<.65,str([id,surface_y]))
+   var forward:Vector3=n.global_transform.basis.z.normalized()
+   var foot:Vector3=n.to_global(Vector3(sx,0,.54 if id!="ArmChair_01" else .43))
+   var seat_id:String="HEARTH_SEAT_%02d"%(seat_candidates.size()+1)
+   seat_candidates.append({"id":seat_id,"asset":id,"seat_surface_xyz":[world.x,surface_y,world.z],"floor_feet_candidate_xyz":[foot.x,0,foot.z],"facing_xyz":[forward.x,0,forward.z],"yaw":yaw})
  return bounds
+func mesh_top(node:Node3D,xz:Vector2)->float:
+ var y:float=-1.0
+ for mesh in node.find_children("*","MeshInstance3D",true,false):
+  var m:MeshInstance3D=mesh
+  for si in range(m.mesh.get_surface_count()):
+   var a:Array=m.mesh.surface_get_arrays(si)
+   var v:PackedVector3Array=a[Mesh.ARRAY_VERTEX]
+   var ix:PackedInt32Array=a[Mesh.ARRAY_INDEX]
+   if ix.is_empty():
+    for j in range(v.size()):ix.append(j)
+   for k in range(0,ix.size(),3):
+    var p:Vector3=m.to_global(v[ix[k]])
+    var q:Vector3=m.to_global(v[ix[k+1]])
+    var r:Vector3=m.to_global(v[ix[k+2]])
+    var hit=Geometry3D.ray_intersects_triangle(Vector3(xz.x,3.0,xz.y),Vector3.DOWN,p,q,r)
+    if hit==null:hit=Geometry3D.ray_intersects_triangle(Vector3(xz.x,3.0,xz.y),Vector3.DOWN,r,q,p)
+    if hit!=null:y=maxf(y,hit.y)
+ return y
+func validate_seats()->int:
+ var total:=0
+ for seat in seat_candidates:
+  var c:Array=seat["seat_surface_xyz"]
+  var f:Array=seat["facing_xyz"]
+  var at:=Vector2(c[0],c[2])
+  var forward:=Vector2(f[0],f[2])
+  var side:=Vector2(forward.y,-forward.x)
+  var found:=false
+  # Same-side approach first, then adjacent lateral access; no teleport claim.
+  for dist in [.60,.75,.90,1.05,1.20]:
+   if found:break
+   for lateral in [0.0,-.20,.20,-.40,.40,-.60,.60,-.80,.80]:
+    var goal:Vector2=at+forward*dist+side*lateral
+    if not clear(goal):continue
+    if not reachable(Vector2(-7.05,1.15),goal) or not reachable(Vector2(7.05,1.15),goal):continue
+    seat["approach_xz"]=[goal.x,goal.y]
+    found=true;total+=2;break
+  assert(found,str(["seat approach unavailable",seat]))
+ return total
 func dragon_crop()->AABB:
  var source:Node3D=load(bank._asset_path("owner_sleeping_dragon")).instantiate()
  stage.add_child(source)
@@ -206,7 +257,26 @@ func run()->void:
    var frame:=box("HEARTH_PICTURE_%02d"%idx,c,Vector3(.51,.30,.065),mats["brass"])
    frame.set_meta("slot_id","HEARTH_PICTURE_%02d"%idx)
    frame.set_meta("artwork_path","")
-   box("BlankCanvas_%02d"%idx,c+Vector3(0,0,.04),Vector3(.44,.23,.02),mats["canvas_blank"])
+   picture_slots.append({"id":frame.get_meta("slot_id"),"center_xyz":[c.x,c.y,c.z+.04],"aperture_m":[.44,.23],"artwork_path":""})
+   var canvas:=box("BlankCanvas_%02d"%idx,c+Vector3(0,0,.04),Vector3(.44,.23,.02),mats["canvas_blank"])
+   var slot_path:String="res://prototypes/depth7/hearth_pictures/HEARTH_PICTURE_%02d.png"%idx
+   var texture:Texture2D=null
+   if ResourceLoader.exists(slot_path,"Texture2D"):
+    texture=load(slot_path) as Texture2D
+   elif FileAccess.file_exists(slot_path):
+    var img:=Image.load_from_file(slot_path)
+    if img!=null and not img.is_empty():texture=ImageTexture.create_from_image(img)
+   if texture!=null and texture.get_height()>0:
+    var aspect:float=float(texture.get_width())/float(texture.get_height())
+    var height:float=minf(.23,.44/aspect)
+    var picture:=MeshInstance3D.new()
+    picture.name="Artwork_%02d"%idx
+    var quad:=QuadMesh.new();quad.size=Vector2(height*aspect,height)
+    picture.mesh=quad
+    var m:=StandardMaterial3D.new();m.albedo_texture=texture;m.roughness=.9
+    picture.material_override=m;stage.add_child(picture);picture.position=canvas.position+Vector3(0,0,.012)
+    frame.set_meta("artwork_path",slot_path);picture_slots.back()["artwork_path"]=slot_path
+    picture_slots.back()["image_size_m"]=[height*aspect,height]
  box("HearthApron",Vector3(-.18,.004,-6.53),Vector3(3.35,.008,.78),mats["hearth_tile"])
  asset("sofa_03",Vector3(-5.33,0,-7.32),1.0,0,true)
  asset("common_woven_rug",Vector3(-4.85,.008,-6.14),1.65)
@@ -239,7 +309,7 @@ func run()->void:
  asset("blendkit_sofa_repaired",Vector3(-6.56,0,-6.02),.88,90,true)
  asset("ArmChair_01",Vector3(-3.30,0,-5.80),.85,-90,true)
  asset("gothic_coffee_table",Vector3(-4.96,0,-5.70),.90,0,true)
- asset("brass_candleholders",Vector3(-4.96,.3268,-5.70),.45)
+ asset("brass_candleholders",Vector3(-4.96,.3069,-5.70),.45)
  asset("wooden_table_02",Vector3(.50,0,-4.06),1.0,0,true)
  asset("wine_bottles_01",Vector3(.25,.79955,-4.15),.72)
  asset("brass_goblets",Vector3(.75,.79955,-3.92),.75)
@@ -248,7 +318,7 @@ func run()->void:
  asset("ArmChair_01",Vector3(-5.93,0,-.68),1.10,75,true)
  asset("gothic_coffee_table",Vector3(-4.28,0,-.62),1.13,0,true)
  asset("ArmChair_01",Vector3(-2.72,0,-.70),1.10,-75,true)
- asset("brass_candleholders",Vector3(-4.29,.4104,-.62),.55)
+ asset("brass_candleholders",Vector3(-4.29,.3853,-.62),.55)
  asset("potted_plant_01",Vector3(-6.52,0,-3.95),.8,0,true)
  asset("potted_plant_02",Vector3(2.30,0,-1.90),.9,0,true)
  # Owner dragon: uniform scale, source proportions, fills bands 2/3.
@@ -284,15 +354,20 @@ func run()->void:
   assert(clear(q),str(["approach",q]))
   for e in [Vector2(-7.05,1.15),Vector2(7.05,1.15)]:
    assert(reachable(e,q),str(["unreachable",e,q]));route_count+=1
+ var seat_routes:=validate_seats()
+ assert(seat_candidates.size()==7 and picture_slots.size()==10)
+ print("HEARTH_SEAT_CONTACT_PASS seats=",seat_candidates.size()," routes=",seat_routes)
  print("DEPTH7_OWNER_LAYOUT_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
- var f=FileAccess.open("/home/user/dragon_qa/iter57_placement.json",FileAccess.WRITE)
- f.store_string(JSON.stringify({"bands_front_to_back":BANDS,"room_width":14.4,"dragon_bounds":[dragon.position,dragon.size],"placements":placements,"route_checks":route_count},"  "));f.close()
+ var f=FileAccess.open("/home/user/dragon_qa/iter58_placement.json",FileAccess.WRITE)
+ f.store_string(JSON.stringify({"bands_front_to_back":BANDS,"room_width":14.4,"dragon_bounds":[dragon.position,dragon.size],"placements":placements,"route_checks":route_count,"seat_route_checks":seat_routes,"seat_candidates":seat_candidates,"picture_slots":picture_slots},"  "));f.close()
+ if DisplayServer.get_name()=="headless":
+  print("HEARTH_HEADLESS_PASS");quit();return
  scale_actor("RES_07",Vector3(0.35,0,1.15))
  cam=Camera3D.new();stage.add_child(cam);cam.projection=Camera3D.PROJECTION_PERSPECTIVE;cam.fov=25.0;cam.current=true
  cam.position=Vector3(-.5,7.2,20.0);cam.look_at(Vector3(0,1.05,-3.35))
- await capture("/home/user/dragon_qa/iter57_hearth.png")
+ await capture("/home/user/dragon_qa/iter58_hearth.png")
  cam.position=Vector3(-8,11,20);cam.look_at(Vector3(0,.75,-3.35));cam.fov=27.0
- await capture("/home/user/dragon_qa/iter57_oblique.png")
+ await capture("/home/user/dragon_qa/iter58_oblique.png")
  # Technical plan, same scene, visible seven bands, not a generated drawing.
  for i in range(BANDS.size()):
   var m:=StandardMaterial3D.new();m.albedo_color=Color("#d8b078");m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -301,6 +376,6 @@ func run()->void:
   var label:=Label3D.new();label.text=str(i+1);label.font_size=45;label.modulate=Color("#fff2ce");label.pixel_size=.008;label.rotation_degrees.x=-90
   stage.add_child(label);label.position=Vector3(-7.03,.06,(BANDS[i]+BANDS[i+1])*.5)
  cam.projection=Camera3D.PROJECTION_ORTHOGONAL;cam.position=Vector3(0,22,-3.2);cam.look_at(Vector3(0,0,-3.2),Vector3(0,0,-1));cam.size=10.6
- await capture("/home/user/dragon_qa/iter57_plan.png")
+ await capture("/home/user/dragon_qa/iter58_plan.png")
  print("DEPTH7_OWNER_LAYOUT_RENDER_PASS 3")
  quit()
