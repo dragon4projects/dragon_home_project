@@ -96,7 +96,6 @@ var build_size := 1
 var build_marker: MeshInstance3D
 var build_cell := Vector2i(99, 99)
 var moving_view := false
-var save_timer := 0.0
 var hud_title: Label
 var hud_status: Label
 var hud_help: Label
@@ -289,6 +288,8 @@ func _restore_zna_artifact_sources()->int:
 	return added
 
 func _ready() -> void:
+	# Closing must pass through the checkpoint handler, including on failure.
+	get_tree().auto_accept_quit=false
 	Engine.max_fps = 30 # Low-end hardware baseline; detail modes can unlock 60.
 	architecture_review = FileAccess.file_exists(ARCHITECTURE_MARKER) or OS.get_environment("DRAGON_HOUSE_ARCHITECTURE")=="1"
 	iter1_owner_review = architecture_review or FileAccess.file_exists(ITER1_REVIEW_MARKER)
@@ -3655,12 +3656,19 @@ func _show_recovery_blocked()->void:
 	center.add_child(message)
 
 func _process(delta: float) -> void:
-	if world.recovery_blocked:return
+	if world.recovery_blocked:
+		_show_recovery_blocked()
+		return
 	# The camera never chooses activities. Life is a separate simulation clock.
 	# Candidate layouts are deliberately visual-only until measured stations and
 	# actor footprint paths are bound. Do not simulate against stale furniture.
 	if not teea008_review.enabled or teea008_live:
 		life.tick(delta)
+	# A save can also fail inside a life action. Never advance another tick
+	# or reset the checkpoint deadline after an unsuccessful write.
+	if not world.checkpoint_if_due():
+		_show_recovery_blocked()
+		return
 	# The three guest facade transitions are cheap to check each frame.
 	if _refresh_guest_facades():update_render_lod()
 	# Seat projection must use the actual camera transform of this frame.
@@ -3670,10 +3678,6 @@ func _process(delta: float) -> void:
 	update_physical_objects()
 	if teea008_live:
 		_update_physical_books()
-	save_timer += delta
-	if save_timer > 20.0:
-		world.save_world()
-		save_timer = 0.0
 	if Engine.get_process_frames() % 40 == 0:
 		update_hud()
 		update_render_lod()
@@ -3684,7 +3688,9 @@ func _process(delta: float) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		if not world.recovery_blocked:world.save_world()
+		if not world.recovery_blocked and not world.save_world():
+			_show_recovery_blocked()
+			return
 		get_tree().quit()
 
 
