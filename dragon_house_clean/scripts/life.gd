@@ -1987,6 +1987,7 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		{"planner_usec":spent,"next_due":life_scheduler.peek_due_at(id)})
 
 func tick(delta: float) -> void:
+	if world.recovery_blocked:return
 	clock += delta
 	world.sim_clock = clock
 	# Bounded maintenance pass, not a per-frame inventory scan. At most one
