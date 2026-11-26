@@ -167,6 +167,20 @@ func setup(p_world) -> void:
 		canonical_lifts.setup(world)
 		creature_runtime.canonical_lifts=canonical_lifts
 	rng.seed = 814223
+	# A durable completed view newer than the checkpoint is already credited.
+	# Settle only its matching restored performer before rebuilding stations.
+	for actor in world.residents.values():
+		if not actor.has("recovered_view_completion"):continue
+		actor.erase("recovered_view_completion")
+		stations.release(actor)
+		actor.erase("viewing_object_id")
+		actor["phase"]="idle"
+		actor["intent"]="REST"
+		actor["route"]=[]
+		actor["waypoints"]=[]
+		actor["waypoint_index"]=0
+		actor["until"]=clock
+		actor["view_recovery_wake"]=true
 	# Restore catalogue possession before station reconciliation can invalidate
 	# a route or erase its presentation cache.
 	reconcile_book_possession()
@@ -201,6 +215,9 @@ func setup(p_world) -> void:
 	# Only active timed performers are rearmed, once on load.
 	for id in active_ids:
 		var actor:Dictionary=world.residents[id]
+		if actor.has("view_recovery_wake"):
+			actor.erase("view_recovery_wake")
+			life_scheduler.schedule_at(id,clock,"RECOVERED_VIEW_COMPLETION")
 		if media_runtime.reading_session_valid(actor,clock):
 			var reading:Dictionary=actor["reading_session"]
 			actor["until"]=float(reading.get("ends_at",clock))
@@ -1817,23 +1834,32 @@ func _begin_solo_habit_commitment(actor:Dictionary)->void:
 	var intent:String=str(actor.get("intent",""))
 	if intent not in SOLO_HABIT_INTENTS or not _solo_habit_station_valid(actor):return
 	actor["solo_habit_commitment"]={"intent":intent,"room_id":str(actor["room_id"]),"station_id":str(actor["station_anchor_id"]),"started_at":clock,"ends_at":float(actor["until"])}
+	if intent=="VIEW_ART":
+		actor["solo_habit_commitment"]["view_subject_id"]=str(actor.get("viewing_object_id",""))
 
 func _finish_solo_habit_commitment(actor:Dictionary)->bool:
 	var raw=actor.get("solo_habit_commitment",{})
 	if typeof(raw)!=TYPE_DICTIONARY or raw.is_empty():return false
 	if clock<float(raw.get("ends_at",INF)):return false
-	# Consume before applying effects. A second wake or reload cannot repeat.
-	actor.erase("solo_habit_commitment")
+	# The durable view event consumes its own commitment; other activities
+	# retain the existing snapshot-only completion semantics.
 	var intent:String=str(raw.get("intent",""))
 	var start:float=float(raw.get("started_at",-1))
 	var end:float=float(raw.get("ends_at",-1))
-	if intent not in SOLO_HABIT_INTENTS or intent!=str(actor.get("intent","")) or not is_finite(start) or not is_finite(end) or start<0 or end<=start or end!=float(actor.get("until",-1)):return false
-	if str(raw.get("room_id",""))!=str(actor.get("room_id","")) or str(raw.get("station_id",""))!=str(actor.get("station_anchor_id","")) or not _solo_habit_station_valid(actor):return false
+	if intent not in SOLO_HABIT_INTENTS or intent!=str(actor.get("intent","")) or not is_finite(start) or not is_finite(end) or start<0 or end<=start or end!=float(actor.get("until",-1)):
+		actor.erase("solo_habit_commitment")
+		return false
+	if str(raw.get("room_id",""))!=str(actor.get("room_id","")) or str(raw.get("station_id",""))!=str(actor.get("station_anchor_id","")) or not _solo_habit_station_valid(actor):
+		actor.erase("solo_habit_commitment")
+		return false
+	if intent!="VIEW_ART":actor.erase("solo_habit_commitment")
 	var subject:String=""
 	if intent=="VIEW_ART":
 		subject=str(actor.get("viewing_object_id",""))
 		var item:Dictionary=world.physical_object(subject)
-		if item.is_empty() or str(item.get("current_room_id",""))!=str(actor["room_id"]) or str(item.get("interaction_station_id",""))!=str(actor["station_anchor_id"]) or not world.record_object_view(subject,str(actor["id"])):return false
+		var completed:bool=not item.is_empty() and str(item.get("current_room_id",""))==str(actor["room_id"]) and str(item.get("interaction_station_id",""))==str(actor["station_anchor_id"]) and world.record_object_view(subject,str(actor["id"]),daypart())
+		actor.erase("solo_habit_commitment")
+		return completed
 	elif intent.begins_with("BROWSE_"):
 		subject=str(actor.get("browsing_item_id",""))
 		if media_runtime._lookup(str(actor.get("browsing_category","")),subject).is_empty():return false
