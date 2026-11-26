@@ -1578,8 +1578,14 @@ func _populate_furniture(group_node: Node3D) -> void:
 			_ensure_fallback_anchor_furniture(
 				root,life.stations.layout_for_world(world,physical_room))
 	if bool(group.get("depth7_generic",false)):
-		for at in [Vector3(-float(group["width"])*W*.28,2.3,-5.7),Vector3(float(group["width"])*W*.28,2.3,-5.7),Vector3(0,2.2,-.8)]:
-			_add_warm_room_light(decoration_layer,at,.65)
+		if str(group["type"])=="library":
+			# Match the real rear sconces and both reading areas, not the old
+			# shallow-room light coordinates. Keep the same 3-light budget.
+			for at in [Vector3(-4.8,2.38,-7.2),Vector3(0,2.38,-7.2),Vector3(5.5,2.15,-2.2)]:
+				_add_warm_room_light(decoration_layer,at,.92)
+		else:
+			for at in [Vector3(-float(group["width"])*W*.28,2.3,-5.7),Vector3(float(group["width"])*W*.28,2.3,-5.7),Vector3(0,2.2,-.8)]:
+				_add_warm_room_light(decoration_layer,at,.65)
 		detailed_room_groups[group_node.name]=true
 		detail_materialization_count+=1
 		return
@@ -1613,6 +1619,27 @@ func _release_furniture(group_node: Node3D) -> void:
 		_clear_children_now(decoration_layer)
 	detailed_room_groups.erase(group_node.name)
 	detail_eviction_count += 1
+
+func _depth7_library_finish(parent:Node3D,span:float)->void:
+	var finish:=Node3D.new()
+	finish.name="LibraryRearFinish"
+	parent.add_child(finish)
+	# Recessed timber treatment behind models. No floor objects or new stations.
+	var timber:=StandardMaterial3D.new()
+	timber.albedo_color=Color("#73513b")
+	timber.albedo_texture=_texture_from_source("res://assets/materials/texture_albedo/natural_walnut_veneer_diff_1k.jpg")
+	timber.roughness=.86
+	timber.uv1_scale=Vector3(5.0,1.0,1.0)
+	var panels:=box(finish,Vector3(0,.61,-8.025),Vector3(span-.34,1.14,.07),Color("#73513b"))
+	panels.material_override=timber
+	panels.name="WalnutWainscot"
+	for y in [.09,1.19,2.91]:
+		var trim:=box(finish,Vector3(0,y,-7.966),Vector3(span-.34,.11,.09),Color("#58402e"))
+		trim.name="RearTrim"
+	for i in range(1,6):
+		var x:float=-span*.5+float(i)*span/6.0
+		var stile:=box(finish,Vector3(x,.62,-7.966),Vector3(.075,1.04,.08),Color("#503626"))
+		stile.name="WainscotStile"
 
 func make_room(group: Dictionary) -> void:
 	# One shell per logical R1/R2/R3 merge group, not N adjacent full-walled rooms.
@@ -1671,6 +1698,7 @@ func make_room(group: Dictionary) -> void:
 		box(structure,Vector3(0,-.04,-3.20),Vector3(span,.08,9.70),palette["floor"]).name="CutawayFloorSlab"
 		box(structure,Vector3(0,1.50,-8.14),Vector3(span,3.0,.18),palette["rock"]).name="StructuralRearBackup"
 		box(structure,Vector3(0,3.07,-7.60),Vector3(span,.14,1.05),palette["wood"]).name="CutawayCeilingSlab"
+		if t=="library":_depth7_library_finish(structure,span)
 		for side in [-1,1]:
 			box(structure,Vector3(float(side)*(span*.5-.10),1.45,-4.2),Vector3(.16,2.9,7.7),palette["rock"]).name="ConnectorRearReturn_%s"%("L" if side<0 else "R")
 		for z in [Depth7Space.center(1),Depth7Space.center(3),Depth7Space.center(5)]:
@@ -2830,9 +2858,54 @@ func clear_content_hotspots() -> void:
 	if content_hover_label != null:
 		content_hover_label.visible = false
 
+# Exact ray/rectangle test on the ten actual picture frames. Do not use the
+# generic 42-pixel hotspot halo or require an invented physical object.
+func _hearth_picture_hit(point:Vector2)->Dictionary:
+	if camera==null or room_root==null:return {}
+	if not current_mode in ["ROOM","FOLLOW"]:return {}
+	var room:Dictionary=world.room_by_id(selected_room)
+	if room.is_empty() or room.get("type","")!="common" or not world.public_cutaway_allowed(room):return {}
+	var group:Node3D=room_root.get_node_or_null(NodePath(str(room["id"])))
+	if group==null or not group.is_visible_in_tree():return {}
+	var origin:Vector3=camera.project_ray_origin(point)
+	var direction:Vector3=camera.project_ray_normal(point)
+	var best:float=INF
+	var found:Dictionary={}
+	for frame in group.find_children("HEARTH_PICTURE_*","MeshInstance3D",true,false):
+		if not frame.is_visible_in_tree() or not frame.mesh is BoxMesh:continue
+		var a:Vector3=frame.to_local(origin)
+		var b:Vector3=frame.to_local(origin+direction)-a
+		if b.z>=-0.00001:continue
+		var half:Vector3=frame.mesh.size*.5
+		var t:float=(half.z-a.z)/b.z
+		if t<=0.0 or t>=best:continue
+		var local:Vector3=a+b*t
+		if absf(local.x)>half.x or absf(local.y)>half.y:continue
+		var slot:String=str(frame.get_meta("slot_id",""))
+		if slot!=str(frame.name):continue
+		best=t
+		found={"category":"hearth_picture","item_id":slot,"room_id":room["id"],"anchor":frame,"display_name":"Картина "+slot.get_slice("_",2)}
+	return found
+
+func _open_hearth_picture(entry:Dictionary)->bool:
+	var room:Dictionary=world.room_by_id(str(entry.get("room_id","")))
+	if room.is_empty() or room.get("type","")!="common" or not world.public_cutaway_allowed(room):return false
+	var group:Node3D=room_root.get_node_or_null(NodePath(str(room["id"])))
+	if group==null or not group.is_visible_in_tree():return false
+	var slot:String=str(entry.get("item_id",""))
+	if not slot.begins_with("HEARTH_PICTURE_") or slot.length()!=17:return false
+	var frame:Node3D=group.get_node_or_null("Layer_OverviewCues/Depth7Hearth/"+slot)
+	if frame==null or not frame.is_visible_in_tree() or str(frame.get_meta("slot_id",""))!=slot:return false
+	var path:String=str(frame.get_meta("artwork_path",""))
+	var record:Dictionary={"id":slot,"title":"Картина "+slot.get_slice("_",2),"preview_path":path}
+	if path=="":record["description"]="Рамка пока пуста."
+	return content_viewer.open_record("paintings",record)
+
 func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 	if camera == null:
 		return {}
+	var frame_hit:Dictionary=_hearth_picture_hit(point)
+	if not frame_hit.is_empty():return frame_hit
 	var cube_hit:Dictionary=_artifact_cube_hotspot(point)
 	if not cube_hit.is_empty():return cube_hit
 	var best := 42.0
@@ -2912,6 +2985,7 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	var category := str(entry.get("category",""))
 	var item_id := str(entry.get("item_id",""))
 	var record: Dictionary = {}
+	if category=="hearth_picture":return _open_hearth_picture(entry)
 	if category=="teea008_surface":
 		var surface:Dictionary=teea008_review.surfaces.get(item_id,{})
 		if surface.is_empty() or not world.public_cutaway_allowed(world.room_by_id(str(entry.get("room_id","")))):

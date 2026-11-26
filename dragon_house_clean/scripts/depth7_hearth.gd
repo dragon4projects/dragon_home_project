@@ -150,7 +150,10 @@ func populate(parent:Node3D)->Node3D:
    frame.set_meta("artwork_path","")
    picture_slots.append({"id":frame.get_meta("slot_id"),"center_xyz":[c.x,c.y,c.z+.04],"aperture_m":[.44,.23],"artwork_path":""})
    var canvas:=box("BlankCanvas_%02d"%idx,c+Vector3(0,0,.04),Vector3(.44,.23,.02),mats["canvas_blank"])
+   # Explicit slot files only. The user override survives exports and upgrades.
    var slot_path:String="res://assets/hearth_pictures/HEARTH_PICTURE_%02d.png"%idx
+   var user_path:String="user://hearth_pictures/HEARTH_PICTURE_%02d.png"%idx
+   if FileAccess.file_exists(user_path):slot_path=user_path
    var texture:Texture2D=null
    if ResourceLoader.exists(slot_path,"Texture2D"):
     texture=load(slot_path) as Texture2D
