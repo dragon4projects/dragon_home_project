@@ -30,6 +30,18 @@ const OBJECT_STATES := ["PLACED","HELD","STASHED","LOST_FOUND"]
 
 var last_error: String = ""
 
+# Stable identity of a specific arrived view, including legacy saved markers.
+# Quantize only the identity's time encoding to microseconds; deadlines retain
+# their original values. A repeated attempt after rollback is the same action.
+static func view_completion_id(actor:Dictionary,object_id:String)->String:
+	var raw=actor.get("solo_habit_commitment",{})
+	if typeof(raw)!=TYPE_DICTIONARY or raw.is_empty() or str(raw.get("intent",""))!="VIEW_ART":return ""
+	var start:float=float(raw.get("started_at",-1))
+	var end:float=float(raw.get("ends_at",-1))
+	if not is_finite(start) or not is_finite(end) or start<0 or end<=start:return ""
+	if object_id=="" or str(raw.get("view_subject_id",object_id))!=object_id:return ""
+	return "view-v1-"+JSON.stringify([str(actor.get("id","")),object_id,str(raw.get("room_id","")),str(raw.get("station_id","")),roundi(start*1000000.0),roundi(end*1000000.0)]).sha256_text()
+
 func reject(reason: String) -> bool:
 	last_error = reason
 	return false
@@ -197,6 +209,21 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 		if not bool(actor.get("active",false)) or str(actor.get("phase",""))!="perform" or str(actor.get("intent",""))!="VIEW_ART" or str(actor.get("viewing_object_id",""))!=object_id:return reject("view not performed")
 		if str(actor.get("room_id",""))!=room_id or str(actor.get("station_room_id",""))!=room_id or not world.public_cutaway_allowed(world.room_by_id(room_id)) or str(object.get("state",""))!="PLACED":return reject("view target inaccessible")
 		if float(payload.get("sim_clock",-1.0))!=float(world.sim_clock):return reject("view clock mismatch")
+		var marker=actor.get("solo_habit_commitment",{})
+		var completion_id:=view_completion_id(actor,object_id)
+		if completion_id=="" or str(event.get("event_id",""))!=completion_id or str(payload.get("view_completion_id",""))!=completion_id:return reject("view completion identity mismatch")
+		if str(marker.get("room_id",""))!=room_id or str(marker.get("station_id",""))!=str(actor.get("station_anchor_id","")) or str(payload.get("station_id",""))!=str(marker.get("station_id","")) or str(object.get("interaction_station_id",""))!=str(marker.get("station_id","")):return reject("view station mismatch")
+		if float(marker.get("ends_at",-1))!=float(actor.get("until",-1)) or float(world.sim_clock)<float(marker.get("ends_at",INF)):return reject("view not completed")
+		if float(payload.get("started_at",-1))!=float(marker.get("started_at",-1)) or float(payload.get("ends_at",-1))!=float(marker.get("ends_at",-1)):return reject("view commitment mismatch")
+		if not bool(actor.get("autonomy_enabled",true)):return reject("view autonomy disabled")
+		var point=actor.get("station_point",[])
+		if typeof(point)!=TYPE_ARRAY or point.size()!=2:return reject("view station point missing")
+		for v in point:
+			if typeof(v) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(v)):return reject("view station point invalid")
+		var expected:Vector3=world.room_local_to_world(world.room_by_id(room_id),Vector2(float(point[0]),float(point[1])))
+		var actual:=Vector3(float(actor.get("x",INF)),float(actor.get("visual_y",INF)),float(actor.get("z",INF)))
+		if not actual.is_finite() or actual.distance_to(expected)>0.12:return reject("view actor not at station")
+		if str(payload.get("context","")) not in ["night","morning","day","evening"]:return reject("view context invalid")
 		return true
 
 	if event_type == "OBJECT_OWNER_CHANGED":
