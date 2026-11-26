@@ -27,6 +27,7 @@
         0,
         -6.78000020980835
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_01",
       "seat_surface_xyz": [
         -5.77999973297119,
@@ -51,6 +52,7 @@
         0,
         -6.78000020980835
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_02",
       "seat_surface_xyz": [
         -4.88000011444092,
@@ -75,6 +77,7 @@
         0,
         -5.62400007247925
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_03",
       "seat_surface_xyz": [
         -6.42799997329712,
@@ -99,6 +102,7 @@
         0,
         -6.41599988937378
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_04",
       "seat_surface_xyz": [
         -6.42799997329712,
@@ -123,6 +127,7 @@
         0,
         -5.80000019073486
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_05",
       "seat_surface_xyz": [
         -3.42750000953674,
@@ -147,6 +152,7 @@
         0,
         -0.557578563690186
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_06",
       "seat_surface_xyz": [
         -5.77062225341797,
@@ -171,6 +177,7 @@
         0,
         -0.577578544616699
       ],
+      "group": "left_conversation",
       "id": "HEARTH_SEAT_07",
       "seat_surface_xyz": [
         -2.87937784194946,
@@ -178,6 +185,306 @@
         -0.657294869422913
       ],
       "yaw": -75.0
+    },
+    {
+      "approach_xz": [
+        -0.0540000572800636,
+        -5.73199987411499
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -8.74227836789032e-08,
+        0,
+        -1.0
+      ],
+      "floor_feet_candidate_xyz": [
+        -0.0540000200271606,
+        0,
+        -5.32520008087158
+      ],
+      "group": "hearth_view",
+      "id": "HEARTH_SEAT_08",
+      "seat_surface_xyz": [
+        -0.0539999902248383,
+        0.376566171646118,
+        -4.98199987411499
+      ],
+      "yaw": 180.0
+    },
+    {
+      "approach_xz": [
+        -0.846000015735626,
+        -5.73199987411499
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -8.74227836789032e-08,
+        0,
+        -1.0
+      ],
+      "floor_feet_candidate_xyz": [
+        -0.846000015735626,
+        0,
+        -5.32520008087158
+      ],
+      "group": "hearth_view",
+      "id": "HEARTH_SEAT_09",
+      "seat_surface_xyz": [
+        -0.845999956130981,
+        0.375545740127563,
+        -4.98199987411499
+      ],
+      "yaw": 180.0
+    },
+    {
+      "approach_xz": [
+        -0.0540000572800636,
+        -3.53200006484985
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -8.74227836789032e-08,
+        0,
+        -1.0
+      ],
+      "floor_feet_candidate_xyz": [
+        -0.0540000200271606,
+        0,
+        -3.12520027160645
+      ],
+      "group": "hearth_view",
+      "id": "HEARTH_SEAT_10",
+      "seat_surface_xyz": [
+        -0.0539999902248383,
+        0.376565933227539,
+        -2.78200006484985
+      ],
+      "yaw": 180.0
+    },
+    {
+      "approach_xz": [
+        -0.846000015735626,
+        -3.53200006484985
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -8.74227836789032e-08,
+        0,
+        -1.0
+      ],
+      "floor_feet_candidate_xyz": [
+        -0.846000015735626,
+        0,
+        -3.12520003318787
+      ],
+      "group": "hearth_view",
+      "id": "HEARTH_SEAT_11",
+      "seat_surface_xyz": [
+        -0.845999956130981,
+        0.375546216964722,
+        -2.78200006484985
+      ],
+      "yaw": 180.0
+    },
+    {
+      "approach_xz": [
+        0.498000025749207,
+        -6.0460000038147
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -1.0,
+        0,
+        -4.37113918394516e-08
+      ],
+      "floor_feet_candidate_xyz": [
+        0.904799997806549,
+        0,
+        -6.0460000038147
+      ],
+      "group": "hearth_view",
+      "id": "HEARTH_SEAT_12",
+      "seat_surface_xyz": [
+        1.24800002574921,
+        0.376565933227539,
+        -6.0460000038147
+      ],
+      "yaw": -90.0
+    },
+    {
+      "approach_xz": [
+        0.498000055551529,
+        -5.6540002822876
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -1.0,
+        0,
+        -4.37113918394516e-08
+      ],
+      "floor_feet_candidate_xyz": [
+        0.904799938201904,
+        0,
+        -5.25400018692017
+      ],
+      "group": "hearth_view",
+      "id": "HEARTH_SEAT_13",
+      "seat_surface_xyz": [
+        1.24800002574921,
+        0.375545978546143,
+        -5.25400018692017
+      ],
+      "yaw": -90.0
+    },
+    {
+      "approach_xz": [
+        2.26200008392334,
+        -2.85400009155273
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        1.0,
+        0,
+        -4.37113918394516e-08
+      ],
+      "floor_feet_candidate_xyz": [
+        1.85520005226135,
+        0,
+        -2.85400009155273
+      ],
+      "group": "dragon_view",
+      "id": "HEARTH_SEAT_14",
+      "seat_surface_xyz": [
+        1.51199996471405,
+        0.37656569480896,
+        -2.85400009155273
+      ],
+      "yaw": 90.0
+    },
+    {
+      "approach_xz": [
+        2.26200008392334,
+        -3.64599990844727
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        1.0,
+        0,
+        -4.37113918394516e-08
+      ],
+      "floor_feet_candidate_xyz": [
+        1.85520005226135,
+        0,
+        -3.64599990844727
+      ],
+      "group": "dragon_view",
+      "id": "HEARTH_SEAT_15",
+      "seat_surface_xyz": [
+        1.51199996471405,
+        0.375545978546143,
+        -3.64599990844727
+      ],
+      "yaw": 90.0
+    },
+    {
+      "approach_xz": [
+        5.24599981307983,
+        -2.43199992179871
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -8.74227836789032e-08,
+        0,
+        -1.0
+      ],
+      "floor_feet_candidate_xyz": [
+        5.24599981307983,
+        0,
+        -2.02519989013672
+      ],
+      "group": "dragon_view",
+      "id": "HEARTH_SEAT_16",
+      "seat_surface_xyz": [
+        5.24599981307983,
+        0.376565456390381,
+        -1.68199992179871
+      ],
+      "yaw": 180.0
+    },
+    {
+      "approach_xz": [
+        4.4539999961853,
+        -2.43199992179871
+      ],
+      "asset": "blendkit_sofa_repaired",
+      "facing_xyz": [
+        -8.74227836789032e-08,
+        0,
+        -1.0
+      ],
+      "floor_feet_candidate_xyz": [
+        4.4539999961853,
+        0,
+        -2.02519989013672
+      ],
+      "group": "dragon_view",
+      "id": "HEARTH_SEAT_17",
+      "seat_surface_xyz": [
+        4.4539999961853,
+        0.375545978546143,
+        -1.68199992179871
+      ],
+      "yaw": 180.0
+    },
+    {
+      "approach_xz": [
+        3.31479072570801,
+        -0.71038830280304
+      ],
+      "asset": "ArmChair_01",
+      "facing_xyz": [
+        0.5735764503479,
+        0,
+        -0.819152057170868
+      ],
+      "floor_feet_candidate_xyz": [
+        2.62690687179565,
+        0,
+        -0.774056553840637
+      ],
+      "group": "dragon_view",
+      "id": "HEARTH_SEAT_18",
+      "seat_surface_xyz": [
+        2.47915363311768,
+        0.45991063117981,
+        -0.563042998313904
+      ],
+      "yaw": 145.0
+    },
+    {
+      "approach_xz": [
+        6.5734658241272,
+        -1.31030118465424
+      ],
+      "asset": "ArmChair_01",
+      "facing_xyz": [
+        -0.342020213603973,
+        0,
+        -0.939692616462708
+      ],
+      "floor_feet_candidate_xyz": [
+        6.31469678878784,
+        0,
+        -0.851742386817932
+      ],
+      "group": "dragon_view",
+      "id": "HEARTH_SEAT_19",
+      "seat_surface_xyz": [
+        6.40280103683472,
+        0.45991063117981,
+        -0.60967755317688
+      ],
+      "yaw": -160.0
     }
   ],
   "picture_slots": [
@@ -312,6 +619,6 @@
       "id": "HEARTH_PICTURE_10"
     }
   ],
-  "route_checks": 24,
-  "seat_route_checks": 14
+  "route_checks": 18,
+  "seat_route_checks": 38
 }
