@@ -1,0 +1,50 @@
+name: Verified normalized TEEA model intake
+on:
+  push:
+    branches: [integration/teea-theatre-intake-20261126]
+    paths: ['.github/workflows/teea-normalized-intake-20261126.yml']
+permissions:
+  contents: write
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Download and verify normalized model payload
+        run: |
+          curl -fL --retry 2 --max-time 120 'https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/73193fb2-3bfc-43dc-9486-5b2d81c2206b.zip' -o /tmp/teea-normalized.zip
+          echo '13c903978d08e7a2f933ac4f2bb27d752a8f0292ff1fafcddd40e79ba13ca3cb  /tmp/teea-normalized.zip' | sha256sum -c -
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          import json,hashlib
+          from pathlib import Path
+          prefix='dragon_house_clean/'
+          meta=prefix+'data/asset_proposals/OWNER_NORMALIZED_INTAKE_20261126/'
+          with ZipFile('/tmp/teea-normalized.zip') as z:
+              m=json.loads(z.read(meta+'manifest.json'))
+              assert len(m['items'])==282
+              allowed={meta+'manifest.json',meta+'asset_index.json'}
+              for r in m['items']:
+                  p=prefix+r['path']
+                  assert p.startswith(prefix+'assets/decor_bank/') and '..' not in Path(p).parts
+                  b=z.read(p)
+                  assert len(b)==r['bytes'] and hashlib.sha256(b).hexdigest()==r['sha256']
+                  assert not Path(p).exists(),p
+                  allowed.add(p)
+              assert set(z.namelist())==allowed
+              for p in sorted(allowed):
+                  f=Path(p);f.parent.mkdir(parents=True,exist_ok=True);f.write_bytes(z.read(p))
+          print('282 payload checks passed; no raw sources')
+          PY
+      - name: Commit models only
+        run: |
+          git lfs install --local
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dragon_house_clean/assets/decor_bank dragon_house_clean/data/asset_proposals/OWNER_NORMALIZED_INTAKE_20261126
+          git diff --cached --stat
+          git commit -m '[skip ci] Restore 21 owner-authorized normalized game models'
+          git push origin HEAD:integration/teea-theatre-intake-20261126
