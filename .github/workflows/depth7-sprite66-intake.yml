@@ -33,7 +33,7 @@ jobs:
               paths=[]
               for r in records:
                   p=r['path']
-                  assert re.fullmatch(r'assets/(?:residents/RES_(?:04|07|08)/wardrobes/(?:HOME|CITY)|creatures/(?:manjka|npc_ai_magic_sphere))/[A-Z_0-9/]+/[0-9]+\.png',p),p
+                  assert re.fullmatch(r'assets/(?:residents/RES_(?:04|07|08)/wardrobes/(?:HOME|CITY)|creatures/(?:manjka|npc_ai_magic_sphere))/[A-Za-z_0-9]+/[A-Za-z_0-9]+\.png',p),p
                   b=z.read(prefix+p)
                   assert b.startswith(b'\x89PNG\r\n\x1a\n') and len(b)==r['size'] and hashlib.sha256(b).hexdigest()==r['sha256'],p
                   paths.append(p)
