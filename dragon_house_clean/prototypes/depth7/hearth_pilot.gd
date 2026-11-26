@@ -85,7 +85,7 @@ func dragon_crop()->AABB:
  assert(not first and surfaces>0)
  var scale_value:float=minf(5.40/bounds.size.x,4.30/bounds.size.z)
  n.scale=Vector3.ONE*scale_value
- n.position=Vector3(4.76,-bounds.position.y*scale_value,-1.59)-Vector3(bounds.get_center().x*scale_value,0,bounds.get_center().z*scale_value)
+ n.position=Vector3(6.99-bounds.size.x*scale_value*.5,-bounds.position.y*scale_value,-7.70+bounds.size.z*scale_value*.5)-Vector3(bounds.get_center().x*scale_value,0,bounds.get_center().z*scale_value)
  var final:=n.global_transform*bounds
  for b in blockers:
   assert(minf(b.end.x,final.end.x)-maxf(b.position.x,final.position.x)<.005 or minf(b.end.z,final.end.z)-maxf(b.position.z,final.position.z)<.005)
@@ -99,8 +99,8 @@ func clear(p:Vector2)->bool:
   if p.x>b.position.x-RADIUS and p.x<b.end.x+RADIUS and p.y>b.position.z-RADIUS and p.y<b.end.z+RADIUS:return false
  return true
 func reachable(start:Vector2,goal:Vector2)->bool:
- # Conservative 0.15m occupancy grid; axis edges checked at midpoint.
- var step:=.15
+ # Conservative 0.10m occupancy grid; axis edges checked at midpoint.
+ var step:=.10
  var origin:=Vector2(-7.12,-7.70)
  var a:=Vector2i(roundi((start.x-origin.x)/step),roundi((start.y-origin.y)/step))
  var b:=Vector2i(roundi((goal.x-origin.x)/step),roundi((goal.y-origin.y)/step))
@@ -168,6 +168,7 @@ func run()->void:
  material("glass",Color("#23333a"))
  material("trim",Color("#3d2921"),"natural_walnut_veneer_diff_1k.jpg",Vector3(.8,.8,.8))
  material("brass",Color("#9b7545"))
+ material("canvas_blank",Color("#b9a58a"))
  material("hearth_tile",Color("#51483e"),"tiger_rock_diff_2k.jpg",Vector3(.80,.80,.80))
  box("Floor",Vector3(0,-.16,-3.20),Vector3(14.4,.32,9.70),mats["floor"])
  box("RearWall",Vector3(0,1.48,-8.19),Vector3(14.4,2.96,.28),mats["rock"])
@@ -189,35 +190,44 @@ func run()->void:
  box("RearBeam",Vector3(0,2.94,-7.78),Vector3(14.4,.26,.38),mats["wood"])
  # Low cutaway frame, open ceiling and front; no fake wall across the aisle.
  for x in [-7.1,7.1]:
-  box("SideReturn",Vector3(x,1.45,-6.9),Vector3(.20,2.9,2.1),mats["rock"])
+  box("SideReturn",Vector3(x,1.45,-5.65),Vector3(.20,2.9,4.60),mats["rock"])
  for x in [-5.7,5.4]:arch(x,-7.87)
  # Band 7: actual furniture, fireplace centered, rear sofa/book storage.
  asset("wooden_bookshelf_worn",Vector3(-3.15,0,-7.36),1.12,0,true)
- asset("wooden_bookshelf_worn",Vector3(3.25,0,-7.36),1.12,0,true)
+ asset("wooden_bookshelf_worn",Vector3(2.06,0,-7.36),.92,0,true)
  var fireplace:=asset("sketchfab_fireplace_annabelle_fibonacci",Vector3(-.18,0,-7.43),1.70,0,true)
  box("ChimneyBreast",Vector3(-.18,2.47,-7.84),Vector3(2.72,1.09,.33),mats["stone"])
  box("ChimneyMantel",Vector3(-.18,1.99,-7.58),Vector3(3.02,.15,.54),mats["wood"])
+ # Ten independently named, replaceable wall slots. No invented owner artwork.
+ for row in range(2):
+  for col in range(5):
+   var idx:int=row*5+col+1
+   var c:=Vector3(-.18+(col-2)*.55,2.26+row*.34,-7.60)
+   var frame:=box("HEARTH_PICTURE_%02d"%idx,c,Vector3(.51,.30,.065),mats["brass"])
+   frame.set_meta("slot_id","HEARTH_PICTURE_%02d"%idx)
+   frame.set_meta("artwork_path","")
+   box("BlankCanvas_%02d"%idx,c+Vector3(0,0,.04),Vector3(.44,.23,.02),mats["canvas_blank"])
  box("HearthApron",Vector3(-.18,.004,-6.53),Vector3(3.35,.008,.78),mats["hearth_tile"])
- asset("sofa_03",Vector3(-5.30,0,-6.91),1.0,0,true)
- asset("common_woven_rug",Vector3(-5.18,.008,-5.71),1.45)
+ asset("sofa_03",Vector3(-5.33,0,-7.32),1.0,0,true)
+ asset("common_woven_rug",Vector3(-4.85,.008,-6.14),1.65)
  asset("common_woven_rug",Vector3(-.10,.007,-5.22),.86)
- asset("wooden_lantern_01",Vector3(-1.87,.005,-6.86),1.40)
- asset("vintage_grandfather_clock_01",Vector3(6.35,0,-7.30),1.0,0,true)
- for cx in [-3.15,3.25]:
+ asset("wooden_lantern_01",Vector3(-1.92,.005,-6.18),1.15)
+ asset("vintage_grandfather_clock_01",Vector3(-2.09,0,-7.38),1.0,0,true)
+ for cx in [-3.15,2.06]:
+  var ratio:float=1.0 if cx<0 else .92/1.12
   for y in [.22,.64,1.06,1.48]:
    for dx in [-.34,.27]:
-    asset("book_encyclopedia_set_01",Vector3(cx+dx,y,-7.28),.87)
-  asset("potted_plant_04",Vector3(cx,2.20,-7.36),1.0)
+    asset("book_encyclopedia_set_01",Vector3(cx+dx*ratio,y*ratio,-7.28),.87*ratio)
+  asset("potted_plant_04",Vector3(cx,2.20*ratio,-7.36),1.0)
  # Timber rafters and rear shelf sconces create framed architectural bays.
  for x in [-6.85,-3.48,0.0,3.48,6.85]:
   box("CeilingRafter",Vector3(x,3.04,-6.95),Vector3(.23,.25,2.05),mats["wood"])
   if x!=0.0:
    var brace:=box("TimberBrace",Vector3(x+.25,2.69,-7.70),Vector3(.69,.18,.24),mats["wood"])
    brace.rotation.z=.70
- asset("potted_plant_01",Vector3(5.55,0,-6.15),.8,0,true)
- asset("wooden_lantern_01",Vector3(2.30,0,-6.92),1.2)
+ asset("wooden_lantern_01",Vector3(1.52,0,-6.64),1.2)
  asset("wicker_basket_01",Vector3(-1.95,0,-6.65),1.6)
- asset("vintage_oil_lamp",Vector3(3.33,.79955,-4.36),.82)
+ asset("vintage_oil_lamp",Vector3(.88,.79955,-4.16),.82)
  # A third timber bay gives the rear room a recognizable scale.
  for x in [-6.86,6.86]:
   box("SideHighBeam",Vector3(x,2.99,-5.70),Vector3(.25,.25,3.72),mats["wood"])
@@ -225,23 +235,26 @@ func run()->void:
   box("SideColumn",Vector3(x,1.49,-5.02),Vector3(.19,2.98,.22),mats["wood"])
  # Band 6 is local approach pockets; band 5 stays traversable.
  # Band 4: inward-facing chairs and real coffee/bar table.
- asset("blendkit_sofa_repaired",Vector3(-4.90,0,-4.22),.88,165,true)
- asset("blendkit_sofa_set_chair",Vector3(-2.70,0,-4.24),.88,145,true)
- asset("wooden_table_02",Vector3(2.85,0,-4.26),1.0,0,true)
- asset("wine_bottles_01",Vector3(2.60,.79955,-4.35),.72)
- asset("brass_goblets",Vector3(3.10,.79955,-4.12),.75)
+ # U-shaped group: back sofa +Z, left sofa +X, right chair -X.
+ asset("blendkit_sofa_repaired",Vector3(-6.56,0,-6.02),.88,90,true)
+ asset("ArmChair_01",Vector3(-3.30,0,-5.80),.85,-90,true)
+ asset("gothic_coffee_table",Vector3(-4.96,0,-5.70),.90,0,true)
+ asset("brass_candleholders",Vector3(-4.96,.3268,-5.70),.45)
+ asset("wooden_table_02",Vector3(.50,0,-4.06),1.0,0,true)
+ asset("wine_bottles_01",Vector3(.25,.79955,-4.15),.72)
+ asset("brass_goblets",Vector3(.75,.79955,-3.92),.75)
  # Band 2: seating group at front left, free center and right for Dragon.
  asset("common_woven_rug",Vector3(-4.30,.006,-.76),1.78)
- asset("ArmChair_01",Vector3(-5.93,0,-.68),1.10,-45,true)
+ asset("ArmChair_01",Vector3(-5.93,0,-.68),1.10,75,true)
  asset("gothic_coffee_table",Vector3(-4.28,0,-.62),1.13,0,true)
- asset("GreenChair_01",Vector3(-2.72,0,-.70),1.05,55,true)
+ asset("ArmChair_01",Vector3(-2.72,0,-.70),1.10,-75,true)
  asset("brass_candleholders",Vector3(-4.29,.4104,-.62),.55)
- asset("potted_plant_01",Vector3(-6.52,0,-4.30),.8,0,true)
- asset("potted_plant_02",Vector3(5.50,0,-4.36),.9,0,true)
+ asset("potted_plant_01",Vector3(-6.52,0,-3.95),.8,0,true)
+ asset("potted_plant_02",Vector3(2.30,0,-1.90),.9,0,true)
  # Owner dragon: uniform scale, source proportions, fills bands 2/3.
  var dragon:=dragon_crop()
- assert(dragon.position.x>1.4 and dragon.end.x<7.15)
- assert(dragon.position.z>=BANDS[3]-.001 and dragon.end.z<=BANDS[1]+.001)
+ assert(absf(dragon.end.x-6.99)<.01)
+ assert(absf(dragon.position.z+7.70)<.01)
  assert(absf(dragon.position.y)<.02)
  # Wall lights and rear shelves, using real existing decor.
  for x in [-6.65,-3.45,3.48,6.75]:
@@ -249,36 +262,37 @@ func run()->void:
   light(Vector3(x,2.05,-6.95),Color("#ffbd72"),1.3,4.1)
  light(Vector3(-.18,1.10,-6.48),Color("#ff9d42"),2.6,4.3)
  light(Vector3(-4.9,1.75,-5.78),Color("#ffcb94"),.85,3.1)
- light(Vector3(2.85,1.75,-4.18),Color("#ffe1b5"),.85,2.8)
+ light(Vector3(.50,1.75,-4.18),Color("#ffe1b5"),.85,2.8)
  box("RearCeilingSlab",Vector3(0,3.17,-7.37),Vector3(14.4,.19,1.40),mats["rock"])
  box("CeilingFrontHeader",Vector3(0,3.04,-6.63),Vector3(14.4,.23,.24),mats["wood"])
  light(Vector3(-4.3,2.65,-.95),Color("#ffd8a4"),1.45,5.0)
- light(Vector3(4.4,2.5,-1.9),Color("#ffc08b"),1.45,5.1)
+ light(Vector3(4.9,2.5,-5.4),Color("#ffc08b"),1.45,5.1)
  var key:=DirectionalLight3D.new();stage.add_child(key);key.rotation_degrees=Vector3(-38,-20,0);key.light_color=Color("#ffe3c3");key.light_energy=.38
  # Full front aisle continuous, rear lanes accessible on left and central gaps.
  for i in range(95):
   assert(clear(Vector2(-7.05+14.10*float(i)/94.0,1.15)),"front aisle blocked")
- # Verify horizontal continuity on the actual centerlines outside the dragon exclusion.
- var band3_end:float=dragon.position.x-RADIUS-.02
- for i in range(81):
-  assert(clear(Vector2(lerpf(-7.05,band3_end,float(i)/80),-2.68)),"band 3 left continuity")
+ # Rear corner approved by owner: right-hand rear lanes terminate at the dragon.
+ # Keep front aisle and band 3 continuous; band 5 to the left of the nook.
  for i in range(95):
-  assert(clear(Vector2(lerpf(-7.05,7.05,float(i)/94),-5.34)),"band 5 continuity")
- var targets=[Vector2(-4.9,-2.65),Vector2(-4.6,-5.34),Vector2(3.0,-5.34),Vector2(-3.65,-6.50),Vector2(3.25,-6.50),Vector2(-.18,-6.35),Vector2(2.85,-5.34),Vector2(-4.28,-1.82),Vector2(-5.30,-5.91),Vector2(6.35,-6.50)]
+  assert(clear(Vector2(lerpf(-7.05,7.05,float(i)/94),-2.68)),"band 3 continuity")
+ var band5_end:float=dragon.position.x-RADIUS-.02
+ for i in range(60):
+  assert(clear(Vector2(lerpf(-7.05,band5_end,float(i)/59),-4.78)),"band 5 left continuity")
+ var targets=[Vector2(-4.9,-2.65),Vector2(-4.6,-4.78),Vector2(1.6,-5.4),Vector2(-3.65,-6.72),Vector2(2.06,-6.45),Vector2(-.18,-6.35),Vector2(.50,-5.34),Vector2(-4.28,-1.82),Vector2(-5.33,-6.57),Vector2(4.9,-2.75),Vector2(-5.80,-5.70),Vector2(-4.04,-5.80)]
  var route_count:=0
  for q in targets:
   assert(clear(q),str(["approach",q]))
   for e in [Vector2(-7.05,1.15),Vector2(7.05,1.15)]:
    assert(reachable(e,q),str(["unreachable",e,q]));route_count+=1
- print("DEPTH7_REFINED_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
- var f=FileAccess.open("/home/user/dragon_qa/iter56_placement.json",FileAccess.WRITE)
+ print("DEPTH7_OWNER_LAYOUT_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
+ var f=FileAccess.open("/home/user/dragon_qa/iter57_placement.json",FileAccess.WRITE)
  f.store_string(JSON.stringify({"bands_front_to_back":BANDS,"room_width":14.4,"dragon_bounds":[dragon.position,dragon.size],"placements":placements,"route_checks":route_count},"  "));f.close()
  scale_actor("RES_07",Vector3(0.35,0,1.15))
  cam=Camera3D.new();stage.add_child(cam);cam.projection=Camera3D.PROJECTION_PERSPECTIVE;cam.fov=25.0;cam.current=true
  cam.position=Vector3(-.5,7.2,20.0);cam.look_at(Vector3(0,1.05,-3.35))
- await capture("/home/user/dragon_qa/iter56_hearth.png")
+ await capture("/home/user/dragon_qa/iter57_hearth.png")
  cam.position=Vector3(-8,11,20);cam.look_at(Vector3(0,.75,-3.35));cam.fov=27.0
- await capture("/home/user/dragon_qa/iter56_oblique.png")
+ await capture("/home/user/dragon_qa/iter57_oblique.png")
  # Technical plan, same scene, visible seven bands, not a generated drawing.
  for i in range(BANDS.size()):
   var m:=StandardMaterial3D.new();m.albedo_color=Color("#d8b078");m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -287,6 +301,6 @@ func run()->void:
   var label:=Label3D.new();label.text=str(i+1);label.font_size=45;label.modulate=Color("#fff2ce");label.pixel_size=.008;label.rotation_degrees.x=-90
   stage.add_child(label);label.position=Vector3(-7.03,.06,(BANDS[i]+BANDS[i+1])*.5)
  cam.projection=Camera3D.PROJECTION_ORTHOGONAL;cam.position=Vector3(0,22,-3.2);cam.look_at(Vector3(0,0,-3.2),Vector3(0,0,-1));cam.size=10.6
- await capture("/home/user/dragon_qa/iter56_plan.png")
- print("DEPTH7_REFINED_RENDER_PASS 3")
+ await capture("/home/user/dragon_qa/iter57_plan.png")
+ print("DEPTH7_OWNER_LAYOUT_RENDER_PASS 3")
  quit()
