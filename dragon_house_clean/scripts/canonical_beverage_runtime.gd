@@ -1,4 +1,5 @@
 extends RefCounted
+const LearnedHabits=preload("res://scripts/learned_habits.gd")
 ## Persisted beverage state is separate from the event-sourced object projection.
 ## Only the accepted object holder can sip; replays of object movement cannot
 ## reset contents or preferences. No physics, recipes or intoxication.
@@ -195,6 +196,7 @@ func sip(cup_id:String,actor_id:String)->bool:
 		prefs["last_choice"]=row.duplicate(true)
 		_append_choice(row)
 		c.erase("pending_choice")
+		if world.residents.has(actor_id):LearnedHabits.record(world.residents[actor_id],"GET_COFFEE",float(world.sim_clock),id,str(row.get("context","")))
 	if float(c["remaining_ml"])<=0:
 		prefs["completed_drinks"].append(id)
 		if prefs["completed_drinks"].size()>12:prefs["completed_drinks"].pop_front()
