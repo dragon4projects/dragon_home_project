@@ -505,6 +505,7 @@ func commit_claim(actor: Dictionary, claim: Dictionary) -> void:
 		actor["station_exclusive_furniture"]=bool(claim["contact"].get("exclusive",false))
 
 func release(actor: Dictionary) -> void:
+	actor.erase("solo_habit_commitment")
 	actor.erase("station_room_id")
 	actor.erase("station_slot")
 	actor.erase("station_point")
