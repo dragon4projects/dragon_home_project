@@ -519,6 +519,9 @@ func _journal_accepted(event: Dictionary) -> void:
 		world._append_journal("OBJECT_OWNER_CHANGED",
 			str(event.get("subject_id","")),object_id,
 			str(event.get("from","")),str(event.get("to","")),details)
+	elif event_type=="OBJECT_SUPPORT_REBASED":
+		details["anchors"]=payload.get("anchors",{}).duplicate(true)
+		world._append_journal("OBJECT_SUPPORT_REBASED","",object_id,str(event.get("from","")),str(event.get("to","")),details)
 	elif event_type == "OBJECT_HOME_ASSIGNED":
 		world._append_journal("OBJECT_HOME_ASSIGNED",
 			str(event.get("subject_id","")),object_id,
@@ -697,6 +700,15 @@ func register_object(object_id: String, display_name: String,
 		"PERSISTENT_UNTIL_CHANGED",canonical_owner_id,object_id,home_room_id,
 		"",home_room_id,"WORLD_MODEL_OBJECT_REGISTRATION_V022",
 		"Explicit object registration through WorldModel",payload)
+	return bool(submit(event).get("ok",false))
+
+func rebase_support_geometry(object_id:String,anchors:Dictionary)->bool:
+	var obj:Dictionary=world.objects.get(object_id,{})
+	if obj.is_empty() or anchors.is_empty():return false
+	var room_id:String=str(obj.get("home_room_id",""))
+	var event:=_base_event("OBJECT_SUPPORT_REBASED","EXPLICIT_WORLD_FACT","system","world_model","SYSTEM_RULE",
+		str(obj.get("visibility","house_public")),"PERSISTENT_UNTIL_CHANGED","",object_id,room_id,room_id,room_id,
+		"DEPTH7_SUPPORT_REBASE_V1","Existing support moved by architecture revision; no owner action",{"object_id":object_id,"anchors":anchors,"sim_clock":float(world.sim_clock)})
 	return bool(submit(event).get("ok",false))
 
 func assign_home(object_id: String, target_room_id: String, home_anchor: Vector2,

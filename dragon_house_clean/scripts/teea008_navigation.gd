@@ -368,7 +368,7 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 			elif kind=="floor_rest":
 				var lo:Array=item["bounds_min_m"]
 				var hi:Array=item["bounds_max_m"]
-				spot["candidate_contact"]={"floor":station.get("room_local_xyz",[]),"instance_xyz":item["room_local_xyz"],"lie_width_m":float(hi[0])-float(lo[0])}
+				spot["candidate_contact"]={"floor":station.get("room_local_xyz",[]),"instance_xyz":item["room_local_xyz"],"lie_width_m":float(hi[0])-float(lo[0]),"depth7_measured":bool(row.get("depth7_measured",false))}
 				spot["kind"]="floor_rest"
 				spot["pose_hint"]="LIE_SIDE_CURLED"
 			if bool(row.get("depth7_measured",false)) and kind=="seat":

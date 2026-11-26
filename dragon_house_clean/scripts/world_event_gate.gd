@@ -21,7 +21,7 @@ const REVERSIBILITY := [
 ]
 const OBJECT_EVENTS := [
 	"OBJECT_REGISTERED","OBJECT_MOVED","OBJECT_POLICY_SET","OBJECT_OWNER_CHANGED",
-	"OBJECT_HOME_ASSIGNED","OBJECT_INTERACTED"
+	"OBJECT_HOME_ASSIGNED","OBJECT_INTERACTED","OBJECT_SUPPORT_REBASED"
 ]
 const MOVEMENT_KINDS := [
 	"PICKED_UP","PLACED","STASHED","RECOVERED_TO_LOST_FOUND","RESTORED_HOME","HOUSEKEEPING_RETURNED"
@@ -200,6 +200,37 @@ func validate(world, projection: Dictionary, event: Dictionary) -> bool:
 	if object_id == "" or not projection.has(object_id):
 		return reject("unknown object")
 	var object: Dictionary = projection[object_id]
+
+	if event_type=="OBJECT_SUPPORT_REBASED":
+		if truth!="EXPLICIT_WORLD_FACT" or event.get("source_type")!="system" or event.get("authority")!="SYSTEM_RULE" or event.get("provenance")!="DEPTH7_SUPPORT_REBASE_V1":
+			return reject("invalid geometry migration authority")
+		var nav=world.housekeeping_navigation
+		if nav==null:return reject("geometry support registry unavailable")
+		var updates:Dictionary=payload.get("anchors",{})
+		if updates.is_empty():return reject("empty geometry migration")
+		for field in updates:
+			if not field in ["home_anchor","current_anchor"]:return reject("geometry migration may only change anchors")
+			var prefix:String="home" if field=="home_anchor" else "current"
+			var room_id:String=str(object.get(prefix+"_room_id",""))
+			var room:Dictionary=world.room_by_id(room_id)
+			if room.is_empty() or not bool(room.get("depth7",false)) or not world.public_cutaway_allowed(room):return reject("invalid migrated room")
+			if prefix=="current" and (object.get("state")!="PLACED" or str(object.get("current_holder_id",""))!=""):return reject("cannot migrate held or hidden current object")
+			var change:Dictionary=updates[field]
+			if change.get("from",[])!=object.get(field,[]):return reject("stale geometry anchor")
+			var target:Array=change.get("to",[])
+			if not _valid_anchor(world,room_id,target):return reject("invalid new geometry anchor")
+			var sid:String=str(change.get("slot_id",""))
+			var category:String=str(object.get("viewer_category",""))
+			var slot:Dictionary={}
+			if category=="artifacts" and sid==str(object.get(prefix+"_support_id","")):
+				slot=nav.artifact_support(room,sid)
+			elif category=="cups":
+				for candidate in nav.cup_slots(room):
+					if str(candidate["id"])==sid:slot=candidate;break
+			if slot.is_empty():return reject("missing matching geometry support")
+			var xyz:Array=slot["xyz"]
+			if Vector2(float(target[0]),float(target[1])).distance_to(Vector2(float(xyz[0]),float(xyz[2])))>.0001:return reject("geometry anchor does not match support")
+		return true
 
 	if event_type=="OBJECT_INTERACTED":
 		var actor_id:String=str(payload.get("actor_id",""))

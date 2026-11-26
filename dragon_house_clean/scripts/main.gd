@@ -2,6 +2,7 @@ extends Node3D
 ## Fresh Godot 4.7.2 cutaway world. Geometry and presentation only;
 ## room truth + autonomous life are independent of the camera.
 const Depth7Space=preload("res://scripts/depth7_space.gd")
+const Depth7SupportMigration=preload("res://scripts/depth7_support_migration.gd")
 const Depth7Layout=preload("res://scripts/depth7_layout.gd")
 const Depth7Hearth=preload("res://scripts/depth7_hearth.gd")
 const WorldScript = preload("res://scripts/world_model.gd")
@@ -328,6 +329,7 @@ func _ready() -> void:
 				push_warning("Iteration-1 guest candidate activation failed: "+str(guest_review_result))
 		else:
 			push_warning("Iteration-1 candidate contract could not be initialized: "+candidate_content.last_error)
+	var legacy_depth_layouts:Dictionary=teea008_review.layouts.duplicate(true) if architecture_review and teea008_review.enabled else {}
 	if architecture_review and teea008_review.enabled:
 		var f:=FileAccess.open("res://data/depth7_hearth_layout.json",FileAccess.READ)
 		if f!=null:
@@ -372,6 +374,12 @@ func _ready() -> void:
 		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
+		if architecture_review and not legacy_depth_layouts.is_empty():
+			var old_nav=TEEA008NavigationScript.new()
+			old_nav.configure(legacy_depth_layouts)
+			var migration:Dictionary=Depth7SupportMigration.run(world,old_nav,life.candidate_navigation)
+			world.runtime_state["depth7_support_migration"]=migration
+			print("DEPTH7_SUPPORT_MIGRATION ",migration)
 		_ensure_canonical_artifact_cube()
 		_restore_zna_artifact_sources()
 		if architecture_review:

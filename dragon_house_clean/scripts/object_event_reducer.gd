@@ -117,6 +117,16 @@ func _apply_owned(next:Dictionary,event:Dictionary)->Dictionary:
 		return _fail("unknown object")
 	var object: Dictionary = next[object_id]
 
+	if event_type=="OBJECT_SUPPORT_REBASED":
+		for field in payload.get("anchors",{}):
+			if not field in ["home_anchor","current_anchor"]:return _fail("invalid rebased field")
+			var change:Dictionary=payload["anchors"][field]
+			if change.get("from",[])!=object.get(field,[]):return _fail("stale rebased anchor")
+			object[field]=change["to"].duplicate(true)
+		object["updated_event_id"]=event_id
+		_append_history(object,_history_entry(event,"SUPPORT_GEOMETRY_REBASED",""))
+		return next
+
 	if event_type=="OBJECT_INTERACTED":
 		object["last_interaction_at"]=float(payload.get("sim_clock",0.0))
 		object["updated_event_id"]=event_id
