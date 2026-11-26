@@ -1,7 +1,7 @@
 extends SceneTree
 # Isolated visual/geometry prototype. No production room, state or save mutation.
 const BANK=preload("res://scripts/teea008_review_bank.gd")
-const BANDS=[1.65,0.65,-1.55,-3.80,-4.75,-5.65,-6.65,-8.05]
+const BANDS=[1.65,0.65,-.85,-1.75,-3.60,-4.50,-6.65,-8.05]
 const HW=7.2
 const RADIUS=.325
 var stage:Node3D
@@ -26,7 +26,14 @@ func box(id:String,p:Vector3,d:Vector3,m:Material,yaw:float=0)->MeshInstance3D:
  return n
 func light(p:Vector3,color:Color,energy:float,range_m:float)->void:
  var l:=OmniLight3D.new();stage.add_child(l);l.position=p;l.light_color=color;l.light_energy=energy;l.omni_range=range_m;l.omni_attenuation=1.1;l.shadow_enabled=false
+# Same 0.85 -> 1.0 linear correction as production room_space_v2,
+# normalized over the expanded seven-band floor. Keep owner X/Z anchors.
+func depth_scale(z:float)->float:
+ return lerpf(.85,1.0,clampf((z-BANDS[7])/(BANDS[0]-BANDS[7]),0.0,1.0))
 func asset(id:String,at:Vector3,scale_value:float=1.0,yaw:float=0,blocking:bool=false)->AABB:
+ var base_scale:float=scale_value
+ if id in ["sofa_03","blendkit_sofa_repaired","ArmChair_01","gothic_coffee_table"]:
+  scale_value*=depth_scale(at.z)
  var path:String=bank._asset_path(id)
  assert(ResourceLoader.exists(path,"PackedScene"),path)
  var n:=Node3D.new();n.name=id;stage.add_child(n);n.position=at;n.scale=Vector3.ONE*scale_value;n.rotation_degrees.y=yaw
@@ -52,14 +59,14 @@ func asset(id:String,at:Vector3,scale_value:float=1.0,yaw:float=0,blocking:bool=
   for b in blockers:
    assert(minf(b.end.x,bounds.end.x)-maxf(b.position.x,bounds.position.x)<.005 or minf(b.end.z,bounds.end.z)-maxf(b.position.z,bounds.position.z)<.005,str(["overlap",id,b,bounds]))
   blockers.append(bounds)
- placements.append({"asset":id,"position":[at.x,at.y,at.z],"scale":scale_value,"yaw":yaw,"bounds_min":[bounds.position.x,bounds.position.y,bounds.position.z],"bounds_max":[bounds.end.x,bounds.end.y,bounds.end.z],"blocking":blocking})
+ placements.append({"asset":id,"position":[at.x,at.y,at.z],"scale":scale_value,"base_scale":base_scale,"depth_factor":scale_value/base_scale,"yaw":yaw,"bounds_min":[bounds.position.x,bounds.position.y,bounds.position.z],"bounds_max":[bounds.end.x,bounds.end.y,bounds.end.z],"blocking":blocking})
  if id in ["sofa_03","blendkit_sofa_repaired","ArmChair_01"]:
   var xs:Array=[-.45,.45] if id!="ArmChair_01" else [0.0]
   for sx in xs:
    var local:=Vector3(sx,0,.15)
    var world:Vector3=n.to_global(local)
    var surface_y:float=mesh_top(n,Vector2(world.x,world.z))
-   assert(surface_y>.30 and surface_y<.65,str([id,surface_y]))
+   assert(surface_y>.28 and surface_y<.65,str([id,surface_y]))
    var forward:Vector3=n.global_transform.basis.z.normalized()
    var foot:Vector3=n.to_global(Vector3(sx,0,.54 if id!="ArmChair_01" else .43))
    var seat_id:String="HEARTH_SEAT_%02d"%(seat_candidates.size()+1)
@@ -97,7 +104,7 @@ func validate_seats()->int:
    assert(forward.dot((focal-at).normalized())>.45,str(["wrong facing",seat,focal]))
   var found:=false
   # Same-side approach first, then adjacent lateral access; no teleport claim.
-  for dist in [.60,.75,.90,1.05,1.20]:
+  for dist in [.55,.60,.65,.70,.75,.80,.90,1.05,1.20]:
    if found:break
    for lateral in [0.0,-.20,.20,-.40,.40,-.60,.60,-.80,.80]:
     var goal:Vector2=at+forward*dist+side*lateral
@@ -313,26 +320,26 @@ func run()->void:
  asset("blendkit_sofa_repaired",Vector3(-6.56,0,-6.02),.88,90,true)
  asset("ArmChair_01",Vector3(-3.30,0,-5.80),.85,-90,true)
  asset("gothic_coffee_table",Vector3(-4.96,0,-5.70),.90,0,true)
- asset("brass_candleholders",Vector3(-4.96,.3069,-5.70),.45)
+ asset("brass_candleholders",Vector3(-4.96,.3069*depth_scale(-5.70),-5.70),.45*depth_scale(-5.70))
  # Band 2: seating group at front left, free center and right for Dragon.
- asset("common_woven_rug",Vector3(-4.30,.006,-.76),1.78)
- asset("ArmChair_01",Vector3(-5.93,0,-.68),1.10,75,true)
- asset("gothic_coffee_table",Vector3(-4.28,0,-.62),1.13,0,true)
- asset("ArmChair_01",Vector3(-2.72,0,-.70),1.10,-75,true)
- asset("brass_candleholders",Vector3(-4.29,.3853,-.62),.55)
- asset("potted_plant_01",Vector3(-6.52,0,-3.95),.8,0,true)
+ asset("common_woven_rug",Vector3(-4.30,.006,-.15),1.78)
+ asset("ArmChair_01",Vector3(-5.93,0,-.12),1.10,75,true)
+ asset("gothic_coffee_table",Vector3(-4.28,0,-.12),1.13,0,true)
+ asset("ArmChair_01",Vector3(-2.72,0,-.12),1.10,-75,true)
+ asset("brass_candleholders",Vector3(-4.29,.3853*depth_scale(-.12),-.12),.55*depth_scale(-.12))
+ asset("potted_plant_01",Vector3(-6.52,0,-5.0),.8,0,true)
  # Owner's marked layout: two rows and one side sofa oriented toward the fire.
  # Keep the existing left conversation groups and add seven independently measured pieces.
  seat_group="hearth_view"
- asset("blendkit_sofa_repaired",Vector3(-.45,0,-4.85),.88,180,true)
- asset("blendkit_sofa_repaired",Vector3(-.45,0,-2.65),.88,180,true)
- asset("blendkit_sofa_repaired",Vector3(1.38,0,-5.65),.88,-90,true)
+ asset("blendkit_sofa_repaired",Vector3(-1.88,0,-5.40),.88,180,true)
+ asset("blendkit_sofa_repaired",Vector3(-.45,0,-2.70),.88,180,true)
+ asset("blendkit_sofa_repaired",Vector3(.20,0,-5.45),.76,-140,true)
  # Dragon group: side sofa +X, front sofa -Z, two inward angled chairs.
  seat_group="dragon_view"
- asset("blendkit_sofa_repaired",Vector3(1.38,0,-3.25),.88,90,true)
- asset("blendkit_sofa_repaired",Vector3(4.85,0,-1.55),.88,180,true)
- asset("ArmChair_01",Vector3(2.40,0,-.45),.92,145,true)
- asset("ArmChair_01",Vector3(6.45,0,-.48),.92,-160,true)
+ asset("blendkit_sofa_repaired",Vector3(1.48,0,-5.55),.78,90,true)
+ asset("blendkit_sofa_repaired",Vector3(4.85,0,-2.10),.88,180,true)
+ asset("ArmChair_01",Vector3(2.40,0,-2.25),.92,145,true)
+ asset("ArmChair_01",Vector3(6.45,0,-2.25),.92,-160,true)
  seat_group=""
  # Owner dragon: uniform scale, source proportions, rear-right nook.
  var dragon:=dragon_crop()
@@ -354,29 +361,32 @@ func run()->void:
  # Full front aisle continuous, rear lanes accessible on left and central gaps.
  for i in range(95):
   assert(clear(Vector2(-7.05+14.10*float(i)/94.0,1.15)),"front aisle blocked")
- # Latest owner layout has furniture crossing rear band centerlines.
- # Front aisle remains continuous. Test reachable pockets instead of falsely
- # claiming uninterrupted straight rear aisles through the new rows.
- var targets=[Vector2(-4.9,-2.65),Vector2(-4.6,-4.78),Vector2(-3.65,-6.72),Vector2(-.18,-6.35),Vector2(-4.28,-1.82),Vector2(-5.33,-6.57),Vector2(-5.80,-5.70),Vector2(-4.04,-5.80),Vector2(4.85,-2.65)]
+ # Clear lanes 1/3/5, with only the owner dragon nook excluded from 5.
+ for i in range(141):
+  var x:float=lerpf(-7.05,7.05,float(i)/140)
+  assert(clear(Vector2(x,-1.30)),str(["band3",x]))
+  if x<dragon.position.x-RADIUS-.015:
+   assert(clear(Vector2(x,-4.05)),str(["band5",x]))
+ var targets=[Vector2(-4.9,-1.30),Vector2(-4.6,-4.05),Vector2(-3.65,-6.72),Vector2(-1.20,-6.35),Vector2(-5.33,-6.57),Vector2(-5.80,-5.70),Vector2(-4.04,-5.80),Vector2(4.85,-1.30)]
  var route_count:=0
  for q in targets:
   assert(clear(q),str(["approach",q]))
   for e in [Vector2(-7.05,1.15),Vector2(7.05,1.15)]:
    assert(reachable(e,q),str(["unreachable",e,q]));route_count+=1
  var seat_routes:=validate_seats()
- assert(seat_candidates.size()==19 and picture_slots.size()==10)
+ assert(seat_candidates.size()==19 and picture_slots.size()==10 and seat_routes==38)
  print("HEARTH_SEAT_CONTACT_PASS seats=",seat_candidates.size()," routes=",seat_routes)
  print("DEPTH7_OWNER_LAYOUT_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
- var f=FileAccess.open("/home/user/dragon_qa/iter59_placement.json",FileAccess.WRITE)
+ var f=FileAccess.open("/home/user/dragon_qa/iter60_placement.json",FileAccess.WRITE)
  f.store_string(JSON.stringify({"bands_front_to_back":BANDS,"room_width":14.4,"dragon_bounds":[dragon.position,dragon.size],"placements":placements,"route_checks":route_count,"seat_route_checks":seat_routes,"seat_candidates":seat_candidates,"picture_slots":picture_slots},"  "));f.close()
  if DisplayServer.get_name()=="headless":
   print("HEARTH_HEADLESS_PASS");quit();return
  scale_actor("RES_07",Vector3(0.35,0,1.15))
  cam=Camera3D.new();stage.add_child(cam);cam.projection=Camera3D.PROJECTION_PERSPECTIVE;cam.fov=25.0;cam.current=true
  cam.position=Vector3(-.5,7.2,20.0);cam.look_at(Vector3(0,1.05,-3.35))
- await capture("/home/user/dragon_qa/iter59_hearth.png")
+ await capture("/home/user/dragon_qa/iter60_hearth.png")
  cam.position=Vector3(-8,11,20);cam.look_at(Vector3(0,.75,-3.35));cam.fov=27.0
- await capture("/home/user/dragon_qa/iter59_oblique.png")
+ await capture("/home/user/dragon_qa/iter60_oblique.png")
  # Technical plan, same scene, visible seven bands, not a generated drawing.
  for i in range(BANDS.size()):
   var m:=StandardMaterial3D.new();m.albedo_color=Color("#d8b078");m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -385,6 +395,6 @@ func run()->void:
   var label:=Label3D.new();label.text=str(i+1);label.font_size=45;label.modulate=Color("#fff2ce");label.pixel_size=.008;label.rotation_degrees.x=-90
   stage.add_child(label);label.position=Vector3(-7.03,.06,(BANDS[i]+BANDS[i+1])*.5)
  cam.projection=Camera3D.PROJECTION_ORTHOGONAL;cam.position=Vector3(0,22,-3.2);cam.look_at(Vector3(0,0,-3.2),Vector3(0,0,-1));cam.size=10.6
- await capture("/home/user/dragon_qa/iter59_plan.png")
+ await capture("/home/user/dragon_qa/iter60_plan.png")
  print("DEPTH7_OWNER_LAYOUT_RENDER_PASS 3")
  quit()
