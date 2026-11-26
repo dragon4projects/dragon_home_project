@@ -456,7 +456,9 @@ func _journal_accepted(event: Dictionary) -> void:
 		"event_id":str(event.get("event_id","")),
 		"truth_class":str(event.get("truth_class","")),
 		"authority":str(event.get("authority","")),
-		"provenance":str(event.get("provenance",""))
+		"provenance":str(event.get("provenance","")),
+		"visibility":str(event.get("visibility","")),
+		"event_room_id":str(event.get("room_id",""))
 	}
 	if event_type == "OBJECT_REGISTERED":
 		details["canonical_owner_id"] = str(object.get("canonical_owner_id",""))
