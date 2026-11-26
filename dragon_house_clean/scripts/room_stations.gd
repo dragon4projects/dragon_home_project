@@ -637,6 +637,15 @@ func migrate_legacy_positions(world) -> int:
 			continue
 		var claim: Dictionary=single(world,actor,room,str(actor.get("intent","")))
 		if claim.is_empty():
+			# A stationless legacy trip may have no legal destination claim.
+			# Keep its physical lift leg until the next actual landing.
+			var points:Array=actor.get("waypoints",[])
+			var idx:int=int(actor.get("waypoint_index",0))
+			var y:float=float(actor.get("visual_y",0.0))
+			if world.canonical_house_seed and phase=="travel" and idx>=0 and idx<points.size() and str(points[idx].get("kind",""))=="lift" and absf(y-roundf(y/world.FLOOR_H)*world.FLOOR_H)>0.035:
+				actor["station_replan_lift_pending"]=true
+				changed+=1
+				continue
 			# An overfilled legacy room has no vacant station. Pause/replan,
 			# rather than leaving two people at the same destination.
 			actor["phase"]="idle"
