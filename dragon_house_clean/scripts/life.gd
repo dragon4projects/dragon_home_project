@@ -166,7 +166,7 @@ func setup(p_world) -> void:
 	if world.canonical_house_seed:
 		canonical_lifts.setup(world)
 		creature_runtime.canonical_lifts=canonical_lifts
-	rng.seed = 814223
+	rng = world.decision_rng("life")
 	# A durable completed view newer than the checkpoint is already credited.
 	# Settle only its matching restored performer before rebuilding stations.
 	for actor in world.residents.values():
@@ -2546,12 +2546,16 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 		return 0
 	var affected:Dictionary={}
 	var prior:String=str(world.runtime_state.get("teea008_geometry_revision",""))
-	# The V2 furniture delta moved only the two hearth chairs. Do not cancel
-	# unrelated reading, cinema and guest activities on this known upgrade.
-	var hearth_only:bool=world.canonical_house_seed and prior.begins_with("CANONICAL_SOCIAL_INTERIOR_20261125_V1|") and revision==prior.replace("CANONICAL_SOCIAL_INTERIOR_20261125_V1|","CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH|")
+	# Known furniture-only migrations may coexist in a single older save.
+	# Invalidate only the changed room types, not every public commitment.
+	var known_revision:String=prior.replace("CANONICAL_SOCIAL_INTERIOR_20261125_V1|","CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH|").replace("|LIBRARY_GALLERY_V1|","|LIBRARY_GALLERY_V2_READING|")
+	var known_upgrade:bool=world.canonical_house_seed and prior!="" and revision==known_revision
+	var hearth_changed:bool=prior.begins_with("CANONICAL_SOCIAL_INTERIOR_20261125_V1|")
+	var library_changed:bool=prior.contains("|LIBRARY_GALLERY_V1|")
 	for room in world.rooms:
 		var key:String=candidate_navigation.key(room)
-		if key=="common/R3" or (not hearth_only and world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3","cinema/R3","music/R3","study/R3","workshop/R3","guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]):
+		var changed:bool=(hearth_changed and key=="common/R3") or (library_changed and key=="library/R3")
+		if (known_upgrade and changed) or (not known_upgrade and (key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3","cinema/R3","music/R3","study/R3","workshop/R3","guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]))):
 			affected[str(room["id"])]=true
 	var count:=0
 	if previously_initialized:
