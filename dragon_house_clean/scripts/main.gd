@@ -357,6 +357,7 @@ func _ready() -> void:
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
+	if architecture_review:print("DEPTH7_SPRITE_STATES ",asset_banks.install_depth7_intake())
 	asset_banks.begin_validation_pass()
 	world.merge_zna_media_previews()
 	world.load_private_cinema_catalog()
@@ -374,6 +375,7 @@ func _ready() -> void:
 		print("TEEA008_LIVE_START navigation")
 		life.candidate_navigation=TEEA008NavigationScript.new()
 		life.candidate_navigation.configure(teea008_review.layouts)
+		if architecture_review:print("DEPTH7_POSE_CONTACTS ",life.candidate_navigation.install_depth7_pose_intake())
 		if architecture_review and not legacy_depth_layouts.is_empty():
 			var old_nav=TEEA008NavigationScript.new()
 			old_nav.configure(legacy_depth_layouts)
@@ -1999,9 +2001,10 @@ func update_creatures(delta: float = 0.0) -> void:
 			# No floor-walking cycle for a floating entity. Use directional idle
 			# art while its horizontal travel remains owned by simulation.
 			if bank_id=="npc_ai_magic_sphere":
-				state="IDLE_LEFT" if moving_left else "IDLE_RIGHT"
+				var phase:String=str(creature.get("phase","idle"))
+				state=("HOVER_MOVE_W" if moving_left else "HOVER_MOVE_E") if phase=="travel" else ("HOVER_REST" if phase=="perform" and str(creature.get("intent","")) in ["REST","SLEEP"] else "HOVER_IDLE")
 				if asset_banks.creature_frame_count(bank_id,state)==0:
-					state="IDLE_RIGHT"
+					state="IDLE_LEFT" if moving_left else "IDLE_RIGHT"
 			var anim: Dictionary = creature_animations.get(creature_id,
 				{"state":state,"frame":0,"elapsed":0.0})
 			if str(anim.get("state","")) != state:
@@ -2016,6 +2019,11 @@ func update_creatures(delta: float = 0.0) -> void:
 			var tex := asset_banks.creature_texture(bank_id,state,int(anim.get("frame",0)))
 			if tex != null:
 				body.texture = tex
+				if bank_id=="npc_ai_magic_sphere" and state.begins_with("HOVER_"):
+					body.pixel_size=_creature_canvas_width(bank_id)/maxf(1.0,float(tex.get_width()))
+					var hover_anchor:Array=asset_banks._creature_entry(bank_id,state).get("hover_anchor_px",[])
+					if hover_anchor.size()==2:
+						body.position.y=(float(hover_anchor[1])-float(tex.get_height())*.5)*body.pixel_size
 			creature_animations[creature_id] = anim
 		var label: Label3D = creature_labels.get(creature_id)
 		if label != null:
@@ -2426,6 +2434,12 @@ func _active_station_render_contact(actor:Dictionary)->Dictionary:
 	var contact:Dictionary=actor.get("station_contact",{})
 	if contact.is_empty():
 		return {}
+	if Depth7Space.enabled_for(world.room_by_id(room_id)) and life.candidate_navigation!=null:
+		var live_room:Dictionary=world.room_by_id(room_id)
+		var spots:Array=life.candidate_navigation.candidate_spots(live_room).filter(func(spot):return str(spot["id"])==str(actor.get("station_anchor_id","")))
+		if spots.size()==1 and str(contact.get("state",""))!="READ" and str(contact.get("state",""))!="LIE_SIDE_CURLED":
+			var rotated:Dictionary=life.candidate_navigation.pose_contact(actor,spots[0],str(actor.get("intent","")),effective_camera_yaw())
+			if not rotated.is_empty():contact=rotated
 	var state:String=str(contact.get("state",""))
 	var wardrobe:String=str(actor.get("visual_wardrobe","HOME"))
 	var calibrated_wardrobe:String=str(actor.get("teea008_pose_wardrobe",wardrobe))

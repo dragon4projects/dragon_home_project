@@ -63,6 +63,51 @@ func initialize(path: String = REGISTRY_PATH) -> bool:
 	manifest = parsed
 	return true
 
+# Add reviewed intake states without changing bank approval or roster policy.
+# Contact-dependent frames still require independent pose/hand calibration.
+func install_depth7_intake()->int:
+	var f:=FileAccess.open("res://data/asset_proposals/DH_SPRITE_20261126_INTAKE/registry_delta.json",FileAccess.READ)
+	if f==null:return 0
+	var doc=JSON.parse_string(f.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY:return 0
+	var m:=FileAccess.open("res://data/asset_proposals/DH_SPRITE_20261126_INTAKE/frames.json",FileAccess.READ)
+	if m==null:return 0
+	var records=JSON.parse_string(m.get_as_text())
+	if typeof(records)!=TYPE_ARRAY:return 0
+	var hashes:Dictionary={}
+	for rec in records:hashes[str(rec["path"])]=str(rec["sha256"])
+	var count:=0
+	for u in doc.get("entries",[]):
+		var a:String=str(u.get("actor_id",""))
+		var state:String=str(u.get("state",""))
+		var w=u.get("wardrobe")
+		var states:Dictionary={}
+		if w==null:
+			if a!="npc_ai_magic_sphere" or not state.begins_with("HOVER_"):continue
+			states=manifest.get("creatures",{}).get(a,{}).get("states",{})
+		else:
+			if not ((a in ["RES_04","RES_08"] and state.begins_with("SIT_")) or (a=="RES_07" and state in ["READ","IDLE_NW_CORRECTED"])):continue
+			states=manifest.get("residents",{}).get(a,{}).get("wardrobes",{}).get(str(w),{}).get("states",{})
+		if states.is_empty() or states.get(state)!=u.get("expected_previous_entry"):continue
+		var entry:Dictionary=u.get("entry",{})
+		var valid:bool=entry.get("status","")=="PASS" and entry.get("frames",[]).size()>0
+		for raw in entry.get("frames",[]):
+			var path:String=_normalize_frame(raw)
+			var safe:bool=_safe_creature_frame_path(a,path) if w==null else _safe_frame_path(a,str(w),path)
+			if not safe or not hashes.has(path) or not _real_image_bytes(path):
+				valid=false;break
+			if FileAccess.file_exists("res://"+path):
+				if FileAccess.get_sha256("res://"+path)!=hashes[path]:valid=false;break
+			else:
+				var proof_file:=FileAccess.open("res://data/integration_candidates/TEEA008_POSE_EXPORT_PROOF.json",FileAccess.READ)
+				if proof_file==null:valid=false;break
+				var proof=JSON.parse_string(proof_file.get_as_text())
+				if typeof(proof)!=TYPE_DICTIONARY or str(proof.get("frames",{}).get("res://"+path,""))!=hashes[path]:valid=false;break
+		if valid:
+			states[state]=entry.duplicate(true)
+			count+=1
+	return count
+
 func _root(resident_id: String, wardrobe: String) -> String:
 	return "assets/residents/%s/wardrobes/%s/" % [resident_id,wardrobe]
 
@@ -98,7 +143,7 @@ func _entry(resident_id: String, wardrobe: String, state: String) -> Dictionary:
 	# Keep original bytes/provenance; select by visually audited direction.
 	# No exact rear-left frame exists: prefer the true rear to a front view.
 	if resident_id=="RES_07" and wardrobe=="HOME" and str(actor.get("appearance_profile",""))=="EXISTING_EVMOCHKA":
-		var corrected:Dictionary={"IDLE_N":"IDLE_SW","IDLE_S":"IDLE_NE","IDLE_E":"IDLE_NW","IDLE_W":"IDLE_SE","IDLE_NE":"IDLE_W","IDLE_NW":"IDLE_SW","IDLE_SW":"IDLE_N","IDLE_SE":"IDLE_E"}
+		var corrected:Dictionary={"IDLE_N":"IDLE_SW","IDLE_S":"IDLE_NE","IDLE_E":"IDLE_NW","IDLE_W":"IDLE_SE","IDLE_NE":"IDLE_W","IDLE_NW":"IDLE_NW_CORRECTED" if states.has("IDLE_NW_CORRECTED") else "IDLE_SW","IDLE_SW":"IDLE_N","IDLE_SE":"IDLE_E"}
 		state=str(corrected.get(state,state))
 	return states.get(state,{})
 

@@ -691,7 +691,7 @@ func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary
 		if not compatible:return {}
 		claim["pose_hint"]="VIEW"
 		return claim
-	if intent in ["REST","SLEEP","READ_BOOK","TALK_PAIR","LISTEN_MUSIC"]:
+	if intent in ["REST","SLEEP","READ_BOOK","TALK_PAIR","LISTEN_MUSIC","WATCH_FIRE"]:
 		var contact:Dictionary={}
 		if intent=="SLEEP" or kind=="seat" or (intent=="REST" and kind=="floor_rest"):
 			contact=candidate_navigation.pose_contact(actor,spot,intent)

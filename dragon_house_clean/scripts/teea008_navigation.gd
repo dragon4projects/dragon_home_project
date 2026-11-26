@@ -64,6 +64,23 @@ func configure(rows:Dictionary)->void:
 				if not validated.is_empty() and record.get("path","")==validated.get("path","") and record.get("sha256","")==validated.get("sha256","") and canvas==validated.get("canvas",[]) and point.size()==2 and canvas.size()==2 and float(point[0])>=0 and float(point[1])>=0 and float(point[0])<float(canvas[0]) and float(point[1])<float(canvas[1]):
 					hand_profiles[id]=record
 
+func install_depth7_pose_intake()->int:
+	var f:=FileAccess.open("res://data/asset_proposals/DH_SPRITE_20261126_INTAKE/pose_contacts.json",FileAccess.READ)
+	if f==null:return 0
+	var doc=JSON.parse_string(f.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY:return 0
+	var count:=0
+	for id in doc.get("profiles",{}):
+		var incoming:Dictionary=doc["profiles"][id]
+		var existing:Dictionary=pose_profiles.get(id,{})
+		if existing.get("wardrobe")!=incoming.get("wardrobe") or existing.get("appearance_profile")!=incoming.get("appearance_profile"):continue
+		for state in incoming.get("states",{}):
+			var p:Dictionary=incoming["states"][state]
+			if _pose_source_valid("res://"+str(p.get("path","")),p):
+				existing["states"][state]=p.duplicate(true)
+				count+=1
+	return count
+
 func hand_contact(actor:Dictionary,state:String,frame:int)->Dictionary:
 	if state!="IDLE_S" or frame!=0:return {}
 	var record:Dictionary=hand_profiles.get(str(actor.get("id","")),{})
@@ -356,7 +373,7 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 			elif kind=="seat":
 				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0),"front_z":float(item["bounds_max_m"][2]),"depth7_measured":bool(row.get("depth7_measured",false))}
 				var facing:Array=spot["candidate_contact"]["facing"]
-				if facing.size()==3 and (float(facing[2])>0.5 or (DEPTH7.enabled_for(room) and float(facing[2])< -0.5) or (str(item.get("asset_id",""))=="owner_theatre_seat_pair" and float(facing[0])>.9)):
+				if facing.size()==3 and (DEPTH7.enabled_for(room) or float(facing[2])>0.5 or (str(item.get("asset_id",""))=="owner_theatre_seat_pair" and float(facing[0])>.9)):
 					spot["kind"]="seat"
 					spot["pose_hint"]="RELAXED_SIT"
 				if str(item.get("asset_id",""))=="vintage_day_bed":
@@ -471,14 +488,21 @@ func pose_profile(actor:Dictionary,state:String)->Dictionary:
 		return {}
 	return profile.get("states",{}).get(state,{})
 
-func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
+func pose_contact(actor:Dictionary,spot:Dictionary,intent:String,view_yaw:float=0.0)->Dictionary:
 	var raw:Dictionary=spot.get("candidate_contact",{})
 	if raw.is_empty():
 		return {}
 	var state: String="RELAXED_SIT"
 	var direction:Array=raw.get("facing",[])
-	if bool(raw.get("depth7_measured",false)) and direction.size()==3 and float(direction[2])< -0.5:
-		state="SIT_N"
+	var measured:bool=bool(raw.get("depth7_measured",false))
+	var directional:String=""
+	if measured and direction.size()==3:
+		var f:=Vector2(float(direction[0]),float(direction[2]))
+		var angle:float=atan2(f.dot(Vector2(cos(view_yaw),-sin(view_yaw))),f.dot(Vector2(sin(view_yaw),cos(view_yaw))))
+		directional=["RELAXED_SIT","SIT_SE","SIT_E","SIT_NE","SIT_N","SIT_NW","SIT_W","SIT_SW"][posmod(roundi(angle/(PI/4.0)),8)]
+		state=directional
+		if pose_profile(actor,state).is_empty() and float(direction[2])>.5 and state!="SIT_N":
+			state="RELAXED_SIT"
 	var anchor:Array=[]
 	var exclusive:=false
 	var kind:String=str(spot.get("kind",""))
@@ -490,7 +514,8 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 		state="READ"
 		anchor=raw.get("pelvis",[])
 	elif intent=="WATCH_FILM":
-		state="SIT_E_OCCLUDED" if str(spot.get("candidate_asset_id",""))=="owner_theatre_seat_pair" else "SIT_N"
+		if measured and directional!="" and not pose_profile(actor,directional).is_empty():state=directional
+		else:state="SIT_E_OCCLUDED" if str(spot.get("candidate_asset_id",""))=="owner_theatre_seat_pair" else "SIT_N"
 		anchor=raw.get("pelvis",[])
 	else:
 		anchor=raw.get("pelvis",[])
@@ -514,7 +539,9 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 		if state=="SIT_E_OCCLUDED":
 			if float(facing[0])<0.9:return {}
 			return {"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":false,"book_baked":false,"evidence":"OCCLUDED_SIDE_CROP_NOT_FULL_BODY"}
-		if state=="SIT_N":
+		if measured and state.begins_with("SIT_") and state!="SIT_E_OCCLUDED":
+			if state!=directional:return {}
+		elif state=="SIT_N":
 			if float(facing[2])> -0.5:return {}
 		elif float(facing[2])<0.5:return {}
 		var feet:Array=raw.get("feet",[])
@@ -524,7 +551,7 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 		if absf(foot_gap)>0.15 or float(profile["contact_span_px"])*ratio>float(raw.get("width_m",0.0))+0.06:
 			return {}
 	var result:Dictionary={"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":exclusive,"book_baked":bool(profile.get("book_baked",false)),"evidence":"VISUAL_ESTIMATE_REVIEW_ONLY"}
-	if state in ["RELAXED_SIT","READ"] and raw.has("front_z"):
+	if state in ["RELAXED_SIT","READ","SIT_SE","SIT_SW"] and raw.has("front_z"):
 		result["seat_front_z"]=float(raw["front_z"])
 	return result
 

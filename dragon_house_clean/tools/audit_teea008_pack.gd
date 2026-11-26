@@ -21,7 +21,19 @@ func run()->void:
 	assert(count==243,str(count))
 	var proof:=read_dict("res://data/integration_candidates/TEEA008_POSE_EXPORT_PROOF.json")
 	var poses:=read_dict("res://data/teea008_pose_contacts_review.json")
-	assert(proof.get("frames",{}).size()==127)
+	var intake_path:="res://data/asset_proposals/DH_SPRITE_20261126_INTAKE/frames.json"
+	var intake_count:=0
+	if FileAccess.file_exists(intake_path):
+		var intake_file:=FileAccess.open(intake_path,FileAccess.READ)
+		var records=JSON.parse_string(intake_file.get_as_text())
+		assert(typeof(records)==TYPE_ARRAY and records.size()==42)
+		for rec in records:
+			var p:String="res://"+str(rec["path"])
+			assert(str(proof["frames"].get(p,""))==str(rec["sha256"]),p)
+			var tex:=ResourceLoader.load(p,"Texture2D") as Texture2D
+			assert(tex!=null and tex.get_width()==int(rec["canvas"][0]) and tex.get_height()==int(rec["canvas"][1]),p)
+			intake_count+=1
+	assert(proof.get("frames",{}).size()==127+intake_count)
 	var verified:=0
 	for profile in poses["profiles"].values():
 		for entry in profile["states"].values():
