@@ -417,6 +417,10 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 			display_cache[cache_key]=p
 		if segment_clear(room,p,p) and absf(p.x)<float(room["size_modules"])*2.4-0.18:
 			_add_spot(out,{"id":d["id"],"offset":p,"kind":"standing","furniture_id":"DISPLAY_WALL","pose_hint":"VIEW","approach_z":p.y},cap,0.60)
+	if row.has("service_cups"):
+		for slot in cup_slots(room):
+			var p:Vector2=slot.approach
+			_add_spot(out,{"id":slot.id,"offset":p,"kind":"standing","furniture_id":slot.furniture_id,"pose_hint":"IDLE_S","approach_z":p.y,"cup_slot_id":slot.id},cap,0.60)
 	for item in row.get("instances",[]):
 		for station in item.get("station_candidates",[]):
 			var raw:Array=station.get("room_approach_xz",[])
@@ -635,9 +639,16 @@ func cup_slots(room:Dictionary)->Array:
 	if cup_slot_cache.has(k):
 		return cup_slot_cache[k]
 	var out:Array=[]
+	var row:Dictionary=layouts.get(k,{})
+	if row.has("service_cups"):
+		for raw in row.service_cups:
+			var slot:Dictionary=raw.duplicate(true)
+			slot["approach"]=Vector2(float(raw.approach[0]),float(raw.approach[1]))
+			if clear(room,slot.approach):out.append(slot)
+		cup_slot_cache[k]=out
+		return out
 	if not str(room.get("type","")) in ["common","rest","kitchen"]:
 		return out
-	var row:Dictionary=layouts.get(k,{})
 	var by_id:Dictionary={}
 	for item in row.get("instances",[]):
 		by_id[str(item["instance_id"])]=item

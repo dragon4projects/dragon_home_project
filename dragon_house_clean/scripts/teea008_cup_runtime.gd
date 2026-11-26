@@ -14,13 +14,23 @@ func setup(model,navigation)->void:
 func register_review_mugs()->int:
 	var rooms:Array=[]
 	if world.canonical_house_seed:
-		rooms=world.matching_rooms(["common","rest","kitchen"])
+		rooms=world.matching_rooms(["common","rest","kitchen","library","artifact","study","workshop","music","cinema"])
 	else:
 		rooms=[world.get_room(-2,0)]
 	var added:=0
 	for room in rooms:
 		if room.is_empty():continue
 		var row:Dictionary=nav.layouts.get(nav.key(room),{})
+		if row.has("service_cups"):
+			for slot in nav.cup_slots(room):
+				var id:String=str(slot.object_id)
+				if not world.physical_object(id).is_empty():continue
+				var pos:Array=slot.xyz
+				if not world.housekeeping_slot_free({},str(room.id),[pos[0],pos[2]],str(slot.id)):continue
+				var meta:Dictionary={"asset_id":slot.asset,"viewer_category":"cups","object_class":"display_object","home_anchor":[pos[0],pos[2]],"display_world_height":.105,"description":"Чашка общего пользования; измеренная опора.","reset_eligible":true}
+				if world.register_physical_object(id,"Красная чашка" if str(slot.asset).ends_with("_red") else "Синяя чашка","",str(room.id),true,true,false,false,true,meta):added+=1
+			continue
+		if not str(room.get("type","")) in ["common","rest","kitchen"]:continue
 		for item in row.get("instances",[]):
 			var asset:String=str(item.get("asset_id",""))
 			if not asset in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:continue
@@ -117,6 +127,14 @@ func service_sources(actor:Dictionary,room:Dictionary)->Array:
 			var sid:String=str(other.get("drink_service_id",""))
 			if sid!="":occupied[sid]=true
 	var row:Dictionary=nav.layouts.get(nav.key(room),{})
+	if row.has("service_sources"):
+		for raw in row.service_sources:
+			if occupied.has(raw.id):continue
+			var p:=Vector2(float(raw.approach[0]),float(raw.approach[1]))
+			var half:float=float(room.get("size_modules",1))*2.4
+			if nav.clear(room,p) and not nav.path(room,Vector2(-half+.08,1.5),p).is_empty() and not nav.path(room,Vector2(half-.08,1.5),p).is_empty():
+				result.append({"id":raw.id,"type":raw.type,"approach":p})
+		return result
 	var items:Dictionary={}
 	for item in row.get("instances",[]):items[str(item["instance_id"])]=item
 	for item in row.get("instances",[]):

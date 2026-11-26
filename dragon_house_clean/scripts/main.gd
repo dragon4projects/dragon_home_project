@@ -9,6 +9,7 @@ const DenseV2Runtime=preload("res://scripts/dense_v2_runtime.gd")
 var dense_v2=DenseV2Runtime.new()
 var dense_v2_qa:bool=false
 var dense_artifact_qa:bool=false
+var dense_services_qa:bool=false
 const DenseArtifactWorld=preload("res://scripts/dense_v2_artifact_world.gd")
 const DenseArtifactImport=preload("res://scripts/dense_v2_artifact_import.gd")
 var dense_artifact_empty_nodes:Dictionary={}
@@ -335,8 +336,10 @@ func _ready() -> void:
 	if dense_v2_qa:
 		# QA state is deliberately independent of the owner's existing world.
 		world.save_path="user://dragon_house_dense_v2_qa.json"
-		dense_artifact_qa=OS.get_environment("DRAGON_DENSE_ARTIFACT_QA")=="1"
+		dense_services_qa=OS.get_environment("DRAGON_DENSE_SERVICES_QA")=="1"
+		dense_artifact_qa=dense_services_qa or OS.get_environment("DRAGON_DENSE_ARTIFACT_QA")=="1"
 		if dense_artifact_qa:world.save_path="user://dragon_house_dense_artifact_qa_v1.json"
+		if dense_services_qa:world.save_path="user://dragon_house_dense_services_qa_v1.json"
 	if not world.load_or_seed():
 		_show_recovery_blocked()
 		return
@@ -374,7 +377,7 @@ func _ready() -> void:
 		for room in world.rooms:
 			if str(room.get("type","")) in ["private","lift"]:room["depth7"]=true
 	if dense_v2_qa:
-		if not dense_v2.install(world,teea008_review.layouts):
+		if not dense_v2.install(world,teea008_review.layouts,dense_services_qa):
 			push_error("DENSE_V2_QA layout mapping rejected; no legacy-save fallback")
 			_show_recovery_blocked()
 			return
@@ -2400,7 +2403,7 @@ func update_physical_objects() -> void:
 					var inst:Array=slot["instance_xyz"]
 					var scale_value:float=depth_scale_for_room(room_id,float(inst[2]))
 					anchor.position=Vector3(room_center.x+float(pos[0]),room_center.y+float(pos[1]),float(pos[2])) if Depth7Space.enabled_for(room) else Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
-					anchor.scale=Vector3.ONE*scale_value
+					anchor.scale=Vector3.ONE*float(slot.get("scale",scale_value))
 
 	_refresh_dense_artifact_holders()
 

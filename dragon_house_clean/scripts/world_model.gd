@@ -688,7 +688,12 @@ func housekeeping_target(object:Dictionary)->Dictionary:
 		if home_ok:return {"room_id":home,"anchor":anchor,"support_id":support}
 	# Do not invent furniture or a free position if measured supports are absent.
 	if housekeeping_navigation==null or str(object.get("display_mode",""))=="wall" or not category in ["artifacts","cups"]:return {}
-	var candidates:Array=matching_rooms(["common","rest","kitchen"] if category=="cups" else ["artifact"])
+	var cup_types:Array=["common","rest","kitchen"]
+	if category=="cups" and housekeeping_navigation!=null:
+		for candidate_room in rooms:
+			var kind:String=str(candidate_room.get("type",""))
+			if not cup_types.has(kind) and housekeeping_navigation.layouts.get(housekeeping_navigation.key(candidate_room),{}).has("service_cups"):cup_types.append(kind)
+	var candidates:Array=matching_rooms(cup_types if category=="cups" else ["artifact"])
 	for room in candidates:
 		if not public_cutaway_allowed(room):continue
 		var slots:Array=housekeeping_navigation.cup_slots(room) if category=="cups" else housekeeping_navigation.artifact_slots(room)

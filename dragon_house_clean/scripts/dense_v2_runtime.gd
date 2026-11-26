@@ -26,8 +26,9 @@ var report:Dictionary={}
 var route_repairs:Array=[]
 var withheld_stations:Array=[]
 var review=REVIEW.new()
+const SERVICES=preload("res://scripts/dense_v2_service_overlay.gd")
 
-func install(world,layouts:Dictionary)->bool:
+func install(world,layouts:Dictionary,enable_services:bool=false)->bool:
  var data:Dictionary={}
  var rooms:Dictionary={}
  var expected_source:String=FileAccess.get_sha256(REVIEW.SOURCE)
@@ -45,6 +46,11 @@ func install(world,layouts:Dictionary)->bool:
    rooms[k]=part["rooms"][k]
  if rooms.size()!=19:return false
  data["rooms"]=rooms
+ var overlay=SERVICES.new()
+ if enable_services:
+  if not overlay.initialize():return false
+  for k in overlay.KEYS:
+   if not rooms.has(k) or not overlay.apply(rooms[k]):return false
  var prospective:Dictionary={}
  var planned_layouts:Dictionary={}
  for k in ROOMS:
@@ -55,6 +61,9 @@ func install(world,layouts:Dictionary)->bool:
   var compiled:Dictionary=data.get("rooms",{}).get(k,{})
   if compiled.is_empty() or not compiled.get("issues",[]).is_empty():return false
   var row:Dictionary=review.navigation_row(compiled,spec[2],spec[3])
+  if compiled.has("service_sources"):
+   row["service_sources"]=compiled.service_sources
+   row["service_cups"]=compiled.service_cups
   prospective[str(room.id)]={"compiled":compiled,"variant":row.variant_id}
   planned_layouts[row.variant_id]=row
  if prospective.is_empty():return false

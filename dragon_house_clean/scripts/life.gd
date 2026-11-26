@@ -533,6 +533,10 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 			types=types.duplicate()
 			if not types.has("kitchen"):types.append("kitchen")
 			if intent=="GET_COFFEE" and not types.has("rest"):types.append("rest")
+			if intent=="GET_COFFEE" and candidate_navigation!=null:
+				for public_room in world.rooms:
+					var kind:String=str(public_room.get("type",""))
+					if not types.has(kind) and candidate_navigation.layouts.get(candidate_navigation.key(public_room),{}).has("service_sources"):types.append(kind)
 		if candidate_navigation!=null and intent in ["REST","SLEEP"]:
 			types=types.duplicate()
 			if not types.has("common"):
