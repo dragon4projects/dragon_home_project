@@ -7,9 +7,12 @@ const EPS:=0.00001
 const PLANE_TOL:=0.012
 const STEP:=0.025
 const MAX_TRIANGLES:=200000
+const BIN:=.12
+const MAX_BIN_REFS:=1200000
 var cache:Dictionary={}
 var audit:Dictionary={}
-var probe_error:String=""
+var review=REVIEW.new()
+const STATIC_DECOR=["ceramic_vase_01","blendkit_vintage_brass_oil_lamp","vintage_oil_lamp","potted_plant_04","desk_lamp_arm_01","blendkit_beaker_flask","blendkit_kitchen_set_6_glass_conteiner_2"]
 
 func _initialize()->void:
  call_deferred("_run")
@@ -26,7 +29,7 @@ func _collect(node:Node,xf:Transform3D,triangles:PackedVector3Array)->bool:
   if not _collect(child,xf,triangles):return false
  return true
 
-func _geometry(p:Dictionary)->PackedVector3Array:
+func _geometry(p:Dictionary)->Dictionary:
  var key:String=str(p.path)+"|"+str(p.scale)+"|"+str(p.yaw)
  if not cache.has(key):
   var scene:=ResourceLoader.load(str(p.path),"PackedScene") as PackedScene
@@ -36,7 +39,7 @@ func _geometry(p:Dictionary)->PackedVector3Array:
    var xf:=Transform3D(Basis(Vector3.UP,deg_to_rad(float(p.yaw))).scaled(Vector3.ONE*float(p.scale)),Vector3.ZERO)
    if not _collect(root,xf,triangles):triangles.clear()
    root.free()
-  cache[key]=triangles
+  cache[key]=_index(triangles)
  return cache[key]
 
 func _v(a:Array)->Vector3:return Vector3(float(a[0]),float(a[1]),float(a[2]))
@@ -47,11 +50,34 @@ func _box(p:Dictionary)->AABB:
 
 # Each column intersects actual imported triangles, not merged mesh AABBs.
 # A projected vertical triangle has no unique intersection with this ray.
-# Such triangles are covered conservatively by neighbouring footprint
-# probes, but the result is a sampled candidate, never clearance certification.
-func _hits(tris:PackedVector3Array,q:Vector2)->Array:
- var hits:Array=[]
+# Vertical dividers are checked separately for prop candidates.
+# Sampled support alone is never clearance certification.
+func _index(tris:PackedVector3Array)->Dictionary:
+ var bins:Dictionary={}
+ var refs:=0
  for i in range(0,tris.size()-2,3):
+  var a:=tris[i];var b:=tris[i+1];var c:=tris[i+2]
+  if absf(Vector2(b.x-a.x,b.z-a.z).cross(Vector2(c.x-a.x,c.z-a.z)))<EPS:continue
+  var x0:=floori(minf(a.x,minf(b.x,c.x))/BIN)
+  var x1:=floori(maxf(a.x,maxf(b.x,c.x))/BIN)
+  var z0:=floori(minf(a.z,minf(b.z,c.z))/BIN)
+  var z1:=floori(maxf(a.z,maxf(b.z,c.z))/BIN)
+  refs+=(x1-x0+1)*(z1-z0+1)
+  if refs>MAX_BIN_REFS:return {}
+  for x in range(x0,x1+1):
+   for z in range(z0,z1+1):
+    var key:=Vector2i(x,z)
+    if not bins.has(key):bins[key]=[]
+    bins[key].append(i)
+ if bins.is_empty():return {}
+ return {"triangles":tris,"bins":bins}
+
+func _hits(geometry:Dictionary,q:Vector2)->Array:
+ var hits:Array=[]
+ if geometry.is_empty():return hits
+ var tris:PackedVector3Array=geometry.triangles
+ var key:=Vector2i(floori(q.x/BIN),floori(q.y/BIN))
+ for i in geometry.bins.get(key,[]):
   var a:=tris[i];var b:=tris[i+1];var c:=tris[i+2]
   var u:=Vector2(b.x-a.x,b.z-a.z)
   var v:=Vector2(c.x-a.x,c.z-a.z)
@@ -62,7 +88,7 @@ func _hits(tris:PackedVector3Array,q:Vector2)->Array:
   var s:=u.cross(w)/det
   if t< -EPS or s< -EPS or t+s>1.0+EPS:continue
   var normal:Vector3=(b-a).cross(c-a).normalized()
-  hits.append({"y":a.y+t*(b.y-a.y)+s*(c.y-a.y),"flat":absf(normal.y)>=.995})
+  hits.append({"y":a.y+t*(b.y-a.y)+s*(c.y-a.y),"flat":normal.y<=-.995})
  hits.sort_custom(func(a,b):return a.y<b.y)
  return hits
 
@@ -76,7 +102,7 @@ func _column_at(hits:Array,y:float,height:float)->bool:
 
 # Sample the full footprint including edges. Using only the centre lets a
 # mug balance on a rail or a large cube bridge a hole between shelf bays.
-func _probe(tris:PackedVector3Array,center:Vector3,size:Vector3)->bool:
+func _probe(tris:Dictionary,center:Vector3,size:Vector3)->bool:
  if tris.is_empty() or not center.is_finite() or not size.is_finite() or minf(size.x,minf(size.y,size.z))<=0:return false
  var nx:=maxi(2,ceili(size.x/STEP))
  var nz:=maxi(2,ceili(size.z/STEP))
@@ -94,8 +120,9 @@ func _quad(y:float,half:float)->PackedVector3Array:
  return PackedVector3Array([a,b,c,a,c,d])
 
 func _self_test()->bool:
- var shelf:=_quad(0.4,.5)
- shelf.append_array(_quad(.9,.5))
+ var raw:=_quad(0.4,.5)
+ raw.append_array(_quad(.9,.5))
+ var shelf:=_index(raw)
  if not _probe(shelf,Vector3(0,.4,0),Vector3(.2,.3,.2)):return false
  if _probe(shelf,Vector3(0,.4,0),Vector3(.2,.6,.2)):return false
  if _probe(shelf,Vector3(.48,.4,0),Vector3(.2,.3,.2)):return false
@@ -104,7 +131,7 @@ func _self_test()->bool:
  return true
 
 func _audit_room(room:Dictionary,source:Dictionary)->Dictionary:
- var result:Dictionary={"slots":[],"pending_hosts":[]}
+ var result:Dictionary={"slots":[],"pending_hosts":[],"decor_candidates":[]}
  var by_id:Dictionary={}
  var known:Dictionary={}
  for p in room.placements:
@@ -156,11 +183,72 @@ func _audit_room(room:Dictionary,source:Dictionary)->Dictionary:
  for id in known:
   if not by_id.has(id):
    result.pending_hosts.append({"id":id,"unresolved_ids":known[id],"status":"HOST_ABSENT","sampled_surfaces":[]})
+ result.decor_candidates=_decor_candidates(room,source,result.pending_hosts,by_id)
  return result
+
+# Conservative full triangle AABB check above the contact tolerance.
+# Includes vertical dividers omitted by the vertical ray index. False
+# rejections are acceptable in this preflight; do not activate a candidate.
+func _host_clear(geometry:Dictionary,box:AABB)->bool:
+ var tris:PackedVector3Array=geometry.triangles
+ var interior:=AABB(box.position+Vector3.UP*PLANE_TOL,box.size-Vector3.UP*PLANE_TOL)
+ for i in range(0,tris.size()-2,3):
+  var a:=tris[i];var b:=tris[i+1];var c:=tris[i+2]
+  var lo:=a.min(b).min(c)
+  var hi:=a.max(b).max(c)
+  if AABB(lo,hi-lo+Vector3.ONE*EPS).intersects(interior):return false
+ return true
+
+func _decor_candidates(room:Dictionary,source:Dictionary,hosts:Array,by_id:Dictionary)->Array:
+ var proposals:Array=[]
+ var occupied:Array=[]
+ for p in room.placements:
+  if p.get("fits",false) and p.has("bounds_min"):occupied.append({"id":p.id,"box":_box(p)})
+ # Reserve the full registered functional footprint, even unqualified
+ # slots, so later book/cup/artifact migration is not preempted by decor.
+ for host in room.placements:
+  for slot in host.get("support_slots",[]):
+   if slot.get("room_xyz",[]).size()!=3 or slot.get("max_dimensions_m",[]).size()!=3:continue
+   var size:=_v(slot.max_dimensions_m)
+   if absf(fposmod(float(host.yaw),180.0)-90.0)<.01:size=Vector3(size.z,size.y,size.x)
+   if minf(size.x,minf(size.y,size.z))<=0:continue
+   var at:=_v(slot.room_xyz)
+   occupied.append({"id":str(slot.room_slot_id),"box":AABB(at-Vector3(size.x*.5,0,size.z*.5),size)})
+ for h in hosts:
+  if h.sampled_surfaces.is_empty():continue
+  var host:Dictionary=by_id[h.id]
+  var geometry:=_geometry(host)
+  var pivot:=_v(host.pivot)
+  for id in h.unresolved_ids:
+   var item:Dictionary=source.get(id,{})
+   if item.is_empty():continue
+   var model:Dictionary=review.index.models.get(str(int(item.catalog)),{})
+   if not model.get("id","") in STATIC_DECOR:continue
+   var yaw:float=float(host.yaw)
+   var measurement:Dictionary=review.measured_bounds(model.path,yaw)
+   if measurement.is_empty():continue
+   var b:AABB=measurement.bounds
+   var scale:float=float(item.depth_scale)
+   var size:Vector3=b.size*scale
+   # No arbitrary shrink-to-fit: keep authored depth scale.
+   for at_raw in h.sampled_surfaces:
+    var at:=_v(at_raw)
+    var box:=AABB(at-Vector3(size.x*.5,0,size.z*.5),size)
+    if box.end.y>3.0:continue
+    if occupied.any(func(o):return o.id!=host.id and box.grow(.015).intersects(o.box)):continue
+    if not _probe(geometry,at-pivot,size):continue
+    if not _host_clear(geometry,AABB(box.position-pivot,box.size)):continue
+    var center:=b.get_center()
+    var prop_pivot:=at-Vector3(center.x,b.position.y,center.z)*scale
+    proposals.append({"id":id,"asset":model.id,"path":model.path,"host":host.id,"yaw":yaw,"scale":scale,"pivot":_a(prop_pivot),"bounds_min":_a(box.position),"bounds_max":_a(box.end),"status":"STATIC_DECOR_PREFLIGHT_ONLY"})
+    occupied.append({"id":id,"box":box})
+    break
+ return proposals
 
 func _run()->void:
  if not _self_test():
   push_error("Synthetic shelf geometry regression failed");quit(1);return
+ if not review.initialize():quit(8);return
  var rooms:Dictionary={}
  var expected:=FileAccess.get_sha256(REVIEW.SOURCE)
  for i in range(3):
@@ -176,11 +264,14 @@ func _run()->void:
  var keys:Array=["L1_gallery","L0_workshop","L1_study","L2_library","L0_reading"]
  for key in keys:
   if not rooms.has(key):quit(6);return
-  audit[key]=_audit_room(rooms[key],{})
-  print("SUPPORT_AUDIT ",key," slots=",audit[key].slots.size()," pending_hosts=",audit[key].pending_hosts.size())
+  var source:Dictionary={}
+  for item in review.load_json(key+".json"):source[item.instance]=item
+  audit[key]=_audit_room(rooms[key],source)
+  print("SUPPORT_AUDIT ",key," slots=",audit[key].slots.size()," pending_hosts=",audit[key].pending_hosts.size()," static_decor_candidates=",audit[key].decor_candidates.size())
  var f:=FileAccess.open("user://dense_v2_support_surface_audit.json",FileAccess.WRITE)
  if f==null:quit(7);return
  f.store_string(JSON.stringify({"schema":1,"source_sha256":expected,"status":"SAMPLED_GEOMETRY_CANDIDATES_ONLY","rooms":audit},"  "))
  f.close()
  print("SUPPORT_AUDIT_WRITTEN ",ProjectSettings.globalize_path("user://dense_v2_support_surface_audit.json"))
  quit(0)
+
