@@ -316,6 +316,7 @@ func _review_layout_delta(raw:Dictionary)->Dictionary:
 	return row
 
 func _asset_path(asset:String)->String:
+	if asset=="blendkit_sofa_set_chair":return "res://assets/decor_bank/blendkit_sofa_set/chair.gltf"
 	if asset.begins_with("owner_theatre_") or asset.begins_with("blendkit_") or asset=="owner_hp_notebook_lowpoly" or asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
 		return "res://assets/decor_bank/"+asset+"/model.gltf"
 	var base:String=SKETCHFAB_ROOT if asset.begins_with("sketchfab_") else ROOT
@@ -610,6 +611,7 @@ func _apply_social_interiors()->void:
 	_apply_social_zones_v3()
 	_apply_owner_decor_refresh()
 	_apply_owner_room_clusters()
+	_apply_owner_chair_and_glass_v1()
 
 # Supported, noninteractive replacements only. Preserve existing table/support
 # IDs and skip any candidate which cannot fit its real carrier or peers.
@@ -668,6 +670,64 @@ func _apply_owner_room_clusters()->void:
 		if row.is_empty():continue
 		for id in changes[key]:_move_social_ensemble(row,id,changes[key][id])
 		row["owner_cluster_revision"]="OWNER_ROOM_CLUSTERS_V1"
+
+# The original sofa-set mesh has a visually defective imported material.
+# Use a measured single-chair derivative with a plain fabric review finish.
+# Do not activate the perforated sofa or the composite table/chair mesh.
+func _apply_owner_chair_and_glass_v1()->void:
+	if not ResourceLoader.exists(_asset_path("blendkit_sofa_set_chair"),"PackedScene"):return
+	var changes:Dictionary={"rest_social_upper/R3":"rest_r3_armchair","rest_social_lower/R3":"rest_r3_armchair","music/R3":"music_listening_chair"}
+	for key in changes:
+		var row:Dictionary=layouts.get(key,{})
+		if row.is_empty():continue
+		for item in row["instances"]:
+			if item["instance_id"]!=changes[key]:continue
+			assert(item.get("support_slots",[]).is_empty() and item["station_candidates"].size()==1)
+			var pos:Array=item["room_local_xyz"]
+			var x:float=float(pos[0])
+			var y:float=float(pos[1])
+			var z:float=float(pos[2])
+			var scale_value:float=1.15
+			var hw:float=0.816706*scale_value*0.5
+			var hd:float=0.852862*scale_value*0.5
+			item["asset_id"]="blendkit_sofa_set_chair"
+			item["uniform_scale"]=scale_value
+			item["rotation_deg_xyz"]=[0,0,0]
+			item["bounds_min_m"]=[x-hw,y,z-hd]
+			item["bounds_max_m"]=[x+hw,y+0.635204*scale_value,z+hd]
+			item["physical_footprint_xz"]=[[x-hw,z-hd],[x+hw,z-hd],[x+hw,z+hd],[x-hw,z+hd]]
+			var st:Dictionary=item["station_candidates"][0]
+			st["room_pelvis_contact_xyz"]=[x,y+0.385*scale_value,z]
+			st["room_feet_contact_xyz"]=[x,y,z+hd+0.07]
+			st["room_approach_xz"]=[x,z+hd+0.40]
+			st["room_facing_xyz"]=[0,0,1]
+			st["seating_width_m"]=0.52*scale_value
+			row["owner_chair_revision"]="OWNER_CHAIR_V1"
+	# A laboratory beaker is a fixed decorative tool, not a physical CUP.
+	# This small spare portion of the lab table is outside all existing props.
+	var lab:Dictionary=layouts.get("workshop/R3",{})
+	if not lab.is_empty():
+		_add_owner_supported_glass(lab,"workshop_lab_table","owner_lab_beaker","blendkit_beaker_flask",Vector2(4.30,-1.08),Vector3(0.099607,0.0994,0.099607))
+	var gallery:Dictionary=layouts.get("artifact/R3",{})
+	if not gallery.is_empty():
+		_add_owner_supported_glass(gallery,"gallery_display_table","owner_gallery_glass_cover","blendkit_decorational_glass_cover_storage",Vector2(-4.8,0.05),Vector3(0.26,0.393966,0.26))
+
+func _add_owner_supported_glass(row:Dictionary,host_id:String,id:String,asset:String,at:Vector2,d:Vector3)->void:
+	if not ResourceLoader.exists(_asset_path(asset),"PackedScene"):return
+	var host:Dictionary={}
+	for i in row["instances"]:
+		if i["instance_id"]==host_id:host=i
+	if host.is_empty() or not host.get("support_slots",[]).is_empty():return
+	var y:float=float(host["bounds_max_m"][1])
+	var lo:Array=[at.x-d.x*0.5,y,at.y-d.z*0.5]
+	var hi:Array=[at.x+d.x*0.5,y+d.y,at.y+d.z*0.5]
+	if lo[0]<host["bounds_min_m"][0] or hi[0]>host["bounds_max_m"][0] or lo[2]<host["bounds_min_m"][2] or hi[2]>host["bounds_max_m"][2]:return
+	for other in row["instances"]:
+		if _support_host_id(other)!=host_id:continue
+		var a:Array=other["bounds_min_m"]
+		var b:Array=other["bounds_max_m"]
+		if minf(hi[0],b[0])>maxf(lo[0],a[0]) and minf(hi[2],b[2])>maxf(lo[2],a[2]):return
+	row["instances"].append({"instance_id":id,"asset_id":asset,"room_local_xyz":[at.x,y,at.y],"rotation_deg_xyz":[0,0,0],"uniform_scale":1.0,"bounds_min_m":lo,"bounds_max_m":hi,"physical_footprint_xz":[[lo[0],lo[2]],[hi[0],lo[2]],[hi[0],hi[2]],[lo[0],hi[2]]],"placement_policy":"supported_on","support_ref":host_id+"."+id,"station_candidates":[],"support_slots":[],"owner_approved":false})
 
 # Owner permits furniture relocation. Only two unsupported chairs move;
 # preserve support IDs, cup homes, dragon and the authored shell.

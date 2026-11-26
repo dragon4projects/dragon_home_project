@@ -1,0 +1,112 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Dragon House measured chair variant from Blendkit White sofa set"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "MeasuredChair",
+      "mesh": 0,
+      "translation": [
+        -0.0038306713104248047,
+        0.24195119738578796,
+        0.030744776129722595
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Original chair shell",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "indices": 2,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Ivory fabric review",
+      "doubleSided": true,
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.67,
+          0.59,
+          0.5,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.92
+      }
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 240,
+      "max": [
+        0.41218364238739014,
+        0.39325278997421265,
+        0.3956863284111023
+      ],
+      "min": [
+        -0.4045222997665405,
+        -0.24195119738578796,
+        -0.4571758806705475
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 240,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5123,
+      "count": 912,
+      "type": "SCALAR"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 2880,
+      "byteOffset": 0,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2880,
+      "byteOffset": 2880,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1824,
+      "byteOffset": 9600,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "deps/model.bin",
+      "byteLength": 605552
+    }
+  ]
+}

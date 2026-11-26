@@ -32,3 +32,6 @@ assets/textures/basalt.jpg !filter !diff !merge !text
 assets/textures/floor.jpg !filter !diff !merge !text
 assets/textures/wood.jpg !filter !diff !merge !text
 tests/fixtures/test_video.ogv !filter !diff !merge !text
+
+# Small authored derivative references the existing LFS mesh buffer.
+assets/decor_bank/blendkit_sofa_set/chair.gltf !filter !diff !merge text
