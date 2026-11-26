@@ -1793,6 +1793,7 @@ func _move(actor: Dictionary, delta: float) -> void:
 			if str(actor.get("intent","")) in ["WATCH_FILM","LISTEN_MUSIC"]:
 				_start_cinema_commitment(actor)
 				return
+			world._append_journal("PUBLIC_ACTIVITY_STARTED",actor_id,actor_id,"",str(actor["room_id"]),{"intent":str(actor.get("intent",""))})
 			actor["until"] = maxf(float(actor.get("until",0.0)),clock+12.0)
 			moving_ids.erase(actor_id)
 			life_scheduler.schedule_at(actor_id,float(actor["until"]),"ACTION_COMMITMENT")
