@@ -1,0 +1,33 @@
+{
+  "task_id": "DH-SPRITE-20261126-LOCAL-01",
+  "batch": "DH_SPRITE_20261126_PILOT",
+  "baseline_commit": "ade387c43d87e9b31b4d3e7eb62e9f8cffd44967",
+  "baseline_registry_git_blob": "534b41c5e20dc5c0f9ec7ea38fc686477891a558",
+  "status": "PILOT_CANDIDATES_INTEGRATION_PENDING",
+  "staged_frames": 19,
+  "proposed_states": 11,
+  "ledger_rows": 22301,
+  "rows_with_candidates": 11,
+  "rows_deferred_for_review_or_art": 22290,
+  "verified_source_pngs": 14,
+  "mapped_unique_registry_paths": 2769,
+  "protected_git_blob_count": 423,
+  "protected_tree_sha256": "4ce69f17366502a2c11cb43e2850121cd217c1bc023cf3f59307d31d41495781",
+  "checks": {
+    "pinned_paths_absent": "PASS 19/19 against pinned Git tree",
+    "png_alpha_and_contacts": "PASS 19/19",
+    "original_protection": "PASS local before and after committed pointer listings match pinned main tree. Full LFS body re-read was not performed.",
+    "review_at_source_scale": "PASS as candidate with no owner approval. Physical contact fit remains open.",
+    "delta_check": "PASS 11 updates against pinned blob. Idempotent rerun 0 updates.",
+    "godot_headless": "PASS 19/19 PNGs via Image, RGBA8, ImageTexture and Sprite3D. READ book fixture created the pinned open book geometry at three yaw samples using seat height gauge. macOS logged unrelated data-dir and certificate errors.",
+    "godot_full_render": "PENDING. Local Compatibility display process aborted with code 134. Hosted QA runner rejected the candidate file transfer route.",
+    "github_lfs_publication": "PENDING. Local authenticated git transport unavailable due github.com DNS resolution failure. No branch or remote upload.",
+    "runtime_selection": "PENDING. No production registry or renderer bindings applied."
+  },
+  "sheet_attempts": [
+    {"actor":"RES_07","wardrobe":"HOME","action":"SIT","requested":8,"result":"GENERATOR_OUTPUT_REJECTED","accepted_cells":0},
+    {"actor":"RES_07","wardrobe":"HOME","action":"DRINK","requested":4,"result":"RGBA_SPLIT_AFTER_MATTE","accepted_cells":4},
+    {"actor":"RES_08","wardrobe":"CITY","action":"SIT","requested":6,"result":"RGBA_SPLIT","accepted_cells":6},
+    {"actor":"manjka","wardrobe":null,"action":"CHASE_RIGHT","requested":6,"result":"RGBA_SPLIT","accepted_cells":6}
+  ]
+}

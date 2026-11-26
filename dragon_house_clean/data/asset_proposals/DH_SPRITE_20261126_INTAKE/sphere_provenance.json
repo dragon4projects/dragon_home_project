@@ -1,0 +1,394 @@
+[
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_W",
+    "direction": "W",
+    "frame_index": 0,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_left/walk_left_0001.png",
+    "source_sha256": "a3a4fb6b0d667570ae3b4ed3120f45820ac96eb4a92e23f565081680e9393f43",
+    "sheet_cell": 0,
+    "translation": [
+      0,
+      18
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0001.png",
+    "runtime_bound": false,
+    "sha256": "41a70ffede5be7f6c0f418d30077592d6bf3d07aa8cd1d7a9e4da564328f4738"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_W",
+    "direction": "W",
+    "frame_index": 1,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_left/walk_left_0002.png",
+    "source_sha256": "e7ab8e51584c1d25057762b2c042aa98e1c35ce31949fa2284953811116b3c60",
+    "sheet_cell": 1,
+    "translation": [
+      1,
+      24
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0002.png",
+    "runtime_bound": false,
+    "sha256": "3423126d17f8719f0dd2d5fab746dc1aad88a3268b0bd14b5841fa03da07aae7"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_W",
+    "direction": "W",
+    "frame_index": 2,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_left/walk_left_0003.png",
+    "source_sha256": "6d39944012fb67c72d22374936ed60d42157e71ff33267dd470e955b490cbde4",
+    "sheet_cell": 2,
+    "translation": [
+      0,
+      18
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0003.png",
+    "runtime_bound": false,
+    "sha256": "90164ed090bf2c08bdea55bc4b1f65d2e03da8c4efbed2b8dad3bb0031112420"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_W",
+    "direction": "W",
+    "frame_index": 3,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_left/walk_left_0004.png",
+    "source_sha256": "6fd0426a51f71050d19be47bcf964855d0b2e68b440535156b262877c209db98",
+    "sheet_cell": 3,
+    "translation": [
+      0,
+      11
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0004.png",
+    "runtime_bound": false,
+    "sha256": "46160a83fce40c71a4e10bbaa4a88235c8e82ba4f04c1606091100968229604e"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_E",
+    "direction": "E",
+    "frame_index": 0,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_right/walk_right_0001.png",
+    "source_sha256": "2baec0a569a81db668382f41f50f6207e5b9aaf4791e4ad09b43d444a526f59c",
+    "sheet_cell": 4,
+    "translation": [
+      0,
+      18
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0001.png",
+    "runtime_bound": false,
+    "sha256": "0aa166aad76f97e148e1722d38f6d333c7b8feb10c100a20d18a82131f952b6c"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_E",
+    "direction": "E",
+    "frame_index": 1,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_right/walk_right_0002.png",
+    "source_sha256": "58fb97c1e71842e481ef92048817d58a5ce5b0e3914e32e953432e931126df96",
+    "sheet_cell": 5,
+    "translation": [
+      -2,
+      24
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0002.png",
+    "runtime_bound": false,
+    "sha256": "af4286f8a8f097e65c2ddc7109e813df1cdce8be2fb3a8dc49aff146aa606286"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_E",
+    "direction": "E",
+    "frame_index": 2,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_right/walk_right_0003.png",
+    "source_sha256": "d71bbf636b029f293eea89d0ec992c39564a620a3d98f799e3529305a71ea4ef",
+    "sheet_cell": 6,
+    "translation": [
+      0,
+      18
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0003.png",
+    "runtime_bound": false,
+    "sha256": "595e1f57864792325398776a4c3485f7f5b3b3e709e466aee9da9b389af79d52"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_MOVE_E",
+    "direction": "E",
+    "frame_index": 3,
+    "source": "assets/creatures/npc_ai_magic_sphere/walk_right/walk_right_0004.png",
+    "source_sha256": "d016ef87e6bc642fa911db23ad3eb8b0224ec21746cad637390a3888dbf4e684",
+    "sheet_cell": 7,
+    "translation": [
+      0,
+      11
+    ],
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "anchor_method": "alpha bounds midpoint, threshold 16",
+    "ground_contacts": [],
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0004.png",
+    "runtime_bound": false,
+    "sha256": "35a376e12cf1026009f264e2a0f75572b08acdac35de44ab1afde221c5466e29"
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_IDLE",
+    "frame_index": 0,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0001.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 0,
+    "rect": [
+      0,
+      0,
+      443,
+      443
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "1b34571d834905a30581b979a29c8ef058d0dcb8f1018a5d60f69ec6c8e9a6a5",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_IDLE",
+    "frame_index": 1,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0002.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 1,
+    "rect": [
+      443,
+      0,
+      887,
+      443
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "31060efa24a42e740ccb2cf94a5683f9c3a43cf01377f7739602658aaae2034f",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_IDLE",
+    "frame_index": 2,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0003.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 2,
+    "rect": [
+      887,
+      0,
+      1330,
+      443
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "cba137e6c6cf0cd7b34fb3b7775121613916e8a99d5d887f5ff821c5233f05be",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_IDLE",
+    "frame_index": 3,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0004.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 3,
+    "rect": [
+      1330,
+      0,
+      1774,
+      443
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "f201a80dc5d1570c2fa1615b4ad463d7c942400d5554a25871f48b3743ade344",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_REST",
+    "frame_index": 0,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0001.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 4,
+    "rect": [
+      0,
+      443,
+      443,
+      887
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "fd50a922b6582f85b62b4e0f2845fc6343d7c8b52f498b957dd1e04ca3526c30",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_REST",
+    "frame_index": 1,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0002.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 5,
+    "rect": [
+      443,
+      443,
+      887,
+      887
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "2022f3c0e856a2adf3889656410fc252ceec5b4387e3089fc807e377be993db0",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_REST",
+    "frame_index": 2,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0003.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 6,
+    "rect": [
+      887,
+      443,
+      1330,
+      887
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "a7e09ec63fd0d0f98175d27eb6e534c9a277a4d44a519b7064ade486acb2bf43",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  },
+  {
+    "actor_id": "npc_ai_magic_sphere",
+    "state": "HOVER_REST",
+    "frame_index": 3,
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0004.png",
+    "source": "assets/creatures/npc_ai_magic_sphere/identity/front_0001.png",
+    "source_sha256": "28bc4ede514985c1095436207d659ef9c7860079328356b1a9f02b8f5a7ab676",
+    "sheet": "review/glow_sheet.png",
+    "sheet_sha256": "4c68a9d52e15986e7d0f41b2577a47c17e3be149e42f6e07fe248829c2f412dd",
+    "sheet_cell": 7,
+    "rect": [
+      1330,
+      443,
+      1774,
+      887
+    ],
+    "method": "Reference-preserved light transfer, see glow.py",
+    "provider": "OpenAI ImageGen",
+    "model": null,
+    "sha256": "08075c93a23289f0fd0083b8db8ae3e81ee7ca672edbad11da32bce2169eb036",
+    "hover_anchor_px": [
+      512,
+      320
+    ],
+    "ground_contacts": [],
+    "runtime_bound": false
+  }
+]

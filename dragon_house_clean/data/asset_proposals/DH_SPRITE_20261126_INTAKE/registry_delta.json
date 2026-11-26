@@ -1,0 +1,809 @@
+{
+  "activation": "CANDIDATE_ONLY",
+  "entries": [
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "READ",
+      "expected_previous_entry": {
+        "frames": [],
+        "frame_count": 0,
+        "status": "PARTIAL",
+        "fps": null,
+        "source_confidence": "Alias declared by old runtime; dedicated frame set absent",
+        "runtime_bound": false,
+        "legacy_alias": "USE"
+      },
+      "entry": {
+        "frames": [
+          "assets/residents/RES_07/wardrobes/HOME/READ/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference-conditioned candidate; visual review of split frame completed; owner and runtime binding pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "DRINK",
+      "expected_previous_entry": {
+        "frames": [],
+        "frame_count": 0,
+        "status": "MISSING",
+        "fps": null,
+        "source_confidence": null,
+        "runtime_bound": false
+      },
+      "entry": {
+        "frames": [
+          "assets/residents/RES_07/wardrobes/HOME/DRINK/0001.png",
+          "assets/residents/RES_07/wardrobes/HOME/DRINK/0002.png",
+          "assets/residents/RES_07/wardrobes/HOME/DRINK/0003.png",
+          "assets/residents/RES_07/wardrobes/HOME/DRINK/0004.png"
+        ],
+        "frame_count": 4,
+        "distinct_frame_hashes": 4,
+        "fps": 5,
+        "declared_source_frames": 4,
+        "durations": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference-conditioned candidate; visual review of split frame completed; owner and runtime binding pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "CARRY_USE",
+      "expected_previous_entry": {
+        "frames": [],
+        "frame_count": 0,
+        "status": "MISSING",
+        "fps": null,
+        "source_confidence": null,
+        "runtime_bound": false
+      },
+      "entry": {
+        "frames": [
+          "assets/residents/RES_07/wardrobes/HOME/CARRY_USE/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference-conditioned candidate; visual review of split frame completed; owner and runtime binding pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_07",
+      "wardrobe": "HOME",
+      "state": "IDLE_NW_CORRECTED",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_07/wardrobes/HOME/IDLE_NW_CORRECTED/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference-conditioned candidate; visual review of split frame completed; owner and runtime binding pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_E",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_08/wardrobes/CITY/SIT_E/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference wardrobe, six actual facing angles and full silhouette inspected. Real station pelvis and occlusion fit pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_N",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_08/wardrobes/CITY/SIT_N/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference wardrobe, six actual facing angles and full silhouette inspected. Real station pelvis and occlusion fit pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_W",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_08/wardrobes/CITY/SIT_W/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference wardrobe, six actual facing angles and full silhouette inspected. Real station pelvis and occlusion fit pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_NW",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_08/wardrobes/CITY/SIT_NW/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference wardrobe, six actual facing angles and full silhouette inspected. Real station pelvis and occlusion fit pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_NE",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_08/wardrobes/CITY/SIT_NE/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference wardrobe, six actual facing angles and full silhouette inspected. Real station pelvis and occlusion fit pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_08",
+      "wardrobe": "CITY",
+      "state": "SIT_SE",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_08/wardrobes/CITY/SIT_SE/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Reference wardrobe, six actual facing angles and full silhouette inspected. Real station pelvis and occlusion fit pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "manjka",
+      "wardrobe": null,
+      "state": "CHASE_RIGHT",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/creatures/manjka/chase_right/chase_right_0001.png",
+          "assets/creatures/manjka/chase_right/chase_right_0002.png",
+          "assets/creatures/manjka/chase_right/chase_right_0003.png",
+          "assets/creatures/manjka/chase_right/chase_right_0004.png",
+          "assets/creatures/manjka/chase_right/chase_right_0005.png",
+          "assets/creatures/manjka/chase_right/chase_right_0006.png"
+        ],
+        "frame_count": 6,
+        "distinct_frame_hashes": 6,
+        "fps": 9,
+        "declared_source_frames": 6,
+        "durations": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "canvas": [
+          [
+            1024,
+            640
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Six distinct lateral gallop phases. Stage motion/contact fit and implementation still pending.",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_PILOT/provenance.jsonl"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_SE",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_SE/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_E",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_NE",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_NE/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_N",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_N/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_NW",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_NW/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_W",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "RES_04",
+      "wardrobe": "HOME",
+      "state": "SIT_SW",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/residents/RES_04/wardrobes/HOME/SIT_SW/0001.png"
+        ],
+        "frame_count": 1,
+        "distinct_frame_hashes": 1,
+        "fps": 2,
+        "declared_source_frames": 1,
+        "durations": [
+          1
+        ],
+        "canvas": [
+          [
+            512,
+            512
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/res04_provenance.json"
+      }
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_IDLE",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0001.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0002.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0003.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0004.png"
+        ],
+        "frame_count": 4,
+        "distinct_frame_hashes": 4,
+        "fps": 6,
+        "declared_source_frames": 4,
+        "durations": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "canvas": [
+          [
+            1024,
+            640
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/sphere_provenance.json",
+        "hover_anchor_px": [
+          512,
+          320
+        ]
+      }
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_MOVE_E",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0001.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0002.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0003.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0004.png"
+        ],
+        "frame_count": 4,
+        "distinct_frame_hashes": 4,
+        "fps": 6,
+        "declared_source_frames": 4,
+        "durations": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "canvas": [
+          [
+            1024,
+            640
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/sphere_provenance.json",
+        "hover_anchor_px": [
+          512,
+          320
+        ]
+      }
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_MOVE_W",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0001.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0002.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0003.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0004.png"
+        ],
+        "frame_count": 4,
+        "distinct_frame_hashes": 4,
+        "fps": 6,
+        "declared_source_frames": 4,
+        "durations": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "canvas": [
+          [
+            1024,
+            640
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/sphere_provenance.json",
+        "hover_anchor_px": [
+          512,
+          320
+        ]
+      }
+    },
+    {
+      "actor_id": "npc_ai_magic_sphere",
+      "wardrobe": null,
+      "state": "HOVER_REST",
+      "expected_previous_entry": null,
+      "entry": {
+        "frames": [
+          "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0001.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0002.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0003.png",
+          "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0004.png"
+        ],
+        "frame_count": 4,
+        "distinct_frame_hashes": 4,
+        "fps": 6,
+        "declared_source_frames": 4,
+        "durations": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "canvas": [
+          [
+            1024,
+            640
+          ]
+        ],
+        "color_modes": [
+          "RGBA"
+        ],
+        "warnings": [],
+        "excluded_frames": [],
+        "status": "PASS",
+        "runtime_bound": false,
+        "source_confidence": "Candidate frame intake; actual scene contact fit pending",
+        "evidence": "data/asset_proposals/DH_SPRITE_20261126_INTAKE/sphere_provenance.json",
+        "hover_anchor_px": [
+          512,
+          320
+        ]
+      }
+    }
+  ]
+}

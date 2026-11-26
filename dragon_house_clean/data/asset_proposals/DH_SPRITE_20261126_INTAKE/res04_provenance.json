@@ -1,0 +1,224 @@
+{
+  "actor": "RES_04",
+  "wardrobe": "HOME",
+  "engine_canvas": [
+    512,
+    512
+  ],
+  "provider": "OpenAI ImageGen",
+  "sheet_sha256": "911bad4e37e29d3bf36ab1780cf2a67d26b6eaaba0f4568f076e604e2566b103",
+  "source_refs": {
+    "assets/residents/RES_04/wardrobes/HOME/SIT/0001.png": "4c31f41bb48cb8c83ab72dbc4855d256de49c272b2100c4ebac1f008bc997fa7",
+    "assets/residents/RES_04/wardrobes/HOME/IDLE_N/0001.png": "685533bacf05c87c44af26e15c5407e8fd23bd7b5d2b3603195636840d4628ad"
+  },
+  "frames": [
+    {
+      "state": "SIT_S",
+      "cell": 0,
+      "rect": [
+        145,
+        5,
+        305,
+        438
+      ],
+      "path": "review/front_comparison.png",
+      "sha256": "3de8c5b5700d588f54d7f0fd287034ea1c8877ef8d18d863db09361fcfdb109e",
+      "alpha_bbox": [
+        214,
+        234,
+        301,
+        479
+      ],
+      "pelvis_px": [
+        256,
+        402
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "comparison only; existing SIT takes precedence"
+    },
+    {
+      "state": "SIT_SE",
+      "cell": 1,
+      "rect": [
+        590,
+        5,
+        768,
+        438
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_SE/0001.png",
+      "sha256": "d9a086d7cbcdc4fa02ea2ba7456384e30b9964728a8603ac3ff9f79d24efb600",
+      "alpha_bbox": [
+        223,
+        231,
+        324,
+        479
+      ],
+      "pelvis_px": [
+        256,
+        402
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    },
+    {
+      "state": "SIT_E",
+      "cell": 2,
+      "rect": [
+        1004,
+        5,
+        1219,
+        438
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png",
+      "sha256": "69d49d01cd3c22e39ad94f4ed20cb477ca690216223692db3b75711fddbd2640",
+      "alpha_bbox": [
+        225,
+        234,
+        348,
+        479
+      ],
+      "pelvis_px": [
+        256,
+        402
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    },
+    {
+      "state": "SIT_NE",
+      "cell": 3,
+      "rect": [
+        1440,
+        5,
+        1653,
+        438
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_NE/0001.png",
+      "sha256": "3b9ccc693277c3db7013a4e4f2091cd86f6f2b1a7d97bc862160ab1494f60771",
+      "alpha_bbox": [
+        229,
+        237,
+        348,
+        480
+      ],
+      "pelvis_px": [
+        256,
+        405
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    },
+    {
+      "state": "SIT_N",
+      "cell": 4,
+      "rect": [
+        145,
+        448,
+        304,
+        882
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_N/0001.png",
+      "sha256": "a26f908593e7d84c06304c36e3e5046764093bacb1a1fe9ed182c29db94cdeac",
+      "alpha_bbox": [
+        211,
+        233,
+        301,
+        480
+      ],
+      "pelvis_px": [
+        256,
+        402
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    },
+    {
+      "state": "SIT_NW",
+      "cell": 5,
+      "rect": [
+        554,
+        448,
+        757,
+        882
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_NW/0001.png",
+      "sha256": "ff520209d4e943c2eb29a750601d75f2489222a77bb86f477880dd15282cbf62",
+      "alpha_bbox": [
+        172,
+        234,
+        286,
+        480
+      ],
+      "pelvis_px": [
+        256,
+        403
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    },
+    {
+      "state": "SIT_W",
+      "cell": 6,
+      "rect": [
+        992,
+        448,
+        1212,
+        882
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png",
+      "sha256": "fb9407ff8b5ffcc90330b1426c39a20ba7f5747b7434bfd78b83f4fe84f3d8b1",
+      "alpha_bbox": [
+        165,
+        232,
+        289,
+        480
+      ],
+      "pelvis_px": [
+        256,
+        402
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    },
+    {
+      "state": "SIT_SW",
+      "cell": 7,
+      "rect": [
+        1445,
+        448,
+        1645,
+        882
+      ],
+      "path": "assets/residents/RES_04/wardrobes/HOME/SIT_SW/0001.png",
+      "sha256": "5acaf1790e586a1bc991d48966f861df839629b8102659980b28b3b5dabcadb1",
+      "alpha_bbox": [
+        184,
+        232,
+        294,
+        480
+      ],
+      "pelvis_px": [
+        256,
+        400
+      ],
+      "contact_method": "visual estimate of seated support",
+      "scale": 0.61,
+      "runtime_bound": false,
+      "delivery": "candidate"
+    }
+  ]
+}

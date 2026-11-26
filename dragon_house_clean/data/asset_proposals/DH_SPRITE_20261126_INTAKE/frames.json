@@ -1,0 +1,422 @@
+[
+  {
+    "path": "assets/creatures/manjka/chase_right/chase_right_0001.png",
+    "sha256": "fc29870e42d9ecd07d6953ed55c4782bf4a9373200d0c9426e604eeb66c632b0",
+    "size": 411704,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/creatures/manjka/chase_right/chase_right_0002.png",
+    "sha256": "8ad16c6fb4760b3b7b6ee28723831a4f9e52993c364877fb965887c0255d23a6",
+    "size": 394327,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/creatures/manjka/chase_right/chase_right_0003.png",
+    "sha256": "8a89560abb3b3aa85908211dc3859d28a03bcc266d4f065ce74a5f0aa8dc5b5a",
+    "size": 372681,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/creatures/manjka/chase_right/chase_right_0004.png",
+    "sha256": "3934c40a9fdbaa4296736db12481424ff4c731467c309418082fc5a1697fa849",
+    "size": 353412,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/creatures/manjka/chase_right/chase_right_0005.png",
+    "sha256": "9e4bc4084983772cb569442a5870e2a432803284d9ac0f50ea9a82d274ea6a90",
+    "size": 401410,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/creatures/manjka/chase_right/chase_right_0006.png",
+    "sha256": "cc3af6de33ff6ee2b9967cdab728e41a2c1546c933040ba92e9f1d98f31579ca",
+    "size": 419997,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/CARRY_USE/0001.png",
+    "sha256": "8ebb7690348f1d6f5a3a63332a46f86b8178d8481e18ef870499ff175b763362",
+    "size": 54651,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0001.png",
+    "sha256": "d5838d0155a96ce51681417f64b4a09aeaedb92ba55defe3683ad889c23ad690",
+    "size": 49771,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0002.png",
+    "sha256": "fc6b9391faada70883b6ab1c21866c267b52e6d604704c6013aed9938648a824",
+    "size": 49142,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0003.png",
+    "sha256": "007d690431bdf2ceec8e58d5efb256a6bc926d4d0d7db301f6a53f53916c88e0",
+    "size": 48883,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/DRINK/0004.png",
+    "sha256": "53b9abb32c329e8213f3b39eb89032795c4f827e1f1b0bfd1329c6672e24c9d3",
+    "size": 49686,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_NW_CORRECTED/0001.png",
+    "sha256": "dd68df1f621a1f8d25520a54140a05bfba0f5f31073c145c0f019bbcdb0661f5",
+    "size": 50755,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_07/wardrobes/HOME/READ/0001.png",
+    "sha256": "72ab008b7f7629b67c3eb48914f696e1e3581698ad446c87155bf973d34e24a9",
+    "size": 36491,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_08/wardrobes/CITY/SIT_E/0001.png",
+    "sha256": "37ffe26a1e378e48a037c9ae4e0a96638d76e44eaef42ced02f1a7ea28dc9dd6",
+    "size": 37256,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_08/wardrobes/CITY/SIT_N/0001.png",
+    "sha256": "3fb508836e3e51d93fbea3e74106506a633273ba02330e60155be034d5f59500",
+    "size": 40234,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_08/wardrobes/CITY/SIT_NE/0001.png",
+    "sha256": "8eac25e5b3763073e10826cf5c3d00153977bec81c5db7a67d8b081c047e0b1b",
+    "size": 41559,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_08/wardrobes/CITY/SIT_NW/0001.png",
+    "sha256": "a254631f842834fe04f6251bc67647215c7434d8cc080a1d59984dc61ca59bad",
+    "size": 41964,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_08/wardrobes/CITY/SIT_SE/0001.png",
+    "sha256": "f7607595c8885338bb2fa1b60834057d55533f49dff67e807dbed2bd68986e03",
+    "size": 42605,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_08/wardrobes/CITY/SIT_W/0001.png",
+    "sha256": "27428f6121285200ed721a72ad3286ef76491ff06239b1c9072145bf809f2efa",
+    "size": 36917,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "pilot.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_NE/0001.png",
+    "sha256": "3b9ccc693277c3db7013a4e4f2091cd86f6f2b1a7d97bc862160ab1494f60771",
+    "size": 46791,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_NW/0001.png",
+    "sha256": "ff520209d4e943c2eb29a750601d75f2489222a77bb86f477880dd15282cbf62",
+    "size": 46703,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_N/0001.png",
+    "sha256": "a26f908593e7d84c06304c36e3e5046764093bacb1a1fe9ed182c29db94cdeac",
+    "size": 44893,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_SE/0001.png",
+    "sha256": "d9a086d7cbcdc4fa02ea2ba7456384e30b9964728a8603ac3ff9f79d24efb600",
+    "size": 48772,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_SW/0001.png",
+    "sha256": "5acaf1790e586a1bc991d48966f861df839629b8102659980b28b3b5dabcadb1",
+    "size": 49833,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png",
+    "sha256": "fb9407ff8b5ffcc90330b1426c39a20ba7f5747b7434bfd78b83f4fe84f3d8b1",
+    "size": 45832,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png",
+    "sha256": "69d49d01cd3c22e39ad94f4ed20cb477ca690216223692db3b75711fddbd2640",
+    "size": 45146,
+    "canvas": [
+      512,
+      512
+    ],
+    "source": "res04.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0001.png",
+    "sha256": "41a70ffede5be7f6c0f418d30077592d6bf3d07aa8cd1d7a9e4da564328f4738",
+    "size": 222550,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0002.png",
+    "sha256": "3423126d17f8719f0dd2d5fab746dc1aad88a3268b0bd14b5841fa03da07aae7",
+    "size": 233125,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0003.png",
+    "sha256": "90164ed090bf2c08bdea55bc4b1f65d2e03da8c4efbed2b8dad3bb0031112420",
+    "size": 223614,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_w/hover_move_w_0004.png",
+    "sha256": "46160a83fce40c71a4e10bbaa4a88235c8e82ba4f04c1606091100968229604e",
+    "size": 227221,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0001.png",
+    "sha256": "0aa166aad76f97e148e1722d38f6d333c7b8feb10c100a20d18a82131f952b6c",
+    "size": 224977,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0003.png",
+    "sha256": "595e1f57864792325398776a4c3485f7f5b3b3e709e466aee9da9b389af79d52",
+    "size": 225257,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0002.png",
+    "sha256": "af4286f8a8f097e65c2ddc7109e813df1cdce8be2fb3a8dc49aff146aa606286",
+    "size": 235503,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_move_e/hover_move_e_0004.png",
+    "sha256": "35a376e12cf1026009f264e2a0f75572b08acdac35de44ab1afde221c5466e29",
+    "size": 228512,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0004.png",
+    "sha256": "f201a80dc5d1570c2fa1615b4ad463d7c942400d5554a25871f48b3743ade344",
+    "size": 233723,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0001.png",
+    "sha256": "1b34571d834905a30581b979a29c8ef058d0dcb8f1018a5d60f69ec6c8e9a6a5",
+    "size": 233788,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0003.png",
+    "sha256": "cba137e6c6cf0cd7b34fb3b7775121613916e8a99d5d887f5ff821c5233f05be",
+    "size": 233504,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_idle/hover_idle_0002.png",
+    "sha256": "31060efa24a42e740ccb2cf94a5683f9c3a43cf01377f7739602658aaae2034f",
+    "size": 233620,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0001.png",
+    "sha256": "fd50a922b6582f85b62b4e0f2845fc6343d7c8b52f498b957dd1e04ca3526c30",
+    "size": 233801,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0002.png",
+    "sha256": "2022f3c0e856a2adf3889656410fc252ceec5b4387e3089fc807e377be993db0",
+    "size": 233814,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0003.png",
+    "sha256": "a7e09ec63fd0d0f98175d27eb6e534c9a277a4d44a519b7064ade486acb2bf43",
+    "size": 233771,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  },
+  {
+    "path": "assets/creatures/npc_ai_magic_sphere/hover_rest/hover_rest_0004.png",
+    "sha256": "08075c93a23289f0fd0083b8db8ae3e81ee7ca672edbad11da32bce2169eb036",
+    "size": 233841,
+    "canvas": [
+      1024,
+      640
+    ],
+    "source": "sphere.zip"
+  }
+]

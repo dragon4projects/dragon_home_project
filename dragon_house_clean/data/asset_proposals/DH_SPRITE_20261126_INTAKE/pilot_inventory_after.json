@@ -1,0 +1,1533 @@
+{
+  "inventory_scope": "Pinned registry path coverage. Actual payloads decoded only in the explicitly verified subset.",
+  "unique_mapped_registry_paths": 2769,
+  "full_payload_audit_attempted": false,
+  "verified_reference_sha256": {
+    "assets/creatures/manjka/identity/front_0001.png": "1e8484c4dac4f24410ba1549c714ddd19dd255715565843b26109d418a8c099e",
+    "assets/creatures/manjka/walk_right/walk_right_0001.png": "c3c82f1bbf34c2c66077c0fa83914afa07ca768e3e1c71a4bcdbe21ab564f01e",
+    "assets/creatures/manjka/walk_right/walk_right_0003.png": "a8627900bbffb7066c74a5d6435389039cdf995d07d53ca4b5cabda5a15ae345",
+    "assets/residents/RES_07/wardrobes/HOME/IDLE_NE/0001.png": "24ac07920d62c9a2cd9acd41c65d70f7d3b103e2c27684573483df2dd8f127cf",
+    "assets/residents/RES_07/wardrobes/HOME/IDLE_NW/0001.png": "8818d03479f11c9f3c82203317dc92e7b0762cd703367e63ce1f2d2f19ad8429",
+    "assets/residents/RES_07/wardrobes/HOME/IDLE_SE/0001.png": "5d2ed0f2d682beb3d5aba4313901f8f6439018f99c325d66083bc4b764db5a06",
+    "assets/residents/RES_07/wardrobes/HOME/IDLE_SW/0001.png": "a4a431497cabb860530c3aa5360abd8deea9b0caccac594593f218306522ce6b",
+    "assets/residents/RES_07/wardrobes/HOME/SIT/0001.png": "3bff6e16d9dad627a1127dd8982982228878ed13a575da11070361c000070c37",
+    "assets/residents/RES_07/wardrobes/SHORT/CARRY_USE/0001.png": "6a35792e5ea496470b7fe2597e446a5a8322743f76d3907afe90c3a796889d8a",
+    "assets/residents/RES_07/wardrobes/SHORT/DRINK/0001.png": "a0cc9c98b406d672a577ef839bf6553fc32ce90e31f23ef8ac69c8405e0dc81c",
+    "assets/residents/RES_07/wardrobes/SHORT/READ/0001.png": "a4b841b918871a410d5786beb5dc726b7fafb55fc89d0ef9aa17114aeb204efa",
+    "assets/residents/RES_08/wardrobes/CITY/IDLE_N/0001.png": "b95addc3c91ed82fe561f1f3464761e883fdf115c681ce08f092fe4faf36038e",
+    "assets/residents/RES_08/wardrobes/CITY/IDLE_S/0001.png": "97077cdbb815ee05a037cbd96bbb1edae5b37c9838730addcde5947a7a2cd3d7",
+    "assets/residents/RES_08/wardrobes/CITY/SIT/0001.png": "bfd51c12734e38285e61f0987858e21b6a89f6fc6d0bb3affa0021a208bc0c13"
+  },
+  "rows": 22301,
+  "status_totals": {
+    "DEFERRED": 22290,
+    "INTEGRATION_PENDING": 11
+  },
+  "unique_decoded_source_paths": 14,
+  "missing_or_invalid_local": {},
+  "protected_git_tree_sha256": "4ce69f17366502a2c11cb43e2850121cd217c1bc023cf3f59307d31d41495781",
+  "protected_wardrobe_git_blob_ids": {
+    "assets/residents/RES_22/wardrobes/CITY/CARRY_USE/0001.png": "d395068218df6b603d9ade5c95a3a6d11313538a",
+    "assets/residents/RES_22/wardrobes/CITY/DRINK/0001.png": "c4b1aa106c1d2e068f1d7f21ec0a70c88ba0443e",
+    "assets/residents/RES_22/wardrobes/CITY/DRINK/0002.png": "cdbf0f8693bf4f2705646c7f453a525c5e303772",
+    "assets/residents/RES_22/wardrobes/CITY/DRINK/0003.png": "5089b048683ef188e50e76eb8972b09fa4a6d5af",
+    "assets/residents/RES_22/wardrobes/CITY/DRINK/0004.png": "01a973ccbaaee238fde12b1f1a231d1ac67f8daf",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_E/0001.png": "23aee3c7d604065abde8d89347ec73a441fa1b56",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_N/0001.png": "0170dd227041a2f29d4496017cc05b57f752c13b",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_NE/0001.png": "8f2f0fecc3952b406d26bf0af67838534ed50b4b",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_NW/0001.png": "ebd60f308b57ad03ac5cf61f7f46f005ed9d1ee1",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_S/0001.png": "37bf18f691d73d162a0a5df9d3766e334968b70e",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_SE/0001.png": "22b1a287ad1fe20ab289c8b2f8785a5f3ce5015b",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_SW/0001.png": "b17ad7f05b7b18c6ffffe2f1b5df02b0ff1820ca",
+    "assets/residents/RES_22/wardrobes/CITY/IDLE_W/0001.png": "32a8094a988f645b5153bb8b1f696e09ad6ddc19",
+    "assets/residents/RES_22/wardrobes/CITY/LIE_SIDE_CURLED/0001.png": "aa7a90e93bae6700d69a56424b568b8ce768371c",
+    "assets/residents/RES_22/wardrobes/CITY/LIE_SIDE_STRAIGHT/0001.png": "611e0be9a121992147e80b3dfe386baac57d46fa",
+    "assets/residents/RES_22/wardrobes/CITY/READ/0001.png": "5b1d872aea82c3a361d58a147499e4621691ac2e",
+    "assets/residents/RES_22/wardrobes/CITY/RELAXED_SIT/0001.png": "511805aa51970d8e954e0ec874cebcec13cf0342",
+    "assets/residents/RES_22/wardrobes/CITY/SIT/0001.png": "2b74aa75265c092f28ad688cb5c22ef87a9c16bd",
+    "assets/residents/RES_22/wardrobes/CITY/SIT_HUG_KNEES/0001.png": "3b53920491c02a39e2e401a800bce1f2356cea5a",
+    "assets/residents/RES_22/wardrobes/CITY/SIT_LEGS_TUCKED/0001.png": "11feb897266cfedb3d21e3ba2415b4ef867f29ef",
+    "assets/residents/RES_22/wardrobes/CITY/SLEEP/0001.png": "78f363039a1fa2a18442ec7db763cda63e6af3ce",
+    "assets/residents/RES_22/wardrobes/CITY/TALK/0001.png": "b6246332ecd034c0fa9b0120449ae1a9e5d2d1e4",
+    "assets/residents/RES_22/wardrobes/CITY/VIEW/0001.png": "46817216aebb54c4d00cb76b951f5e628a32bfee",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0001.png": "075c4bf26e17fe1a2a05ef00ae04c1c5ffa94298",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0002.png": "c63cf1054ed0016c360231ba23fd6dc34a9d701f",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0003.png": "4dc095c38e8e39618de3ccdeadd9f7bef97531ed",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0004.png": "d79e0c0468724c6a4202a64840af4b28039eb884",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0005.png": "b1db236681a23be8c15808bd4627547bd20b7744",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0006.png": "007036e84252ff6dd9659948ffa927e709da0808",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0007.png": "d6d291d576c283727e2770aa41273cd230301d20",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0008.png": "f4b63112b513af4f4abf2fd01472827664117825",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0009.png": "f9a6a5beba411a152278b8dfbc11ad40e348313a",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0010.png": "da53638a5c2a5600d68685963156588b731b7328",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0011.png": "843e483e707206771ac52ca0b1a39736ce84708a",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_LEFT/0012.png": "160c13a5d920a062458cabe71ae438f240d41e35",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0001.png": "f17f1aece6e140ead21c02bcfdead35c87b8fe02",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0002.png": "2d79a36988072f2b1e9e3af8e4bc7724c6b4e80d",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0003.png": "0426ed0d852681c3ecd1a009a0ef9ca1d2c0958d",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0004.png": "356780e4fc3014a9a7065bbd83fb7e484b13f4c3",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0005.png": "8b68aa6c8d0b4c7d32c61f887bbd30931232e0ad",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0006.png": "a2d677fba6f6f95ca6f7aac679250b6d8277bbaf",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0007.png": "5f5e3e9df033ad10e7c9fd2b411a58dfb2b90c4a",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0008.png": "b0ea95dba35746994837f12daf7cb6f6bd80061e",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0009.png": "4334c6726606a89a5ebeb458b54109381c555365",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0010.png": "1efdcb3a9d59fc19c729864f103e9c8a5534e3f6",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0011.png": "4b896729f1375b7e5b9849da9feafdea31d3266f",
+    "assets/residents/RES_22/wardrobes/CITY/WALK_RIGHT/0012.png": "20da68bfb694a4f6c4476084b9d0ecbf4a3a4289",
+    "assets/residents/RES_22/wardrobes/HOME/CARRY_USE/0001.png": "5102b9098c3920e6ba46e6869ecabe8d9f278836",
+    "assets/residents/RES_22/wardrobes/HOME/DRINK/0001.png": "850cf33b3b2d150359593edd40ddf88a2b96e7eb",
+    "assets/residents/RES_22/wardrobes/HOME/DRINK/0002.png": "4e6dac9342645783042d15ea9b5c12339f62d403",
+    "assets/residents/RES_22/wardrobes/HOME/DRINK/0003.png": "62968f1eb97c3b9f84072a0af868c2f548390908",
+    "assets/residents/RES_22/wardrobes/HOME/DRINK/0004.png": "f44112990e4f67a2915f568b7f875bb150629115",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_E/0001.png": "15d2811bfc1eb7de7247e16d92eca52618549e3c",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_N/0001.png": "4ae3aa2bb3874144f81530ebe77352bcddc89f8d",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_NE/0001.png": "3f9c539b2704bdbba4f78e8e23e3761091187f2d",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_NW/0001.png": "83cf7464733eafa86b8e6c08a8c3ea64e4dbfc1c",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_S/0001.png": "77c4e765ab818440cc58d2ac6f51edc852deef56",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_SE/0001.png": "ed509c72186df315f1b439cab492ebca12d727bd",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_SW/0001.png": "df21ffa5c92c74a774dbbfefb530314c02545a53",
+    "assets/residents/RES_22/wardrobes/HOME/IDLE_W/0001.png": "d81e8ea7a6da48fde7f6ce4aac5f8d81154f1dbf",
+    "assets/residents/RES_22/wardrobes/HOME/LIE_SIDE_CURLED/0001.png": "91200c1bde9b148a925dfdba1e0ee5acafd13b29",
+    "assets/residents/RES_22/wardrobes/HOME/LIE_SIDE_STRAIGHT/0001.png": "7a102bb007cb1e02a99a2603c70ea1e1d0d9a0db",
+    "assets/residents/RES_22/wardrobes/HOME/READ/0001.png": "7d5ff4822c650ca435427f6aa26b441d33d57e09",
+    "assets/residents/RES_22/wardrobes/HOME/RELAXED_SIT/0001.png": "289e4318fd0b7a31c956b856dc92009220f52fda",
+    "assets/residents/RES_22/wardrobes/HOME/SIT/0001.png": "1058629d0f01b727f86f8d723e555c6433fb25c6",
+    "assets/residents/RES_22/wardrobes/HOME/SIT_HUG_KNEES/0001.png": "eff3c33e24b84a03eb569c17f6e3b05f8cb97a7a",
+    "assets/residents/RES_22/wardrobes/HOME/SIT_LEGS_TUCKED/0001.png": "a2ee4af46bc4952c687d87039b5273952fc82cff",
+    "assets/residents/RES_22/wardrobes/HOME/SLEEP/0001.png": "e9f4dadbd8e712783ee8c63da27c7f3e6c4ae1a7",
+    "assets/residents/RES_22/wardrobes/HOME/TALK/0001.png": "0c9e8994cd7f54073a052f77330b373c15a24639",
+    "assets/residents/RES_22/wardrobes/HOME/VIEW/0001.png": "9835a5802bccfd465502491d33098623fc1b8ce1",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0001.png": "a83a717a5b559dc5670ae57e5a20f34d784fe158",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0002.png": "cfa72e86286afbdda3d34e701cc33b7531fc4358",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0003.png": "ff03d2e12635042eab3e1550030fa158fd47b942",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0004.png": "691fd85717a4b87173017cac3f01159ce640c07f",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0005.png": "f1a99f048a3d4431156842536316b44847d2340c",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0006.png": "31ddd224257d4eb360aff146666d8712302f5bc5",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0007.png": "048a4f4607c6cba2f1679e5f777b86e77cadf7e8",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0008.png": "da7e943403b2b43ab96b5b6b37d5ca673c9d785e",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0009.png": "6990220b71bf1bbd2eb3dcd24bae6022a80d6ee4",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0010.png": "6d67820415e82459667683ea86d338a2e493bf38",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0011.png": "111fe90b6efef7c17f228ecdc2abb4151cf261fa",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_LEFT/0012.png": "aae1d359f014386cab20f0d7adf477504f58c9c4",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0001.png": "c62a18eb4cac3b6a5108f07a7db0030fbe06e031",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0002.png": "45cbd9c3ada186b34d55cfffe409c81d0b9d22d1",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0003.png": "61c762a0e03d87f79568894bc8971781e11101a6",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0004.png": "0ab70fc12f3481f22a6122c044f721849d15e089",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0005.png": "6cbfa05d89471fb3e19319d89579b6fcbc73ed7a",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0006.png": "8f82df88ec6f5a9c77106944e96a50d99ebea08d",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0007.png": "6306395a4b942eb17df48357b171517abef5b2df",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0008.png": "01d85bdbba77ee79d6fb7317b937cb540e0544a0",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0009.png": "c99ce4ef52fdd67557fe471174b21f0403822496",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0010.png": "47d60011eb035e99a8d2bfaefb18ba9208fb3ad0",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0011.png": "d52b7f7b65903929b9c2989f2822412a4028e042",
+    "assets/residents/RES_22/wardrobes/HOME/WALK_RIGHT/0012.png": "f00652d54d47061c8a14498db169bf3f9df81369",
+    "assets/residents/RES_22/wardrobes/SHORT/CARRY_USE/0001.png": "14f532b58056dd084fde68594e05a138ab6646fe",
+    "assets/residents/RES_22/wardrobes/SHORT/DRINK/0001.png": "8114f2cac9c3967a00bda3a2275c9fc38269ea54",
+    "assets/residents/RES_22/wardrobes/SHORT/DRINK/0002.png": "dfcc1f0964b8e426b47d504ae9cb7927c96531f9",
+    "assets/residents/RES_22/wardrobes/SHORT/DRINK/0003.png": "e7e07b8dbde7d0e9d59117b0078a228f83fd608b",
+    "assets/residents/RES_22/wardrobes/SHORT/DRINK/0004.png": "9a6c1ae8504ccbc8a117e8ee86d3f552725f8f97",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_E/0001.png": "34734398d98df3810cbf6566580046243149f2bb",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_N/0001.png": "67d67341af27dbe7096cab9e7f96f41352c90962",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_NE/0001.png": "3560659769e9d02c70e95450bacae97c3ee49772",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_NW/0001.png": "86a1796757600529c9206f8838ef11b0bc7a78d4",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_S/0001.png": "ed3c0ecc168bb3cbc5b16a205aae4c0af99c474b",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_SE/0001.png": "ba9be7a5935c1761ad39d93f85d8e4066673b067",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_SW/0001.png": "cc8518320b7f8973c37d122f0981b2a854f5cf22",
+    "assets/residents/RES_22/wardrobes/SHORT/IDLE_W/0001.png": "3a41a96bf43edc224f819f81366c621e59c6d106",
+    "assets/residents/RES_22/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png": "8e851185ae07ad64b7b2beefdb06140933a48164",
+    "assets/residents/RES_22/wardrobes/SHORT/LIE_SIDE_STRAIGHT/0001.png": "65ae2ac8f42e5890c36a4840437171666dc3f617",
+    "assets/residents/RES_22/wardrobes/SHORT/READ/0001.png": "db68885954972c9514ba070400cd91a50b32b536",
+    "assets/residents/RES_22/wardrobes/SHORT/RELAXED_SIT/0001.png": "51978226db87edac111f3f869c5e4d11efd457cb",
+    "assets/residents/RES_22/wardrobes/SHORT/SIT/0001.png": "20cb22ba55e5f44555cc4037018bdde2c983cef1",
+    "assets/residents/RES_22/wardrobes/SHORT/SIT_HUG_KNEES/0001.png": "312a239a887fa37965841cfc097264143f9aed4e",
+    "assets/residents/RES_22/wardrobes/SHORT/SIT_LEGS_TUCKED/0001.png": "5a7872c7f5e9587ba7865fe02994904a5c3bb36b",
+    "assets/residents/RES_22/wardrobes/SHORT/SLEEP/0001.png": "87fa83f07a849c1f00a5321baf37f77422eea71b",
+    "assets/residents/RES_22/wardrobes/SHORT/TALK/0001.png": "a93db4b6a8828e18d3e6ca6ae61e6ec68ca91629",
+    "assets/residents/RES_22/wardrobes/SHORT/VIEW/0001.png": "8837649d464c791d56e70dac18bcf14595a090a9",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0001.png": "72589a19ef50d549d435d54812eaf4e488d02b56",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0002.png": "def820d30d054d03a4ba91e9e354d6f6df696ba0",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0003.png": "ef7262674d4d147a67797ac1ff92315cf93b2924",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0004.png": "ff5beaf6fc21a5dd6ce3815d8fa25814e90896b8",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0005.png": "d275b039a03b23e418c6d1378eeb6f8a931a650a",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0006.png": "63a15e19d006c29130ecd2adc9e93b4addee14d3",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0007.png": "883ee2e3297f2edfb183d1c3a09d160d77408087",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0008.png": "38adbcf3a54b3d04ad6a125cf3b6687eef722af8",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0009.png": "ec2df09f8837c298c3744a1075728710158320bf",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0010.png": "6c6eb729a29898aaa9e66d15b031ac5aeced7477",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0011.png": "9f1ee78e01a701ed7a41b8d12c347ca8747ab792",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_LEFT/0012.png": "b89b5ef9af18976c4e2f41ede851c03a0eb8fb69",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0001.png": "9ce55afd0472ae0a877d01f72be1e40c303d9461",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0002.png": "5085f6805c890d75220587d5b220a9806c4250bf",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0003.png": "1d27dd47f91d00164c9f5f93700682ef988f8202",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0004.png": "81ff63b1641f5325b26068d943b6a6840732aac4",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0005.png": "8370cd7f7e900e4ebfa63c88390d87924af36abd",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0006.png": "66a56017ed281e02127e9081aa8d7d05bccc6a8c",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0007.png": "47c01a43fd38e275949564854537580b75471fcf",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0008.png": "bc574e1f0d22878f980c23f72c1324a2bcc2a508",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0009.png": "d8d09e53387e0659e42172cd9f7eaba733f6c7dd",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0010.png": "0f8089e3cc1dbaa4061be38d87eb6be4eda30fa6",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0011.png": "306954618edcc27c841e31b36951b853216d0ab3",
+    "assets/residents/RES_22/wardrobes/SHORT/WALK_RIGHT/0012.png": "9f37d70b1d826355bd15a53878d1bcc2ee337c1a",
+    "assets/residents/RES_23/wardrobes/CITY/CARRY_USE/0001.png": "b839ebfb79d39156b22eaad164de468621f57ffc",
+    "assets/residents/RES_23/wardrobes/CITY/DRINK/0001.png": "ab44633b806b0bb13e702289627b39aa5ff6c835",
+    "assets/residents/RES_23/wardrobes/CITY/DRINK/0002.png": "cfda80c51479a30b28d37df58e0f2ad0ea947fe7",
+    "assets/residents/RES_23/wardrobes/CITY/DRINK/0003.png": "28e4f9662392b7c79e70590277736164e79852fe",
+    "assets/residents/RES_23/wardrobes/CITY/DRINK/0004.png": "397c4f062d9ea814d3f4d72ee13082bf0501e917",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_E/0001.png": "3c78f7064df6e94314decc9b09f7e119eeac17d7",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_N/0001.png": "7bf03d3377db8c7a0ee953a254b604f64b343757",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_NE/0001.png": "f00fadd2eb57401d2a2927e1767ca29b9c097afa",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_NW/0001.png": "80bcaeb61a98bf015da029fc56e3b23ee0c27a14",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_S/0001.png": "1f1bcb12e16871889adb9e7cc3258a121a41e4e4",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_SE/0001.png": "86260ed5e79c55ae06bf08e442fb7f9979aa6368",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_SW/0001.png": "15df1884dc4b1dc2cdefa7efacd9670fceee71b8",
+    "assets/residents/RES_23/wardrobes/CITY/IDLE_W/0001.png": "9d98a2fd754a0fa710520f41b4bb719a977ccb0d",
+    "assets/residents/RES_23/wardrobes/CITY/LIE_SIDE_CURLED/0001.png": "ce8d93355fafc2241543c1d7242b0594ac302da8",
+    "assets/residents/RES_23/wardrobes/CITY/LIE_SIDE_STRAIGHT/0001.png": "accbc05fb14fb616854bf56f839fa65789524447",
+    "assets/residents/RES_23/wardrobes/CITY/READ/0001.png": "f325d443f5454559064eb23f84cb555b3e3f7002",
+    "assets/residents/RES_23/wardrobes/CITY/RELAXED_SIT/0001.png": "a3ffb8a429a2e63b84b3b4fea7540e88bbfd41e1",
+    "assets/residents/RES_23/wardrobes/CITY/SIT/0001.png": "f45632f178b2b14bc88f714d07d4dd4f15a39d09",
+    "assets/residents/RES_23/wardrobes/CITY/SIT_HUG_KNEES/0001.png": "2c543961aafc6b35a2c77b5fd3d64b63f9b201ab",
+    "assets/residents/RES_23/wardrobes/CITY/SIT_LEGS_TUCKED/0001.png": "98005cd73edfe5dd8ceaebc1826638a63a7c5e3b",
+    "assets/residents/RES_23/wardrobes/CITY/SLEEP/0001.png": "7f2866f24ee6f8c1c30785413eb3d03ff8d0b0e8",
+    "assets/residents/RES_23/wardrobes/CITY/TALK/0001.png": "d938b5fe705785d028a3c1d71a95e1e454ab4867",
+    "assets/residents/RES_23/wardrobes/CITY/VIEW/0001.png": "988c5035c1e18e904b445a4a8008a2b2559ec35b",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0001.png": "0454b5d528fb2448896152dbf9c0516e3d814abd",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0002.png": "ffb76eee1db7e1c0af5f5fc78325e8e64b26929c",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0003.png": "8fb740e0f93ee9aa43b2a594c8424b4052d35b40",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0004.png": "ae3a40274e524a174e142fae8dbf51ba455ede63",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0005.png": "b316c8b87b1ee7e74dc01d6c1fb8c267eb733e78",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0006.png": "d5272dcffa3fd84f3d91c5f6a105c53604a502f4",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0007.png": "e344b0d7bd5f99d86996df5014b9027547ca83f1",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0008.png": "1b5ccaec94b23e3af0e244baa380fffbe3c453d4",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0009.png": "f6afe67be9c40afccbb8527935b9345f876348e3",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0010.png": "6a4d3d3cd7a64bddb0dc49a3bc0b67b9992bee1e",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0011.png": "ccf6b0058b2d1dbeb23754d8221d9560d42110b1",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_LEFT/0012.png": "8f25034c3938fc4d609efa0de4ba63d7513f7a25",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0001.png": "d4ff4531abdee08adcaa6214b6b169c3bbe425ee",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0002.png": "11ac057e69fa2ef98fece65cfd9d9fcf92ac6e41",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0003.png": "0588b5e8726c1686615a6a009d6a972301cb5eab",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0004.png": "f1b37c0a1459a578d18ad11c289fe6133196440a",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0005.png": "b1aaadc4db9b7850979cb8e82d004e6fa1a61fc5",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0006.png": "5c2983e010f22b13eeddd87942a77be7d4d632bd",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0007.png": "40a7b8df4b6e5cb8d659cd612244b1ed3c6db104",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0008.png": "e118e70abca4cc4e4ca653965ecd3047d9235db4",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0009.png": "a1e4cdd54ece89d87189845c230d498a6903db94",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0010.png": "1ac7672cb25ea2d15d17556393dcbcdcbc1d1371",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0011.png": "f79075865e9cf23ac25af8ec6a4d9bf4db52358d",
+    "assets/residents/RES_23/wardrobes/CITY/WALK_RIGHT/0012.png": "833ee94fa23b060ffb4243141fbbba969532c548",
+    "assets/residents/RES_23/wardrobes/HOME/CARRY_USE/0001.png": "c86ac3fa6b5aeeebced9c74ba20ec06eb47d97db",
+    "assets/residents/RES_23/wardrobes/HOME/DRINK/0001.png": "2d379244feb7d1da0196d15c1c56fa170dff4cc4",
+    "assets/residents/RES_23/wardrobes/HOME/DRINK/0002.png": "70b30491da3291f665b278c19a4b09e15c8b70a3",
+    "assets/residents/RES_23/wardrobes/HOME/DRINK/0003.png": "42627d3d41ba947180e9655c622b8ef1104aba36",
+    "assets/residents/RES_23/wardrobes/HOME/DRINK/0004.png": "c9cf71468379f796be6f10853e49c779238da579",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_E/0001.png": "3de8687a5983f06944484d78446023ce4a26b5f6",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_N/0001.png": "b6d52997269f969f46edf22e40f76b1f1ccaf5d2",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_NE/0001.png": "b20a4e51b7682eb2a962d6d17e4342e4482f0837",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_NW/0001.png": "5da5b34658bd82c1b1546fafdcc6193fa525e7d3",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_S/0001.png": "77ded1decc83d932b487edbb8eb0a1a1fdba0ee5",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_SE/0001.png": "e3890b28e8a27d632b56d2a7583b9c7b0c51ba73",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_SW/0001.png": "1aef6cbdde150f9eb79e2307a8531044f684d503",
+    "assets/residents/RES_23/wardrobes/HOME/IDLE_W/0001.png": "4ea78e2e0545130e0fd26890dccac3dca554d294",
+    "assets/residents/RES_23/wardrobes/HOME/LIE_SIDE_CURLED/0001.png": "67ff8da51571e0004b6bb146adf52ff78536023c",
+    "assets/residents/RES_23/wardrobes/HOME/LIE_SIDE_STRAIGHT/0001.png": "d39c0b06dccd47eda99408a9e0493f2a4948d94d",
+    "assets/residents/RES_23/wardrobes/HOME/READ/0001.png": "e818f03507cf7604c72facb52f416532cb0c0d28",
+    "assets/residents/RES_23/wardrobes/HOME/RELAXED_SIT/0001.png": "3e4ed6607e256cef4ee8499b308cfa5e52e0fae2",
+    "assets/residents/RES_23/wardrobes/HOME/SIT/0001.png": "b50544087d99e24ccbb42ec13a26daa93919c9ed",
+    "assets/residents/RES_23/wardrobes/HOME/SIT_HUG_KNEES/0001.png": "111e51e063ccb4d73994d3386ab3ac1c32109935",
+    "assets/residents/RES_23/wardrobes/HOME/SIT_LEGS_TUCKED/0001.png": "3c5a148c8f0ee1f4bc115ec748bc83d71917245e",
+    "assets/residents/RES_23/wardrobes/HOME/SLEEP/0001.png": "a15329598b1a1606d0cc3e5193c27c3ac5f7a66d",
+    "assets/residents/RES_23/wardrobes/HOME/TALK/0001.png": "b562727fc67d2fdca044cc04c3b0a73bb0f08740",
+    "assets/residents/RES_23/wardrobes/HOME/VIEW/0001.png": "ddc72564e7ef1e636e7f90c52648254d9c3e72b1",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0001.png": "fd3650f16a7c3e35a181e6e7059b4a510bb870ef",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0002.png": "b30f3fe8cae250c81c18319b504b8a1772b7daea",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0003.png": "549a808b105e59c8079a8f95caf0feb83c7d39c9",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0004.png": "3726aab5e3bbd3803b0481a6b245b10e8ab8b47c",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0005.png": "26e5445214bdf3ee388d59517c1f478bb087c22e",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0006.png": "d339b76faab732f622774f5a815254ba09113dd7",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0007.png": "0a97a89774d5660d1a80c4dd7a375b2c7045abf1",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0008.png": "ed53a9a720f485b6f5c23d20667e8d57f83a5d7c",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0009.png": "a40d17fc49ec339223a0a6dc1d1a8ee37e5f7f66",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0010.png": "85593d1aa2a983a257280e9627ade8e7b1c427e9",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0011.png": "89078e29906b0d23e1cb76fcc025b2d2f7755cee",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_LEFT/0012.png": "a3aa1b000ae85f4273573703609681947fcb3099",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0001.png": "8edf442d62b665453c2b53685371959d07ea6daf",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0002.png": "2382df695272ff05a589a025f71a4bfd84b69ab6",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0003.png": "58daabdd0f87241c8ac463416df7b9f20a20a218",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0004.png": "f3fcc043d7a43ff095eb4cde47510cc8c97e11e6",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0005.png": "8e7cddcb0cb43f00e5413dbbee3d2456ed1ed26c",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0006.png": "049bd48f7978b2df254c61af5c7473a365e6e3db",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0007.png": "46cd943fc6a24cc26197e79c27ac7b6a93d9d043",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0008.png": "05a779df00dd8716e3e92506b4c6dd6a8d9ad209",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0009.png": "4022875ddb6556bc65dee059bf189f101ac1c16e",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0010.png": "e955a842f18eeb18bc747e8bad377e918e34bdae",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0011.png": "d0e3177f85f0007fe0b1e518359b3efab4e6fb1b",
+    "assets/residents/RES_23/wardrobes/HOME/WALK_RIGHT/0012.png": "acf32c9daf68e4d47fe20cddd6519545089aaa67",
+    "assets/residents/RES_23/wardrobes/SHORT/CARRY_USE/0001.png": "99cde247f08a110b1b793c7ad816bb7c7a3f7702",
+    "assets/residents/RES_23/wardrobes/SHORT/DRINK/0001.png": "290189e7235632712a50df319157901781c2299c",
+    "assets/residents/RES_23/wardrobes/SHORT/DRINK/0002.png": "4996478c57107c83e642bbb0ee2aefcae484d000",
+    "assets/residents/RES_23/wardrobes/SHORT/DRINK/0003.png": "576ab9f24376fa8c9ad51ab63b2284bd77813d6e",
+    "assets/residents/RES_23/wardrobes/SHORT/DRINK/0004.png": "9e11cc4cbeaac2c5504ab42b93976ffc02567766",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_E/0001.png": "b50b52b1f0794472d58a7f4b7e200c062b4eef36",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_N/0001.png": "0fbff5b893479948a9e973c23d5ba86d1dce8620",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_NE/0001.png": "365137f6fbc50d6841d02c9ef57f42246676c8fe",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_NW/0001.png": "de5310cdec5a35993dd9a9a6f6140f65525941b8",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_S/0001.png": "3e44eff72debe68ce02a2bd0f5766101395ec03a",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_SE/0001.png": "e8e6b42c51225aac6a9761120278a3a2459f8098",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_SW/0001.png": "debb889922bf8412497427a025516cf2eab4e147",
+    "assets/residents/RES_23/wardrobes/SHORT/IDLE_W/0001.png": "16b9f232be9a4b7990bbbc91e97344f63cee2fb7",
+    "assets/residents/RES_23/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png": "c174b39b6c90140be4615198e1b0a035535228f0",
+    "assets/residents/RES_23/wardrobes/SHORT/LIE_SIDE_STRAIGHT/0001.png": "1013cbb1c20b9256d84499a4cc369acbd544f93a",
+    "assets/residents/RES_23/wardrobes/SHORT/READ/0001.png": "b5cd1f8cc1c0cb4a7739673f6d09985237a813f2",
+    "assets/residents/RES_23/wardrobes/SHORT/RELAXED_SIT/0001.png": "d0af265576f3dd431e68da1d9e93a9b214a98b45",
+    "assets/residents/RES_23/wardrobes/SHORT/SIT/0001.png": "2af8b098c8c5bb972cc8a640666d6b61fe6e5f2a",
+    "assets/residents/RES_23/wardrobes/SHORT/SIT_HUG_KNEES/0001.png": "2a4c8e1dc69ab334db29c87e8800c4ac29508237",
+    "assets/residents/RES_23/wardrobes/SHORT/SIT_LEGS_TUCKED/0001.png": "7f43ad3aa92be3165767447c8404e53c060dfb04",
+    "assets/residents/RES_23/wardrobes/SHORT/SLEEP/0001.png": "362fb5a6f4ccd76f4b5dfdcc525fb8231aa2b1ff",
+    "assets/residents/RES_23/wardrobes/SHORT/TALK/0001.png": "aba166a7c6c785cf32b5d84706665ca3a5156ce8",
+    "assets/residents/RES_23/wardrobes/SHORT/VIEW/0001.png": "3de25ddb50a84d177682f02114223378a782e8e6",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0001.png": "30a4dee769d720ce45a06f38ce550db3d3b26c51",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0002.png": "07bf887f0fe94e562b7fc935b74f9b222b7d1baf",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0003.png": "529f2f0413533b20fa685d3e236b29d82a937190",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0004.png": "21ba53d5760cb0c4c657274929807a4bfc405a00",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0005.png": "f816bf4207343080db3e0f9cd5b52545af333063",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0006.png": "4c88fe3f66dc13c6084254c1e177d434a2234c2f",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0007.png": "5675481eb0f3f34b8483b5c8613465276abb7b0d",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0008.png": "d691ac37e56d7ec6974d0224ea7420f49384e40a",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0009.png": "100238defb6fe24086e19e378f7a394da86264ae",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0010.png": "fe6845a6d49b284991265e21d7b5626814615a7f",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0011.png": "7f10d5ff40f7944eb5c6ea14887b2c698c6b082c",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_LEFT/0012.png": "78393f7053bfee5ccd71c6cd2ec9d59b166344e4",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0001.png": "2753a5b8b2fa7972f21690b9f610139ded6881fd",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0002.png": "d00c2aca00ca7e334a80deaf6ab212bc5767c955",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0003.png": "43e7b1687270ed505696ab72a3ff7cabb5121311",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0004.png": "55179305898139e4ff156a24ebe1c2456b6302e9",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0005.png": "50e935d64bd842117601ed56e622bdec1ef4e8b7",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0006.png": "23c98d5104c029802304a355dd0ebf1c49aaa810",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0007.png": "b9052aa226ee70dd00977dcd3af5e839f019a0a5",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0008.png": "26b9f117e9802a21db225426e64763f8874263b8",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0009.png": "6a9e68b01b7ced57a9fe02d8cdc08b190a58e125",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0010.png": "439885e690c35f777fc0d9cc573b915047f559be",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0011.png": "e43eff84f62a2ee5a5d53a7174ae4dc9e12416ac",
+    "assets/residents/RES_23/wardrobes/SHORT/WALK_RIGHT/0012.png": "57630e76195d49fee8ee1b8a031ffaf69f52b6ed",
+    "assets/residents/RES_24/wardrobes/CITY/CARRY_USE/0001.png": "f9d48c1f46702ce54e529b3658dfc17b6b362ae7",
+    "assets/residents/RES_24/wardrobes/CITY/DRINK/0001.png": "032fa9e8c864866766c975c99f816a624169d925",
+    "assets/residents/RES_24/wardrobes/CITY/DRINK/0002.png": "56e763e01794c25a779aab6088e05f0fa8328c67",
+    "assets/residents/RES_24/wardrobes/CITY/DRINK/0003.png": "408de7e60c7bb27e1365ba8aa9b376198c3676ad",
+    "assets/residents/RES_24/wardrobes/CITY/DRINK/0004.png": "f82a1d362c8c84a0886e52f601687c380bce4327",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_E/0001.png": "1cdd3d5e42986c99ce29179c1c0c3cb667ab7c43",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_N/0001.png": "d33a5d7f30d41e1e24fbb140fe309c9bfe3b4440",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_NE/0001.png": "32140da1ec48df6f4630cd05f9c00061d565b3c0",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_NW/0001.png": "0a970afda0c6cb474c23fd8d7a9df851cbc25372",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_S/0001.png": "7bc8ddbb49cdef60b4e519db3626d63693049885",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_SE/0001.png": "3efdc868085d004115f150e07690c254b33f4c79",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_SW/0001.png": "680ec96e90cc6a18df396a161c06abb8bcc5460c",
+    "assets/residents/RES_24/wardrobes/CITY/IDLE_W/0001.png": "0d39211984305e3179a5b23aa0a501ee768673d1",
+    "assets/residents/RES_24/wardrobes/CITY/LIE_SIDE_CURLED/0001.png": "06c9dc408cacde9085843d541a387e6487912309",
+    "assets/residents/RES_24/wardrobes/CITY/LIE_SIDE_STRAIGHT/0001.png": "f11fcf1035a38705b7c0721ab08511bee6d31240",
+    "assets/residents/RES_24/wardrobes/CITY/READ/0001.png": "89a1359afad00a7a77df7e7fa43e830c0fae2935",
+    "assets/residents/RES_24/wardrobes/CITY/RELAXED_SIT/0001.png": "96b74974cf6da3749b7983a153a1bc9aae990414",
+    "assets/residents/RES_24/wardrobes/CITY/SIT/0001.png": "ed7bcf61affea6b35e25aba5e0606712271d4046",
+    "assets/residents/RES_24/wardrobes/CITY/SIT_HUG_KNEES/0001.png": "aea2cc751083ff318f57952021ca4d1274d9952d",
+    "assets/residents/RES_24/wardrobes/CITY/SIT_LEGS_TUCKED/0001.png": "8debbf5ed87702f527cc8fd742e62af35b484ea7",
+    "assets/residents/RES_24/wardrobes/CITY/SLEEP/0001.png": "63aa13c8c76dd0905d2295e764cfe0efd761548a",
+    "assets/residents/RES_24/wardrobes/CITY/TALK/0001.png": "979f3ecf1ffc0c4087ca0b8baf216e3e5c596270",
+    "assets/residents/RES_24/wardrobes/CITY/VIEW/0001.png": "92fddcb5187d1e3950223e47614a08a2f86835dd",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0001.png": "802b9c11bc4055d2fd427cab6e38e6d1dc5b3acc",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0002.png": "be2bbb5945a1c3422666faf13a059f83dffd8e8f",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0003.png": "b064a355ee34d7810ef45bc3a76cafc1f3e93819",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0004.png": "dd9fde6afe0d26289559e657c0c2566686425763",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0005.png": "1381ff3ffad2dc17871ba877df2e47270ee0ba81",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0006.png": "de50d5559712e446b04ad2bad2a501b84abc0b7e",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0007.png": "b3cecde15bfc914f01d934bdc2b136f5e938d093",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0008.png": "1d9a24df15bb102a1841b5f57b0a9e6cc12abc3a",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0009.png": "cb1a2f1d1714b8ae4f1c81e702690df07e2e0401",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0010.png": "307732c0946e8913feaeeaa911908f7d5e0fde98",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0011.png": "c50a294e0b8ae9fdc07a25b44c5bec900702c502",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_LEFT/0012.png": "f2e28bd9f9dd7ccaf0df07a07d1b24ec0620ce73",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0001.png": "60d60ae65938087b41b16f644b3c512b6c473065",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0002.png": "bade8ba9927a7cff4d56ccba1275395c717871d7",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0003.png": "a46f7d831040959e6faed4374495fcfef9cf9e0f",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0004.png": "0b23c19d88aeeccf7b637ac10d2f7e65205cf4b9",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0005.png": "d2de9ba3a32df833906e105080709045c685a345",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0006.png": "f456e7078c7fcc85687944bb9f319016e9bde5fc",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0007.png": "840d9839d7fab1b82ba6c60d65419007d5f71034",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0008.png": "f8f305700a383850685cb1b195d5ef5b7187b91b",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0009.png": "ade045dbd6f7a4edcabe8beffff307e0087f9101",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0010.png": "9a19317a1278996d46d176d6491610c1bdd32df4",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0011.png": "acfc41c5e263d186a4940f33c9900137ee9aca37",
+    "assets/residents/RES_24/wardrobes/CITY/WALK_RIGHT/0012.png": "b5715288f370a949eca99c310cec29edad3345b0",
+    "assets/residents/RES_24/wardrobes/HOME/CARRY_USE/0001.png": "f0e9359b74d9b7a833d42a3de8ed1c4ba0dd188d",
+    "assets/residents/RES_24/wardrobes/HOME/DRINK/0001.png": "8a0cfe54803336ea0fbe9d2eeb0c5af1416aed55",
+    "assets/residents/RES_24/wardrobes/HOME/DRINK/0002.png": "8fbab2bf2dd28acbf13536a7400da91a2e8b22cf",
+    "assets/residents/RES_24/wardrobes/HOME/DRINK/0003.png": "30b845f2957dda02d6c4030445f7bc72c30694e9",
+    "assets/residents/RES_24/wardrobes/HOME/DRINK/0004.png": "d9ee4b2fc1aba04386aeed3d0f68a73f3f91ebd0",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_E/0001.png": "3e2a5364e7c62d37774583b0cebdca72c9048804",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_N/0001.png": "bffa8189bd8c7a56acc22e050f7dff2f2234611d",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_NE/0001.png": "5950a4b085c0a15101ae799db645bd7c06c45e90",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_NW/0001.png": "75705af73c09263cfac68fe044d7d1d626e7015f",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_S/0001.png": "e9acbfc48420c31f577f08344b7623f2e71ad38a",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_SE/0001.png": "23942084101fda8c0b9107adb01870d049d8e128",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_SW/0001.png": "d40983fe6fa5cc207d7fffbbc5c59edec91ee9c9",
+    "assets/residents/RES_24/wardrobes/HOME/IDLE_W/0001.png": "3e9297e4d12ed5ab33b2e6b880467df1d899045f",
+    "assets/residents/RES_24/wardrobes/HOME/LIE_SIDE_CURLED/0001.png": "442dbf79693ff26c636bbe527cb47d93c2ac1d53",
+    "assets/residents/RES_24/wardrobes/HOME/LIE_SIDE_STRAIGHT/0001.png": "826d02597266f63e62da7b60acfd8e88cf012582",
+    "assets/residents/RES_24/wardrobes/HOME/READ/0001.png": "b9cb6bb592628d7934cb2c376149c4b62a64b10a",
+    "assets/residents/RES_24/wardrobes/HOME/RELAXED_SIT/0001.png": "bb65db1cbfbc46da47c53cc323c8dba1a0e61c8d",
+    "assets/residents/RES_24/wardrobes/HOME/SIT/0001.png": "38ff7bd7f6e6431ba54c452e70ce7e52dc9de564",
+    "assets/residents/RES_24/wardrobes/HOME/SIT_HUG_KNEES/0001.png": "9153043dd24b3e0b87b200025ccd108e2e109db0",
+    "assets/residents/RES_24/wardrobes/HOME/SIT_LEGS_TUCKED/0001.png": "63736f7fdef3b67886bb594b72cbd531a0f263b3",
+    "assets/residents/RES_24/wardrobes/HOME/SLEEP/0001.png": "780385f3e63f9a4a7b68f4bf6c4845760c233270",
+    "assets/residents/RES_24/wardrobes/HOME/TALK/0001.png": "8ccf97d161057ac3ea0fc360ec4678f3b1e1e278",
+    "assets/residents/RES_24/wardrobes/HOME/VIEW/0001.png": "d412ddca57f364d1b25c744d4528beee70961e35",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0001.png": "ec85b78a679c261465cccf100319914dc64ff72e",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0002.png": "8085932a9b8a7e06afb771e01fbf7142f432eb8f",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0003.png": "7ffe59a1d868fcfdc20c6788efa242f71eeeeccb",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0004.png": "bad1f67098d4d842de4aa6c15e5a6c8ccc025528",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0005.png": "ab6d62279cdecf6d990ba2cf3fdc59de7e4b7d6f",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0006.png": "05ac02d96caa352b5891dd96a5351ea7b7e01f6e",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0007.png": "9cfa6eaa621bac187a92b7835b2f360c0505caa1",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0008.png": "e1628928fc4cac11f24cccceaa754b0ef5d29932",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0009.png": "f210ddf84969a2e9d2571b6bcd911762fe2ea00e",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0010.png": "9fef733b9b0613579e5fcc28ed317db9b5731782",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0011.png": "52c62414cb37483389227b77009558df0f530fcc",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_LEFT/0012.png": "db75861486546a9bffde503a51d11d9bbceb9a19",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0001.png": "f6192536b45ae42706d52ca488ce58c2d9c360fa",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0002.png": "db77b4ebcce8b3c5ed89f3c7d332e2187f4fb3e2",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0003.png": "3b0baa7e796c68be8a2adabb249aa858a668e958",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0004.png": "7d14f32a07a6e7b82025267de49881ee6bbf80ee",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0005.png": "2af4a9a4179936e3f3cf717495cd87b370bc79c7",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0006.png": "edac65a240ad4bada3df380a1a9351376dfd01cc",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0007.png": "e847398564dd968ea67b61d4dd0ba674df8d3f4e",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0008.png": "ae7db7348b977a3bfd14cbabe61b706157c104f7",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0009.png": "b013ecaf36faf29e48fc24d4bff9512c5c23d6b5",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0010.png": "54f893b3355d129f8f7148158b024e0415812cbe",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0011.png": "bdcc57947f130269b5de0f06551bf43334fd08f2",
+    "assets/residents/RES_24/wardrobes/HOME/WALK_RIGHT/0012.png": "193babf48097d7931f991fa131c6674e9b22f299",
+    "assets/residents/RES_24/wardrobes/SHORT/CARRY_USE/0001.png": "b208404c9bc8ccbf2139f4b1fbf52e70380a3e6b",
+    "assets/residents/RES_24/wardrobes/SHORT/DRINK/0001.png": "2656a834b09773da4ab378e74f72951beb458707",
+    "assets/residents/RES_24/wardrobes/SHORT/DRINK/0002.png": "2e5f015a1b2a87b455f116fe95cfcbf1b7153393",
+    "assets/residents/RES_24/wardrobes/SHORT/DRINK/0003.png": "c6d8400b6ec49e044a032de0927c7b0a55ff3e8f",
+    "assets/residents/RES_24/wardrobes/SHORT/DRINK/0004.png": "80388cb4708522f6e18e279951615704cef50b6b",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_E/0001.png": "71966ac6390d5521dfae16ed72ed649b78ee8362",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_N/0001.png": "fb998a7e3677714d737a05610e91a0da82f65ffc",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_NE/0001.png": "79cd068412d7cce7e6976f12d415fdf6794b9edc",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_NW/0001.png": "87fdca0fcb43da637deba7cd225f99585c7efdd9",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_S/0001.png": "42ee9d9203f979d8979de37479b22b77cdc61bfa",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_SE/0001.png": "77efab6e22d20661f0a2869e23a85cb6d7731c36",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_SW/0001.png": "a315b61cee119b971e8d1d668f049c74131d2c73",
+    "assets/residents/RES_24/wardrobes/SHORT/IDLE_W/0001.png": "205ed43e84a98bf7c56f4740e1a9edb5241be728",
+    "assets/residents/RES_24/wardrobes/SHORT/LIE_SIDE_CURLED/0001.png": "a1afe55f42af05760418ba099eaabd2daca7081b",
+    "assets/residents/RES_24/wardrobes/SHORT/LIE_SIDE_STRAIGHT/0001.png": "4c83bdc62650febc5539ce20a079dbe5a2be101f",
+    "assets/residents/RES_24/wardrobes/SHORT/READ/0001.png": "de0d29c686afc7144608dc58023839ca123eaae0",
+    "assets/residents/RES_24/wardrobes/SHORT/RELAXED_SIT/0001.png": "3eea1d16fdfb33030c8e48e824cbc8452eed9804",
+    "assets/residents/RES_24/wardrobes/SHORT/SIT/0001.png": "b6d2b545a0f0e583eb37a107a2374b1e719ae309",
+    "assets/residents/RES_24/wardrobes/SHORT/SIT_HUG_KNEES/0001.png": "79fd9e6384cf19032e570407dc311f1cf203f7cb",
+    "assets/residents/RES_24/wardrobes/SHORT/SIT_LEGS_TUCKED/0001.png": "f0debc463d39c89ff8b58b66b2d5ffea63f22760",
+    "assets/residents/RES_24/wardrobes/SHORT/SLEEP/0001.png": "87f27d9ff6ad686b44b1851509c9daf21c5495fa",
+    "assets/residents/RES_24/wardrobes/SHORT/TALK/0001.png": "83b1d2affa48d5be42a876118e3306a18c2139a5",
+    "assets/residents/RES_24/wardrobes/SHORT/VIEW/0001.png": "a7f1104327b7994a048a06fb65d438de0bdcf52b",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0001.png": "3e4c58b27d6490654c489c55bef18f18b9e54c8e",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0002.png": "b0f47c977cdf39f624266548e041407d29040be4",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0003.png": "a574b81f4590404ac0bb47bc373c12aae0e23191",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0004.png": "7966f1088566a49c5d1320a13b4753b7e37aea83",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0005.png": "5059c4eda67032b7472227bf03eb704afe60de8b",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0006.png": "64ab75d843e31d76e76b90d10e638ee89f5ec8dd",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0007.png": "06dc520b8e18545c455c35738deb34012a89886e",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0008.png": "eedff7b4d1a1ac4c860697bc9a254bfafac5254d",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0009.png": "e1cbba2a66831efc9542eb95cbb69a6c3756a237",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0010.png": "c5f2c9184a7df3fd90cdb739243b651f37e82945",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0011.png": "4389a90c531b09125689e485c32bd99324ee075f",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_LEFT/0012.png": "e3065c56c291eee317d8f9af084e8e0680b0c8bf",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0001.png": "a887ff8543f2e926e14b777cd0d660300d671489",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0002.png": "b80f8e2ac4d382c5d838a73895d091570ee17139",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0003.png": "030efc563826839e8b4226d338479af7f3bd3fe8",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0004.png": "aae781cee111f67c9ddcc762feeae24bf98db850",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0005.png": "746e8f1b8540edec9be2e1a7c0c183d8afaca138",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0006.png": "fdbce70694601de09755833c421cf917128ecd02",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0007.png": "8d2c5e76c41b17d0155984adfd027f313bd84954",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0008.png": "949ae329a976335e958502672ed19228c2b743b0",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0009.png": "7941d624878c92b547398a93d7a9a0a9b1e75c99",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0010.png": "95c6181d6849cc401a8767ce8ac7b58a012f90f6",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0011.png": "df8c4b6657d40bb56f15c22bc1fc77c0cd74e14f",
+    "assets/residents/RES_24/wardrobes/SHORT/WALK_RIGHT/0012.png": "0e5a8df8689df0fa2680f085146e90871763fb2d"
+  },
+  "by_actor_and_wardrobe": {
+    "RES_01": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_02": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_03": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_04": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_05": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_06": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_07": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 77,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 63,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 281,
+        "planned_frames": 1057,
+        "mapped_path_references": 67,
+        "staged_frames": 7,
+        "legacy_translation_mappings": 45,
+        "status": {
+          "DEFERRED": 277,
+          "INTEGRATION_PENDING": 4
+        }
+      },
+      "EXTRA/EVM_GREY_SHORTS_01": {
+        "rows": 3,
+        "planned_frames": 6,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 3
+        }
+      },
+      "EXTRA/EVM_WHITE_SKIRT_01": {
+        "rows": 3,
+        "planned_frames": 6,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 3
+        }
+      },
+      "EXTRA/EVM_DENIM_SKIRT_01": {
+        "rows": 3,
+        "planned_frames": 6,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 3
+        }
+      }
+    },
+    "RES_08": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 6,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 274,
+          "INTEGRATION_PENDING": 6
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_09": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_10": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_11": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_12": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_13": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_14": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_15": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_16": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_17": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_18": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_19": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_20": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_21": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 47,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_22": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_23": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "RES_24": {
+      "SHORT": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "CITY": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      },
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "NPC_VAMPIRE_GIRL": {
+      "HOME": {
+        "rows": 280,
+        "planned_frames": 1056,
+        "mapped_path_references": 65,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 280
+        }
+      }
+    },
+    "manjka": {
+      "SPECIES": {
+        "rows": 184,
+        "planned_frames": 600,
+        "mapped_path_references": 13,
+        "staged_frames": 6,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 183,
+          "INTEGRATION_PENDING": 1
+        }
+      }
+    },
+    "dragon": {
+      "SPECIES": {
+        "rows": 1,
+        "planned_frames": 0,
+        "mapped_path_references": 0,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 1
+        }
+      }
+    },
+    "npc_mouse_gray": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_mouse_brown": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_mouse_pale": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_ai_magic_sphere": {
+      "SPECIES": {
+        "rows": 10,
+        "planned_frames": 40,
+        "mapped_path_references": 2,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 10
+        }
+      }
+    },
+    "npc_hedgehog_01": {
+      "SPECIES": {
+        "rows": 40,
+        "planned_frames": 112,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 40
+        }
+      }
+    },
+    "npc_hedgehog_02": {
+      "SPECIES": {
+        "rows": 40,
+        "planned_frames": 112,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 40
+        }
+      }
+    },
+    "npc_hedgehog_03": {
+      "SPECIES": {
+        "rows": 40,
+        "planned_frames": 112,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 40
+        }
+      }
+    },
+    "npc_cat_black_hero": {
+      "SPECIES": {
+        "rows": 120,
+        "planned_frames": 376,
+        "mapped_path_references": 13,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 120
+        }
+      }
+    },
+    "npc_cat_tabby": {
+      "SPECIES": {
+        "rows": 120,
+        "planned_frames": 376,
+        "mapped_path_references": 13,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 120
+        }
+      }
+    },
+    "npc_cat_white": {
+      "SPECIES": {
+        "rows": 120,
+        "planned_frames": 376,
+        "mapped_path_references": 13,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 120
+        }
+      }
+    },
+    "npc_cat_ginger": {
+      "SPECIES": {
+        "rows": 120,
+        "planned_frames": 376,
+        "mapped_path_references": 13,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 120
+        }
+      }
+    },
+    "npc_rat_hero": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_rat_agouti": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_rat_white": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_rat_hooded": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "npc_cat_calico": {
+      "SPECIES": {
+        "rows": 120,
+        "planned_frames": 376,
+        "mapped_path_references": 13,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 120
+        }
+      }
+    },
+    "npc_cat_sphynx": {
+      "SPECIES": {
+        "rows": 120,
+        "planned_frames": 376,
+        "mapped_path_references": 13,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 120
+        }
+      }
+    },
+    "npc_rat_juvenile_gray": {
+      "SPECIES": {
+        "rows": 80,
+        "planned_frames": 272,
+        "mapped_path_references": 12,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    },
+    "NPC_CENTAUR": {
+      "HOME": {
+        "rows": 96,
+        "planned_frames": 280,
+        "mapped_path_references": 39,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 96
+        }
+      }
+    },
+    "NPC_GINGER_CAT_GUEST": {
+      "SHORT": {
+        "rows": 80,
+        "planned_frames": 240,
+        "mapped_path_references": 35,
+        "staged_frames": 0,
+        "legacy_translation_mappings": 0,
+        "status": {
+          "DEFERRED": 80
+        }
+      }
+    }
+  }
+}
