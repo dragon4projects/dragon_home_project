@@ -1,0 +1,213 @@
+{
+  "owner_approved": false,
+  "additions": {
+    "library/R3": [
+      {
+        "instance_id": "library_tall_clock",
+        "asset_id": "vintage_grandfather_clock_01",
+        "room_local_xyz": [
+          -1.25,
+          0.025,
+          -1.6
+        ],
+        "uniform_scale": 0.9,
+        "placement_policy": "floor_fixed",
+        "support_host_id": "",
+        "local_min_m": [
+          -0.312812,
+          0.0,
+          -0.213308
+        ],
+        "local_max_m": [
+          0.312812,
+          2.190592,
+          0.213308
+        ]
+      },
+      {
+        "instance_id": "library_middle_plant",
+        "asset_id": "potted_plant_02",
+        "room_local_xyz": [
+          2.05,
+          0.025,
+          -1.55
+        ],
+        "uniform_scale": 1,
+        "placement_policy": "floor_fixed",
+        "support_host_id": "",
+        "local_min_m": [
+          -0.280363,
+          0.0,
+          -0.263766
+        ],
+        "local_max_m": [
+          0.280362,
+          0.673587,
+          0.263765
+        ]
+      },
+      {
+        "instance_id": "library_right_reading_rug",
+        "asset_id": "common_woven_rug",
+        "room_local_xyz": [
+          5.6,
+          0.006,
+          0.1
+        ],
+        "uniform_scale": 0.85,
+        "placement_policy": "soft_floor",
+        "support_host_id": "",
+        "local_min_m": [
+          -1.175,
+          0.0,
+          -0.7
+        ],
+        "local_max_m": [
+          1.175,
+          0.0,
+          0.7
+        ]
+      }
+    ],
+    "study/R3": [
+      {
+        "instance_id": "study_reference_notebook",
+        "asset_id": "binder_notebook",
+        "room_local_xyz": [
+          -3.2,
+          0,
+          -1.13
+        ],
+        "uniform_scale": 0.7,
+        "placement_policy": "supported",
+        "support_host_id": "study_reference_table",
+        "local_min_m": [
+          -0.233599,
+          -0.0,
+          -0.079984
+        ],
+        "local_max_m": [
+          0.2336,
+          0.020212,
+          0.079983
+        ]
+      },
+      {
+        "instance_id": "study_reading_rug",
+        "asset_id": "common_woven_rug",
+        "room_local_xyz": [
+          -4.35,
+          0.006,
+          0.02
+        ],
+        "uniform_scale": 0.85,
+        "placement_policy": "soft_floor",
+        "support_host_id": "",
+        "local_min_m": [
+          -1.175,
+          0.0,
+          -0.7
+        ],
+        "local_max_m": [
+          1.175,
+          0.0,
+          0.7
+        ]
+      }
+    ],
+    "guest_centaur/R2": [
+      {
+        "instance_id": "centaur_storage_basket",
+        "asset_id": "wicker_basket_01",
+        "room_local_xyz": [
+          3.7,
+          0,
+          -1.52
+        ],
+        "uniform_scale": 1,
+        "placement_policy": "supported",
+        "support_host_id": "centaur_storage",
+        "local_min_m": [
+          -0.191847,
+          0.0,
+          -0.146659
+        ],
+        "local_max_m": [
+          0.191848,
+          0.118547,
+          0.146658
+        ]
+      }
+    ],
+    "guest_vampire/R1": [
+      {
+        "instance_id": "vampire_ornate_mirror",
+        "asset_id": "ornate_mirror_01",
+        "room_local_xyz": [
+          -1.18,
+          1.85,
+          -2.02
+        ],
+        "uniform_scale": 1,
+        "placement_policy": "wall_mount",
+        "support_host_id": "",
+        "local_min_m": [
+          -0.243248,
+          -0.372077,
+          0.0
+        ],
+        "local_max_m": [
+          0.243248,
+          0.372078,
+          0.025961
+        ]
+      }
+    ],
+    "guest_miu/R1": [
+      {
+        "instance_id": "miu_glass_die",
+        "asset_id": "blendkit_glass_di",
+        "room_local_xyz": [
+          0.4,
+          0,
+          -1.75
+        ],
+        "uniform_scale": 1,
+        "placement_policy": "supported",
+        "support_host_id": "guest_miu_01_table",
+        "local_min_m": [
+          -0.021037,
+          -0.0,
+          -0.021073
+        ],
+        "local_max_m": [
+          0.021037,
+          0.041964,
+          0.021072
+        ]
+      },
+      {
+        "instance_id": "miu_cat_figurine",
+        "asset_id": "concrete_cat_statue",
+        "room_local_xyz": [
+          0.4,
+          0,
+          -1.46
+        ],
+        "uniform_scale": 0.55,
+        "placement_policy": "supported",
+        "support_host_id": "guest_miu_01_table",
+        "local_min_m": [
+          -0.076534,
+          0.0,
+          -0.125054
+        ],
+        "local_max_m": [
+          0.076533,
+          0.28322,
+          0.125053
+        ]
+      }
+    ]
+  }
+}

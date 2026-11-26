@@ -793,9 +793,9 @@ func _add_canonical_interior_lighting(parent:Node3D,group:Dictionary)->void:
 		"guest":
 			var room:Dictionary=world.room_by_id(str(group.get("primary_id","")))
 			match str(room.get("owner_id","")):
-				"NPC_CENTAUR": specs=[[-0.28,2.15,-0.60,"#d5e5c3",0.80,3.2],[0.28,2.05,-0.65,"#f4c08a",0.80,3.2]]
-				"NPC_VAMPIRE_GIRL": specs=[[-0.24,2.0,-0.45,"#a9a7d8",0.55,2.5],[0.24,1.85,-0.65,"#e5aa77",0.62,2.4]]
-				"NPC_GINGER_CAT_GUEST": specs=[[-0.24,2.10,-0.55,"#ffe0a8",0.85,2.8],[0.24,2.10,-0.55,"#f5c48b",0.68,2.5]]
+				"NPC_CENTAUR": specs=[[-0.28,2.15,-0.20,"#d5e5c3",0.90,3.2],[0.28,2.05,-0.65,"#f4c08a",0.80,3.2]]
+				"NPC_VAMPIRE_GIRL": specs=[[-0.24,2.0,-0.20,"#b3a5e2",0.72,2.5],[0.24,1.85,-0.65,"#e5aa77",0.56,2.4]]
+				"NPC_GINGER_CAT_GUEST": specs=[[-0.24,2.10,-0.20,"#ffe0a8",0.90,2.8],[0.24,2.10,-0.55,"#f5c48b",0.72,2.5]]
 				_: return
 		_: return
 	var rig:=Node3D.new()

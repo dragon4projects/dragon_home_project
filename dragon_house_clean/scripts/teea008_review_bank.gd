@@ -653,6 +653,7 @@ func _apply_social_interiors()->void:
 	_apply_owner_decor_refresh()
 	_apply_owner_room_clusters()
 	_apply_owner_chair_and_glass_v1()
+	_apply_reading_guest_details()
 
 # Supported, noninteractive replacements only. Preserve existing table/support
 # IDs and skip any candidate which cannot fit its real carrier or peers.
@@ -769,6 +770,45 @@ func _add_owner_supported_glass(row:Dictionary,host_id:String,id:String,asset:St
 		var b:Array=other["bounds_max_m"]
 		if minf(hi[0],b[0])>maxf(lo[0],a[0]) and minf(hi[2],b[2])>maxf(lo[2],a[2]):return
 	row["instances"].append({"instance_id":id,"asset_id":asset,"room_local_xyz":[at.x,y,at.y],"rotation_deg_xyz":[0,0,0],"uniform_scale":1.0,"bounds_min_m":lo,"bounds_max_m":hi,"physical_footprint_xz":[[lo[0],lo[2]],[hi[0],lo[2]],[hi[0],hi[2]],[lo[0],hi[2]]],"placement_policy":"supported_on","support_ref":host_id+"."+id,"station_candidates":[],"support_slots":[],"owner_approved":false})
+
+# Measured noninteractive detail. Keep existing book/cup/artifact homes
+# fixed, and reject any supported prop which overlaps its carrier's peers.
+func _apply_reading_guest_details()->void:
+	var file:=FileAccess.open("res://data/canonical_reading_guest_details_20261126.json",FileAccess.READ)
+	if file==null:return
+	var doc=JSON.parse_string(file.get_as_text())
+	if typeof(doc)!=TYPE_DICTIONARY or bool(doc.get("owner_approved",true)):return
+	for key in doc["additions"]:
+		var row:Dictionary=layouts.get(key,{})
+		if row.is_empty():continue
+		for spec in doc["additions"][key]:
+			if not ResourceLoader.exists(_asset_path(spec["asset_id"]),"PackedScene"):continue
+			var pos:Array=spec["room_local_xyz"].duplicate()
+			var policy:String=spec["placement_policy"]
+			var host_id:String=spec["support_host_id"]
+			var host:Dictionary={}
+			if policy=="supported":
+				for other in row["instances"]:
+					if other["instance_id"]==host_id:host=other
+				if host.is_empty() or not host.get("support_slots",[]).is_empty():continue
+				pos[1]=host["bounds_max_m"][1]
+			var lo:Array=[]
+			var hi:Array=[]
+			for axis in range(3):
+				lo.append(float(pos[axis])+float(spec["local_min_m"][axis])*float(spec["uniform_scale"]))
+				hi.append(float(pos[axis])+float(spec["local_max_m"][axis])*float(spec["uniform_scale"]))
+			if policy=="supported" and (lo[0]<host["bounds_min_m"][0] or hi[0]>host["bounds_max_m"][0] or lo[2]<host["bounds_min_m"][2] or hi[2]>host["bounds_max_m"][2]):continue
+			var collision:=false
+			for other in row["instances"]:
+				if policy=="supported" and _support_host_id(other)!=host_id:continue
+				if policy=="floor_fixed" and other["placement_policy"]!="floor_fixed":continue
+				if policy not in ["supported","floor_fixed"]:continue
+				var a:Array=other["bounds_min_m"]
+				var b:Array=other["bounds_max_m"]
+				if minf(hi[0],b[0])-maxf(lo[0],a[0])>0.001 and minf(hi[2],b[2])-maxf(lo[2],a[2])>0.001:collision=true
+			if collision:continue
+			row["instances"].append({"instance_id":spec["instance_id"],"asset_id":spec["asset_id"],"room_local_xyz":pos,"rotation_deg_xyz":[0,0,0],"uniform_scale":spec["uniform_scale"],"bounds_min_m":lo,"bounds_max_m":hi,"physical_footprint_xz":[[lo[0],lo[2]],[hi[0],lo[2]],[hi[0],hi[2]],[lo[0],hi[2]]],"placement_policy":policy,"support_ref":host_id+"."+str(spec["instance_id"]) if policy=="supported" else null,"station_candidates":[],"support_slots":[],"owner_approved":false,"reading_guest_detail_revision":"READING_GUEST_DETAILS_V1"})
+		row["reading_guest_detail_revision"]="READING_GUEST_DETAILS_V1"
 
 # Owner permits furniture relocation. Only two unsupported chairs move;
 # preserve support IDs, cup homes, dragon and the authored shell.

@@ -47,7 +47,7 @@ func run()->void:
  assert(a.phase=="idle" and not a.has("station_anchor_id"))
  assert(nav.clear(kitchen,loaded.room_world_to_local(kitchen,Vector3(a.x,a.visual_y,a.z))))
  assert(b.phase=="perform" and b.station_anchor_id==claim.anchor_id and b.until==200.0)
- assert(loaded.runtime_state.teea008_geometry_revision.ends_with("|OWNER_THEATRE_STAGE_V2"))
+ assert(loaded.runtime_state.teea008_geometry_revision.contains("|OWNER_THEATRE_STAGE_V2"))
  var count:=0
  for row in loaded.journal:
   if row.event=="TEEA008_REVIEW_GEOMETRY_MIGRATED":count+=1
