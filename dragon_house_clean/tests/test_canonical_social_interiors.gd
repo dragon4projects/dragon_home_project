@@ -24,7 +24,7 @@ func run()->void:
 		for item in row["instances"]:
 			var asset:String=str(item["asset_id"])
 			if asset=="sketchfab_steampunk_coffee_machine":machine+=1
-			if asset=="wine_bottles_01":bar+=1
+			if asset in ["wine_bottles_01","blendkit_jack_daniel_s_whiskey"]:bar+=1
 			assert(not ids.has(item["instance_id"]))
 			ids[item["instance_id"]]=true
 		assert(machine>=1 and bar>=1,str(room["id"]))
