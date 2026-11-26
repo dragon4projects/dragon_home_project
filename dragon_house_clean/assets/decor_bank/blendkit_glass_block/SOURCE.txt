@@ -1,0 +1,5 @@
+{'id': 140534, 'firstName': 'Dennis', 'lastName': 'Kreker', 'gravatarHash': '09af04f56d371fb65734bfebd736fd9a', 'avatar128': '/avatar-redirect/16e9f346-c2c3-4fbc-a391-2d8c89915f24/128/', 'avatar256': '/avatar-redirect/16e9f346-c2c3-4fbc-a391-2d8c89915f24/256/', 'avatar512': '/avatar-redirect/16e9f346-c2c3-4fbc-a391-2d8c89915f24/512/', 'aboutMe': 'Freelance 3D Artist from germany. Doing archviz, concept art and automotive renderings.', 'aboutMeUrl': 'https://www.dennis-kreker.de', 'fullName': 'Dennis Kreker', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/7f67d2a9-4f83-4ac1-b5fd-ae6d292f865f/
+royalty_free
+Source SHA-256 54f68aa8522fe4304d9bbdef93ca0a83a9a3780d5a7eda1dfc454dfbf99dfa81
+Modified mesh, textures, pivot as documented. Candidate only.

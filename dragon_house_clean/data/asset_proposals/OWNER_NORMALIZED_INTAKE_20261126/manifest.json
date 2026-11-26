@@ -1,0 +1,1415 @@
+{
+  "items": [
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/SOURCE.txt",
+      "bytes": 738,
+      "sha256": "2fa16826a2dcaaa4402d936b986c67520b05af6f0b2101e5fd460f801a8abc3e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/deps/model.bin",
+      "bytes": 189946,
+      "sha256": "4cb3c00cab1d198100e9df94bdf91dbfdce29b5766e340871bbd514824a9241c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/deps/tex_00.jpg",
+      "bytes": 17757,
+      "sha256": "8734d66809f51df55231fd93acb152c492b585aed23aa13886b2552d3cc6866c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/deps/tex_01.jpg",
+      "bytes": 3356,
+      "sha256": "f3786674314d7824d2b70b9106228e0414c7f6c1606884068048727b96b154be"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/deps/tex_02.png",
+      "bytes": 111898,
+      "sha256": "3739c25891075e6c1ee9bb5921b0c19fb6a211c6228c0ae4d998653f7f4c2009"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/deps/tex_03.jpg",
+      "bytes": 12125,
+      "sha256": "132847f27613ba58f5ccb8762cae621b8ef3449530d933129c67f85f90028f28"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/deps/tex_04.png",
+      "bytes": 33392,
+      "sha256": "f1351121352e6a3d3a4115be63b892f7b312d9bf86ff72fc44a84a558f52cc70"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/model.gltf",
+      "bytes": 6515,
+      "sha256": "86a20f1c9578401ff256fcd4e99fb2770aa98bc0015546846c1877f2acb97c75"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_beaker_flask/SOURCE.txt",
+      "bytes": 1458,
+      "sha256": "b2db98750937c779535e781c5b0acb023222e5704959171287212abefeadfc4a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_beaker_flask/deps/model.bin",
+      "bytes": 171984,
+      "sha256": "5440259830e6b1dc2cd561f20331d9f0ed3a08b9e7b22ff10604e1e6746eed96"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_beaker_flask/deps/tex_00.png",
+      "bytes": 3405,
+      "sha256": "c9550a8f357841e58e2b61894082b10a402a765dd43442c681196b0bf6a137f4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_beaker_flask/deps/tex_01.jpg",
+      "bytes": 22762,
+      "sha256": "20cef762352a36b9b02411b828e23f19e2d8f7a8bb2e7610e3eee5e07f081a1d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_beaker_flask/deps/tex_02.png",
+      "bytes": 71818,
+      "sha256": "b73124bfaddcdd8d7576071cf67778c8a0f51fbd127fc4f7aff6fe6e57b3febd"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_beaker_flask/model.gltf",
+      "bytes": 3529,
+      "sha256": "19ee8798bf1584051c28aa0ebda35cced1dc878845ef7c305a95742aad6531ff"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/SOURCE.txt",
+      "bytes": 1297,
+      "sha256": "1261b35bfd0ae00f38069057a3bb2f9726902cb7be25302bc819d914c8241ad1"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/model.bin",
+      "bytes": 343806,
+      "sha256": "6d00807ee27405e371736eec7653c227904b07ad6b6f1072d881d4c9abc38a40"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_00.jpg",
+      "bytes": 28278,
+      "sha256": "518107f50c0ac14348df7bdce85477af32434879a15bde9297b24e3278c5147b"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_01.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_02.jpg",
+      "bytes": 24333,
+      "sha256": "8d5dbdad78b9a62a4a5e764c6c5108a3a5fe07f98e70a5e12a6bd5f5d732d6e7"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_03.png",
+      "bytes": 60019,
+      "sha256": "010219c899d42663868900369e580cb0f0e5fa8ce8695a0c8fcaea77c33d1020"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_04.png",
+      "bytes": 133093,
+      "sha256": "e878f4a85b2526bb3471f2312f8203095688546b356c55b8f49875a628f02690"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_05.jpg",
+      "bytes": 5854,
+      "sha256": "6b49ec3ae3aa7dfe99b3d38dc64b0e53e1933f3bf92af514853c9f93ca640cb0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_06.png",
+      "bytes": 46841,
+      "sha256": "759a74a229158d7b7a6cd2062936dfbc7797adf16f2ab0f18e81dd2d29da41dd"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_07.png",
+      "bytes": 133110,
+      "sha256": "767e65df08bd8aee0bd0a40f130167cfce0c905be8f03c956e0dc3bb9b1f5a12"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_08.jpg",
+      "bytes": 5854,
+      "sha256": "6b49ec3ae3aa7dfe99b3d38dc64b0e53e1933f3bf92af514853c9f93ca640cb0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_09.png",
+      "bytes": 46945,
+      "sha256": "28587a209c5ef9be2ccb6e3160f557c81ba62c5605ba805fc11bd7e4bf3df659"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_10.png",
+      "bytes": 143706,
+      "sha256": "c62eacdced6a681ca21403de0a37a9d37713448e253e9fc93981aff6a38486a4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_11.jpg",
+      "bytes": 5971,
+      "sha256": "d6644e3d0a0f3efa9b64753240c68318c48408b610f408807ca9831a42899c56"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_12.png",
+      "bytes": 46891,
+      "sha256": "8c21a5e087be8bf92197811a69660abb3edbcf790b511474416f866d74bc3080"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_13.png",
+      "bytes": 143593,
+      "sha256": "7c9fcf0d5bca5849888d5b8df328944ea277ad188053f62a5155ed76d4753bc4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_14.jpg",
+      "bytes": 5910,
+      "sha256": "20b8c716fe6629209417ed1457479556dc4c2ff5e03df65d42f44d1217074062"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_15.png",
+      "bytes": 46756,
+      "sha256": "816ca5f9d340023094c3ed37ba9d18c77c76fe5e1d4ec086ca9ede42c4dddad9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_16.png",
+      "bytes": 146981,
+      "sha256": "e4fcb81146ddceb78107c87131b0331f487d92b08f84ff15832402e37594ad9e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_17.jpg",
+      "bytes": 6265,
+      "sha256": "627bf65cc66dd2b048381bd5709af5c1bf4c20aadf677ef83a2918b49270e415"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_18.png",
+      "bytes": 47374,
+      "sha256": "9ccc9955a8c5502e74a6fba5c1536e72bcb360c18b0f9f2ecd86ca838cee3fbe"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_19.png",
+      "bytes": 127810,
+      "sha256": "db9072b670e83161796e99ecc9bc43021ee93d7913f1730daffc99ea90ab6ba9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_20.jpg",
+      "bytes": 5943,
+      "sha256": "fdd2cc1564c68463267e209e854c8c15c5f0103d5d541021a10901df48182b3b"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_21.png",
+      "bytes": 46782,
+      "sha256": "1d65b7e22905203e075afc448131dd74ce5b40a2800cad36ea62b8b1c8befd1c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_22.png",
+      "bytes": 128160,
+      "sha256": "046078221ce97d78b1c62f7a4f17fd25fd13dcec7095384bec37388ec6a11dd0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_23.png",
+      "bytes": 46565,
+      "sha256": "440da938832e81376ba8b253478628f286ccc2672eb2dfc5977933c8d8fb14c5"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_24.png",
+      "bytes": 138884,
+      "sha256": "d9645b9a93c58bf753fced578e7d663afa07b6f7a28ec0e9e4856121cacf31cf"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_25.jpg",
+      "bytes": 5970,
+      "sha256": "f1845d70e968adcfd2b270a9ec753e61418aefc7be47e071b90eed6982f11e29"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_26.png",
+      "bytes": 46815,
+      "sha256": "99b42823d24bd977cfb8cfcdad3f90bca0e1058923ae949ad3c809d923e0f1a0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_27.png",
+      "bytes": 138992,
+      "sha256": "8de7f8ff3f1d06c39445cb309d7d1495d6668ac3604a57b6d21012c1d289b151"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_28.jpg",
+      "bytes": 5945,
+      "sha256": "5b1107f6724ba88e6fb7f284d09689021ed369e1351d2868b86fa0478f80ea9c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_29.png",
+      "bytes": 46653,
+      "sha256": "594d35f8e6fcee9b062177bb819078d3aaedcbbf03a0c50205d067d437f09dbc"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_30.png",
+      "bytes": 141801,
+      "sha256": "026ae60f1507068689d5307f26ace859554d68a2df9dd2dab870aac7fa24a383"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_31.jpg",
+      "bytes": 5960,
+      "sha256": "d8709545d1aa308e5fb7a8e8d60ad079aa6206646d9ca9d54dfcbb2ce9761b60"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_32.png",
+      "bytes": 47257,
+      "sha256": "e75326ebed37908061e598c169efa2dbf0d0b4eafab2b3696d45c3a35a01e3f1"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_33.png",
+      "bytes": 128067,
+      "sha256": "0a02cd8edd5946598f85fa0c3f64a26a9bbd92b82d522bd135347c0a7f9f08d9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_34.png",
+      "bytes": 46654,
+      "sha256": "f6ca1e6d9e23f8a9858b13accb9de2979a3f2094f3a0fb510ba3108d439e2314"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_35.png",
+      "bytes": 140382,
+      "sha256": "c8dc97d2a9e42743e92fc6796ab276c0973c68dc2c8ac9fa4bb1bc6d94f51f78"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_36.jpg",
+      "bytes": 5965,
+      "sha256": "08962b4c0a31d96b9514e45e342c6f23941cc4de7df406d9c217bf3118d49dd6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_37.png",
+      "bytes": 47490,
+      "sha256": "a437f527c1e1e4f61a4b1675a6e25451a4ee3bf479b7c79b56958ee1f414b8fe"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_38.png",
+      "bytes": 140034,
+      "sha256": "7bdb482d2371453a2e9de71755ef7744b74140bae587d458b6a41fe2c5417be8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_39.png",
+      "bytes": 47218,
+      "sha256": "8052130b188c5cc1ab47bffff6d90cc12993e052d4e93a0f09874b5c167eae2f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_40.png",
+      "bytes": 151061,
+      "sha256": "d9d646c911fe53ce144d9e8c2a42ec724afc4095243f981c09929adf25664281"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_41.jpg",
+      "bytes": 6325,
+      "sha256": "12ab9c2106d9a0556799fb9c08143ff5f39c9e0ddd795e601df8ca5785c74adc"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_42.png",
+      "bytes": 46950,
+      "sha256": "c7dd9a65bf3ac14c21de82e58351dbf122931d0b715aeea9213af3e351fc0e1f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_43.png",
+      "bytes": 150535,
+      "sha256": "7636ae6ca100d4b04f02e7e76779c36a6a8c4ca433a78e8d3a7d1658b64a0bdd"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_44.jpg",
+      "bytes": 6243,
+      "sha256": "f04f56dd8dad849700ca4656c3d8b64e95047c03cd340b7e469d80def3d659b8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_45.png",
+      "bytes": 47136,
+      "sha256": "0c7d55c72eaed73951b5973fd873e2a689c12a413b82d1898a89ac6d30444ead"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_46.png",
+      "bytes": 143224,
+      "sha256": "2358aad045e3124204128afe4b6fdfb443a5c98f20e13cd4af4e1c2b23505c2b"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_47.png",
+      "bytes": 47054,
+      "sha256": "20676cff3b333c655f4b9fc1f4633d8a902d992fd203a987d8e798bf16627927"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_48.png",
+      "bytes": 129777,
+      "sha256": "6223fe7e2611cac0d95a634d6227dd10283c6d162a63d1ea92e78695886111f6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_49.jpg",
+      "bytes": 5948,
+      "sha256": "a1bb87a8de912f117dd39f447969a7a24733d9b59c96dc7a1004dcac8d4bd13c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_50.png",
+      "bytes": 45957,
+      "sha256": "20a438c10cc76a0942a3097415d4c3f02616547a3ca88de5843ff3c503cb5b6a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_51.png",
+      "bytes": 124105,
+      "sha256": "9134595f3db78a063c140b217f3a6a2f8b4f23da773946430332405109300b35"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_52.jpg",
+      "bytes": 5954,
+      "sha256": "d542540a88c954cd6c9fa0ad52bef840079681fe413b7a86cc68d8ad19ca0be9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_53.png",
+      "bytes": 48997,
+      "sha256": "8f64410290ef1bddbeffe64504c534d1824d56b316c5f628c224a2df42967bfe"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_54.png",
+      "bytes": 123928,
+      "sha256": "acb267c6b86107deb724b4cfa855a299208da17e7898de138ea6a7bfa610dba8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_55.png",
+      "bytes": 46811,
+      "sha256": "a49a98052a834598d3be2558aa059fb6be216664c474152687261eae2592fd4c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_56.png",
+      "bytes": 124220,
+      "sha256": "c247532c3464e24176b4ea458d7b91e34dd357917a46586c450800f5114eafbf"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_57.jpg",
+      "bytes": 5913,
+      "sha256": "ebd766c75ea7e05b16b838494876888273de9391594137352a0cdb620333073c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_58.png",
+      "bytes": 47614,
+      "sha256": "e6a855ef43cc85730c65610bd99bbc446103d1bcdd33db3aad172bac5ca7777b"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_59.png",
+      "bytes": 131457,
+      "sha256": "fac6931c62d0d5f639048956cc2ef883802f04337aa5044f787c801d13e7ee9d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_60.jpg",
+      "bytes": 5835,
+      "sha256": "ae1f6ba61b62cfdf83b0530541c8bf8c5540bfd918797506698de6a9106cb897"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_61.png",
+      "bytes": 47512,
+      "sha256": "bf1313c6d273423ad9bd4e6005fe20a8a3230c45859ad0c40c0237a0afbddad8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_62.png",
+      "bytes": 127561,
+      "sha256": "f9e4b5a4875d6512db1492ab9d5f58815e13224ed0474e14284bc14fc568e8ad"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_63.jpg",
+      "bytes": 5913,
+      "sha256": "e7b633627f96967a2c7606d6d9b03aafb436375cebe156592f72b7f4fa78aa2d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_64.png",
+      "bytes": 46620,
+      "sha256": "9991a9d4662073f31974e8de407d82130125fbeedd10a89b0f3974b77e4dfd30"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_65.png",
+      "bytes": 124150,
+      "sha256": "cc980ad4d6ecfe6961086feafcb3a22bf4774440a246dcf5161638a9a2f5c19d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_66.png",
+      "bytes": 47069,
+      "sha256": "2ecc22bdf1baea3c05518e419f9061e1e41996bb355d3e79fb858227eb9c35b6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_67.png",
+      "bytes": 126954,
+      "sha256": "e501437a8fe6c24b649a07fd4966d261404ddd6bd20e1fa9af65512acc4d871f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_68.jpg",
+      "bytes": 5943,
+      "sha256": "473211c19c3229ef7a1a2a7f24a53fcb5f435a2bf2a0ca5ecb99eb47131e4c70"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_69.png",
+      "bytes": 66300,
+      "sha256": "e3b075ff7f1474ed61ca563b444ed94b85f8953b079975862b83deaf13e73b76"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_70.png",
+      "bytes": 124289,
+      "sha256": "320b4f26df937ebd10462588547855d3d2ca8fc6ec7a396e0fcc9efc192e8c4a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_71.png",
+      "bytes": 63171,
+      "sha256": "f29de27a6de8d301b624ec990e883bf65366c8e63a59264018ba53f4f64f6b3a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_72.png",
+      "bytes": 127913,
+      "sha256": "097220ffaa717b4d8cf85be320a0a37a146d0d5f74e2f12fa2c265f23ec96ccd"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_73.jpg",
+      "bytes": 5937,
+      "sha256": "8bef366717838150df096fba38826b81d0eb2ddbd3f363f84fa423f3675aa63e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_74.png",
+      "bytes": 64935,
+      "sha256": "8871fbdf184d568fb3df25512032bbfbae8c33d9e441be048bb6c05978bda115"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_75.png",
+      "bytes": 124011,
+      "sha256": "7ba6b5c2f0a4693cb6e457c663e296370c4b44d32fe6ae979557848f74a309b4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_76.jpg",
+      "bytes": 5970,
+      "sha256": "0dd333a058674b808af3aace23db3f63a4006d53bccd38c22e4286179a4fa385"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_77.png",
+      "bytes": 62534,
+      "sha256": "f35f00754020a9081402bf0230e2521c5772b0eaa6b61bba3a7b2297a9af4621"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_78.png",
+      "bytes": 124018,
+      "sha256": "25b22d7b19da7e54e2ee60af0f3d2917de1f0bc55dc37502c231613ef2196ba6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_79.png",
+      "bytes": 62944,
+      "sha256": "59bd308380be08d087f6fd0b58af69b75b42f64cd3e0a5bdac8af3decb6addef"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_80.png",
+      "bytes": 130296,
+      "sha256": "b8c5582bdd2f4eb936da3365799781ad38836d49a9259adf23def08896729831"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_81.jpg",
+      "bytes": 5988,
+      "sha256": "830f61c79d5673f7a37d1b6d5f3d2c110a911677b84a1ebce26b66519e65a345"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_82.png",
+      "bytes": 65738,
+      "sha256": "75517ca6c3fafcf917703d6c3d09ce392402e4772c58b66a10a05402724c3a4c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_83.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_84.jpg",
+      "bytes": 19066,
+      "sha256": "3d2a39c10473c8b4416b0aa25d25763ecd9edcdc2b8b7a0bdb081372b08adf22"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/deps/tex_85.png",
+      "bytes": 216411,
+      "sha256": "407396d5dfabdf748adaab0768040530abfc132ec923ad4df8d118d09fec94f3"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_coke_glass_with_ice/model.gltf",
+      "bytes": 49570,
+      "sha256": "601863f2ea19c9b0cd6d5c44e2df698cc7d916e51a39e8f70af780a46eb52829"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/SOURCE.txt",
+      "bytes": 983,
+      "sha256": "557a198c78f669052e2674643a3a45561f2d658a1eeba756df0a5ac3e3a5ba64"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/model.bin",
+      "bytes": 186392,
+      "sha256": "d52355b1e29848b798c2d02187da6f4a0fc70690c66a3d9b7e518f334ba656b8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/tex_00.png",
+      "bytes": 84245,
+      "sha256": "771507fe6ea1b9ac391da972aaef5e146af8f5e076342266156bf3b73e3962a5"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/tex_01.jpg",
+      "bytes": 10321,
+      "sha256": "39349de70b6c6607f26890945ed884724214d42ec5389559c8682c545f9f9ed7"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/tex_02.png",
+      "bytes": 6969,
+      "sha256": "da733b4d101a75a5d05b14d10171199d98d3a19c930fad69973f24f18eeeae08"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/tex_03.png",
+      "bytes": 84792,
+      "sha256": "8fa695e90403b2bd19ddc7392e58819d284cda155c7a4a42ffebf990b8098551"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/tex_04.jpg",
+      "bytes": 45186,
+      "sha256": "657f33fb47d85028618626b09a3df60c262d76bd384bcac049c61f880ced1e65"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/deps/tex_05.png",
+      "bytes": 70297,
+      "sha256": "3bcb7b58ec747a9bf810b3fd5fb1c02ddd189f2b43d4ed4d06813483ba210661"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_decorational_glass_cover_storage/model.gltf",
+      "bytes": 4506,
+      "sha256": "b4b27404bdaadf87a603e473833457c5366604ba22e1e1c72442e4fbfaebae79"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_dome_01_glass/SOURCE.txt",
+      "bytes": 1672,
+      "sha256": "06cbc295ce692311a3cb92872faef727603c79347b408cb77b81df1741ae1f5d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_dome_01_glass/deps/model.bin",
+      "bytes": 381984,
+      "sha256": "d8685a52e5a741050590a26638cd0485810ea2d1bafce5333abe49dd4f3ef642"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_dome_01_glass/deps/tex_00.png",
+      "bytes": 265859,
+      "sha256": "9d591f9bf5130bde3d96010be3bfe4250bd47f6e090259674762b5d353b36758"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_dome_01_glass/deps/tex_01.jpg",
+      "bytes": 44112,
+      "sha256": "7695264c11b88fbd0f27ac52b66aa839bfb47b6022802677d021b3a008fc78f9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_dome_01_glass/deps/tex_02.png",
+      "bytes": 191706,
+      "sha256": "d2d560ef24ab2eea2444c62bb8b7b91ba9e863ed4d6373174abdd1d168d96515"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_dome_01_glass/model.gltf",
+      "bytes": 3556,
+      "sha256": "34f8f67dba1d3e16bac40d773b8b6d1f8ad1e610275ee4d776a89ef4e298b7d2"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_block/SOURCE.txt",
+      "bytes": 775,
+      "sha256": "a99321d17aa06e47c0ca7accfc97944bfc4ec1183d5b3f898e80072c6c17c65c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_block/deps/model.bin",
+      "bytes": 435900,
+      "sha256": "08994f93f16dec36a1f8a5d8254ba47df9b9e51ff579c9a09b8c122ed446bdb0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_block/deps/tex_00.png",
+      "bytes": 12130,
+      "sha256": "245d835d456a8f3ffe765586d84ce19298eebd0aaaf92ae7bde8c011b0df76c1"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_block/deps/tex_01.jpg",
+      "bytes": 17892,
+      "sha256": "20cd800ebeb4b8ad770d062869df009bcdfd5404324a724e64c16fdaab6072da"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_block/deps/tex_02.png",
+      "bytes": 259673,
+      "sha256": "9459f14eb435380f665f0dca63c293e4908fd9be358a54d47024649d6724c8a4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_block/model.gltf",
+      "bytes": 2864,
+      "sha256": "277d37b32b488e32abd278fdee518c126c96fc67199d298b8e9b887bc7010b52"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/SOURCE.txt",
+      "bytes": 761,
+      "sha256": "c4787777fb7be9e632fa2f9073fbddf2fe3c26d735bdc9d905db7d3430b1f5e5"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/model.bin",
+      "bytes": 379938,
+      "sha256": "437bdf45cc74f4bce6f0a32acf3ed37be07b78a9af64a823d62f8c3b3e29ba81"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_00.png",
+      "bytes": 5162,
+      "sha256": "05b2e582e18d7166c493cd15a47a1dd30fc286286151cae50e7ca25ce94b94b3"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_01.jpg",
+      "bytes": 119073,
+      "sha256": "eaf592b656d196b44dbd2c05dc094fa64db0a4ddc65120200e57fef064e8169f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_02.png",
+      "bytes": 364743,
+      "sha256": "eeb830ab00c44573fde78517996de200fa1b6d541a97c37267baa4d4c03bd16e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_03.png",
+      "bytes": 11459,
+      "sha256": "5e412a30252a960118bbdd769a0b428056a422003458889f40d614abeefe7024"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_04.jpg",
+      "bytes": 132614,
+      "sha256": "3eac09077f4421d1959e67a92ce11c63edf6e215ae9d361d6c175d1e331ec4f2"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_05.png",
+      "bytes": 239353,
+      "sha256": "b037173ab20b76658fc62a08f33a20ee366bdd1dd98b80463f8e895cfd699ffc"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_06.png",
+      "bytes": 16715,
+      "sha256": "6e269a953e4c8250be98504bffd8e53924217710ac7c44f26909156d847accdc"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_07.jpg",
+      "bytes": 116015,
+      "sha256": "2db5f7a31f398898558d95050c3795e75e07fd610313a90d996e922f43c9a991"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/deps/tex_08.png",
+      "bytes": 190534,
+      "sha256": "ed50314c7406da9b75a6eceea331a22ae89cc1dbd7fcd29d7cafbe13101bc7a0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/model.gltf",
+      "bytes": 5473,
+      "sha256": "7dee48e1fe6b8dd468c14ed48394c87d2c9c9d773689c55d8831cd3830964244"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_di/SOURCE.txt",
+      "bytes": 796,
+      "sha256": "da367603293c4413154cabfe91a062934d5aaf915449d889595c466996f66c40"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_di/deps/model.bin",
+      "bytes": 166752,
+      "sha256": "1de1b09283e49080388670c522052b3c7f7b52ad408feb7b9782072be2798c37"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_di/deps/tex_00.png",
+      "bytes": 3815,
+      "sha256": "af05fa49a517d81ae9285f556132c310a570eea1d80c70b1bfe8b6a39957c423"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_di/deps/tex_01.jpg",
+      "bytes": 29748,
+      "sha256": "5f39590d1866e0097b679b3cfc47eaaf012aa1d3ed1be9b434ee133bc433b907"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_di/deps/tex_02.png",
+      "bytes": 118454,
+      "sha256": "d4f44286af3e6573945c8a38bb69557df79caddec143f0eb692cbb3a1e09fe1d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_glass_di/model.gltf",
+      "bytes": 3853,
+      "sha256": "709041cd3d0ea55922f89743b76d32bf1939035309e114da7407a0303e7ee742"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/SOURCE.txt",
+      "bytes": 885,
+      "sha256": "ca44ceec91f65126187133b0217a3996833b9bf9c30d9e1403ad32feeccb8411"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/model.bin",
+      "bytes": 271858,
+      "sha256": "fdb32785bcfe4ca54271a64d50ec31240ef6f0dc7ebe967e7f6cd40b9704925e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_00.png",
+      "bytes": 3456,
+      "sha256": "09e51b55fe8ef780881e4cadd7bc6a70fbfd4184ee297d2717d8acca4d633715"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_01.jpg",
+      "bytes": 22075,
+      "sha256": "b27447040e229405d96c75f9f62d96602b8d10048d3f271aa0b178e7d04c51cd"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_02.png",
+      "bytes": 87117,
+      "sha256": "79d855e9df105c251d80c4af0b3f9cb5c3146f9e7a48248d3ebee9e428cadcf4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_03.png",
+      "bytes": 107037,
+      "sha256": "10754402fafa3db01806a91dba9ac5e44f38265a2b66c2db24438cd5645926d8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_04.jpg",
+      "bytes": 7268,
+      "sha256": "ab35927ffe39ce163f06a32b849125555b35737b33092ff3d5a377bd0f6dad56"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_05.png",
+      "bytes": 179825,
+      "sha256": "869b62c2e24b307795ec4e4f6eff4f662ce6052717f19f6585e34c4c7b35e023"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_06.jpg",
+      "bytes": 66152,
+      "sha256": "ee35c7db2bb616f292a4fe6c8d1b870fcaa6a5a9c6b0cc318154b16fff07fcff"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_07.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_08.jpg",
+      "bytes": 27781,
+      "sha256": "1e2b6e7d7ffead8b1967e440cb2328e3e0e2de870d26ecb8944eb2ddc441db2e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_09.png",
+      "bytes": 67225,
+      "sha256": "62d8de4c4cbbcf7f1ed2f0bed569d9346354dfc969b99e1434db6b40e1240805"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_10.png",
+      "bytes": 4928,
+      "sha256": "3b3a1532520a0594615a01aefbc3f11bbd2817068e7b036b27e542c43130bb95"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_11.jpg",
+      "bytes": 22805,
+      "sha256": "a9ce7f43a2e339dca056caab6d897abd40306e5192ea6341a8c37b3ff520ecc6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_12.png",
+      "bytes": 842,
+      "sha256": "57b5e40e68e97c62837b9d0a5a8f7aac22471c1633897f9bcf4fa62864ecc974"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_13.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_14.jpg",
+      "bytes": 8457,
+      "sha256": "1e10d579eaa8259e685b9b996815e558f0f25b1689fdafc5a2ce877dcc415c58"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/deps/tex_15.png",
+      "bytes": 44176,
+      "sha256": "824c467cec24f56bd8249f493a60124650e71bc140e07560457fbcf7b316f863"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_jack_daniel_s_whiskey/model.gltf",
+      "bytes": 10037,
+      "sha256": "9fdf36ee0a74179696584abc8e03be8133d55eafef9b53fb1b4ebfb40bb2512a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/SOURCE.txt",
+      "bytes": 725,
+      "sha256": "507846f2be8f46858c3e3cc26e3417ce78c5424cf2f4ff156b40270e3704ebdc"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/model.bin",
+      "bytes": 365568,
+      "sha256": "6db0a0219d632d08cd3f0ec913d7407a10e251c3413348ebd43e2ba6a558e1c1"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_00.png",
+      "bytes": 6041,
+      "sha256": "7703910c39134b71e1325a455bd78ae07b978cfc86ab96a1096f9ccbcf0401b4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_01.jpg",
+      "bytes": 28120,
+      "sha256": "27547c700e4e5dca4afb820559300ee06c02982cb0125cb6e16d153e7ad619ff"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_02.png",
+      "bytes": 127291,
+      "sha256": "d8ca6c796932f449e5f0156051fb969105bf88287337830107bc5343364610f2"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_03.png",
+      "bytes": 7605,
+      "sha256": "73279735b9dd658fd13ff72d7e011a3fef84f828bb6225c6d0186bc089b0fdd7"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_04.jpg",
+      "bytes": 42523,
+      "sha256": "71a0e319ee5a1fda01cfab8939fd2b3f36369e4ec1e0b69a08fa0a8ace386cdc"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_05.png",
+      "bytes": 136377,
+      "sha256": "70bfb7b5446566382788781f807ab483b112fb007bdd9132fe143e55764ff86d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_06.png",
+      "bytes": 3970,
+      "sha256": "b34330bff672e27767431db6f888a421600e42e7bca14c53da1d392e16d7e173"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_07.jpg",
+      "bytes": 37647,
+      "sha256": "218aca3a145249e520574ae2f9631747c9cddea3fd728203bcf53d9f4c77e580"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_08.png",
+      "bytes": 138568,
+      "sha256": "f1c14719504225dfb15d02168ef984fadcf35b07a2ce28f1380355ff18667e22"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_09.png",
+      "bytes": 4764,
+      "sha256": "934a27bc94a8e06922216faa9490c0b71ef8f8efb48b64d70bf0d07a583a47f5"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_10.jpg",
+      "bytes": 29032,
+      "sha256": "646d8e532f5debc56a5d97bf8e2e40ef115ddff8b6d573533de6bd2053329565"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_11.png",
+      "bytes": 118318,
+      "sha256": "08619f2d0a48c5d36c2ae21ad0fd8596ca77b6db0b54ba7a0abc1720d8c238e8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_12.png",
+      "bytes": 5426,
+      "sha256": "76cc149875bb6f180ad830de70515131ec71a4db6dbc800a9e6aa98c093dbb75"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_13.jpg",
+      "bytes": 44412,
+      "sha256": "33eb189309f50a5848220f83943440d7dd1999c3234aa1153a2009a08ed7f7a9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_14.png",
+      "bytes": 145913,
+      "sha256": "895743144bb561217fbed16376439f729b74d7cc7f909ade1b4f0b2be7f8f50e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_15.png",
+      "bytes": 3921,
+      "sha256": "ebf78f54e7b4d321b73f2bec37b85bf1bf89b849840b2d82c3e945d44034ec9f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_16.jpg",
+      "bytes": 39319,
+      "sha256": "91bef6752b12c45b33dc5c2a29d4bbe2cb6dd6c9446993c5527de8ecafe6fd77"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/deps/tex_17.png",
+      "bytes": 136886,
+      "sha256": "e538772524631d0a5c7beba066ede7becb38550563d803b9486cad8654c6d4f8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/model.gltf",
+      "bytes": 11369,
+      "sha256": "d221ec810121db4ba68b60c9afbc2a0db8140cbeb8c9b387c7c976bcfceb06df"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/SOURCE.txt",
+      "bytes": 1051,
+      "sha256": "93a51f330e54f1f3723eb6f9faaf3737e8ec40d76d1af246077022d2a189e06d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/model.bin",
+      "bytes": 599194,
+      "sha256": "750b9f277267d7734bcc1fe3da78aaf130997682d2a78277dac4b7e9ae68eae6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_00.png",
+      "bytes": 3319,
+      "sha256": "aa26f6b8939f225a84c7a7e7aa8b5a5aa0f0b0fd909cd7d42d3a101bb67a9066"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_01.jpg",
+      "bytes": 12980,
+      "sha256": "9ed5642e08c12c21e62b0f3886c4f1eb1de16906d2c458966bdae4421347138f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_02.png",
+      "bytes": 83465,
+      "sha256": "842865ba4610dc0dfc5736655570f6e87844e25eeb07bea6f5426d2ef29d86b2"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_03.png",
+      "bytes": 106357,
+      "sha256": "4f2cfbf9a215d434d7bff8fae4edfe78b97d2117d175cb87c23269cd15a5b8c8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_04.jpg",
+      "bytes": 25768,
+      "sha256": "0f44ff28a4163e864e787ee7866269494abdea643e85b8215a5e60c3001f42d9"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_05.png",
+      "bytes": 46113,
+      "sha256": "421dffabc089b02f40f98ad25c691cbd21fa37aa4dd5644886b936d736637f12"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_06.png",
+      "bytes": 103062,
+      "sha256": "3e9864b32f44388315ccc4cf340c81be191b7cb4968ae04474049884da4d160d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_07.jpg",
+      "bytes": 22079,
+      "sha256": "e62c5fb5dfb4470ef94c4008cbd3d9401e81b3527e569514eab1c3a02c167488"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_08.png",
+      "bytes": 40133,
+      "sha256": "e37107c139fc69158fbb7302907b0878092b0b3dd12918c7528dde06b59b47e3"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_09.png",
+      "bytes": 453473,
+      "sha256": "b2dbfc6f6c159ec1585e02f6a62a41c0cea94a910d1df376539a9b8cf6253e05"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_10.jpg",
+      "bytes": 125110,
+      "sha256": "68e6c13bdfb5ae7365f512f8e98b50449f6fb5ab8ccbd4074dac03dcfd1dae58"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_11.png",
+      "bytes": 257565,
+      "sha256": "06acbe1a5138d55f4c8f4c306f97327d6d8c2cd0ee1221db7ee7b8ed87a45aa6"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_12.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_13.jpg",
+      "bytes": 36912,
+      "sha256": "06f54e272e31ae47461aeb5923967f0aa0dc3efcaa6e1538568aee8a083aa6be"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_14.png",
+      "bytes": 243627,
+      "sha256": "580a70df75ae4567ab49c94d4cbc0192157f38144379e0ad772da12eaf7c678b"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_15.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_16.jpg",
+      "bytes": 39761,
+      "sha256": "348e3c56351161d367784fbd47c24e8719e1f02d3748b31a2aa0ad694c0ed0d4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_17.png",
+      "bytes": 239873,
+      "sha256": "75571c968e59ac3d2f8f6ff2c7669735f97bb84da1b7dd4781a02697bb5d7146"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_18.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_19.jpg",
+      "bytes": 39722,
+      "sha256": "2c812aee96ebd6117eabad6b0894cb136a446f8a5e46e50bace06ab548c3925f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_20.png",
+      "bytes": 248980,
+      "sha256": "fe29dd152329452f0240bc1d5b20382af26a96a4f3ccc07dc8619796a82c8120"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_21.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_22.jpg",
+      "bytes": 37616,
+      "sha256": "b69ccc608e0036739674ccc7d82e2f05f7a18740cf4043723bef727c9fd0d3e5"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_23.png",
+      "bytes": 176578,
+      "sha256": "4ee852951896b36e49986e1932ad82ae3579217698d92a37d9ef5d30ee9c8ec4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_24.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_25.jpg",
+      "bytes": 36044,
+      "sha256": "6e103fc92127a5d9488a354ab590c54ebb7cd5b919695cbb0ad526f73770f6a3"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_26.png",
+      "bytes": 175326,
+      "sha256": "7a6626c2a9c63433cdb0dcda3c8db21bb16cf33dac8406e9f2ed040317ba2f10"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_27.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_28.jpg",
+      "bytes": 39611,
+      "sha256": "bf5533a5d0f209826dc60a6c8a26112aad97ae39ccd3e4d35b879ccb222760c2"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_29.png",
+      "bytes": 257737,
+      "sha256": "4efcef696a2c3e24427ac29ae495b076daaeea8bfe0c77e415dba1edef148424"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_30.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_31.jpg",
+      "bytes": 36300,
+      "sha256": "43e84ccd0354e5bd2a90ceac2ac3956d590b6b74116a3fbc18879f1e702874ec"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_32.png",
+      "bytes": 180210,
+      "sha256": "18808bb79bf05949710c3d20f8addcf8c55e16d5f31b421eec4d75db22bf3065"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_33.png",
+      "bytes": 3193,
+      "sha256": "27ac0340579ac7cbb45133f1d8e5cd5e4d32d60e6b4e523a893c13411beeee84"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_34.jpg",
+      "bytes": 29809,
+      "sha256": "35aaf6c3fa908a15061e1db4cdc55c885a594b6a4c791063ffd416687250de17"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/deps/tex_35.png",
+      "bytes": 115376,
+      "sha256": "881a69cfff00fd06bb9c13bcf03dd078be1c1ccbc4637f6a06dd664a245a681d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_plant_decoration/model.gltf",
+      "bytes": 181957,
+      "sha256": "442a091c21998207d2e51f8d4d0bd1ed49aa5f02534c31a1bd378b7004e48185"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa/SOURCE.txt",
+      "bytes": 685,
+      "sha256": "d66694eb60d8e6f6a15a1ba992e6aab28009313b3e3105df1400212196990b3a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa/deps/model.bin",
+      "bytes": 1565364,
+      "sha256": "806b65cc0be2d6f07c604023c7641898200c753c621421704c9d8245b4ae00d3"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa/deps/tex_00.png",
+      "bytes": 655587,
+      "sha256": "e0be3cc804796a6f3d5564a7d4fbf37cecf66b88923dec43a761cc80eb34a747"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa/deps/tex_01.jpg",
+      "bytes": 168952,
+      "sha256": "eaac93772eb8cec5e15c3371d3df8fa4d162d8e5eb2a4809989f56034c7c52ae"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa/deps/tex_02.png",
+      "bytes": 738338,
+      "sha256": "61595692de62d7ca393f72c2ace4fea38439cabe204f3e7c4bb7f897f59a83b0"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa/model.gltf",
+      "bytes": 2760,
+      "sha256": "eab9b18d8b8eb2d15b4ab688d28c09971741e0c0ec8b74ed02c7e02023146f25"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/SOURCE.txt",
+      "bytes": 1147,
+      "sha256": "b2e89afc294871ed3bf7e82e8df13e29155887b0d2c3d0bb88361b484502ade5"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/model.bin",
+      "bytes": 605552,
+      "sha256": "604ab325eaaa2e5ab23c9316966015426cc11463b021b1eb89c9a605844b75cf"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_00.jpg",
+      "bytes": 12572,
+      "sha256": "670548f47f09d868669c25cc32c0c2d6e6095e6d723369d27607d72185531a69"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_01.png",
+      "bytes": 2639311,
+      "sha256": "a5cd772bad8e901c8dce77938771b57afc93487993fa8fdc1f0309658dc4c0a8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_02.jpg",
+      "bytes": 288533,
+      "sha256": "3a5cd926e8299be93b005b2b8c60ef92ae3d1b4c5add580259f15b22770c6726"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_03.png",
+      "bytes": 1003952,
+      "sha256": "6c7212f7a26e29f445b1258bfc7d40074a797f1b65bf5118a515fb951ac4766d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_04.jpg",
+      "bytes": 12572,
+      "sha256": "33ae61a9503d0635114bb238e24490da53fd503c0233faf0dfe053642b2b9248"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_05.png",
+      "bytes": 3129,
+      "sha256": "87658cfaf8e619d7f15fe7179e5874c38663d3254302928d9c1e7eaacee0a9f4"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_06.jpg",
+      "bytes": 417298,
+      "sha256": "5e7aea881d68887315d52d5ed01bd3c5a43d0554239b6fffd28ee03891412b82"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_07.png",
+      "bytes": 1010356,
+      "sha256": "cbc448648af40d9453338631655b1befcc475b7fde8816d7e8b5218556e2927c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_08.png",
+      "bytes": 842,
+      "sha256": "57b5e40e68e97c62837b9d0a5a8f7aac22471c1633897f9bcf4fa62864ecc974"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_09.jpg",
+      "bytes": 261210,
+      "sha256": "a1df24a949930f0130e84dfe3a5da0c14d393fe287765877d10649ec08b19f3b"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_10.png",
+      "bytes": 1489,
+      "sha256": "931e796a857aad76d9a1b604a9ac71dc57edfb035ea051eb0fc37da5bb11dd09"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_11.png",
+      "bytes": 2324949,
+      "sha256": "7dfa439210ad2cac066e489e7d3f89fd13b3fe9261c1911b9dfff49a266c707d"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_12.jpg",
+      "bytes": 418185,
+      "sha256": "1e92229551ee9261fdc76e7d5fd1c35923378b5ddb64cf4214efce877f9f9445"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_13.png",
+      "bytes": 584354,
+      "sha256": "e5dfffbd3c17cf7a732ffef83cb0581e573b259b89ac33cd13be9e97ca00ab7e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/deps/tex_14.png",
+      "bytes": 402644,
+      "sha256": "80d021c65fac28c603809d8a908201d68d8f8b0ba572abc60c7412f32058f10f"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_sofa_set/model.gltf",
+      "bytes": 12636,
+      "sha256": "5f06720dccd58d955678c91073141e97b84e76efcbb0e32793be28e52061148e"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/SOURCE.txt",
+      "bytes": 919,
+      "sha256": "9306b02eff251ac91f57d17f494ad43c5edf8d248417776ba35b6718bd4cd695"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/model.bin",
+      "bytes": 555830,
+      "sha256": "dfe1502614c24329f12f526e5a4ca841b4c64558a0f889e9290fd06854db4776"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_00.png",
+      "bytes": 3197,
+      "sha256": "279f834acfecd66d37d106afd4de9d6a205c26952672174bda2c7097bf779a63"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_01.jpg",
+      "bytes": 10114,
+      "sha256": "7e835b9c368cb95715ed3f305417b01c093efdbafc3249fd3c56717e3f40a1f8"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_02.png",
+      "bytes": 17026,
+      "sha256": "f722096e444f85347986d312f8a1ba7d9f9bb2a6dddd25f52d1cf62da4a6d10a"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_03.png",
+      "bytes": 39873,
+      "sha256": "c41b858664d623291fc317951b96e0037afc0c0820f8649d42845346331ae976"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_04.jpg",
+      "bytes": 54648,
+      "sha256": "79dfa4e3d750528a2f705198574f4bd1b5786f54519ca50bb2c84defcb7f6b72"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_05.png",
+      "bytes": 273863,
+      "sha256": "77df37cc1605438219f28670b1c66cce17fff094a8e7cc7a1e7b61bf8bb76854"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_06.png",
+      "bytes": 98678,
+      "sha256": "e7d92e4634e53cae02fe6466f5ed8817aee0b17e0e29f7f687010ba076f9d54c"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_07.jpg",
+      "bytes": 56093,
+      "sha256": "b30921250a6387bd26651e6aa0703fa9ee146344eca677637cd9640f33ec8c42"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/deps/tex_08.png",
+      "bytes": 540494,
+      "sha256": "4a05577d868d8e643ea32d2bc6623e57a8cbcf90a823942fd36c697f42f55f41"
+    },
+    {
+      "path": "assets/decor_bank/blendkit_vintage_brass_oil_lamp/model.gltf",
+      "bytes": 5447,
+      "sha256": "cd5c6ca65730d979ba9f114c797455382f939079eb959f9a3d5a19919926f790"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/SOURCE.txt",
+      "bytes": 280,
+      "sha256": "85edc5ac41557120c43bed35cb7e9ccc20f7216dc82a590041abcc2d398e2b52"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/deps/model.bin",
+      "bytes": 25132,
+      "sha256": "870315dfa209221968c7f39c30873323510657e26c46c45b2bc0eea87ff9d789"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/deps/tex_00.png",
+      "bytes": 56905,
+      "sha256": "f2a16feb8894dde10864d54ad48f5649d8a012b16db8c3cb163f726ed60413f9"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/deps/tex_01.jpg",
+      "bytes": 19215,
+      "sha256": "7a400e4e8206684295b84e951481ef1b1a1c19fdbc7e745b3837957fcd3b5171"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/deps/tex_02.png",
+      "bytes": 163135,
+      "sha256": "b997e8662e31e148525deb8efc1c9a8247a845642a1b6f8446b5133711711b5d"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/deps/tex_03.jpg",
+      "bytes": 36723,
+      "sha256": "691203edcdd73fbf0263706664d61f0081077123391e8a08dcf0970a440f01ac"
+    },
+    {
+      "path": "assets/decor_bank/owner_hp_notebook_lowpoly/model.gltf",
+      "bytes": 6885,
+      "sha256": "c9a1d2fd0a2d5b23496cd687aa7e5ac1afc8c09811cf3dcd8c60bd62e87bc9af"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_ceiling_feature/SOURCE.txt",
+      "bytes": 220,
+      "sha256": "35189e234256328b378218de776ce4ad1c7ec802c87d174ca697519783cbf2e9"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_ceiling_feature/deps/model.bin",
+      "bytes": 159816,
+      "sha256": "d740f785abb51ac4e7e1c8d364b79a7364542248b41b54a3eb7fb3e599cacd57"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_ceiling_feature/model.gltf",
+      "bytes": 4237,
+      "sha256": "0769079037127f1ca2b117cfd3aa47f8aac7d9e3604ef9d643e747076bb1c689"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_media_console/SOURCE.txt",
+      "bytes": 220,
+      "sha256": "35189e234256328b378218de776ce4ad1c7ec802c87d174ca697519783cbf2e9"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_media_console/deps/model.bin",
+      "bytes": 12336,
+      "sha256": "a9a43c23e4b82ff19ae8298ed01d4a1a65e4eb7d2f862917a6c0b0098d050b0c"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_media_console/model.gltf",
+      "bytes": 3840,
+      "sha256": "9ef002fa08ec699d8c2c819df33c9abc08c47c8218d7ce851549eae684688c7d"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_riser_trim/SOURCE.txt",
+      "bytes": 220,
+      "sha256": "35189e234256328b378218de776ce4ad1c7ec802c87d174ca697519783cbf2e9"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_riser_trim/deps/model.bin",
+      "bytes": 840,
+      "sha256": "503e3df6e8b7300f3e719ac5cd2765ab8647207d2fec22a394b331bd244a80a4"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_riser_trim/model.gltf",
+      "bytes": 1668,
+      "sha256": "5981df283328b6b6affb524e04e094ec86dcf27cdd8372092652b605d5700dcc"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_screen/SOURCE.txt",
+      "bytes": 220,
+      "sha256": "35189e234256328b378218de776ce4ad1c7ec802c87d174ca697519783cbf2e9"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_screen/deps/model.bin",
+      "bytes": 3096,
+      "sha256": "46e73be857343d1b6782befc30d09c452bcc0595c7fb887321ef3317ea49bee2"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_screen/model.gltf",
+      "bytes": 2637,
+      "sha256": "8e0d105a82a74d9f85f818228f3ed2cc1f1285137955d9abeb5d18424c03e972"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_seat_pair/SOURCE.txt",
+      "bytes": 220,
+      "sha256": "35189e234256328b378218de776ce4ad1c7ec802c87d174ca697519783cbf2e9"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_seat_pair/deps/model.bin",
+      "bytes": 13496,
+      "sha256": "7ccfd84409044f9c22d55c74b56be2c77cb0dae3be8b70c1a7e9fe85c19bfaa7"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_seat_pair/model.gltf",
+      "bytes": 2652,
+      "sha256": "66841629e0505cc7b5ca599ef9d2dc2b1d4ba1543ba2aa8278b6c66d9ac665ea"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_side_panel/SOURCE.txt",
+      "bytes": 220,
+      "sha256": "35189e234256328b378218de776ce4ad1c7ec802c87d174ca697519783cbf2e9"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_side_panel/deps/model.bin",
+      "bytes": 672,
+      "sha256": "2bd2db1355610c657cf6f6f594c63c578bbf517bf1894ea29d68e65e3f031d75"
+    },
+    {
+      "path": "assets/decor_bank/owner_theatre_side_panel/model.gltf",
+      "bytes": 1698,
+      "sha256": "9525d74806b05795b6c913dd8dcdcb4cccb9eb396138f8401f407897a364423a"
+    }
+  ],
+  "bytes": 32580161
+}

@@ -1,0 +1,5 @@
+{'id': 1164929, 'firstName': 'Abubakr', 'lastName': 'Hamidov', 'gravatarHash': '340e4eb6988e812453c669baebe39d53', 'avatar128': '/avatar-redirect/3b96fa15-105b-4c27-8203-848037e81461/128/', 'avatar256': '/avatar-redirect/3b96fa15-105b-4c27-8203-848037e81461/256/', 'avatar512': '/avatar-redirect/3b96fa15-105b-4c27-8203-848037e81461/512/', 'aboutMe': 'Chief draftsman and architect at Bimlite studio', 'aboutMeUrl': 'https://www.artstation.com/hamidov', 'fullName': 'Abubakr Hamidov', 'socialNetworks': [{'socialNetwork': {'name': 'Instagram', 'icon': '<i class="fab fa-instagram" title="Instagram"></i><span class="sr-only">Instagram</span>', 'order': 3}, 'url': 'https://www.instagram.com/7hamidov7'}, {'socialNetwork': {'name': 'ArtStation', 'icon': '<i class="fab fa-artstation" title="ArtStation"></i><span class="sr-only">ArtStation</span>', 'order': 5}, 'url': 'https://www.artstation.com/hamidov'}]}
+https://www.blendkit.com/asset-gallery-detail/abf2a52e-4d26-43d7-a5d3-b0e058641b09/
+royalty_free
+Source SHA-256 be4763a860ee60d9c8aa44d78764fa8cba762a1ddacc6fa705504a9a1fca767b
+Modified mesh, textures, pivot as documented. Candidate only.

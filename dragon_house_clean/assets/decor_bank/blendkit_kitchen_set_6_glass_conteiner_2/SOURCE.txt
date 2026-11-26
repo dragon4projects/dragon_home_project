@@ -1,0 +1,5 @@
+{'id': 59772, 'firstName': 'Lucas', 'lastName': 'Paludo', 'gravatarHash': 'e9556ef8eb375a4a8e1ae050ffe77617', 'avatar128': '/avatar-redirect/b7de3d97-c747-43d1-b335-aa0ac3326eae/128/', 'avatar256': '/avatar-redirect/b7de3d97-c747-43d1-b335-aa0ac3326eae/256/', 'avatar512': '/avatar-redirect/b7de3d97-c747-43d1-b335-aa0ac3326eae/512/', 'aboutMe': 'Architect, 3d designer, animator.', 'aboutMeUrl': 'http://www.instagram.com/paludo.arq', 'fullName': 'Lucas Paludo', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/42c20b4b-c203-408f-95f5-0d8fafb01e8e/
+royalty_free
+Source SHA-256 8f6ab69df07d7bae35869e060ba8dacf25541381451b784035164993967a82f9
+Modified mesh, textures, pivot as documented. Candidate only.

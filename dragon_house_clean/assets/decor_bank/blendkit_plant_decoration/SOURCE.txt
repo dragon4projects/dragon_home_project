@@ -1,0 +1,5 @@
+{'id': 791292, 'firstName': 'Patrik', 'lastName': '', 'gravatarHash': '70f1ccb6a5bb5b8917c4c9b1409925f4', 'avatar128': '/avatar-redirect/9722a6db-56f8-411f-8021-f0dad58cf4f5/128/', 'avatar256': '/avatar-redirect/9722a6db-56f8-411f-8021-f0dad58cf4f5/256/', 'avatar512': '/avatar-redirect/9722a6db-56f8-411f-8021-f0dad58cf4f5/512/', 'aboutMe': '', 'aboutMeUrl': None, 'fullName': 'Patrik ', 'socialNetworks': [{'socialNetwork': {'name': 'Instagram', 'icon': '<i class="fab fa-instagram" title="Instagram"></i><span class="sr-only">Instagram</span>', 'order': 3}, 'url': 'https://www.instagram.com/p.capka.av'}, {'socialNetwork': {'name': 'ArtStation', 'icon': '<i class="fab fa-artstation" title="ArtStation"></i><span class="sr-only">ArtStation</span>', 'order': 5}, 'url': 'https://www.artstation.com/pcapka'}]}
+https://www.blendkit.com/asset-gallery-detail/2ebc5ab5-6caf-435d-a977-333975f56d28/
+royalty_free
+Source SHA-256 976980e11f394e4d8e39b09e70ea5ee6f713202d69004bdce38be1b26a57ee4d
+Modified mesh, textures, pivot as documented. Candidate only.

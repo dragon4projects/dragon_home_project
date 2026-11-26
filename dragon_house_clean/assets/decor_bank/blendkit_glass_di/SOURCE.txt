@@ -1,0 +1,5 @@
+{'id': 270493, 'firstName': 'Ramon', 'lastName': 'Perez', 'gravatarHash': '4a4fa97268e27523a106ee52f756028d', 'avatar128': '/avatar-redirect/6faa31c6-582f-4536-8a62-71eda9728f4a/128/', 'avatar256': '/avatar-redirect/6faa31c6-582f-4536-8a62-71eda9728f4a/256/', 'avatar512': '/avatar-redirect/6faa31c6-582f-4536-8a62-71eda9728f4a/512/', 'aboutMe': '3D artist specializing in creature sculpting. I love making procedural textures on my free time though', 'aboutMeUrl': 'https://www.artstation.com/ramon_perez', 'fullName': 'Ramon Perez', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/e063261d-5d36-46da-a7a1-7a4f22e47256/
+royalty_free
+Source SHA-256 8d61b8b882c81f74cebf4ac6e0588cc1d4b981f2f9eb7cc51abc42b70c83157c
+Modified mesh, textures, pivot as documented. Candidate only.

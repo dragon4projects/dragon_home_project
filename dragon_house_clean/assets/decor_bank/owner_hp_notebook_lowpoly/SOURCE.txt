@@ -1,0 +1,5 @@
+3DHaupt / Dennis Haupt
+https://3dhaupt.com/3d-models-electronics-computer-hp-notebook-low-poly-download/
+PUBLIC_REDISTRIBUTION_UNVERIFIED
+Source SHA-256 7bb73f214489c19f5a61edc95809e057b6cb4496cf0347a44313b7c9d3f4dcd8
+Modified mesh, textures, pivot as documented. Candidate only.

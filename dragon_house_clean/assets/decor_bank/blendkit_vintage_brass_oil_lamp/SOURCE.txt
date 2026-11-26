@@ -1,0 +1,5 @@
+{'id': 1801382, 'firstName': 'Ken', 'lastName': 'Xie', 'gravatarHash': '8cde7163f03d520b0b3686d259b41003', 'avatar128': '/avatar-redirect/b1f26dd5-33a9-46ae-b17b-68e420cbba98/128/', 'avatar256': '/avatar-redirect/b1f26dd5-33a9-46ae-b17b-68e420cbba98/256/', 'avatar512': '/avatar-redirect/b1f26dd5-33a9-46ae-b17b-68e420cbba98/512/', 'aboutMe': 'I have been using Blender for 4 years. I am proficient in using Blender for rendering and creating simple interiors and furniture, as well as creating and rendering cartoon game characters. The universal renderer is Cycles', 'aboutMeUrl': 'https://www.turbosquid.com/Search/Artists/KenXie', 'fullName': 'Ken Xie', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/b4c39d29-5ca0-420b-aa83-2c5bf9a6c823/
+royalty_free
+Source SHA-256 25806ebcb3a8e58518a9fdd2ca35c8428d8f3bd5da985392c77993a9e1710523
+Modified mesh, textures, pivot as documented. Candidate only.

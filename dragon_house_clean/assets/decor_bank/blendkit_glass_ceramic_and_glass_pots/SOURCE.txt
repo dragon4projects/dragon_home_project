@@ -1,0 +1,5 @@
+{'id': 85059, 'firstName': 'M3D', 'lastName': 'Mario Antônio Maschke', 'gravatarHash': '9dc9d4a298cb31631aa6395d320dec24', 'avatar128': '/avatar-redirect/644f9dc3-c929-49f8-ba3b-dea0e48958eb/128/', 'avatar256': '/avatar-redirect/644f9dc3-c929-49f8-ba3b-dea0e48958eb/256/', 'avatar512': '/avatar-redirect/644f9dc3-c929-49f8-ba3b-dea0e48958eb/512/', 'aboutMe': 'I am an architect, graphic designer and 3D modeler.\r\nBLENDER enthusiast!', 'aboutMeUrl': None, 'fullName': 'M3D Mario Antônio Maschke', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/4339d6c8-d3b2-468f-8a96-a0844f9a8eff/
+royalty_free
+Source SHA-256 7f1f895c0c74639489452ef59ef48e09a60b178471edc4b433cec8216e9e406f
+Modified mesh, textures, pivot as documented. Candidate only.

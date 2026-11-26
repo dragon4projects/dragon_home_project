@@ -1,0 +1,5 @@
+{'id': 1341460, 'firstName': 'Demycs', 'lastName': '', 'gravatarHash': 'eaec72c6172afa28a1763330a161fd69', 'avatar128': '/avatar-redirect/34ae4afc-b964-4414-9255-02df4161a0e4/128/', 'avatar256': '/avatar-redirect/34ae4afc-b964-4414-9255-02df4161a0e4/256/', 'avatar512': '/avatar-redirect/34ae4afc-b964-4414-9255-02df4161a0e4/512/', 'aboutMe': 'Audio Video professional equipment AR / VR / Game Ready models', 'aboutMeUrl': 'https://sketchfab.com/proAV', 'fullName': 'Demycs ', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/d394c920-82dc-45e4-9790-0c8f5941b67c/
+royalty_free
+Source SHA-256 5d929809eb220c91b6933a5b42ad8635858626451dc50ce6266768492389f196
+Modified mesh, textures, pivot as documented. Candidate only.

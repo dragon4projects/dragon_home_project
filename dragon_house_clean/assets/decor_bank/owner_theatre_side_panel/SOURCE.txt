@@ -1,0 +1,5 @@
+UNVERIFIED
+Owner supplied Home+Theatre.blend
+PUBLIC_REDISTRIBUTION_UNVERIFIED
+Source SHA-256 3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730
+Modified mesh, textures, pivot as documented. Candidate only.

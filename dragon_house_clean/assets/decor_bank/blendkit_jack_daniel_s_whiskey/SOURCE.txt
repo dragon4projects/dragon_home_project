@@ -1,0 +1,5 @@
+{'id': 984262, 'firstName': 'Arman', 'lastName': 'Khachatryan', 'gravatarHash': '5c0ac929e44a98a562f180cde64c1780', 'avatar128': '/avatar-redirect/e7332aa0-da0f-4b40-896c-020e35fa4b3a/128/', 'avatar256': '/avatar-redirect/e7332aa0-da0f-4b40-896c-020e35fa4b3a/256/', 'avatar512': '/avatar-redirect/e7332aa0-da0f-4b40-896c-020e35fa4b3a/512/', 'aboutMe': 'I’m a 3D artist who loves turning imagination into form.\r\nI mostly work with Blender, creating realistic and stylized models inspired by design, architecture, and storytelling.', 'aboutMeUrl': 'https://www.behance.net/armankhachat7', 'fullName': 'Arman Khachatryan', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/ddda5a9d-8801-44bf-9998-faf14ff2f208/
+royalty_free
+Source SHA-256 c58dec33fb8ed16bb5ca7516a2cf1c235f16ae3778910ae8bd18ed3de3581c14
+Modified mesh, textures, pivot as documented. Candidate only.

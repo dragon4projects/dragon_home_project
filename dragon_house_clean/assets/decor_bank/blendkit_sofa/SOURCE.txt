@@ -1,0 +1,5 @@
+{'id': 215324, 'firstName': 'MNDV', 'lastName': '', 'gravatarHash': 'afd1b8341900397004e1a6ea0d4ed66c', 'avatar128': '/avatar-redirect/67fdbf05-db18-477b-93b1-7070328efcb5/128/', 'avatar256': '/avatar-redirect/67fdbf05-db18-477b-93b1-7070328efcb5/256/', 'avatar512': '/avatar-redirect/67fdbf05-db18-477b-93b1-7070328efcb5/512/', 'aboutMe': ':)', 'aboutMeUrl': 'https://blendermarket.com/creators/mndv', 'fullName': 'MNDV ', 'socialNetworks': []}
+https://www.blendkit.com/asset-gallery-detail/ec591235-91b6-435c-8adf-49f077f6637f/
+royalty_free
+Source SHA-256 f321fea0521c2f686edcef63b983f2f25895ea1e96a900e1b05759f96675ed8d
+Modified mesh, textures, pivot as documented. Candidate only.

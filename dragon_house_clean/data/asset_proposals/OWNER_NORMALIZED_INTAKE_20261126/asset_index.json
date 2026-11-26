@@ -1,0 +1,3178 @@
+{
+  "schema": 1,
+  "owner_approved": false,
+  "items": [
+    {
+      "asset_id": "blendkit_34_inch_curved_ultrawide_monitor_black",
+      "runtime_path": "res://assets/decor_bank/blendkit_34_inch_curved_ultrawide_monitor_black/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/d394c920-82dc-45e4-9790-0c8f5941b67c/",
+      "author": {
+        "id": 1341460,
+        "firstName": "Demycs",
+        "lastName": "",
+        "gravatarHash": "eaec72c6172afa28a1763330a161fd69",
+        "avatar128": "/avatar-redirect/34ae4afc-b964-4414-9255-02df4161a0e4/128/",
+        "avatar256": "/avatar-redirect/34ae4afc-b964-4414-9255-02df4161a0e4/256/",
+        "avatar512": "/avatar-redirect/34ae4afc-b964-4414-9255-02df4161a0e4/512/",
+        "aboutMe": "Audio Video professional equipment AR / VR / Game Ready models",
+        "aboutMeUrl": "https://sketchfab.com/proAV",
+        "fullName": "Demycs ",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "5d929809eb220c91b6933a5b42ad8635858626451dc50ce6266768492389f196",
+      "source_triangles": 37601,
+      "triangles": 4267,
+      "dimensions_m": [
+        0.804095,
+        0.473054,
+        0.237187
+      ],
+      "normalized_aabb_min_m": [
+        -0.402047,
+        -0.0,
+        -0.118594
+      ],
+      "normalized_aabb_max_m": [
+        0.402048,
+        0.473053,
+        0.118594
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 4,
+      "textures": [
+        {
+          "file": "tex_00.jpg",
+          "px": [
+            512,
+            216
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_03.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_04.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_beaker_flask",
+      "runtime_path": "res://assets/decor_bank/blendkit_beaker_flask/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/df7cfde1-1e41-429a-8e72-899c628f6990/",
+      "author": {
+        "id": 1960643,
+        "firstName": "Reza",
+        "lastName": "NeoMasyaf",
+        "gravatarHash": "225d4db7083206cc9ba54558cd765142",
+        "avatar128": "/avatar-redirect/63c7e9d5-e5e2-4370-85d6-2c988a6a39f3/128/",
+        "avatar256": "/avatar-redirect/63c7e9d5-e5e2-4370-85d6-2c988a6a39f3/256/",
+        "avatar512": "/avatar-redirect/63c7e9d5-e5e2-4370-85d6-2c988a6a39f3/512/",
+        "aboutMe": "Software Engineer , 3D Artist , Game Developer/Designer .",
+        "aboutMeUrl": "https://www.canva.com/design/DAG_6GOQcLQ/3JIgtpY8HVg-6ldV8jqRmA/edit?utm_content=DAG_6GOQcLQ&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
+        "fullName": "Reza NeoMasyaf",
+        "socialNetworks": [
+          {
+            "socialNetwork": {
+              "name": "Twitter",
+              "icon": "<i class=\"fab fa-x-twitter\" title=\"Twitter\"></i><span class=\"sr-only\">Twitter</span>",
+              "order": 7
+            },
+            "url": "https://x.com/masyaf7073"
+          },
+          {
+            "socialNetwork": {
+              "name": "YouTube",
+              "icon": "<i class=\"fab fa-youtube\" title=\"YouTube\"></i><span class=\"sr-only\">YouTube</span>",
+              "order": 1
+            },
+            "url": "https://www.youtube.com/@RezaNeoMasyaf"
+          },
+          {
+            "socialNetwork": {
+              "name": "Instagram",
+              "icon": "<i class=\"fab fa-instagram\" title=\"Instagram\"></i><span class=\"sr-only\">Instagram</span>",
+              "order": 3
+            },
+            "url": "https://www.instagram.com/rezaneomasyaf/"
+          }
+        ]
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "8ab55d8e94aec330de2c84bf853070ba289ab88905a747dd24368543234259f7",
+      "source_triangles": 1984,
+      "triangles": 1984,
+      "dimensions_m": [
+        0.099607,
+        0.0994,
+        0.099607
+      ],
+      "normalized_aabb_min_m": [
+        -0.049804,
+        0.0,
+        -0.049804
+      ],
+      "normalized_aabb_max_m": [
+        0.049804,
+        0.099401,
+        0.049804
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Explicit alpha-blend approximation for identifiable glass mesh; visual QA pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_coke_glass_with_ice",
+      "runtime_path": "res://assets/decor_bank/blendkit_coke_glass_with_ice/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/74b327b3-94c7-4ef9-b47a-8a2d9c308fd5/",
+      "author": {
+        "id": 8664,
+        "firstName": "Aditya",
+        "lastName": "C",
+        "gravatarHash": "2cbf49b1513296afe9673579d4de0bbd",
+        "avatar128": "/avatar-redirect/fadfb351-ad5c-459b-920e-c998f0c8e890/128/",
+        "avatar256": "/avatar-redirect/fadfb351-ad5c-459b-920e-c998f0c8e890/256/",
+        "avatar512": "/avatar-redirect/fadfb351-ad5c-459b-920e-c998f0c8e890/512/",
+        "aboutMe": "hi,i am a blender artist",
+        "aboutMeUrl": "https://linktr.ee/wrenchlabs",
+        "fullName": "Aditya C",
+        "socialNetworks": [
+          {
+            "socialNetwork": {
+              "name": "YouTube",
+              "icon": "<i class=\"fab fa-youtube\" title=\"YouTube\"></i><span class=\"sr-only\">YouTube</span>",
+              "order": 1
+            },
+            "url": "https://www.youtube.com/@wrenchlabs"
+          },
+          {
+            "socialNetwork": {
+              "name": "Instagram",
+              "icon": "<i class=\"fab fa-instagram\" title=\"Instagram\"></i><span class=\"sr-only\">Instagram</span>",
+              "order": 3
+            },
+            "url": "https://www.instagram.com/wrenchlabs"
+          },
+          {
+            "socialNetwork": {
+              "name": "ArtStation",
+              "icon": "<i class=\"fab fa-artstation\" title=\"ArtStation\"></i><span class=\"sr-only\">ArtStation</span>",
+              "order": 5
+            },
+            "url": "https://www.artstation.com/wrenchlabs"
+          }
+        ]
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "51996e373e66e6d46a410a65513b7489dd3d13c3f27c1699445f9b2be3f521df",
+      "source_triangles": 7088,
+      "triangles": 4236,
+      "dimensions_m": [
+        0.058118,
+        0.10777,
+        0.058576
+      ],
+      "normalized_aabb_min_m": [
+        -0.029058,
+        -0.0,
+        -0.029288
+      ],
+      "normalized_aabb_max_m": [
+        0.029059,
+        0.10777,
+        0.029288
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 32,
+      "textures": [
+        {
+          "file": "tex_00.jpg",
+          "px": [
+            512,
+            161
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_01.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_02.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_04.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_05.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_06.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_07.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_08.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_09.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_10.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_11.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_12.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_13.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_14.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_15.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_16.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_17.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_18.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_19.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_20.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_21.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_22.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_23.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_24.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_25.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_26.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_27.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_28.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_29.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_30.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_31.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_32.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_33.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_34.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_35.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_36.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_37.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_38.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_39.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_40.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_41.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_42.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_43.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_44.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_45.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_46.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_47.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_48.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_49.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_50.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_51.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_52.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_53.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_54.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_55.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_56.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_57.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_58.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_59.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_60.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_61.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_62.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_63.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_64.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_65.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_66.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_67.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_68.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_69.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_70.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_71.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_72.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_73.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_74.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_75.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_76.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_77.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_78.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_79.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_80.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_81.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_82.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_83.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_84.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_85.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Source baked materials do not retain transmission; separate glass material reconstruction/visual review pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_decorational_glass_cover_storage",
+      "runtime_path": "res://assets/decor_bank/blendkit_decorational_glass_cover_storage/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/10acdda9-7321-4578-84d0-1d03484ada66/",
+      "author": {
+        "id": 741007,
+        "firstName": "Dennis",
+        "lastName": "Hafemann",
+        "gravatarHash": "4ce74765f0668ae7de929948b701e85f",
+        "avatar128": "/avatar-redirect/c74dd42b-0be4-4f3b-8c88-25e91a19d639/128/",
+        "avatar256": "/avatar-redirect/c74dd42b-0be4-4f3b-8c88-25e91a19d639/256/",
+        "avatar512": "/avatar-redirect/c74dd42b-0be4-4f3b-8c88-25e91a19d639/512/",
+        "aboutMe": "I create 3D models, assets, motion graphics and addons for Blender.",
+        "aboutMeUrl": "https://superhivemarket.com/creators/dennis-hafemann",
+        "fullName": "Dennis Hafemann",
+        "socialNetworks": [
+          {
+            "socialNetwork": {
+              "name": "YouTube",
+              "icon": "<i class=\"fab fa-youtube\" title=\"YouTube\"></i><span class=\"sr-only\">YouTube</span>",
+              "order": 1
+            },
+            "url": "https://www.youtube.com/@One-Hell-Of-A-Vector"
+          }
+        ]
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "95d3d06dbd2bb42ec9e889d6dd6225ca94e088cd259976675111c83a97f6ce7f",
+      "source_triangles": 2428,
+      "triangles": 2428,
+      "dimensions_m": [
+        0.26,
+        0.393966,
+        0.26
+      ],
+      "normalized_aabb_min_m": [
+        -0.13,
+        0.0,
+        -0.13
+      ],
+      "normalized_aabb_max_m": [
+        0.13,
+        0.393966,
+        0.13
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 2,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Explicit alpha-blend approximation for identifiable glass mesh; visual QA pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_dome_01_glass",
+      "runtime_path": "res://assets/decor_bank/blendkit_dome_01_glass/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/0e7a097f-9125-4e53-8282-576f56f44976/",
+      "author": {
+        "id": 1104971,
+        "firstName": "Grimmotron",
+        "lastName": "",
+        "gravatarHash": "162506b74001aa76f15631a726e3df89",
+        "avatar128": "/avatar-redirect/2b4d37fa-2eef-4dad-aea1-e6cefda9be27/128/",
+        "avatar256": "/avatar-redirect/2b4d37fa-2eef-4dad-aea1-e6cefda9be27/256/",
+        "avatar512": "/avatar-redirect/2b4d37fa-2eef-4dad-aea1-e6cefda9be27/512/",
+        "aboutMe": "My name is Grim and I make stuff.",
+        "aboutMeUrl": "https://grimmotron.com",
+        "fullName": "Grimmotron ",
+        "socialNetworks": [
+          {
+            "socialNetwork": {
+              "name": "YouTube",
+              "icon": "<i class=\"fab fa-youtube\" title=\"YouTube\"></i><span class=\"sr-only\">YouTube</span>",
+              "order": 1
+            },
+            "url": "https://www.youtube.com/@grimmotron"
+          },
+          {
+            "socialNetwork": {
+              "name": "Facebook",
+              "icon": "<i class=\"fab fa-facebook\" title=\"Facebook\"></i><span class=\"sr-only\">Facebook</span>",
+              "order": 2
+            },
+            "url": "https://www.facebook.com/grimmotron"
+          },
+          {
+            "socialNetwork": {
+              "name": "Instagram",
+              "icon": "<i class=\"fab fa-instagram\" title=\"Instagram\"></i><span class=\"sr-only\">Instagram</span>",
+              "order": 3
+            },
+            "url": "https://www.instagram.com/grimmotron"
+          },
+          {
+            "socialNetwork": {
+              "name": "TikTok",
+              "icon": "<i class=\"fab fa-tiktok\" title=\"TikTok\"></i><span class=\"sr-only\">TikTok</span>",
+              "order": 6
+            },
+            "url": "https://www.tiktok.com/@grimmotron"
+          },
+          {
+            "socialNetwork": {
+              "name": "Twitter",
+              "icon": "<i class=\"fab fa-x-twitter\" title=\"Twitter\"></i><span class=\"sr-only\">Twitter</span>",
+              "order": 7
+            },
+            "url": "https://x.com/thetoillmainn"
+          }
+        ]
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "be38a1d0c6a73f82720da95d0aa0e01d6111586d0b393bf6eb2e486440005b90",
+      "source_triangles": 4544,
+      "triangles": 4544,
+      "dimensions_m": [
+        0.158846,
+        0.167743,
+        0.158846
+      ],
+      "normalized_aabb_min_m": [
+        -0.079423,
+        -0.0,
+        -0.079423
+      ],
+      "normalized_aabb_max_m": [
+        0.079422,
+        0.167743,
+        0.079423
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Source baked materials do not retain transmission; separate glass material reconstruction/visual review pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_glass_block",
+      "runtime_path": "res://assets/decor_bank/blendkit_glass_block/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/7f67d2a9-4f83-4ac1-b5fd-ae6d292f865f/",
+      "author": {
+        "id": 140534,
+        "firstName": "Dennis",
+        "lastName": "Kreker",
+        "gravatarHash": "09af04f56d371fb65734bfebd736fd9a",
+        "avatar128": "/avatar-redirect/16e9f346-c2c3-4fbc-a391-2d8c89915f24/128/",
+        "avatar256": "/avatar-redirect/16e9f346-c2c3-4fbc-a391-2d8c89915f24/256/",
+        "avatar512": "/avatar-redirect/16e9f346-c2c3-4fbc-a391-2d8c89915f24/512/",
+        "aboutMe": "Freelance 3D Artist from germany. Doing archviz, concept art and automotive renderings.",
+        "aboutMeUrl": "https://www.dennis-kreker.de",
+        "fullName": "Dennis Kreker",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "54f68aa8522fe4304d9bbdef93ca0a83a9a3780d5a7eda1dfc454dfbf99dfa81",
+      "source_triangles": 25728,
+      "triangles": 4250,
+      "dimensions_m": [
+        0.095596,
+        0.187599,
+        0.185754
+      ],
+      "normalized_aabb_min_m": [
+        -0.047798,
+        0.0,
+        -0.092877
+      ],
+      "normalized_aabb_max_m": [
+        0.047798,
+        0.187599,
+        0.092877
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Explicit alpha-blend approximation for identifiable glass mesh; visual QA pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_glass_ceramic_and_glass_pots",
+      "runtime_path": "res://assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/4339d6c8-d3b2-468f-8a96-a0844f9a8eff/",
+      "author": {
+        "id": 85059,
+        "firstName": "M3D",
+        "lastName": "Mario Antônio Maschke",
+        "gravatarHash": "9dc9d4a298cb31631aa6395d320dec24",
+        "avatar128": "/avatar-redirect/644f9dc3-c929-49f8-ba3b-dea0e48958eb/128/",
+        "avatar256": "/avatar-redirect/644f9dc3-c929-49f8-ba3b-dea0e48958eb/256/",
+        "avatar512": "/avatar-redirect/644f9dc3-c929-49f8-ba3b-dea0e48958eb/512/",
+        "aboutMe": "I am an architect, graphic designer and 3D modeler.\r\nBLENDER enthusiast!",
+        "aboutMeUrl": null,
+        "fullName": "M3D Mario Antônio Maschke",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "7f1f895c0c74639489452ef59ef48e09a60b178471edc4b433cec8216e9e406f",
+      "source_triangles": 367872,
+      "triangles": 4249,
+      "dimensions_m": [
+        1.188071,
+        0.450233,
+        0.350686
+      ],
+      "normalized_aabb_min_m": [
+        -0.594036,
+        0.0,
+        -0.175343
+      ],
+      "normalized_aabb_max_m": [
+        0.594035,
+        0.450233,
+        0.175343
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 3,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_06.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_07.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_08.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Source baked materials do not retain transmission; separate glass material reconstruction/visual review pending.",
+      "source_nodes": null,
+      "grouped_model": true,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_glass_di",
+      "runtime_path": "res://assets/decor_bank/blendkit_glass_di/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/e063261d-5d36-46da-a7a1-7a4f22e47256/",
+      "author": {
+        "id": 270493,
+        "firstName": "Ramon",
+        "lastName": "Perez",
+        "gravatarHash": "4a4fa97268e27523a106ee52f756028d",
+        "avatar128": "/avatar-redirect/6faa31c6-582f-4536-8a62-71eda9728f4a/128/",
+        "avatar256": "/avatar-redirect/6faa31c6-582f-4536-8a62-71eda9728f4a/256/",
+        "avatar512": "/avatar-redirect/6faa31c6-582f-4536-8a62-71eda9728f4a/512/",
+        "aboutMe": "3D artist specializing in creature sculpting. I love making procedural textures on my free time though",
+        "aboutMeUrl": "https://www.artstation.com/ramon_perez",
+        "fullName": "Ramon Perez",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "8d61b8b882c81f74cebf4ac6e0588cc1d4b981f2f9eb7cc51abc42b70c83157c",
+      "source_triangles": 27094,
+      "triangles": 4249,
+      "dimensions_m": [
+        0.042074,
+        0.041964,
+        0.042145
+      ],
+      "normalized_aabb_min_m": [
+        -0.021037,
+        -0.0,
+        -0.021073
+      ],
+      "normalized_aabb_max_m": [
+        0.021037,
+        0.041964,
+        0.021072
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 2,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Explicit alpha-blend approximation for identifiable glass mesh; visual QA pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_hp_notebook_lowpoly",
+      "runtime_path": "res://assets/decor_bank/owner_hp_notebook_lowpoly/model.gltf",
+      "source_page": "https://3dhaupt.com/3d-models-electronics-computer-hp-notebook-low-poly-download/",
+      "author": "3DHaupt / Dennis Haupt",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "7bb73f214489c19f5a61edc95809e057b6cb4496cf0347a44313b7c9d3f4dcd8",
+      "source_triangles": 277,
+      "triangles": 277,
+      "dimensions_m": [
+        0.2378,
+        0.243449,
+        0.34
+      ],
+      "normalized_aabb_min_m": [
+        -0.1189,
+        -0.0,
+        -0.17
+      ],
+      "normalized_aabb_max_m": [
+        0.1189,
+        0.243448,
+        0.17
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.10389106929831113,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 2,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_03.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [
+        {
+          "name": "Armature|Armature|ArmatureAction",
+          "channels": 12
+        }
+      ],
+      "skins": 1,
+      "glass_note": null,
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_jack_daniel_s_whiskey",
+      "runtime_path": "res://assets/decor_bank/blendkit_jack_daniel_s_whiskey/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/ddda5a9d-8801-44bf-9998-faf14ff2f208/",
+      "author": {
+        "id": 984262,
+        "firstName": "Arman",
+        "lastName": "Khachatryan",
+        "gravatarHash": "5c0ac929e44a98a562f180cde64c1780",
+        "avatar128": "/avatar-redirect/e7332aa0-da0f-4b40-896c-020e35fa4b3a/128/",
+        "avatar256": "/avatar-redirect/e7332aa0-da0f-4b40-896c-020e35fa4b3a/256/",
+        "avatar512": "/avatar-redirect/e7332aa0-da0f-4b40-896c-020e35fa4b3a/512/",
+        "aboutMe": "I’m a 3D artist who loves turning imagination into form.\r\nI mostly work with Blender, creating realistic and stylized models inspired by design, architecture, and storytelling.",
+        "aboutMeUrl": "https://www.behance.net/armankhachat7",
+        "fullName": "Arman Khachatryan",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "c58dec33fb8ed16bb5ca7516a2cf1c235f16ae3778910ae8bd18ed3de3581c14",
+      "source_triangles": 8060,
+      "triangles": 4246,
+      "dimensions_m": [
+        0.164336,
+        0.300905,
+        0.199628
+      ],
+      "normalized_aabb_min_m": [
+        -0.082168,
+        0.0,
+        -0.099814
+      ],
+      "normalized_aabb_max_m": [
+        0.082168,
+        0.300905,
+        0.099814
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 6,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_06.jpg",
+          "px": [
+            512,
+            329
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_07.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_08.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_09.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_10.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_11.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_12.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_13.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_14.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_15.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Source baked materials do not retain transmission; separate glass material reconstruction/visual review pending.",
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_kitchen_set_6_glass_conteiner_2",
+      "runtime_path": "res://assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/42c20b4b-c203-408f-95f5-0d8fafb01e8e/",
+      "author": {
+        "id": 59772,
+        "firstName": "Lucas",
+        "lastName": "Paludo",
+        "gravatarHash": "e9556ef8eb375a4a8e1ae050ffe77617",
+        "avatar128": "/avatar-redirect/b7de3d97-c747-43d1-b335-aa0ac3326eae/128/",
+        "avatar256": "/avatar-redirect/b7de3d97-c747-43d1-b335-aa0ac3326eae/256/",
+        "avatar512": "/avatar-redirect/b7de3d97-c747-43d1-b335-aa0ac3326eae/512/",
+        "aboutMe": "Architect, 3d designer, animator.",
+        "aboutMeUrl": "http://www.instagram.com/paludo.arq",
+        "fullName": "Lucas Paludo",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "8f6ab69df07d7bae35869e060ba8dacf25541381451b784035164993967a82f9",
+      "source_triangles": 47904,
+      "triangles": 4248,
+      "dimensions_m": [
+        0.256568,
+        0.132061,
+        0.237439
+      ],
+      "normalized_aabb_min_m": [
+        -0.128283,
+        0.0,
+        -0.11872
+      ],
+      "normalized_aabb_max_m": [
+        0.128284,
+        0.132062,
+        0.118719
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 6,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_06.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_07.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_08.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_09.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_10.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_11.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_12.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_13.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_14.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_15.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_16.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_17.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": "Source baked materials do not retain transmission; separate glass material reconstruction/visual review pending.",
+      "source_nodes": null,
+      "grouped_model": true,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_plant_decoration",
+      "runtime_path": "res://assets/decor_bank/blendkit_plant_decoration/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/2ebc5ab5-6caf-435d-a977-333975f56d28/",
+      "author": {
+        "id": 791292,
+        "firstName": "Patrik",
+        "lastName": "",
+        "gravatarHash": "70f1ccb6a5bb5b8917c4c9b1409925f4",
+        "avatar128": "/avatar-redirect/9722a6db-56f8-411f-8021-f0dad58cf4f5/128/",
+        "avatar256": "/avatar-redirect/9722a6db-56f8-411f-8021-f0dad58cf4f5/256/",
+        "avatar512": "/avatar-redirect/9722a6db-56f8-411f-8021-f0dad58cf4f5/512/",
+        "aboutMe": "",
+        "aboutMeUrl": null,
+        "fullName": "Patrik ",
+        "socialNetworks": [
+          {
+            "socialNetwork": {
+              "name": "Instagram",
+              "icon": "<i class=\"fab fa-instagram\" title=\"Instagram\"></i><span class=\"sr-only\">Instagram</span>",
+              "order": 3
+            },
+            "url": "https://www.instagram.com/p.capka.av"
+          },
+          {
+            "socialNetwork": {
+              "name": "ArtStation",
+              "icon": "<i class=\"fab fa-artstation\" title=\"ArtStation\"></i><span class=\"sr-only\">ArtStation</span>",
+              "order": 5
+            },
+            "url": "https://www.artstation.com/pcapka"
+          }
+        ]
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "976980e11f394e4d8e39b09e70ea5ee6f713202d69004bdce38be1b26a57ee4d",
+      "source_triangles": 37408,
+      "triangles": 6675,
+      "dimensions_m": [
+        0.099723,
+        0.142163,
+        0.107775
+      ],
+      "normalized_aabb_min_m": [
+        -0.049862,
+        -0.0,
+        -0.053887
+      ],
+      "normalized_aabb_max_m": [
+        0.049862,
+        0.142163,
+        0.053887
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 12,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_06.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_07.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_08.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_09.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_10.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_11.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_12.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_13.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_14.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_15.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_16.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_17.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_18.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_19.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_20.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_21.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_22.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_23.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_24.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_25.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_26.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_27.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_28.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_29.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_30.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_31.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_32.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_33.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_34.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_35.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_sofa",
+      "runtime_path": "res://assets/decor_bank/blendkit_sofa/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/ec591235-91b6-435c-8adf-49f077f6637f/",
+      "author": {
+        "id": 215324,
+        "firstName": "MNDV",
+        "lastName": "",
+        "gravatarHash": "afd1b8341900397004e1a6ea0d4ed66c",
+        "avatar128": "/avatar-redirect/67fdbf05-db18-477b-93b1-7070328efcb5/128/",
+        "avatar256": "/avatar-redirect/67fdbf05-db18-477b-93b1-7070328efcb5/256/",
+        "avatar512": "/avatar-redirect/67fdbf05-db18-477b-93b1-7070328efcb5/512/",
+        "aboutMe": ":)",
+        "aboutMeUrl": "https://blendermarket.com/creators/mndv",
+        "fullName": "MNDV ",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "f321fea0521c2f686edcef63b983f2f25895ea1e96a900e1b05759f96675ed8d",
+      "source_triangles": 285944,
+      "triangles": 12750,
+      "dimensions_m": [
+        2.059626,
+        0.806198,
+        0.927944
+      ],
+      "normalized_aabb_min_m": [
+        -1.029813,
+        -0.0,
+        -0.463972
+      ],
+      "normalized_aabb_max_m": [
+        1.029813,
+        0.806197,
+        0.463972
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_sofa_set",
+      "runtime_path": "res://assets/decor_bank/blendkit_sofa_set/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/abf2a52e-4d26-43d7-a5d3-b0e058641b09/",
+      "author": {
+        "id": 1164929,
+        "firstName": "Abubakr",
+        "lastName": "Hamidov",
+        "gravatarHash": "340e4eb6988e812453c669baebe39d53",
+        "avatar128": "/avatar-redirect/3b96fa15-105b-4c27-8203-848037e81461/128/",
+        "avatar256": "/avatar-redirect/3b96fa15-105b-4c27-8203-848037e81461/256/",
+        "avatar512": "/avatar-redirect/3b96fa15-105b-4c27-8203-848037e81461/512/",
+        "aboutMe": "Chief draftsman and architect at Bimlite studio",
+        "aboutMeUrl": "https://www.artstation.com/hamidov",
+        "fullName": "Abubakr Hamidov",
+        "socialNetworks": [
+          {
+            "socialNetwork": {
+              "name": "Instagram",
+              "icon": "<i class=\"fab fa-instagram\" title=\"Instagram\"></i><span class=\"sr-only\">Instagram</span>",
+              "order": 3
+            },
+            "url": "https://www.instagram.com/7hamidov7"
+          },
+          {
+            "socialNetwork": {
+              "name": "ArtStation",
+              "icon": "<i class=\"fab fa-artstation\" title=\"ArtStation\"></i><span class=\"sr-only\">ArtStation</span>",
+              "order": 5
+            },
+            "url": "https://www.artstation.com/hamidov"
+          }
+        ]
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "be4763a860ee60d9c8aa44d78764fa8cba762a1ddacc6fa705504a9a1fca767b",
+      "source_triangles": 83601,
+      "triangles": 12746,
+      "dimensions_m": [
+        2.288059,
+        0.83015,
+        1.314869
+      ],
+      "normalized_aabb_min_m": [
+        -1.14403,
+        0.0,
+        -0.657434
+      ],
+      "normalized_aabb_max_m": [
+        1.144029,
+        0.83015,
+        0.657435
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 6,
+      "textures": [
+        {
+          "file": "tex_00.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_01.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_02.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_06.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_07.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_08.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_09.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_10.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_11.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_12.jpg",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_13.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_14.png",
+          "px": [
+            1024,
+            1024
+          ],
+          "alpha": false,
+          "normal": true
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": null,
+      "grouped_model": true,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_theatre_ceiling_feature",
+      "runtime_path": "res://assets/decor_bank/owner_theatre_ceiling_feature/model.gltf",
+      "source_page": "Owner supplied Home+Theatre.blend",
+      "author": "UNVERIFIED",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730",
+      "source_triangles": 108544,
+      "triangles": 6796,
+      "dimensions_m": [
+        0.490104,
+        0.733653,
+        2.856229
+      ],
+      "normalized_aabb_min_m": [
+        -0.245052,
+        -0.0,
+        -1.428114
+      ],
+      "normalized_aabb_max_m": [
+        0.245052,
+        0.733653,
+        1.428115
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.72,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 3,
+      "textures": [],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": [
+        "Cylinder",
+        "Cube.013",
+        "Cube.014"
+      ],
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_theatre_media_console",
+      "runtime_path": "res://assets/decor_bank/owner_theatre_media_console/model.gltf",
+      "source_page": "Owner supplied Home+Theatre.blend",
+      "author": "UNVERIFIED",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730",
+      "source_triangles": 392,
+      "triangles": 392,
+      "dimensions_m": [
+        1.372698,
+        0.757348,
+        0.457222
+      ],
+      "normalized_aabb_min_m": [
+        -0.686349,
+        0.0,
+        -0.228611
+      ],
+      "normalized_aabb_max_m": [
+        0.686349,
+        0.757349,
+        0.228611
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.72,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 3,
+      "textures": [],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": [
+        "Cube.016",
+        "Cube.017",
+        "Cube.018"
+      ],
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_theatre_riser_trim",
+      "runtime_path": "res://assets/decor_bank/owner_theatre_riser_trim/model.gltf",
+      "source_page": "Owner supplied Home+Theatre.blend",
+      "author": "UNVERIFIED",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730",
+      "source_triangles": 12,
+      "triangles": 12,
+      "dimensions_m": [
+        3.899817,
+        0.138396,
+        0.190024
+      ],
+      "normalized_aabb_min_m": [
+        -1.949908,
+        -0.0,
+        -0.095012
+      ],
+      "normalized_aabb_max_m": [
+        1.949909,
+        0.138396,
+        0.095012
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.72,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": [
+        "Cube.012"
+      ],
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_theatre_screen",
+      "runtime_path": "res://assets/decor_bank/owner_theatre_screen/model.gltf",
+      "source_page": "Owner supplied Home+Theatre.blend",
+      "author": "UNVERIFIED",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730",
+      "source_triangles": 68,
+      "triangles": 68,
+      "dimensions_m": [
+        3.058565,
+        1.795901,
+        0.069713
+      ],
+      "normalized_aabb_min_m": [
+        -1.529282,
+        0.0,
+        -0.034856
+      ],
+      "normalized_aabb_max_m": [
+        1.529282,
+        1.795902,
+        0.034856
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.72,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 2,
+      "textures": [],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": [
+        "Cube.015"
+      ],
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_theatre_seat_pair",
+      "runtime_path": "res://assets/decor_bank/owner_theatre_seat_pair/model.gltf",
+      "source_page": "Owner supplied Home+Theatre.blend",
+      "author": "UNVERIFIED",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730",
+      "source_triangles": 548,
+      "triangles": 548,
+      "dimensions_m": [
+        1.82785,
+        0.810035,
+        0.923947
+      ],
+      "normalized_aabb_min_m": [
+        -0.913925,
+        -0.0,
+        -0.461973
+      ],
+      "normalized_aabb_max_m": [
+        0.913925,
+        0.810035,
+        0.461973
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.72,
+      "yaw_deg": 180,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": [
+        "Cube.009",
+        "Cube.010"
+      ],
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "owner_theatre_side_panel",
+      "runtime_path": "res://assets/decor_bank/owner_theatre_side_panel/model.gltf",
+      "source_page": "Owner supplied Home+Theatre.blend",
+      "author": "UNVERIFIED",
+      "license": "PUBLIC_REDISTRIBUTION_UNVERIFIED",
+      "public_repository_eligible": false,
+      "source_sha256": "3ff4c538aade53b9c84a14d487a575a731d980ab49356cebff84ab462d888730",
+      "source_triangles": 16,
+      "triangles": 16,
+      "dimensions_m": [
+        0.662968,
+        2.630097,
+        0.062317
+      ],
+      "normalized_aabb_min_m": [
+        -0.331483,
+        -0.0,
+        -0.031158
+      ],
+      "normalized_aabb_max_m": [
+        0.331484,
+        2.630097,
+        0.031159
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 0.72,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 1,
+      "textures": [],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": [
+        "Plane"
+      ],
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    },
+    {
+      "asset_id": "blendkit_vintage_brass_oil_lamp",
+      "runtime_path": "res://assets/decor_bank/blendkit_vintage_brass_oil_lamp/model.gltf",
+      "source_page": "https://www.blendkit.com/asset-gallery-detail/b4c39d29-5ca0-420b-aa83-2c5bf9a6c823/",
+      "author": {
+        "id": 1801382,
+        "firstName": "Ken",
+        "lastName": "Xie",
+        "gravatarHash": "8cde7163f03d520b0b3686d259b41003",
+        "avatar128": "/avatar-redirect/b1f26dd5-33a9-46ae-b17b-68e420cbba98/128/",
+        "avatar256": "/avatar-redirect/b1f26dd5-33a9-46ae-b17b-68e420cbba98/256/",
+        "avatar512": "/avatar-redirect/b1f26dd5-33a9-46ae-b17b-68e420cbba98/512/",
+        "aboutMe": "I have been using Blender for 4 years. I am proficient in using Blender for rendering and creating simple interiors and furniture, as well as creating and rendering cartoon game characters. The universal renderer is Cycles",
+        "aboutMeUrl": "https://www.turbosquid.com/Search/Artists/KenXie",
+        "fullName": "Ken Xie",
+        "socialNetworks": []
+      },
+      "license": "royalty_free",
+      "public_repository_eligible": false,
+      "source_sha256": "25806ebcb3a8e58518a9fdd2ca35c8428d8f3bd5da985392c77993a9e1710523",
+      "source_triangles": 65678,
+      "triangles": 6798,
+      "dimensions_m": [
+        0.082195,
+        0.206961,
+        0.081353
+      ],
+      "normalized_aabb_min_m": [
+        -0.041097,
+        0.0,
+        -0.040676
+      ],
+      "normalized_aabb_max_m": [
+        0.041098,
+        0.206962,
+        0.040677
+      ],
+      "pivot": "footprint_center_support_plane",
+      "import_uniform_scale": 1.0,
+      "yaw_deg": 0,
+      "forward_status": "NEEDS_VISUAL_REVIEW",
+      "materials": 3,
+      "textures": [
+        {
+          "file": "tex_00.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_01.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_02.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_03.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_04.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_05.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_06.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": true
+        },
+        {
+          "file": "tex_07.jpg",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        },
+        {
+          "file": "tex_08.png",
+          "px": [
+            512,
+            512
+          ],
+          "alpha": false,
+          "normal": false
+        }
+      ],
+      "animations": [],
+      "skins": 0,
+      "glass_note": null,
+      "source_nodes": null,
+      "grouped_model": false,
+      "owner_approved": false,
+      "status": "NORMALIZED_CANDIDATE",
+      "godot_import_status": "PASS_ISOLATED_4.7.2",
+      "delivery_policy": "PERSONAL_PROJECT_ONLY_NO_PUBLIC_ASSET_FILES"
+    }
+  ],
+  "owner_redistribution_confirmation": "2026-11-26: project owner explicitly confirms permissions checked and authorizes public distribution of models."
+}

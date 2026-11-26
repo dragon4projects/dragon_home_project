@@ -1,0 +1,5 @@
+{'id': 741007, 'firstName': 'Dennis', 'lastName': 'Hafemann', 'gravatarHash': '4ce74765f0668ae7de929948b701e85f', 'avatar128': '/avatar-redirect/c74dd42b-0be4-4f3b-8c88-25e91a19d639/128/', 'avatar256': '/avatar-redirect/c74dd42b-0be4-4f3b-8c88-25e91a19d639/256/', 'avatar512': '/avatar-redirect/c74dd42b-0be4-4f3b-8c88-25e91a19d639/512/', 'aboutMe': 'I create 3D models, assets, motion graphics and addons for Blender.', 'aboutMeUrl': 'https://superhivemarket.com/creators/dennis-hafemann', 'fullName': 'Dennis Hafemann', 'socialNetworks': [{'socialNetwork': {'name': 'YouTube', 'icon': '<i class="fab fa-youtube" title="YouTube"></i><span class="sr-only">YouTube</span>', 'order': 1}, 'url': 'https://www.youtube.com/@One-Hell-Of-A-Vector'}]}
+https://www.blendkit.com/asset-gallery-detail/10acdda9-7321-4578-84d0-1d03484ada66/
+royalty_free
+Source SHA-256 95d3d06dbd2bb42ec9e889d6dd6225ca94e088cd259976675111c83a97f6ce7f
+Modified mesh, textures, pivot as documented. Candidate only.
