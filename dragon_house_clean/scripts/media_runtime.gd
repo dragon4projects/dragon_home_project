@@ -1,4 +1,5 @@
 extends RefCounted
+const LearnedHabits=preload("res://scripts/learned_habits.gd")
 ## Physical-media lifecycle, independent from camera and autonomous planner.
 ## Catalogue entries are explicit. No invented titles, playback or ownership.
 var world
@@ -232,6 +233,7 @@ func pause_reading(actor:Dictionary,now:float)->bool:
 	var elapsed:float=maxf(0.0,minf(now,end)-start)
 	if elapsed<=0:return false
 	if not read(id,book_id,elapsed):return false
+	if now>=end:LearnedHabits.record(actor,"READ_BOOK",now,book_id)
 	var state:Dictionary=_reading_state(id)
 	state.erase("current_work_id")
 	state["last_work_id"]=book_work_id(book)
@@ -815,6 +817,7 @@ func finish_watch(actor:Dictionary,now:float)->bool:
 	actor["last_watch_id"]=id
 	_settle_attendance(actor,"watch_session",now,true,"COMPLETE")
 	actor.erase("watch_session")
+	LearnedHabits.record(actor,"WATCH_FILM",now,id)
 	world._append_journal("CINEMA_UNIT_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"season":season,"episode":episode,"seconds":unit["seconds"]})
 	return true
 
@@ -883,6 +886,7 @@ func finish_listen(actor:Dictionary,now:float)->bool:
 	world.runtime_state["music_progress"]=all
 	_settle_attendance(actor,"listen_session",now,true,"COMPLETE")
 	actor.erase("listen_session")
+	LearnedHabits.record(actor,"LISTEN_MUSIC",now,id)
 	world._append_journal("MUSIC_TRACK_COMPLETED",actor_id,id,"",str(actor.get("room_id","")),{"seconds":unit["seconds"],"completed_count":history[id]["completed_count"]})
 	return true
 
