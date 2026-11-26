@@ -40,6 +40,30 @@ func run()->void:
   assert(nav.segment_clear(room,Vector2(-7.12,D.center(i)),Vector2(7.12,D.center(i))),str(i))
  assert(not nav.clear(room,Vector2(5.0,-5.5)))
  assert(scene.room_root.get_child_count()==65)
+ var social_count:=0
+ var L=load("res://scripts/depth7_layout.gd")
+ for r in scene.world.rooms:
+  if not nav.key(r) in L.SOCIAL_KEYS:continue
+  assert(D.enabled_for(r),str(r))
+  var node:Node3D=scene.room_root.get_node(str(r["id"]))
+  assert(node.get_node_or_null("Layer_Structure/CutawayFloorSlab")!=null)
+  assert(is_equal_approx(node.get_node("Layer_Structure/CutawayFloorSlab").mesh.size.z,9.7))
+  assert(node.get_node("Layer_OverviewCues").get_meta("real_model_count",0)>0)
+  for i in [1,3,5]:assert(nav.segment_clear(r,Vector2(-7.12,D.center(i)),Vector2(7.12,D.center(i))))
+  assert(nav.cup_slots(r).size()>=2)
+  social_count+=1
+ assert(social_count==3,str(social_count))
+ # Canonical traffic must not avoid or reserve positions of other walkers.
+ var Traffic=load("res://scripts/teea008_traffic.gd")
+ var traffic=Traffic.new()
+ traffic.begin(scene.world,nav)
+ var c:Vector3=scene.world.room_center_pos(room)
+ var a:=Vector3(c.x-1,c.y,D.center(5));var b:=Vector3(c.x+1,c.y,D.center(5))
+ var actor={"id":"QA_WALKER_A","room_id":room["id"]}
+ traffic.positions["QA_WALKER_B"]=b
+ assert(traffic.step(actor,a,b,b,2.0,"candidate_path")==b)
+ traffic.finish()
+ print("DEPTH7_SOCIAL_RUNTIME_PASS rooms=",social_count," overlap_pass=true")
  scene.selected_room=room["id"]
  scene.set_mode("ROOM");scene.zoom_current=scene.zoom;scene.smooth_focus=scene.desired_focus;scene.apply_camera(1.0);scene.update_render_lod()
  if DisplayServer.get_name()!="headless":

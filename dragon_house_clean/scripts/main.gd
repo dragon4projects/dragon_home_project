@@ -2,6 +2,7 @@ extends Node3D
 ## Fresh Godot 4.7.2 cutaway world. Geometry and presentation only;
 ## room truth + autonomous life are independent of the camera.
 const Depth7Space=preload("res://scripts/depth7_space.gd")
+const Depth7Layout=preload("res://scripts/depth7_layout.gd")
 const Depth7Hearth=preload("res://scripts/depth7_hearth.gd")
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
@@ -336,6 +337,16 @@ func _ready() -> void:
 				for room in world.rooms:
 					if str(room.get("type",""))=="common" and int(room.get("size_modules",1))==3:
 						room["depth7"]=true
+	if architecture_review and teea008_review.enabled:
+		for key in Depth7Layout.SOCIAL_KEYS:
+			var previous:Dictionary=teea008_review.layouts.get(key,{})
+			if previous.is_empty():continue
+			var converted:=Depth7Layout.convert(previous,key)
+			if converted.is_empty():continue
+			teea008_review.layouts[key]=converted
+			for room in world.rooms:
+				if "%s/R%d"%[str(room.get("interior_variant",room.get("type",""))),int(room.get("size_modules",1))]==key:
+					room["depth7"]=true
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
@@ -1544,6 +1555,12 @@ func _populate_furniture(group_node: Node3D) -> void:
 			furnish(root,str(group["type"]),int(group["x_start"]),int(group["level"]))
 			_ensure_fallback_anchor_furniture(
 				root,life.stations.layout_for_world(world,physical_room))
+	if bool(group.get("depth7_generic",false)):
+		for at in [Vector3(-float(group["width"])*W*.28,2.3,-5.7),Vector3(float(group["width"])*W*.28,2.3,-5.7),Vector3(0,2.2,-.8)]:
+			_add_warm_room_light(decoration_layer,at,.65)
+		detailed_room_groups[group_node.name]=true
+		detail_materialization_count+=1
+		return
 	if architecture_review and bool(group.get("teea008_review",false)):
 		_add_canonical_interior_lighting(decoration_layer,group)
 	if bool(group.get("teea008_review",false)):
@@ -1609,6 +1626,27 @@ func make_room(group: Dictionary) -> void:
 		return
 	var art_type := _review_room_art_type(group)
 	visual_room_groups[n.name]["art_type"] = art_type
+	if architecture_review and not facade_only and Depth7Space.enabled_for(live_room):
+		group["has_art"]=false
+		group["teea008_review"]=true
+		group["native_decor"]=true
+		group["replaces_furniture"]=true
+		group["depth7_generic"]=true
+		var structure:=Node3D.new();structure.name="Layer_Structure";n.add_child(structure)
+		box(structure,Vector3(0,-.04,-3.20),Vector3(span,.08,9.70),palette["floor"]).name="CutawayFloorSlab"
+		box(structure,Vector3(0,1.50,-8.14),Vector3(span,3.0,.18),palette["rock"]).name="StructuralRearBackup"
+		box(structure,Vector3(0,3.07,-7.60),Vector3(span,.14,1.05),palette["wood"]).name="CutawayCeilingSlab"
+		for side in [-1,1]:
+			box(structure,Vector3(float(side)*(span*.5-.10),1.45,-4.2),Vector3(.16,2.9,7.7),palette["rock"])
+		for z in [Depth7Space.center(1),Depth7Space.center(3),Depth7Space.center(5)]:
+			box(structure,Vector3(0,-.004,z),Vector3(span-.22,.008,.06),palette["floor"])
+		var overview:=Node3D.new();overview.name="Layer_OverviewCues";n.add_child(overview)
+		var count:int=teea008_review.populate_overview(overview,art_type,int(group["width"]),Callable(self,"depth_visual_scale"))
+		overview.set_meta("real_model_count",count)
+		var furniture:=Node3D.new();furniture.name="LocalFurniture";n.add_child(furniture)
+		var label:=label3(n,str(live_room.get("display_name",room_names.get(t,t))),Vector3(0,3.35,.40),24,Color("#f4d9b9"))
+		label.name="RoomRoofLabel"
+		return
 	var accepted: Array=interior_skin.validated_layers(art_type,int(group["width"]))
 	visual_room_groups[n.name]["has_art"] = not facade_only and not accepted.is_empty()
 	var has_authored_furniture:bool=accepted.any(
@@ -2121,7 +2159,7 @@ func update_physical_objects() -> void:
 				holder_x,
 				float(holder.get("visual_y",float(holder.get("level",0))*H))+0.78,
 				holder_z+0.18) + _object_offset(str(object_id))*0.25
-			var held_scale: float = depth_visual_scale(holder_z)
+			var held_scale: float = depth_scale_for_room(str(holder.get("room_id","")),holder_z)
 			anchor.scale=Vector3.ONE*held_scale
 			if teea008_live and str(object.get("viewer_category",""))=="cups":
 				# Actual cup mesh, not the unrelated cup baked into DRINK art.
@@ -2176,7 +2214,7 @@ func update_physical_objects() -> void:
 				if plain_sprite!=null:plain_sprite.position.y=0.28
 			var room_world:Vector3=world.room_local_to_world(room,local_anchor)
 			anchor.position=Vector3(depth_visual_x(room_id,room_world.x,local_anchor.y),room_world.y+(0.0 if cube else 0.22),room_world.z)
-			anchor.scale=Vector3.ONE*depth_visual_scale(local_anchor.y)
+			anchor.scale=Vector3.ONE*depth_scale_for_room(room_id,local_anchor.y)
 			if teea008_live and str(object.get("viewer_category",""))=="artifacts" and str(object.get("current_support_id",""))!="":
 				var support:Dictionary=life.candidate_navigation.artifact_support(room,str(object.get("current_support_id","")))
 				if not support.is_empty():
@@ -2185,8 +2223,8 @@ func update_physical_objects() -> void:
 						continue
 					var pos:Array=support["xyz"]
 					var inst:Array=support["instance_xyz"]
-					var scale_value:float=depth_visual_scale(float(inst[2]))
-					anchor.position=Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
+					var scale_value:float=depth_scale_for_room(room_id,float(inst[2]))
+					anchor.position=Vector3(room_center.x+float(pos[0]),room_center.y+float(pos[1]),float(pos[2])) if Depth7Space.enabled_for(room) else Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
 					anchor.scale=Vector3.ONE*scale_value
 					var sprite:Sprite3D=anchor.get_node_or_null("Visual")
 					if sprite!=null and not cube:
@@ -2196,8 +2234,8 @@ func update_physical_objects() -> void:
 				if not slot.is_empty():
 					var pos:Array=slot["xyz"]
 					var inst:Array=slot["instance_xyz"]
-					var scale_value:float=depth_visual_scale(float(inst[2]))
-					anchor.position=Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
+					var scale_value:float=depth_scale_for_room(room_id,float(inst[2]))
+					anchor.position=Vector3(room_center.x+float(pos[0]),room_center.y+float(pos[1]),float(pos[2])) if Depth7Space.enabled_for(room) else Vector3(room_center.x+float(pos[0])*scale_value,room_center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
 					anchor.scale=Vector3.ONE*scale_value
 
 func make_residents() -> void:

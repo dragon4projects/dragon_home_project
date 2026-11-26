@@ -103,6 +103,8 @@ func _support_host_id(item:Dictionary)->String:
 func _mount_pose(item:Dictionary,scale_at:Callable,instances:Dictionary)->Dictionary:
 	var p:Array=item["room_local_xyz"]
 	var physical:=Vector3(float(p[0]),float(p[1]),float(p[2]))
+	if bool(item.get("depth7_measured",false)):
+		return {"position":physical,"depth":1.0,"support_host_id":_support_host_id(item)}
 	var depth:float=float(scale_at.call(physical.z))
 	var projected:=Vector3(physical.x*depth,physical.y,physical.z)
 	var host_id:String=_support_host_id(item)

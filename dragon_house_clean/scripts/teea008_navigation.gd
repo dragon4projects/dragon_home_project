@@ -345,7 +345,8 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 				raw=[at.x,at.y]
 			var p:=_v2(raw)
 			if not clear(room,p):
-				continue
+				if bool(row.get("depth7_measured",false)):p=nearest_clear(room,p)
+				else:continue
 			var spot:Dictionary={"id":str(station["station_candidate_id"]),"offset":p,"kind":"standing","furniture_id":str(item["instance_id"]),"pose_hint":"IDLE_S","approach_z":p.y,"candidate_kind":kind,"candidate_asset_id":str(item["asset_id"]),"candidate_supports":item.get("support_slots",[])}
 			if kind=="standing":
 				spot["pose_hint"]="VIEW"
