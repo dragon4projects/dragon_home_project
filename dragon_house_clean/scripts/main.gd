@@ -222,8 +222,8 @@ func _ensure_canonical_artifact_cube()->bool:
 		slots.push_front(preferred)
 	for slot in slots:
 		var p:Array=slot["xyz"]
-		var dims:Array=slot["dimensions"]
-		if float(p[1])<0.35 or float(p[1])>1.70:continue
+		var dims:Array=slot.get("unscaled_dimensions",slot["dimensions"])
+		if float(p[1])<0.35*depth_scale_for_room(rid,float(slot["instance_xyz"][2])) or float(p[1])>1.70:continue
 		if float(dims[0])<ARTIFACT_CUBE_SIDE or float(dims[1])<ARTIFACT_CUBE_SIDE or float(dims[2])<ARTIFACT_CUBE_SIDE:continue
 		var occupied:=false
 		for obj in world.objects.values():
@@ -275,10 +275,10 @@ func _restore_zna_artifact_sources()->int:
 		for slot in slots:
 			var sid:String=str(slot["id"])
 			var p:Array=slot["xyz"]
-			var dims:Array=slot["dimensions"]
+			var dims:Array=slot.get("unscaled_dimensions",slot["dimensions"])
 			# Keep central review/test opening available for owner-added art.
 			if sid=="artifact_r3_shelf_c.shelf_3_1":continue
-			if float(p[1])<0.35 or float(p[1])>1.70:continue
+			if float(p[1])<0.35*depth_scale_for_room(rid,float(slot["instance_xyz"][2])) or float(p[1])>1.70:continue
 			if float(dims[0])<ARTIFACT_CUBE_SIDE or float(dims[1])<ARTIFACT_CUBE_SIDE or float(dims[2])<ARTIFACT_CUBE_SIDE:continue
 			var occupied:=false
 			for object in world.objects.values():
@@ -338,7 +338,7 @@ func _ready() -> void:
 					if str(room.get("type",""))=="common" and int(room.get("size_modules",1))==3:
 						room["depth7"]=true
 	if architecture_review and teea008_review.enabled:
-		for key in Depth7Layout.SOCIAL_KEYS:
+		for key in Depth7Layout.SOCIAL_KEYS+Depth7Layout.FUNCTION_KEYS:
 			var previous:Dictionary=teea008_review.layouts.get(key,{})
 			if previous.is_empty():continue
 			var converted:=Depth7Layout.convert(previous,key)
@@ -347,6 +347,7 @@ func _ready() -> void:
 			for room in world.rooms:
 				if "%s/R%d"%[str(room.get("interior_variant",room.get("type",""))),int(room.get("size_modules",1))]==key:
 					room["depth7"]=true
+		Depth7Layout.move_media(teea008_review.surfaces,Depth7Layout.FUNCTION_KEYS)
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
@@ -2194,12 +2195,12 @@ func update_physical_objects() -> void:
 			if teea008_review.enabled and bool(visual_room_groups.get(room_id,{}).get("teea008_review",false)):
 				# Canonical wall lane remains compatible with v0.22 events.
 				# Map it onto the measured rear wall plane for this renderer.
-				local_z=-1.98
+				local_z=-7.96 if Depth7Space.enabled_for(room) else -1.98
 			var physical_x:float=room_center.x+local_x
 			anchor.position=Vector3(
 				depth_visual_x(room_id,physical_x,local_z),
 				room_center.y+local_y,local_z)
-			anchor.scale=Vector3.ONE*depth_visual_scale(local_z)
+			anchor.scale=Vector3.ONE*depth_scale_for_room(room_id,local_z)
 		else:
 			var raw_anchor=object.get("current_anchor",[])
 			var local_anchor:Vector2
@@ -4172,7 +4173,7 @@ func _update_physical_books()->void:
 			var contact:Dictionary=_active_station_render_contact(actor)
 			if str(contact.get("state",""))=="READ" and bool(contact.get("book_baked",false)) and str(actor_animations.get(holder_id,{}).get("state",""))=="READ":continue
 			var z:float=float(actor.get("z",0))
-			scale_value=depth_visual_scale(z)
+			scale_value=depth_scale_for_room(str(room["id"]),z)
 			position_value=Vector3(depth_visual_x(str(room["id"]),float(actor["x"]),z)+0.20*scale_value,float(actor.get("visual_y",0))+0.90*scale_value,z+0.14)
 		else:
 			if str(book.get("location_room_id",""))!=str(slot["room_id"]):continue
@@ -4182,8 +4183,8 @@ func _update_physical_books()->void:
 			var pos:Array=slot["xyz"]
 			var inst:Array=slot["instance_xyz"]
 			var center:Vector3=world.room_center_pos(room)
-			scale_value=depth_visual_scale(float(inst[2]))
-			position_value=Vector3(center.x+float(pos[0])*scale_value,center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
+			scale_value=depth_scale_for_room(str(room["id"]),float(inst[2]))
+			position_value=Vector3(center.x+float(pos[0]),center.y+float(pos[1]),float(pos[2])) if Depth7Space.enabled_for(room) else Vector3(center.x+float(pos[0])*scale_value,center.y+float(inst[1])+(float(pos[1])-float(inst[1]))*scale_value,float(inst[2])+(float(pos[2])-float(inst[2]))*scale_value)
 		var node:Node3D=book_nodes.get(id)
 		if not is_instance_valid(node):
 			node=_create_physical_book(book)

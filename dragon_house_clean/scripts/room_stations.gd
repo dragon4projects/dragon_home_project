@@ -158,7 +158,7 @@ func _display_anchor_data(world, room: Dictionary) -> Array:
 		seen[station_id]=true
 		result.append({
 			"id":station_id,
-			"x":float(point[0]),"z":float(point[1]),
+			"x":float(point[0]),"z":-6.35 if bool(room.get("depth7",false)) and str(object.get("display_mode",""))=="wall" else float(point[1]),
 			"kind":"standing","furniture_id":"DISPLAY_WALL",
 			"pose_hint":"VIEW",
 			"approach_z":float(object.get("interaction_approach_z",0.95))

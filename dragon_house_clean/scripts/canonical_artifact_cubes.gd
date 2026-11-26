@@ -59,7 +59,7 @@ func title(id:String)->String:
 	return str(row.get("title","Артефакт"))
 
 func slot_available(room:Dictionary,slot:Dictionary,id:String)->bool:
-	var dims:Array=slot.get("dimensions",[])
+	var dims:Array=slot.get("unscaled_dimensions",slot.get("dimensions",[]))
 	if dims.size()!=3:return false
 	for axis in range(3):
 		if float(dims[axis])+0.00001<provisional_size_m:return false

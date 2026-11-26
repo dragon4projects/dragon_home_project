@@ -53,6 +53,29 @@ func run()->void:
   assert(nav.cup_slots(r).size()>=2)
   social_count+=1
  assert(social_count==3,str(social_count))
+ var functional_count:=0
+ for r in scene.world.rooms:
+  var key:String=nav.key(r)
+  if not key in L.FUNCTION_KEYS:continue
+  assert(D.enabled_for(r),key)
+  var node:Node3D=scene.room_root.get_node(str(r["id"]))
+  assert(is_equal_approx(node.get_node("Layer_Structure/CutawayFloorSlab").mesh.size.z,9.7))
+  scene.selected_room=r["id"]
+  scene.set_mode("ROOM");scene.zoom_current=scene.zoom;scene.smooth_focus=scene.desired_focus;scene.apply_camera(1.0);scene.update_render_lod()
+  var layer:Node3D=node.get_node("LocalFurniture")
+  assert(scene.detailed_room_groups.has(str(r["id"])),key)
+  var expected:=0
+  for sid in scene.teea008_review.surfaces:
+   if scene.teea008_review.surfaces[sid].room_variant==key:expected+=1
+  assert(layer.find_children("Aperture_*","Node3D",true,false).size()==expected,key)
+  if key=="library/R3":assert(nav.book_slots(r).size()==10)
+  if key=="artifact/R3":assert(nav.artifact_slots(r).size()==28)
+  if DisplayServer.get_name()!="headless":
+   for i in range(2):await process_frame;await RenderingServer.frame_post_draw
+   assert(root.get_texture().get_image().save_png("/home/user/dragon_qa/iter63_"+str(r["id"])+"_"+key.get_slice("/",0)+".png")==OK)
+  functional_count+=1
+ assert(functional_count==8,str(functional_count))
+ print("DEPTH7_FUNCTION_RUNTIME_PASS rooms=",functional_count)
  # Canonical traffic must not avoid or reserve positions of other walkers.
  var Traffic=load("res://scripts/teea008_traffic.gd")
  var traffic=Traffic.new()

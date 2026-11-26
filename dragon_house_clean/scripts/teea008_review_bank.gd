@@ -534,7 +534,7 @@ func populate_overview(parent:Node3D,kind:String,width:int,scale_at:Callable)->i
 	for item in row.get("instances",[]):
 		var asset:String=str(item["asset_id"])
 		var policy:String=str(item.get("placement_policy",""))
-		if policy not in ["floor_fixed","soft_floor"] and asset not in ["owner_theatre_screen","owner_theatre_side_panel","media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
+		if policy not in ["floor_fixed","soft_floor","seat_plinth"] and asset not in ["owner_theatre_screen","owner_theatre_side_panel","media_holder_film_screen","Television_01","boombox","classic_laptop","sketchfab_steampunk_coffee_machine"]:
 			continue
 		var wrapper:Node3D=_mount(parent,item,scale_at,false,instances)
 		if wrapper==null:continue

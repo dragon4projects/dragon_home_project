@@ -356,7 +356,7 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 			elif kind=="seat":
 				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0),"front_z":float(item["bounds_max_m"][2]),"depth7_measured":bool(row.get("depth7_measured",false))}
 				var facing:Array=spot["candidate_contact"]["facing"]
-				if facing.size()==3 and (float(facing[2])>0.5 or (DEPTH7.enabled_for(room) and float(facing[2])< -0.5)):
+				if facing.size()==3 and (float(facing[2])>0.5 or (DEPTH7.enabled_for(room) and float(facing[2])< -0.5) or (str(item.get("asset_id",""))=="owner_theatre_seat_pair" and float(facing[0])>.9)):
 					spot["kind"]="seat"
 					spot["pose_hint"]="RELAXED_SIT"
 				if str(item.get("asset_id",""))=="vintage_day_bed":
@@ -614,10 +614,10 @@ func book_slots(room:Dictionary)->Array:
 		if station_id=="":continue
 		for slot in item.get("support_slots",[]):
 			var p:Array=slot.get("room_xyz",[])
-			var fit:Array=slot.get("max_dimensions_m",[])
+			var fit:Array=slot.get("unscaled_dimensions_m",slot.get("max_dimensions_m",[]))
 			if p.size()!=3 or fit.size()!=3 or used.has(str(slot["room_slot_id"])):
 				continue
-			if float(p[1])<0.35 or float(p[1])>1.65 or float(fit[0])<0.16 or float(fit[1])<0.18 or float(fit[2])<0.045:
+			if float(p[1])<0.35*(DEPTH7.scale_at(float(item["room_local_xyz"][2])) if DEPTH7.enabled_for(room) else 1.0) or float(p[1])>1.65 or float(fit[0])<0.16 or float(fit[1])<0.18 or float(fit[2])<0.045:
 				continue
 			out.append({"id":str(slot["room_slot_id"]),"station_id":station_id,"xyz":p,"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
 	# Measured rest-room surfaces with an existing accessible approach.
@@ -627,7 +627,7 @@ func book_slots(room:Dictionary)->Array:
 			for slot in item.get("support_slots",[]):
 				var sid:String=str(slot.get("room_slot_id",""))
 				var p:Array=slot.get("room_xyz",[])
-				var fit:Array=slot.get("max_dimensions_m",[])
+				var fit:Array=slot.get("unscaled_dimensions_m",slot.get("max_dimensions_m",[]))
 				if used.has(sid) or str(slot.get("status",""))!="MEASURED_SURFACE_CANDIDATE" or p.size()!=3 or fit.size()!=3:continue
 				if float(fit[0])<0.16 or float(fit[1])<0.18 or float(fit[2])<0.045:continue
 				for spot in spots:
@@ -669,7 +669,7 @@ func artifact_slots(room:Dictionary)->Array:
 					blocked=true
 					break
 			if blocked:continue
-			out.append({"id":sid,"xyz":p,"dimensions":dims,"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
+			out.append({"id":sid,"xyz":p,"dimensions":dims,"unscaled_dimensions":slot.get("unscaled_dimensions_m",dims),"instance_xyz":item["room_local_xyz"],"furniture_id":str(item["instance_id"])})
 	out.sort_custom(func(a,b):return str(a["id"])<str(b["id"]))
 	artifact_slot_cache[variant]=out
 	return out

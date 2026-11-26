@@ -134,7 +134,7 @@ func place_artifact(room_id:String,surface_id:String,item_id:String,navigation,w
 	var carrier:String=str(surface.get("carrier_instance_id",""))
 	for slot in navigation.artifact_slots(room):
 		if str(slot["furniture_id"])!=carrier:continue
-		var dims:Array=slot["dimensions"]
+		var dims:Array=slot.get("unscaled_dimensions",slot["dimensions"])
 		if width>float(dims[0]) or height>float(dims[1]) or depth>float(dims[2]):continue
 		var pos:Array=slot["xyz"]
 		var occupied:=false
