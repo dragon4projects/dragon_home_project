@@ -26,11 +26,13 @@ func run() -> void:
 	_cleanup(path)
 	OS.set_environment("DRAGON_OBJECT_EVENT_BACKEND","json")
 
-	# No JSON snapshot is saved after these object events. The event stream must
-	# be sufficient to reconstruct the object projection on restart.
+	# A valid initial checkpoint is required by the recovery guard. No new
+	# checkpoint follows the durable object events; replay must bridge that gap.
 	var world := World.new()
 	world.save_path = path
-	world.seed_world()
+	assert(world.load_or_seed())
+	var initial_snapshot_sha:String=FileAccess.get_sha256(path)
+	assert(initial_snapshot_sha!="")
 	var home: Dictionary = world.get_room(1,-1)
 	var stash: Dictionary = world.get_room(-2,0)
 	assert(world.register_physical_object(
@@ -46,12 +48,12 @@ func run() -> void:
 		"CRASH_GAP_OBJECT","MANJKA",stash["id"],"STASHED"))
 	var committed_revision: int = world.object_event_revision()
 	assert(committed_revision==3)
-	assert(not FileAccess.file_exists(path),
-		"QA requires event commit without compatibility snapshot")
+	assert(FileAccess.get_sha256(path)==initial_snapshot_sha,
+		"QA requires event commit without a new compatibility checkpoint")
 
 	var restarted := World.new()
 	restarted.save_path = path
-	restarted.load_or_seed()
+	assert(restarted.load_or_seed())
 	var object: Dictionary = restarted.physical_object("CRASH_GAP_OBJECT")
 	assert(not object.is_empty())
 	assert(str(object["state"])=="STASHED")
@@ -82,12 +84,13 @@ func run() -> void:
 	var journal_details: Dictionary = replayed_journal.get("details",{})
 	assert(str(journal_details.get("event_id",""))==str(latest.get("event_id","")))
 
-	# load_or_seed writes a compatibility checkpoint after replay. A second
-	# restart must produce exactly the same canonical object projection.
+	# Explicitly checkpoint the recovered projection. A second restart
+	# must produce exactly the same canonical object projection.
+	assert(restarted.save_world())
 	var stable_snapshot: String = JSON.stringify(restarted.objects)
 	var restarted_again := World.new()
 	restarted_again.save_path = path
-	restarted_again.load_or_seed()
+	assert(restarted_again.load_or_seed())
 	assert(JSON.stringify(restarted_again.objects)==stable_snapshot)
 	assert(restarted_again.object_event_revision()==committed_revision)
 
