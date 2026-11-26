@@ -14,7 +14,7 @@ const DECISION_MAX := 18.0
 
 func setup(p_world) -> void:
 	world = p_world
-	rng.seed = 923118
+	rng = world.decision_rng("creatures")
 	for id in world.creatures:
 		var creature: Dictionary = world.creatures[id]
 		if not creature.has("next_decision_at"):
