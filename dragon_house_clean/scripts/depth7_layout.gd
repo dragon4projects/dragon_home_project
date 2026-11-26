@@ -198,7 +198,9 @@ static func append_hearth_services(row:Dictionary,legacy:Dictionary)->void:
  var homes:Dictionary={
   "common_r3_p3_shared_coffee_table":Vector3(-.9,.025,D.center(2)),
   "hearth_bar_counter":Vector3(1.35,.025,D.center(2)),
-  "common_r3_service_table_review":Vector3(4.65,.025,D.center(2))
+  "common_r3_service_table_review":Vector3(4.65,.025,D.center(2)),
+  "common_r3_p3_fur_left":Vector3(-4.65,.008,D.center(4)),
+  "common_r3_p3_fur_right":Vector3(1.12,.008,D.center(4))
  }
  var sources:Dictionary={}
  for item in legacy.get("instances",[]):

@@ -2485,7 +2485,13 @@ func _active_station_render_contact(actor:Dictionary)->Dictionary:
 	if Depth7Space.enabled_for(world.room_by_id(room_id)) and life.candidate_navigation!=null:
 		var live_room:Dictionary=world.room_by_id(room_id)
 		var spots:Array=life.candidate_navigation.candidate_spots(live_room).filter(func(spot):return str(spot["id"])==str(actor.get("station_anchor_id","")))
-		if spots.size()==1 and str(contact.get("state",""))!="READ" and str(contact.get("state",""))!="LIE_SIDE_CURLED":
+		if spots.size()!=1:return {}
+		# A saved or transient station claim is not proof that the body
+		# arrived. Only render a seated/lying frame at the measured approach.
+		var point:Vector2=spots[0]["offset"]
+		var actual:=Vector3(float(actor.get("x",INF)),float(actor.get("visual_y",INF)),float(actor.get("z",INF)))
+		if not actual.is_finite() or actual.distance_to(world.room_local_to_world(live_room,point))>.12:return {}
+		if str(contact.get("state",""))!="READ" and str(contact.get("state",""))!="LIE_SIDE_CURLED":
 			var rotated:Dictionary=life.candidate_navigation.pose_contact(actor,spots[0],str(actor.get("intent","")),effective_camera_yaw())
 			if not rotated.is_empty():contact=rotated
 	var state:String=str(contact.get("state",""))

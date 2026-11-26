@@ -558,6 +558,14 @@ func reconcile(world, before_invalidate:Callable=Callable()) -> int:
 			var offset:Vector2=spot["offset"]
 			restored_claim=_candidate_claim(actor,room,slot,spot,str(actor.get("intent","")))
 			invalid=restored_claim.is_empty() or prior.size()!=2 or offset.distance_to(Vector2(float(prior[0]),float(prior[1])))>0.01
+			if not invalid and bool(room.get("depth7",false)) and str(actor.get("intent",""))!="GET_COFFEE":
+				var target:Vector3=world.room_local_to_world(room,offset)
+				if actor.get("phase")=="perform":
+					var actual:=Vector3(float(actor.get("x",INF)),float(actor.get("visual_y",INF)),float(actor.get("z",INF)))
+					invalid=str(actor.get("room_id",""))!=room_id or not actual.is_finite() or actual.distance_to(target)>.12
+				else:
+					var last:Array=actor["waypoints"][-1].get("position",[])
+					invalid=last.size()!=3 or Vector3(last[0],last[1],last[2]).distance_to(target)>.025
 		if invalid:
 			# Settle a verified saved activity before erasing its station proof.
 			if before_invalidate.is_valid() and not claimed.has(key):before_invalidate.call(actor)
@@ -580,7 +588,9 @@ func reconcile(world, before_invalidate:Callable=Callable()) -> int:
 		else:
 			claimed[key] = true
 			if not restored_claim.is_empty():
+				var habit:Dictionary=actor.get("solo_habit_commitment",{}).duplicate(true)
 				commit_claim(actor,restored_claim)
+				if not habit.is_empty():actor["solo_habit_commitment"]=habit
 				continue
 			# v0.7 stored generic coordinates and the SAME slot IDs. Rewrite
 			# the actor's true body location/terminal waypoint, not just the

@@ -2251,7 +2251,14 @@ func reconcile_cup_tasks()->Array:
 			# Retain genuinely live hold/service commitments, but never
 			# retain a stale service plan whose cup identity changed.
 			if task==actual and stage=="hold":continue
-			if task==actual and stage=="serve" and str(actor.get("phase",""))=="travel":continue
+			if task==actual and stage=="serve" and candidate_cups.service_plan_valid(actor):continue
+			if task==actual and stage=="serve":
+				# A moved/missing source must not fill at the obsolete point.
+				# A serving already present in the checkpoint is not a failure.
+				var plan:Dictionary=actor.get("drink_service_plan",{})
+				var content:Dictionary=candidate_cups.beverages.content(actual)
+				if not plan.is_empty() and content.get("choice_instance_id")!=plan.get("choice_instance_id"):
+					candidate_cups.beverages.fail_choice(plan,"RESTORED_SOURCE_INVALID")
 			_clear_cup_task(actor)
 			var item:Dictionary=world.objects[actual]
 			var target:String=str(item.get("home_room_id",""))
@@ -2369,15 +2376,16 @@ func _route_drink_source(actor:Dictionary)->bool:
 func _complete_drink_service(actor:Dictionary)->void:
 	var choice:Dictionary=actor.get("drink_service_plan",{})
 	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
-	var raw:Array=actor.get("drink_service_approach",[])
-	var valid:bool=raw.size()==2 and str(actor.get("room_id",""))==str(room.get("id",""))
 	var beverage=candidate_cups.beverages
+	var cup_id:String=str(actor.get("cup_task_id",""))
+	var existing:Dictionary=beverage.content(cup_id)
+	var already_filled:bool=not choice.is_empty() and existing.get("choice_instance_id")==choice.get("choice_instance_id") and existing.get("consumer_id")==actor.get("id") and float(existing.get("remaining_ml",0))>0 and world.physical_object(cup_id).get("current_holder_id")==actor.get("id")
+	var valid:bool=already_filled or candidate_cups.service_plan_valid(actor,true)
+	if valid and not already_filled:
+		valid=beverage.fill_planned(cup_id,str(actor["id"]),choice)
 	if valid:
-		valid=candidate_cups.at_approach(actor,room,Vector2(float(raw[0]),float(raw[1])))
-	if valid:
-		valid=beverage.fill_planned(str(actor.get("cup_task_id","")),str(actor["id"]),choice)
-	if valid:
-		actor["drink_sips_left"]=rng.randi_range(1,4)
+		if not already_filled:actor["drink_sips_left"]=rng.randi_range(1,4)
+		else:actor["drink_sips_left"]=maxi(0,int(actor.get("drink_sips_left",0)))
 	else:
 		beverage.fail_choice(choice,"SERVICE_NOT_REACHED")
 		actor["drink_sips_left"]=0
@@ -2558,6 +2566,8 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 		revision+="|READING_GUEST_DETAILS_V1"
 	if world.canonical_house_seed and candidate_navigation.layouts.get("rest_social_upper/R3",{}).get("owner_sofa_revision","")=="OWNER_SOFA_V1":
 		revision+="|OWNER_SOFA_V1"
+	if bool(candidate_navigation.layouts.get("common/R3",{}).get("depth7_measured",false)):
+		revision+="|DEPTH7_SERVICES_V1"
 	if revision=="" or str(world.runtime_state.get("teea008_geometry_revision",""))==revision:
 		return 0
 	var affected:Dictionary={}
@@ -2581,12 +2591,14 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 	if reading_changed:known_revision+="|READING_GUEST_DETAILS_V1"
 	var sofa_changed:bool=revision.ends_with("|OWNER_SOFA_V1") and not prior.ends_with("|OWNER_SOFA_V1")
 	if sofa_changed:known_revision+="|OWNER_SOFA_V1"
+	var depth7_services_changed:bool=revision.ends_with("|DEPTH7_SERVICES_V1") and not prior.ends_with("|DEPTH7_SERVICES_V1")
+	if depth7_services_changed:known_revision+="|DEPTH7_SERVICES_V1"
 	var known_upgrade:bool=world.canonical_house_seed and prior!="" and revision==known_revision
 	var hearth_changed:bool=prior.begins_with("CANONICAL_SOCIAL_INTERIOR_20261125_V1|")
 	var library_changed:bool=prior.contains("|LIBRARY_GALLERY_V1|")
 	for room in world.rooms:
 		var key:String=candidate_navigation.key(room)
-		var changed:bool=(hearth_changed and key=="common/R3") or ((library_changed or reading_changed) and key=="library/R3") or (social_changed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3"]) or (centaur_changed and key=="guest_centaur/R2") or ((theatre_changed or theatre_stage_changed) and key=="cinema/R3") or (clusters_changed and key in ["library/R3","music/R3","study/R3","workshop/R3"]) or (chair_changed and key in ["rest_social_upper/R3","rest_social_lower/R3","music/R3"]) or (sofa_changed and key in ["rest_social_upper/R3","rest_social_lower/R3"])
+		var changed:bool=((hearth_changed or depth7_services_changed) and key=="common/R3") or ((library_changed or reading_changed) and key=="library/R3") or (social_changed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3"]) or (centaur_changed and key=="guest_centaur/R2") or ((theatre_changed or theatre_stage_changed) and key=="cinema/R3") or (clusters_changed and key in ["library/R3","music/R3","study/R3","workshop/R3"]) or (chair_changed and key in ["rest_social_upper/R3","rest_social_lower/R3","music/R3"]) or (sofa_changed and key in ["rest_social_upper/R3","rest_social_lower/R3"])
 		if (known_upgrade and changed) or (not known_upgrade and (key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3","cinema/R3","music/R3","study/R3","workshop/R3","guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]))):
 			affected[str(room["id"])]=true
 	var count:=0
@@ -2603,6 +2615,7 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 							relevant=true
 							break
 				if not relevant:continue
+				if not is_creature and _depth7_unchanged_performer(actor):continue
 				actor["teea008_geometry_replan_pending"]=revision
 				# A snapshot may be between floors. Keep that connector leg
 				# and defer invalidation to the next accessible floor waypoint.
@@ -2610,6 +2623,19 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 				count+=1
 	world.runtime_state["teea008_geometry_revision"]=revision
 	return count
+
+# Reconcile has already refreshed the stable station claim against the
+# new layout. Keep a performer only if it is still at that exact point;
+# do not teleport it to preserve a deadline.
+func _depth7_unchanged_performer(actor:Dictionary)->bool:
+	if actor.get("phase")!="perform":return false
+	var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+	if not bool(room.get("depth7",false)) or not world.is_accessible(room,str(actor.get("id",""))):return false
+	if actor.get("station_room_id")!=room.get("id") or str(actor.get("station_anchor_id",""))=="":return false
+	var p:Array=actor.get("station_point",[])
+	if p.size()!=2:return false
+	var at:=Vector3(float(actor.get("x",INF)),float(actor.get("visual_y",INF)),float(actor.get("z",INF)))
+	return at.is_finite() and at.distance_to(world.room_local_to_world(room,Vector2(p[0],p[1])))<.025
 
 func _finish_review_geometry_replan(actor:Dictionary,is_creature:bool)->bool:
 	if not actor.has("teea008_geometry_replan_pending"):return false

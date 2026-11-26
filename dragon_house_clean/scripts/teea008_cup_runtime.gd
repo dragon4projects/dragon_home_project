@@ -150,3 +150,32 @@ func service_sources(actor:Dictionary,room:Dictionary)->Array:
 				result.append({"id":id,"type":source,"approach":approach})
 				break
 	return result
+
+# A saved service point is not sufficient evidence that the current source
+# still exists there. Resolve the same measured source, type and approach.
+func service_plan_valid(actor:Dictionary,require_arrival:bool=false)->bool:
+	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))
+	var cup:Dictionary=world.physical_object(str(actor.get("cup_task_id","")))
+	var plan:Dictionary=actor.get("drink_service_plan",{})
+	var raw:Array=actor.get("drink_service_approach",[])
+	if room.is_empty() or not world.is_accessible(room,str(actor.get("id",""))) or not world.public_cutaway_allowed(room):return false
+	if cup.get("viewer_category")!="cups" or cup.get("current_holder_id")!=actor.get("id"):return false
+	if plan.is_empty() or plan.get("cup_id")!=cup.get("id") or plan.get("resident_id")!=actor.get("id") or str(plan.get("choice_instance_id",""))=="":return false
+	if raw.size()!=2 or not is_finite(float(raw[0])) or not is_finite(float(raw[1])):return false
+	var at:=Vector2(float(raw[0]),float(raw[1]))
+	var matched:=false
+	for source in service_sources(actor,room):
+		if source["id"]==actor.get("drink_service_id") and source["type"]==plan.get("source_station") and at.distance_to(source["approach"])<.01:
+			matched=true
+			break
+	if not matched:return false
+	if require_arrival:return str(actor.get("room_id",""))==str(room["id"]) and at_approach(actor,room,at)
+	if str(actor.get("phase",""))!="travel":return false
+	var points:Array=actor.get("waypoints",[])
+	var index:int=int(actor.get("waypoint_index",-1))
+	if index<0 or index>=points.size():return false
+	var last:Dictionary=points[-1]
+	if last.get("kind")!="station" or last.get("room_id")!=room.get("id"):return false
+	var p:Array=last.get("position",[])
+	if p.size()!=3:return false
+	return world.room_local_to_world(room,at).distance_to(Vector3(p[0],p[1],p[2]))<.01
