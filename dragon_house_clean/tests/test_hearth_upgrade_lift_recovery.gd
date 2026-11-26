@@ -24,7 +24,7 @@ func run()->void:
 	station.candidate_navigation=nav
 	for a in w.residents.values():a["active"]=false
 	var hearth:Dictionary=w.room_by_id("ROOM_0027")
-	var living:Dictionary=w.room_by_id("ROOM_0020")
+	var living:Dictionary=w.matching_rooms(["cinema"])[0]
 	var a:Dictionary=w.residents["RES_01"]
 	var b:Dictionary=w.residents["RES_02"]
 	var rider:Dictionary=w.residents["RES_03"]

@@ -584,6 +584,7 @@ func _apply_social_interiors()->void:
 	_apply_guest_display_dressing()
 	_apply_conditional_shelf_dressing()
 	_apply_hearth_conversation_v2()
+	_apply_social_zones_v3()
 
 # Owner permits furniture relocation. Only two unsupported chairs move;
 # preserve support IDs, cup homes, dragon and the authored shell.
@@ -597,6 +598,63 @@ func _apply_hearth_conversation_v2()->void:
 			var at:Vector2=positions[id]
 			_translate_hearth_item(item,at.x,at.y)
 	row["runtime_review_geometry_revision"]="CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH"
+
+# Move unsupported furniture and its purely decorative children as a unit.
+# Leave all registered cup homes and measured return supports pinned.
+func _move_social_ensemble(row:Dictionary,id:String,at:Vector2)->void:
+	var host:Dictionary={}
+	for item in row["instances"]:
+		if str(item["instance_id"])==id:host=item
+	if host.is_empty():return
+	assert(host.get("support_slots",[]).is_empty())
+	var origin:Array=host["room_local_xyz"]
+	var delta:=at-Vector2(float(origin[0]),float(origin[2]))
+	for item in row["instances"]:
+		if _support_host_id(item)!=id:continue
+		assert(str(item.get("asset_id","")) not in ["candidate_dragon_mug_red","candidate_guest_mug_blue"])
+		var p:Array=item["room_local_xyz"]
+		_translate_hearth_item(item,float(p[0])+delta.x,float(p[2])+delta.y)
+	_translate_hearth_item(host,at.x,at.y)
+
+func _apply_social_zones_v3()->void:
+	var changes:Dictionary={
+		"kitchen/R3":{
+			"kitchen_prep":Vector2(-2.65,-1.30),
+			"kitchen_stove":Vector2(-1.66,-1.35),
+			"kitchen_micro_table":Vector2(-0.68,-1.30),
+			"kitchen_storage":Vector2(1.05,-1.45),
+			"kitchen_social":Vector2(5.95,0.35),
+			"kitchen_social_chair":Vector2(6.45,-1.35)
+		},
+		"rest_social_upper/R3":{
+			"rest_r3_armchair":Vector2(2.00,-1.38),
+			"rest_social_upper_rug":Vector2(0.85,0.08)
+		},
+		"rest_social_lower/R3":{
+			"rest_r3_armchair":Vector2(1.65,-0.74),
+			"rest_social_lower_side":Vector2(-2.0,-0.20),
+			"rest_social_lower_rug":Vector2(-0.20,0.12)
+		}
+	}
+	for key in changes:
+		var row:Dictionary=layouts.get(key,{})
+		if row.is_empty():continue
+		for id in changes[key]:_move_social_ensemble(row,id,changes[key][id])
+		if key=="kitchen/R3":
+			# Two actual reading/rest-compatible chairs share the social nook.
+			var extra:Dictionary={}
+			for item in row["instances"]:
+				if str(item["instance_id"])=="kitchen_social_chair":extra=item.duplicate(true)
+			if not extra.is_empty():
+				extra["instance_id"]="kitchen_social_chair_b"
+				for station in extra["station_candidates"]:
+					station["station_candidate_id"]="kitchen_social_chair_b."+str(station["id"])
+				_translate_hearth_item(extra,5.26,-1.35)
+				row["instances"].append(extra)
+		row["social_zone_revision"]="SOCIAL_ZONES_V3"
+		var count:=0
+		for item in row["instances"]:count+=item.get("station_candidates",[]).size()
+		row["station_count"]=count
 
 func _apply_library_gallery_dressing()->void:
 	var file:=FileAccess.open("res://data/canonical_library_gallery_20261125.json",FileAccess.READ)
