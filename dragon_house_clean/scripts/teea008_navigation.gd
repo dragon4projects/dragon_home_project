@@ -1,6 +1,7 @@
 extends RefCounted
 ## Candidate-only X/Z navigation. The immutable room graph remains authoritative.
 ## Conservative 0.65 m diameter proxy; guest body-depth and sprite pose fit are separate gates.
+const DEPTH7=preload("res://scripts/depth7_space.gd")
 const STEP:=0.10
 const RADIUS:=0.325
 const BACK:=-1.95
@@ -103,13 +104,17 @@ func _obstacles(room:Dictionary)->Array:
 	blockers[k]=out
 	return out
 
+func _back(room:Dictionary)->float:
+	return DEPTH7.BACK if DEPTH7.enabled_for(room) else BACK
+
 func clear(room:Dictionary,p:Vector2)->bool:
 	if not has_layout(room):
 		return true
 	var hw:float=float(room.get("size_modules",1))*2.4
 	# The front/side openings connect to adjacent volumes; don't shrink them.
-	if absf(p.x)>hw+0.001 or p.y<BACK+RADIUS-0.001 or p.y>FRONT+0.001:
+	if absf(p.x)>hw+0.001 or p.y<_back(room)+RADIUS-0.001 or p.y>FRONT+0.001:
 		return false
+	if DEPTH7.enabled_for(room) and DEPTH7.passage(p.y):return true
 	for box:Rect2 in _obstacles(room):
 		var near:=Vector2(clampf(p.x,box.position.x,box.end.x),clampf(p.y,box.position.y,box.end.y))
 		if p.distance_squared_to(near)<RADIUS*RADIUS-0.000001:
@@ -143,8 +148,12 @@ func segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
 		return true
 	var hw:float=float(room.get("size_modules",1))*2.4
 	for p in [a,b]:
-		if absf(p.x)>hw+0.001 or p.y<BACK+RADIUS-0.001 or p.y>FRONT+0.001:
+		if absf(p.x)>hw+0.001 or p.y<_back(room)+RADIUS-0.001 or p.y>FRONT+0.001:
 			return false
+	if DEPTH7.enabled_for(room):
+		# Use the same round body clearance as point navigation, including the
+		# explicit exception for furniture on the three passage bands.
+		return sampled_segment_clear(room,a,b)
 	# Exact segment-to-AABB distance (rounded clearance rather than square
 	# expansion). Independent QA still samples the segment at 2.5 cm.
 	var sweep:=Rect2(Vector2(minf(a.x,b.x),minf(a.y,b.y)),Vector2(absf(a.x-b.x),absf(a.y-b.y))).grow(RADIUS)
@@ -175,9 +184,9 @@ func _grid(room:Dictionary)->AStarGrid2D:
 		return grids[k]
 	var hw:float=float(room.get("size_modules",1))*2.4
 	var g:=AStarGrid2D.new()
-	g.region=Rect2i(0,0,roundi(hw*2.0/STEP)+1,roundi((FRONT-BACK)/STEP)+1)
+	g.region=Rect2i(0,0,roundi(hw*2.0/STEP)+1,roundi((FRONT-_back(room))/STEP)+1)
 	g.cell_size=Vector2(STEP,STEP)
-	g.offset=Vector2(-hw,BACK)
+	g.offset=Vector2(-hw,_back(room))
 	g.diagonal_mode=AStarGrid2D.DIAGONAL_MODE_NEVER
 	g.update()
 	for z in range(g.region.size.y):
@@ -307,7 +316,7 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 	var row:Dictionary=layouts.get(variant_key,{})
 	if row.is_empty():
 		return []
-	var cap:int=[0,4,8,16][clampi(int(room.get("size_modules",1)),1,3)]
+	var cap:int=int(row.get("station_cap",[0,4,8,16][clampi(int(room.get("size_modules",1)),1,3)]))
 	var out:Array=[]
 	# Wall display IDs are real world IDs; safe approach is derived without
 	# moving the actual object or changing its canonical home.
@@ -344,9 +353,9 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 					spot["kind"]="work"
 					spot["pose_hint"]="USE"
 			elif kind=="seat":
-				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0),"front_z":float(item["bounds_max_m"][2])}
+				spot["candidate_contact"]={"pelvis":station.get("room_pelvis_contact_xyz",[]),"feet":station.get("room_feet_contact_xyz",[]),"facing":station.get("room_facing_xyz",[]),"instance_xyz":item["room_local_xyz"],"width_m":station.get("seating_width_m",0.0),"front_z":float(item["bounds_max_m"][2]),"depth7_measured":bool(row.get("depth7_measured",false))}
 				var facing:Array=spot["candidate_contact"]["facing"]
-				if facing.size()==3 and float(facing[2])>0.5:
+				if facing.size()==3 and (float(facing[2])>0.5 or (DEPTH7.enabled_for(room) and float(facing[2])< -0.5)):
 					spot["kind"]="seat"
 					spot["pose_hint"]="RELAXED_SIT"
 				if str(item.get("asset_id",""))=="vintage_day_bed":
@@ -361,7 +370,9 @@ func candidate_spots(room:Dictionary,display_anchors:Array=[])->Array:
 				spot["candidate_contact"]={"floor":station.get("room_local_xyz",[]),"instance_xyz":item["room_local_xyz"],"lie_width_m":float(hi[0])-float(lo[0])}
 				spot["kind"]="floor_rest"
 				spot["pose_hint"]="LIE_SIDE_CURLED"
-			_add_spot(out,spot,cap,0.60)
+			if bool(row.get("depth7_measured",false)) and kind=="seat":
+				if out.size()<cap:out.append(spot)
+			else:_add_spot(out,spot,cap,0.60)
 	for slot in cup_slots(room):
 		var p:Vector2=slot["approach"]
 		_add_spot(out,{"id":slot["id"],"offset":p,"kind":"standing","furniture_id":slot["furniture_id"],"pose_hint":"IDLE_S","approach_z":p.y,"cup_slot_id":slot["id"]},cap,0.60)
@@ -464,6 +475,9 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 	if raw.is_empty():
 		return {}
 	var state: String="RELAXED_SIT"
+	var direction:Array=raw.get("facing",[])
+	if bool(raw.get("depth7_measured",false)) and direction.size()==3 and float(direction[2])< -0.5:
+		state="SIT_N"
 	var anchor:Array=[]
 	var exclusive:=false
 	var kind:String=str(spot.get("kind",""))
@@ -488,6 +502,8 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 	var px:Array=profile["contact_px"]
 	var bbox:Array=profile["alpha_bbox"]
 	var ratio:float=CANVAS_HEIGHT/float(canvas[1])
+	if bool(raw.get("depth7_measured",false)):
+		ratio*=DEPTH7.scale_at(float(raw["instance_xyz"][2]))
 	if state=="LIE_SIDE_CURLED":
 		if (float(bbox[2])-float(bbox[0]))*ratio>float(raw.get("lie_width_m",0.0))-0.04:
 			return {}

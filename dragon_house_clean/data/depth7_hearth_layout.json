@@ -1,0 +1,1627 @@
+{
+  "variant_id": "common/R3",
+  "size": "R3",
+  "width_m": 14.4,
+  "depth7_measured": true,
+  "station_cap": 32,
+  "runtime_review_geometry_revision": "DEPTH7_HEARTH_20261126_V1",
+  "instances": [
+    {
+      "instance_id": "hearth_depth7_00",
+      "asset_id": "wooden_bookshelf_worn",
+      "room_local_xyz": [
+        -3.15000009536743,
+        0.0,
+        -7.3600001335144
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 1.12,
+      "bounds_min_m": [
+        -3.88094234466553,
+        -6.34193426662932e-08,
+        -7.66925287246704
+      ],
+      "bounds_max_m": [
+        -2.41905784606934,
+        2.19550228118896,
+        -7.05074739456177
+      ],
+      "physical_footprint_xz": [
+        [
+          -3.88094234466553,
+          -7.66925287246704
+        ],
+        [
+          -2.41905784606934,
+          -7.66925287246704
+        ],
+        [
+          -2.41905784606934,
+          -7.05074739456177
+        ],
+        [
+          -3.88094234466553,
+          -7.05074739456177
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_01",
+      "asset_id": "wooden_bookshelf_worn",
+      "room_local_xyz": [
+        2.05999994277954,
+        0.0,
+        -7.3600001335144
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 0.92,
+      "bounds_min_m": [
+        1.45958304405212,
+        -5.20944603010776e-08,
+        -7.61402893066406
+      ],
+      "bounds_max_m": [
+        2.66041684150696,
+        1.80344831943512,
+        -7.10597133636475
+      ],
+      "physical_footprint_xz": [
+        [
+          1.45958304405212,
+          -7.61402893066406
+        ],
+        [
+          2.66041684150696,
+          -7.61402893066406
+        ],
+        [
+          2.66041684150696,
+          -7.10597133636475
+        ],
+        [
+          1.45958304405212,
+          -7.10597133636475
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_02",
+      "asset_id": "sketchfab_fireplace_annabelle_fibonacci",
+      "room_local_xyz": [
+        -0.180000007152557,
+        0.0,
+        -7.42999982833862
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 1.7,
+      "bounds_min_m": [
+        -1.7628333568573,
+        2.38418564890708e-07,
+        -7.92155265808105
+      ],
+      "bounds_max_m": [
+        1.40283346176147,
+        1.89077389240265,
+        -6.93844556808472
+      ],
+      "physical_footprint_xz": [
+        [
+          -1.7628333568573,
+          -7.92155265808105
+        ],
+        [
+          1.40283346176147,
+          -7.92155265808105
+        ],
+        [
+          1.40283346176147,
+          -6.93844556808472
+        ],
+        [
+          -1.7628333568573,
+          -6.93844556808472
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_03",
+      "asset_id": "sofa_03",
+      "room_local_xyz": [
+        -5.32999992370605,
+        0.0,
+        -7.32000017166138
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 0.6014117566277,
+      "bounds_min_m": [
+        -5.98702478408813,
+        -1.70985003933311e-07,
+        -7.54254293441772
+      ],
+      "bounds_max_m": [
+        -4.67297506332397,
+        0.538029551506042,
+        -7.09745788574219
+      ],
+      "physical_footprint_xz": [
+        [
+          -5.98702478408813,
+          -7.54254293441772
+        ],
+        [
+          -4.67297506332397,
+          -7.54254293441772
+        ],
+        [
+          -4.67297506332397,
+          -7.09745788574219
+        ],
+        [
+          -5.98702478408813,
+          -7.09745788574219
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_01",
+          "kind": "seat",
+          "room_approach_xz": [
+            -5.60063505172729,
+            -6.67978811264038
+          ],
+          "room_pelvis_contact_xyz": [
+            -5.60063505172729,
+            0.270836591720581,
+            -7.22978830337524
+          ],
+          "room_feet_contact_xyz": [
+            -5.60063505172729,
+            0,
+            -6.99523782730103
+          ],
+          "room_facing_xyz": [
+            0.0,
+            0,
+            1.0
+          ],
+          "seating_width_m": 0.469101170169606,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_02",
+          "kind": "seat",
+          "room_approach_xz": [
+            -5.05936479568481,
+            -6.67978811264038
+          ],
+          "room_pelvis_contact_xyz": [
+            -5.05936479568481,
+            0.270837306976318,
+            -7.22978830337524
+          ],
+          "room_feet_contact_xyz": [
+            -5.05936479568481,
+            0,
+            -6.99523782730103
+          ],
+          "room_facing_xyz": [
+            0.0,
+            0,
+            1.0
+          ],
+          "seating_width_m": 0.469101170169606,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_07",
+      "asset_id": "vintage_grandfather_clock_01",
+      "room_local_xyz": [
+        -2.08999991416931,
+        0.0,
+        -7.38000011444092
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 1.0,
+      "bounds_min_m": [
+        -2.40281224250793,
+        3.09373717755079e-08,
+        -7.59330892562866
+      ],
+      "bounds_max_m": [
+        -1.77718758583069,
+        2.19059205055237,
+        -7.16669225692749
+      ],
+      "physical_footprint_xz": [
+        [
+          -2.40281224250793,
+          -7.59330892562866
+        ],
+        [
+          -1.77718758583069,
+          -7.59330892562866
+        ],
+        [
+          -1.77718758583069,
+          -7.16669225692749
+        ],
+        [
+          -2.40281224250793,
+          -7.16669225692749
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_28",
+      "asset_id": "blendkit_sofa_repaired",
+      "room_local_xyz": [
+        -6.55999994277954,
+        0.0,
+        -6.01999998092651
+      ],
+      "rotation_deg_xyz": [
+        0,
+        90.0,
+        0
+      ],
+      "uniform_scale": 0.58307764784869,
+      "bounds_min_m": [
+        -6.83039426803589,
+        0.000740926421713084,
+        -6.62112092971802
+      ],
+      "bounds_max_m": [
+        -6.28956460952759,
+        0.471040189266205,
+        -5.41924524307251
+      ],
+      "physical_footprint_xz": [
+        [
+          -6.83039426803589,
+          -6.62112092971802
+        ],
+        [
+          -6.28956460952759,
+          -6.62112092971802
+        ],
+        [
+          -6.28956460952759,
+          -5.41924524307251
+        ],
+        [
+          -6.83039426803589,
+          -5.41924524307251
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_03",
+          "kind": "seat",
+          "room_approach_xz": [
+            -5.92253828048706,
+            -5.7576150894165
+          ],
+          "room_pelvis_contact_xyz": [
+            -6.47253847122192,
+            0.249508142471313,
+            -5.7576150894165
+          ],
+          "room_feet_contact_xyz": [
+            -6.24513816833496,
+            0,
+            -5.7576150894165
+          ],
+          "room_facing_xyz": [
+            1.0,
+            0,
+            -4.37113882867379e-08
+          ],
+          "seating_width_m": 0.4548005653219782,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_04",
+          "kind": "seat",
+          "room_approach_xz": [
+            -5.92253828048706,
+            -6.28238487243652
+          ],
+          "room_pelvis_contact_xyz": [
+            -6.47253847122192,
+            0.24883246421814,
+            -6.28238487243652
+          ],
+          "room_feet_contact_xyz": [
+            -6.24513816833496,
+            0,
+            -6.28238487243652
+          ],
+          "room_facing_xyz": [
+            1.0,
+            0,
+            -4.37113882867379e-08
+          ],
+          "seating_width_m": 0.4548005653219782,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_29",
+      "asset_id": "ArmChair_01",
+      "room_local_xyz": [
+        -3.29999995231628,
+        0.0,
+        -5.80000019073486
+      ],
+      "rotation_deg_xyz": [
+        0,
+        -90.0,
+        0
+      ],
+      "uniform_scale": 0.571999992370605,
+      "bounds_min_m": [
+        -3.51900720596313,
+        -2.84140696749091e-07,
+        -6.04265117645264
+      ],
+      "bounds_max_m": [
+        -3.08099222183228,
+        0.609229803085327,
+        -5.55734920501709
+      ],
+      "physical_footprint_xz": [
+        [
+          -3.51900720596313,
+          -6.04265117645264
+        ],
+        [
+          -3.08099222183228,
+          -6.04265117645264
+        ],
+        [
+          -3.08099222183228,
+          -5.55734920501709
+        ],
+        [
+          -3.51900720596313,
+          -5.55734920501709
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_05",
+          "kind": "seat",
+          "room_approach_xz": [
+            -3.93579983711243,
+            -5.80000019073486
+          ],
+          "room_pelvis_contact_xyz": [
+            -3.38579988479614,
+            0.28594446182251,
+            -5.80000019073486
+          ],
+          "room_feet_contact_xyz": [
+            -3.54595994949341,
+            0,
+            -5.80000019073486
+          ],
+          "room_facing_xyz": [
+            -1.0,
+            0,
+            -4.37113882867379e-08
+          ],
+          "seating_width_m": 0.3546399952697751,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_30",
+      "asset_id": "gothic_coffee_table",
+      "room_local_xyz": [
+        -4.96000003814697,
+        0.0,
+        -5.69999980926514
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 0.609882361019359,
+      "bounds_min_m": [
+        -5.24603748321533,
+        2.36359483096749e-07,
+        -5.9860372543335
+      ],
+      "bounds_max_m": [
+        -4.67396259307861,
+        0.221510991454124,
+        -5.41396236419678
+      ],
+      "physical_footprint_xz": [
+        [
+          -5.24603748321533,
+          -5.9860372543335
+        ],
+        [
+          -4.67396259307861,
+          -5.9860372543335
+        ],
+        [
+          -4.67396259307861,
+          -5.41396236419678
+        ],
+        [
+          -5.24603748321533,
+          -5.41396236419678
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [
+        {
+          "room_slot_id": "hearth_depth7_30.cup_0",
+          "room_xyz": [
+            -5.106371804791616,
+            0.20796988510760142,
+            -5.571924513451075
+          ],
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "room_slot_id": "hearth_depth7_30.cup_1",
+          "room_xyz": [
+            -4.813628271502324,
+            0.20796988510760142,
+            -5.571924513451075
+          ],
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_33",
+      "asset_id": "ArmChair_01",
+      "room_local_xyz": [
+        -5.92999982833862,
+        0.0,
+        -0.119999997317791
+      ],
+      "rotation_deg_xyz": [
+        0,
+        75.0,
+        0
+      ],
+      "uniform_scale": 1.03425882366826,
+      "bounds_min_m": [
+        -6.42606019973755,
+        -5.1376991905272e-07,
+        -0.646290302276611
+      ],
+      "bounds_max_m": [
+        -5.43393993377686,
+        1.10157573223114,
+        0.406290054321289
+      ],
+      "physical_footprint_xz": [
+        [
+          -6.42606019973755,
+          -0.646290302276611
+        ],
+        [
+          -5.43393993377686,
+          -0.646290302276611
+        ],
+        [
+          -5.43393993377686,
+          0.406290054321289
+        ],
+        [
+          -6.42606019973755,
+          0.406290054321289
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_06",
+          "kind": "seat",
+          "room_approach_xz": [
+            -5.45594310760498,
+            0.835244059562683
+          ],
+          "room_pelvis_contact_xyz": [
+            -5.78014707565308,
+            0.51702880859375,
+            -0.0798471122980118
+          ],
+          "room_feet_contact_xyz": [
+            -5.50042247772217,
+            0,
+            -0.00489504635334015
+          ],
+          "room_facing_xyz": [
+            0.965925812721252,
+            0,
+            0.258819073438644
+          ],
+          "seating_width_m": 0.6412404706743211,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_34",
+      "asset_id": "gothic_coffee_table",
+      "room_local_xyz": [
+        -4.28000020980835,
+        0.0,
+        -0.119999997317791
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 1.06246588249557,
+      "bounds_min_m": [
+        -4.77830123901367,
+        4.11760993301868e-07,
+        -0.618300557136536
+      ],
+      "bounds_max_m": [
+        -3.78169894218445,
+        0.385890632867813,
+        0.378301620483398
+      ],
+      "physical_footprint_xz": [
+        [
+          -4.77830123901367,
+          -0.618300557136536
+        ],
+        [
+          -3.78169894218445,
+          -0.618300557136536
+        ],
+        [
+          -3.78169894218445,
+          0.378301620483398
+        ],
+        [
+          -4.77830123901367,
+          0.378301620483398
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [
+        {
+          "room_slot_id": "hearth_depth7_34.cup_0",
+          "room_xyz": [
+            -4.5349920216072865,
+            0.36230086593098937,
+            0.10311783800627868
+          ],
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "room_slot_id": "hearth_depth7_34.cup_1",
+          "room_xyz": [
+            -4.025008398009413,
+            0.36230086593098937,
+            0.10311783800627868
+          ],
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_35",
+      "asset_id": "ArmChair_01",
+      "room_local_xyz": [
+        -2.72000002861023,
+        0.0,
+        -0.119999997317791
+      ],
+      "rotation_deg_xyz": [
+        0,
+        -75.0,
+        0
+      ],
+      "uniform_scale": 1.03425882366826,
+      "bounds_min_m": [
+        -3.21605968475342,
+        -5.1376991905272e-07,
+        -0.646290302276611
+      ],
+      "bounds_max_m": [
+        -2.22393918037415,
+        1.10157573223114,
+        0.406290054321289
+      ],
+      "physical_footprint_xz": [
+        [
+          -3.21605968475342,
+          -0.646290302276611
+        ],
+        [
+          -2.22393918037415,
+          -0.646290302276611
+        ],
+        [
+          -2.22393918037415,
+          0.406290054321289
+        ],
+        [
+          -3.21605968475342,
+          0.406290054321289
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_07",
+          "kind": "seat",
+          "room_approach_xz": [
+            -3.19405627250671,
+            0.835244059562683
+          ],
+          "room_pelvis_contact_xyz": [
+            -2.8698525428772,
+            0.51702880859375,
+            -0.0798471122980118
+          ],
+          "room_feet_contact_xyz": [
+            -3.14957737922668,
+            0,
+            -0.00489504635334015
+          ],
+          "room_facing_xyz": [
+            -0.965925812721252,
+            0,
+            0.258819073438644
+          ],
+          "seating_width_m": 0.6412404706743211,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_37",
+      "asset_id": "potted_plant_01",
+      "room_local_xyz": [
+        -6.51999998092651,
+        0.0,
+        -5.0
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0.0,
+        0
+      ],
+      "uniform_scale": 0.8,
+      "bounds_min_m": [
+        -6.70782423019409,
+        -2.40903005988002e-07,
+        -5.20174837112427
+      ],
+      "bounds_max_m": [
+        -6.33217525482178,
+        0.862885534763336,
+        -4.79825067520142
+      ],
+      "physical_footprint_xz": [
+        [
+          -6.70782423019409,
+          -5.20174837112427
+        ],
+        [
+          -6.33217525482178,
+          -5.20174837112427
+        ],
+        [
+          -6.33217525482178,
+          -4.79825067520142
+        ],
+        [
+          -6.70782423019409,
+          -4.79825067520142
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_38",
+      "asset_id": "blendkit_sofa_repaired",
+      "room_local_xyz": [
+        -1.87999999523163,
+        0.0,
+        -5.40000009536743
+      ],
+      "rotation_deg_xyz": [
+        0,
+        180.0,
+        0
+      ],
+      "uniform_scale": 0.608752937227137,
+      "bounds_min_m": [
+        -2.50759100914001,
+        0.000773552455939353,
+        -5.68234348297119
+      ],
+      "bounds_max_m": [
+        -1.25279152393341,
+        0.491782039403915,
+        -5.11769914627075
+      ],
+      "physical_footprint_xz": [
+        [
+          -2.50759100914001,
+          -5.68234348297119
+        ],
+        [
+          -1.25279152393341,
+          -5.68234348297119
+        ],
+        [
+          -1.25279152393341,
+          -5.11769914627075
+        ],
+        [
+          -2.50759100914001,
+          -5.11769914627075
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_08",
+          "kind": "seat",
+          "room_approach_xz": [
+            -0.806061208248138,
+            -6.04131317138672
+          ],
+          "room_pelvis_contact_xyz": [
+            -1.60606122016907,
+            0.260494709014893,
+            -5.49131298065186
+          ],
+          "room_feet_contact_xyz": [
+            -1.60606122016907,
+            0,
+            -5.72872686386108
+          ],
+          "room_facing_xyz": [
+            -8.74227765734759e-08,
+            0,
+            -1.0
+          ],
+          "seating_width_m": 0.47482729103716687,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_09",
+          "kind": "seat",
+          "room_approach_xz": [
+            -2.15393877029419,
+            -6.09131288528442
+          ],
+          "room_pelvis_contact_xyz": [
+            -2.15393877029419,
+            0.25978946685791,
+            -5.49131298065186
+          ],
+          "room_feet_contact_xyz": [
+            -2.15393877029419,
+            0,
+            -5.72872686386108
+          ],
+          "room_facing_xyz": [
+            -8.74227765734759e-08,
+            0,
+            -1.0
+          ],
+          "seating_width_m": 0.47482729103716687,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_39",
+      "asset_id": "blendkit_sofa_repaired",
+      "room_local_xyz": [
+        -0.449999988079071,
+        0.0,
+        -2.70000004768372
+      ],
+      "rotation_deg_xyz": [
+        0,
+        180.0,
+        0
+      ],
+      "uniform_scale": 0.720564703907686,
+      "bounds_min_m": [
+        -1.19286274909973,
+        0.000915633514523506,
+        -3.03420257568359
+      ],
+      "bounds_max_m": [
+        0.292410135269165,
+        0.582109332084656,
+        -2.36584782600403
+      ],
+      "physical_footprint_xz": [
+        [
+          -1.19286274909973,
+          -3.03420257568359
+        ],
+        [
+          0.292410135269165,
+          -3.03420257568359
+        ],
+        [
+          0.292410135269165,
+          -2.36584782600403
+        ],
+        [
+          -1.19286274909973,
+          -2.36584782600403
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_10",
+          "kind": "seat",
+          "room_approach_xz": [
+            0.67425411939621,
+            -3.3580846786499
+          ],
+          "room_pelvis_contact_xyz": [
+            -0.125745862722397,
+            0.308340787887573,
+            -2.80808472633362
+          ],
+          "room_feet_contact_xyz": [
+            -0.125745892524719,
+            0,
+            -3.08910512924194
+          ],
+          "room_facing_xyz": [
+            -8.74227765734759e-08,
+            0,
+            -1.0
+          ],
+          "seating_width_m": 0.5620404690479951,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_11",
+          "kind": "seat",
+          "room_approach_xz": [
+            -1.574254155159,
+            -3.3580846786499
+          ],
+          "room_pelvis_contact_xyz": [
+            -0.774254083633423,
+            0.30750560760498,
+            -2.80808472633362
+          ],
+          "room_feet_contact_xyz": [
+            -0.774254143238068,
+            0,
+            -3.08910489082336
+          ],
+          "room_facing_xyz": [
+            -8.74227765734759e-08,
+            0,
+            -1.0
+          ],
+          "seating_width_m": 0.5620404690479951,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_40",
+      "asset_id": "blendkit_sofa_repaired",
+      "room_local_xyz": [
+        0.200000002980232,
+        0.0,
+        -5.44999980926514
+      ],
+      "rotation_deg_xyz": [
+        0,
+        -140.0,
+        0
+      ],
+      "uniform_scale": 0.523952947998047,
+      "bounds_min_m": [
+        -0.369997322559357,
+        0.000665795698296279,
+        -5.98315954208374
+      ],
+      "bounds_max_m": [
+        0.769721686840057,
+        0.423276215791702,
+        -4.91665697097778
+      ],
+      "physical_footprint_xz": [
+        [
+          -0.369997322559357,
+          -5.98315954208374
+        ],
+        [
+          0.769721686840057,
+          -5.98315954208374
+        ],
+        [
+          0.769721686840057,
+          -4.91665697097778
+        ],
+        [
+          -0.369997322559357,
+          -4.91665697097778
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_12",
+          "kind": "seat",
+          "room_approach_xz": [
+            0.436191946268082,
+            -6.46875810623169
+          ],
+          "room_pelvis_contact_xyz": [
+            0.330098479986191,
+            0.224207639694214,
+            -5.66176128387451
+          ],
+          "room_feet_contact_xyz": [
+            0.198750182986259,
+            0,
+            -5.81829595565796
+          ],
+          "room_facing_xyz": [
+            -0.642787635326385,
+            0,
+            -0.766044437885284
+          ],
+          "seating_width_m": 0.4086832994384767,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_13",
+          "kind": "seat",
+          "room_approach_xz": [
+            -0.844295501708984,
+            -5.39430141448975
+          ],
+          "room_pelvis_contact_xyz": [
+            -0.031135618686676,
+            0.2236008644104,
+            -5.35864973068237
+          ],
+          "room_feet_contact_xyz": [
+            -0.162483915686607,
+            0,
+            -5.51518440246582
+          ],
+          "room_facing_xyz": [
+            -0.642787635326385,
+            0,
+            -0.766044437885284
+          ],
+          "seating_width_m": 0.4086832994384767,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_41",
+      "asset_id": "blendkit_sofa_repaired",
+      "room_local_xyz": [
+        1.48000001907349,
+        0.0,
+        -5.55000019073486
+      ],
+      "rotation_deg_xyz": [
+        0,
+        90.0,
+        0
+      ],
+      "uniform_scale": 0.534070581234203,
+      "bounds_min_m": [
+        1.23233199119568,
+        0.000678652373608202,
+        -6.10059785842896
+      ],
+      "bounds_max_m": [
+        1.72770535945892,
+        0.431449770927429,
+        -4.99973821640015
+      ],
+      "physical_footprint_xz": [
+        [
+          1.23233199119568,
+          -6.10059785842896
+        ],
+        [
+          1.72770535945892,
+          -6.10059785842896
+        ],
+        [
+          1.72770535945892,
+          -4.99973821640015
+        ],
+        [
+          1.23233199119568,
+          -4.99973821640015
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_14",
+          "kind": "seat",
+          "room_approach_xz": [
+            2.11011052131653,
+            -5.30966854095459
+          ],
+          "room_pelvis_contact_xyz": [
+            1.56011056900024,
+            0.228537082672119,
+            -5.30966854095459
+          ],
+          "room_feet_contact_xyz": [
+            1.76839816570282,
+            0,
+            -5.30966854095459
+          ],
+          "room_facing_xyz": [
+            1.0,
+            0,
+            -4.37113882867379e-08
+          ],
+          "seating_width_m": 0.41657505336267836,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_15",
+          "kind": "seat",
+          "room_approach_xz": [
+            2.11011052131653,
+            -5.79033184051514
+          ],
+          "room_pelvis_contact_xyz": [
+            1.56011056900024,
+            0.227918386459351,
+            -5.79033184051514
+          ],
+          "room_feet_contact_xyz": [
+            1.76839816570282,
+            0,
+            -5.79033184051514
+          ],
+          "room_facing_xyz": [
+            1.0,
+            0,
+            -4.37113882867379e-08
+          ],
+          "seating_width_m": 0.41657505336267836,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_42",
+      "asset_id": "blendkit_sofa_repaired",
+      "room_local_xyz": [
+        4.84999990463257,
+        0.0,
+        -2.09999990463257
+      ],
+      "rotation_deg_xyz": [
+        0,
+        180.0,
+        0
+      ],
+      "uniform_scale": 0.745411768655216,
+      "bounds_min_m": [
+        4.08152103424072,
+        0.000947207037825137,
+        -2.4457266330719
+      ],
+      "bounds_max_m": [
+        5.61801052093506,
+        0.602182030677795,
+        -1.75432527065277
+      ],
+      "physical_footprint_xz": [
+        [
+          4.08152103424072,
+          -2.4457266330719
+        ],
+        [
+          5.61801052093506,
+          -2.4457266330719
+        ],
+        [
+          5.61801052093506,
+          -1.75432527065277
+        ],
+        [
+          4.08152103424072,
+          -1.75432527065277
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_16",
+          "kind": "seat",
+          "room_approach_xz": [
+            5.18543529510498,
+            -2.81181192398071
+          ],
+          "room_pelvis_contact_xyz": [
+            5.18543529510498,
+            0.318973541259766,
+            -2.21181178092957
+          ],
+          "room_feet_contact_xyz": [
+            5.18543529510498,
+            0,
+            -2.50252223014832
+          ],
+          "room_facing_xyz": [
+            -8.74227765734759e-08,
+            0,
+            -1.0
+          ],
+          "seating_width_m": 0.5814211795510684,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        },
+        {
+          "station_candidate_id": "HEARTH_SEAT_17",
+          "kind": "seat",
+          "room_approach_xz": [
+            3.71456456184387,
+            -2.76181149482727
+          ],
+          "room_pelvis_contact_xyz": [
+            4.51456451416016,
+            0.318109750747681,
+            -2.21181154251099
+          ],
+          "room_feet_contact_xyz": [
+            4.51456451416016,
+            0,
+            -2.50252223014832
+          ],
+          "room_facing_xyz": [
+            -8.74227765734759e-08,
+            0,
+            -1.0
+          ],
+          "seating_width_m": 0.5814211795510684,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_43",
+      "asset_id": "ArmChair_01",
+      "room_local_xyz": [
+        2.40000009536743,
+        0.0,
+        -2.25
+      ],
+      "rotation_deg_xyz": [
+        0,
+        145.0,
+        0
+      ],
+      "uniform_scale": 0.7728,
+      "bounds_min_m": [
+        1.96173894405365,
+        -3.83879523724318e-07,
+        -2.68041610717773
+      ],
+      "bounds_max_m": [
+        2.83826112747192,
+        0.823099374771118,
+        -1.81958341598511
+      ],
+      "physical_footprint_xz": [
+        [
+          1.96173894405365,
+          -2.68041610717773
+        ],
+        [
+          2.83826112747192,
+          -2.68041610717773
+        ],
+        [
+          2.83826112747192,
+          -1.81958341598511
+        ],
+        [
+          1.96173894405365,
+          -1.81958341598511
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_18",
+          "kind": "seat",
+          "room_approach_xz": [
+            3.27344751358032,
+            -2.45134401321411
+          ],
+          "room_pelvis_contact_xyz": [
+            2.46648907661438,
+            0.386324882507324,
+            -2.34495615959167
+          ],
+          "room_feet_contact_xyz": [
+            2.59060192108154,
+            0,
+            -2.52220749855042
+          ],
+          "room_facing_xyz": [
+            0.5735764503479,
+            0,
+            -0.819152057170868
+          ],
+          "seating_width_m": 0.479136,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_44",
+      "asset_id": "ArmChair_01",
+      "room_local_xyz": [
+        6.44999980926514,
+        0.0,
+        -2.25
+      ],
+      "rotation_deg_xyz": [
+        0,
+        -160.0,
+        0
+      ],
+      "uniform_scale": 0.7728,
+      "bounds_min_m": [
+        6.04073619842529,
+        -3.83879523724318e-07,
+        -2.64017057418823
+      ],
+      "bounds_max_m": [
+        6.85926294326782,
+        0.823099374771118,
+        -1.85982847213745
+      ],
+      "physical_footprint_xz": [
+        [
+          6.04073619842529,
+          -2.64017057418823
+        ],
+        [
+          6.85926294326782,
+          -2.64017057418823
+        ],
+        [
+          6.85926294326782,
+          -1.85982847213745
+        ],
+        [
+          6.04073619842529,
+          -1.85982847213745
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [
+        {
+          "station_candidate_id": "HEARTH_SEAT_19",
+          "kind": "seat",
+          "room_approach_xz": [
+            6.5981183052063,
+            -3.01256823539734
+          ],
+          "room_pelvis_contact_xyz": [
+            6.41035270690918,
+            0.386324882507324,
+            -2.35892915725708
+          ],
+          "room_feet_contact_xyz": [
+            6.33634519577026,
+            0,
+            -2.56226372718811
+          ],
+          "room_facing_xyz": [
+            -0.342020183801651,
+            0,
+            -0.939692556858063
+          ],
+          "seating_width_m": 0.479136,
+          "status": "MEASURED_SURFACE_CANDIDATE"
+        }
+      ],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    },
+    {
+      "instance_id": "hearth_depth7_45",
+      "asset_id": "owner_sleeping_dragon",
+      "room_local_xyz": [
+        4.851303458213804,
+        0.574517726898195,
+        -5.55000066757202
+      ],
+      "rotation_deg_xyz": [
+        0,
+        0,
+        0
+      ],
+      "uniform_scale": 26.1641348180295,
+      "bounds_min_m": [
+        2.71260714530945,
+        0.0,
+        -7.70000076293945
+      ],
+      "bounds_max_m": [
+        6.98999977111816,
+        1.14903545379639,
+        -3.40000057220459
+      ],
+      "physical_footprint_xz": [
+        [
+          2.71260714530945,
+          -7.70000076293945
+        ],
+        [
+          6.98999977111816,
+          -7.70000076293945
+        ],
+        [
+          6.98999977111816,
+          -3.40000057220459
+        ],
+        [
+          2.71260714530945,
+          -3.40000057220459
+        ]
+      ],
+      "placement_policy": "floor_fixed",
+      "station_candidates": [],
+      "support_slots": [],
+      "support_ref": null,
+      "owner_approved": true
+    }
+  ],
+  "picture_slots": [
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        -1.27999997138977,
+        2.25999999046326,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_01"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        -0.730000019073486,
+        2.25999999046326,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_02"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        -0.180000007152557,
+        2.25999999046326,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_03"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        0.370000004768372,
+        2.25999999046326,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_04"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        0.920000016689301,
+        2.25999999046326,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_05"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        -1.27999997138977,
+        2.59999990463257,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_06"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        -0.730000019073486,
+        2.59999990463257,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_07"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        -0.180000007152557,
+        2.59999990463257,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_08"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        0.370000004768372,
+        2.59999990463257,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_09"
+    },
+    {
+      "aperture_m": [
+        0.44,
+        0.23
+      ],
+      "artwork_path": "",
+      "center_xyz": [
+        0.920000016689301,
+        2.59999990463257,
+        -7.55999990463257
+      ],
+      "id": "HEARTH_PICTURE_10"
+    }
+  ]
+}

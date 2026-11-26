@@ -2,6 +2,7 @@ extends RefCounted
 ## Iteration 2 physical room topology.
 ## A room is one immutable-sized X/Z volume (R1/R2/R3), not a dynamic merge
 ## of neighboring logical cells. Connectors are explicit room-owned geometry.
+const DEPTH7=preload("res://scripts/depth7_space.gd")
 const MODULE_W := 4.8
 const FLOOR_H := 4.6
 const BACK_Z := -1.95
@@ -51,9 +52,12 @@ func world_to_local(room: Dictionary, position: Vector3) -> Vector2:
 	var center:=center_world(room)
 	return Vector2(position.x-center.x,position.z)
 
+func back_z(room:Dictionary)->float:
+	return DEPTH7.BACK if DEPTH7.enabled_for(room) else BACK_Z
+
 func local_contains(room: Dictionary, local: Vector2, margin: float = 0.0) -> bool:
 	return local.x>=-half_width(room)+margin and local.x<=half_width(room)-margin and (
-		local.y>=BACK_Z+margin and local.y<=FRONT_Z-margin)
+		local.y>=back_z(room)+margin and local.y<=FRONT_Z-margin)
 
 func default_connectors(room_type: String, modules: int) -> Array:
 	var safe: int = normalize_size(modules)

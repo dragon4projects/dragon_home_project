@@ -1,6 +1,8 @@
 extends Node3D
 ## Fresh Godot 4.7.2 cutaway world. Geometry and presentation only;
 ## room truth + autonomous life are independent of the camera.
+const Depth7Space=preload("res://scripts/depth7_space.gd")
+const Depth7Hearth=preload("res://scripts/depth7_hearth.gd")
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
@@ -325,6 +327,15 @@ func _ready() -> void:
 				push_warning("Iteration-1 guest candidate activation failed: "+str(guest_review_result))
 		else:
 			push_warning("Iteration-1 candidate contract could not be initialized: "+candidate_content.last_error)
+	if architecture_review and teea008_review.enabled:
+		var f:=FileAccess.open("res://data/depth7_hearth_layout.json",FileAccess.READ)
+		if f!=null:
+			var row=JSON.parse_string(f.get_as_text())
+			if typeof(row)==TYPE_DICTIONARY and bool(row.get("depth7_measured",false)):
+				teea008_review.layouts["common/R3"]=row
+				for room in world.rooms:
+					if str(room.get("type",""))=="common" and int(room.get("size_modules",1))==3:
+						room["depth7"]=true
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
@@ -1581,6 +1592,21 @@ func make_room(group: Dictionary) -> void:
 	var facade_only := _group_facade_only(group)
 	n.set_meta("facade_only",facade_only)
 	if architecture_review and t=="guest":canonical_guest_nodes[str(n.name)]=n
+	var live_room:Dictionary=world.room_by_id(str(group["primary_id"]))
+	if architecture_review and not facade_only and Depth7Space.enabled_for(live_room) and t=="common":
+		group["art_type"]="common"
+		group["has_art"]=false
+		group["teea008_review"]=true
+		group["native_decor"]=true
+		group["replaces_furniture"]=true
+		group["depth7_hearth"]=true
+		var overview:=Node3D.new()
+		overview.name="Layer_OverviewCues"
+		n.add_child(overview)
+		Depth7Hearth.new().populate(overview)
+		var roof_label:=label3(n,str(live_room.get("display_name","Каминная")),Vector3(0,3.35,.40),24,Color("#f4d9b9"))
+		roof_label.name="RoomRoofLabel"
+		return
 	var art_type := _review_room_art_type(group)
 	visual_room_groups[n.name]["art_type"] = art_type
 	var accepted: Array=interior_skin.validated_layers(art_type,int(group["width"]))
@@ -1816,9 +1842,13 @@ func make_sprite_texture(is_manka: bool) -> Texture2D:
 func depth_visual_scale(z: float) -> float:
 	return world.room_space.perspective_scale(z)
 
+func depth_scale_for_room(room_id:String,z:float)->float:
+	var room:Dictionary=world.room_by_id(room_id)
+	return Depth7Space.scale_at(z) if Depth7Space.enabled_for(room) else depth_visual_scale(z)
+
 func depth_visual_x(room_id: String, physical_x: float, z: float) -> float:
 	var room:Dictionary=world.room_by_id(room_id)
-	if room.is_empty():
+	if room.is_empty() or Depth7Space.enabled_for(room):
 		return physical_x
 	var center_x:float=world.room_center_pos(room).x
 	var scale_value:float=depth_visual_scale(z)
@@ -1893,7 +1923,7 @@ func update_creatures(delta: float = 0.0) -> void:
 			str(creature.get("room_id","")),float(creature.get("x",0.0)),creature_z)
 		var bank_id := str(creature.get("bank_id",""))
 		anchor.position = Vector3(creature_x,y+_creature_hover_height(bank_id,creature_hover_clock),creature_z)
-		var creature_scale:=depth_visual_scale(creature_z)
+		var creature_scale:=depth_scale_for_room(str(creature.get("room_id","")),creature_z)
 		anchor.scale=Vector3.ONE*creature_scale
 		var body: Sprite3D = anchor.get_node_or_null("Body")
 		if body != null and bank_id != "" and body.has_meta("candidate_bank"):
@@ -2253,7 +2283,7 @@ func update_residents(delta: float = 0.0) -> void:
 		var actor_x:float=depth_visual_x(
 			str(actor.get("room_id","")),float(actor.get("x",0.0)),actor_z)
 		actor_sprites[id].position = Vector3(actor_x,y,actor_z)
-		var actor_scale:=depth_visual_scale(actor_z)
+		var actor_scale:=depth_scale_for_room(str(actor.get("room_id","")),actor_z)
 		var contact:Dictionary=_active_station_render_contact(actor)
 		if not contact.is_empty() and bool(actor.get("runtime_visual_bound",false)):
 			var room:Dictionary=world.room_by_id(str(actor.get("station_room_id","")))
@@ -2262,15 +2292,16 @@ func update_residents(delta: float = 0.0) -> void:
 				var pos:Array=contact["local_xyz"]
 				var inst:Array=contact["instance_xyz"]
 				# Same transform as the real model wrapper, not the approach point.
-				actor_scale=depth_visual_scale(float(inst[2]))
-				var physical_contact:=Vector3(c.x+float(pos[0])*actor_scale,c.y+float(inst[1])+(float(pos[1])-float(inst[1]))*actor_scale,float(inst[2])+(float(pos[2])-float(inst[2]))*actor_scale)
+				actor_scale=depth_scale_for_room(str(room["id"]),float(inst[2]))
+				var measured:bool=Depth7Space.enabled_for(room)
+				var physical_contact:=Vector3(c.x+float(pos[0]),c.y+float(pos[1]),float(pos[2])) if measured else Vector3(c.x+float(pos[0])*actor_scale,c.y+float(inst[1])+(float(pos[1])-float(inst[1]))*actor_scale,float(inst[2])+(float(pos[2])-float(inst[2]))*actor_scale)
 				actor_sprites[id].position=physical_contact
 				# A flat sprite at the pelvis plane gets its entire legs cut by
 				# a deep cushion. Move only its render plane forward, along the
 				# camera ray, and preserve the projected contact and body scale.
 				# Other foreground objects still depth-test normally.
 				if contact.has("seat_front_z"):
-					var front:float=float(inst[2])+(float(contact["seat_front_z"])-float(inst[2]))*actor_scale
+					var front:float=float(contact["seat_front_z"]) if measured else float(inst[2])+(float(contact["seat_front_z"])-float(inst[2]))*actor_scale
 					var projected:Dictionary=_seat_render_projection(physical_contact,front,actor_scale)
 					actor_sprites[id].position=projected["position"]
 					actor_scale=float(projected["scale"])

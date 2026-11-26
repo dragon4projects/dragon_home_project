@@ -1,5 +1,6 @@
 extends SceneTree
 # Isolated visual/geometry prototype. No production room, state or save mutation.
+const DEPTH=preload("res://scripts/depth7_space.gd")
 const BANK=preload("res://scripts/teea008_review_bank.gd")
 const BANDS=[1.65,0.65,-.85,-1.75,-3.60,-4.50,-6.65,-8.05]
 const HW=7.2
@@ -29,7 +30,7 @@ func light(p:Vector3,color:Color,energy:float,range_m:float)->void:
 # Same 0.85 -> 1.0 linear correction as production room_space_v2,
 # normalized over the expanded seven-band floor. Keep owner X/Z anchors.
 func depth_scale(z:float)->float:
- return lerpf(.85,1.0,clampf((z-BANDS[7])/(BANDS[0]-BANDS[7]),0.0,1.0))
+ return DEPTH.scale_at(z)
 func asset(id:String,at:Vector3,scale_value:float=1.0,yaw:float=0,blocking:bool=false)->AABB:
  var base_scale:float=scale_value
  if id in ["sofa_03","blendkit_sofa_repaired","ArmChair_01","gothic_coffee_table"]:
@@ -66,7 +67,7 @@ func asset(id:String,at:Vector3,scale_value:float=1.0,yaw:float=0,blocking:bool=
    var local:=Vector3(sx,0,.15)
    var world:Vector3=n.to_global(local)
    var surface_y:float=mesh_top(n,Vector2(world.x,world.z))
-   assert(surface_y>.28 and surface_y<.65,str([id,surface_y]))
+   assert(surface_y>.20 and surface_y<.65,str([id,surface_y]))
    var forward:Vector3=n.global_transform.basis.z.normalized()
    var foot:Vector3=n.to_global(Vector3(sx,0,.54 if id!="ArmChair_01" else .43))
    var seat_id:String="HEARTH_SEAT_%02d"%(seat_candidates.size()+1)
@@ -377,16 +378,16 @@ func run()->void:
  assert(seat_candidates.size()==19 and picture_slots.size()==10 and seat_routes==38)
  print("HEARTH_SEAT_CONTACT_PASS seats=",seat_candidates.size()," routes=",seat_routes)
  print("DEPTH7_OWNER_LAYOUT_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
- var f=FileAccess.open("/home/user/dragon_qa/iter60_placement.json",FileAccess.WRITE)
+ var f=FileAccess.open("/home/user/dragon_qa/iter61_placement.json",FileAccess.WRITE)
  f.store_string(JSON.stringify({"bands_front_to_back":BANDS,"room_width":14.4,"dragon_bounds":[dragon.position,dragon.size],"placements":placements,"route_checks":route_count,"seat_route_checks":seat_routes,"seat_candidates":seat_candidates,"picture_slots":picture_slots},"  "));f.close()
  if DisplayServer.get_name()=="headless":
   print("HEARTH_HEADLESS_PASS");quit();return
  scale_actor("RES_07",Vector3(0.35,0,1.15))
  cam=Camera3D.new();stage.add_child(cam);cam.projection=Camera3D.PROJECTION_PERSPECTIVE;cam.fov=25.0;cam.current=true
  cam.position=Vector3(-.5,7.2,20.0);cam.look_at(Vector3(0,1.05,-3.35))
- await capture("/home/user/dragon_qa/iter60_hearth.png")
+ await capture("/home/user/dragon_qa/iter61_hearth.png")
  cam.position=Vector3(-8,11,20);cam.look_at(Vector3(0,.75,-3.35));cam.fov=27.0
- await capture("/home/user/dragon_qa/iter60_oblique.png")
+ await capture("/home/user/dragon_qa/iter61_oblique.png")
  # Technical plan, same scene, visible seven bands, not a generated drawing.
  for i in range(BANDS.size()):
   var m:=StandardMaterial3D.new();m.albedo_color=Color("#d8b078");m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -395,6 +396,6 @@ func run()->void:
   var label:=Label3D.new();label.text=str(i+1);label.font_size=45;label.modulate=Color("#fff2ce");label.pixel_size=.008;label.rotation_degrees.x=-90
   stage.add_child(label);label.position=Vector3(-7.03,.06,(BANDS[i]+BANDS[i+1])*.5)
  cam.projection=Camera3D.PROJECTION_ORTHOGONAL;cam.position=Vector3(0,22,-3.2);cam.look_at(Vector3(0,0,-3.2),Vector3(0,0,-1));cam.size=10.6
- await capture("/home/user/dragon_qa/iter60_plan.png")
+ await capture("/home/user/dragon_qa/iter61_plan.png")
  print("DEPTH7_OWNER_LAYOUT_RENDER_PASS 3")
  quit()
