@@ -85,6 +85,10 @@ var selected_outline: Node3D
 var journal_panel: PanelContainer
 var journal_text: Label
 var journal_open := false
+var public_journal=preload("res://scripts/public_house_journal.gd").new()
+var journal_actor_filter:OptionButton
+var journal_room_filter:OptionButton
+var journal_category_filter:OptionButton
 var follow_deadzone_ratio := 0.12
 var build_mode := false
 var build_type := "corridor"
@@ -2212,7 +2216,7 @@ func update_residents(delta: float = 0.0) -> void:
 		# Names live in the status panel, never stacked over actors or furniture.
 		actor_labels[id].visible = false
 		if id == follow_id:
-			actor_labels[id].text = actor["name"] + " • " + life.status(actor)
+			actor_labels[id].text = actor["name"] + " • " + public_journal.status(world,life,actor)
 
 func animate_manka(actor: Dictionary, delta: float) -> void:
 	var state := "IDLE_LEFT" if str(actor.get("moving_axis","")) == "left" else "IDLE_RIGHT"
@@ -2479,10 +2483,28 @@ func build_interface() -> void:
 	journal_panel.custom_minimum_size = Vector2(335, 240)
 	journal_panel.visible = false
 	root.add_child(journal_panel)
+	var journal_column:=VBoxContainer.new()
+	journal_panel.add_child(journal_column)
+	var journal_heading:=Label.new()
+	journal_heading.text="Журнал дома · симуляция"
+	journal_column.add_child(journal_heading)
+	journal_actor_filter=OptionButton.new()
+	journal_room_filter=OptionButton.new()
+	journal_category_filter=OptionButton.new()
+	for filter in [journal_actor_filter,journal_room_filter,journal_category_filter]:
+		filter.fit_to_longest_item=false
+		filter.custom_minimum_size.x=310
+		filter.item_selected.connect(func(_index):update_journal())
+		journal_column.add_child(filter)
+	var journal_scroll:=ScrollContainer.new()
+	journal_scroll.custom_minimum_size=Vector2(310,300)
+	journal_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	journal_column.add_child(journal_scroll)
 	journal_text = Label.new()
-	journal_text.custom_minimum_size = Vector2(310, 220)
+	journal_text.custom_minimum_size = Vector2(300,0)
+	journal_text.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	journal_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	journal_panel.add_child(journal_text)
+	journal_scroll.add_child(journal_text)
 	var import_button := Button.new()
 	import_button.text = "Импорт контента / предметов (JSON)"
 	import_button.pressed.connect(func(): catalog_picker.popup_centered_ratio(0.65))
@@ -2832,64 +2854,32 @@ func toggle_journal() -> void:
 	journal_open = not journal_open
 	journal_panel.visible = journal_open
 	if journal_open:
+		_refresh_journal_filters()
 		update_journal()
 
-func _world_journal_line(entry: Dictionary) -> String:
-	var event_name: String = str(entry.get("event",""))
-	var actor_id: String = str(entry.get("actor_id",""))
-	var subject_id: String = str(entry.get("subject_id",""))
-	var actor_name: String = actor_id
-	if world.residents.has(actor_id):
-		actor_name = str(world.residents[actor_id].get("name",actor_id))
-	elif world.creatures.has(actor_id):
-		actor_name = str(world.creatures[actor_id].get("name",actor_id))
-	var subject_name: String = subject_id
-	var object: Dictionary = world.physical_object(subject_id)
-	if not object.is_empty():
-		subject_name = str(object.get("display_name",subject_id))
-	match event_name:
-		"CREATURE_ROAMED":
-			return "%s — перемещение: %s → %s" % [
-				actor_name,str(entry.get("from","")),str(entry.get("to",""))]
-		"CREATURE_ACCESS_REJECTED":
-			return "%s — доступ отклонён: %s" % [
-				actor_name,str(entry.get("to",""))]
-		"OBJECT_PICKED_UP":
-			return "%s — переносит: %s" % [actor_name,subject_name]
-		"OBJECT_STASHED":
-			return "%s — прячет: %s" % [actor_name,subject_name]
-		"OBJECT_LOST_FOUND":
-			return "Дом нашёл: %s" % subject_name
-		"OBJECT_RESTORED_HOME":
-			return "На место возвращено: %s" % subject_name
-		"OBJECT_HOUSEKEEPING_RETURNED":
-			return "Домовой убрал: %s" % subject_name
-		"OBJECT_VIEWED":
-			return "%s — рассмотрела: %s" % [actor_name,subject_name]
-		"BOOK_RESTORED_HOME":
-			var book:Dictionary=life.media_runtime._lookup("books",subject_id)
-			return "Домовой вернул книгу: %s" % str(book.get("title","Книга"))
-		"GUEST_REGISTERED":
-			return "Гостья в Доме: %s" % actor_name
-		"CREATURE_REGISTERED":
-			return "В Доме появилась живность: %s" % actor_name
-		_:
-			if event_name.begins_with("OBJECT_"):
-				return "%s · %s" % [subject_name,event_name.trim_prefix("OBJECT_").to_lower()]
-			return "%s · %s" % [actor_name,event_name]
+func _add_journal_option(filter:OptionButton,label:String,key:String)->void:
+	filter.add_item(label)
+	filter.set_item_metadata(filter.item_count-1,key)
+
+func _refresh_journal_filters()->void:
+	for filter in [journal_actor_filter,journal_room_filter,journal_category_filter]:filter.clear()
+	_add_journal_option(journal_actor_filter,"Все жители","")
+	for collection in [world.residents,world.creatures]:
+		for id in collection:_add_journal_option(journal_actor_filter,public_journal.actor_label(world,str(id)),str(id))
+	_add_journal_option(journal_room_filter,"Все публичные помещения","")
+	for room in world.rooms:
+		if world.public_cutaway_allowed(room):_add_journal_option(journal_room_filter,public_journal.room_label(room)+" · этаж "+str(int(room["level"])),str(room["id"]))
+	_add_journal_option(journal_category_filter,"Все занятия и события","")
+	for key in public_journal.CATEGORY_NAMES:_add_journal_option(journal_category_filter,public_journal.CATEGORY_NAMES[key],str(key))
+	for filter in [journal_actor_filter,journal_room_filter,journal_category_filter]:filter.select(0)
+
+func _journal_filter_value(filter:OptionButton)->String:
+	return str(filter.get_item_metadata(filter.selected)) if filter!=null and filter.selected>=0 else ""
 
 func update_journal() -> void:
-	if journal_text == null:
-		return
-	var lines: Array[String] = []
-	for message in life.log.slice(maxi(0, life.log.size() - 6)):
-		lines.append(str(message))
-	for entry in world.journal_entries(8):
-		if typeof(entry) == TYPE_DICTIONARY:
-			lines.append(_world_journal_line(entry))
-	if lines.size() > 14:
-		lines = lines.slice(lines.size()-14,lines.size())
-	journal_text.text = "ЖУРНАЛ ДОМА\n\n" + "\n".join(lines)
+	if journal_text == null:return
+	var lines:Array[String]=public_journal.lines(world,_journal_filter_value(journal_actor_filter),_journal_filter_value(journal_room_filter),_journal_filter_value(journal_category_filter))
+	journal_text.text="\n\n".join(lines) if not lines.is_empty() else "Нет публичных событий по выбранным условиям."
 
 func camera_world_bounds() -> Rect2:
 	var lo := Vector2(99999,99999)
@@ -3096,7 +3086,7 @@ func room_activity_lines(group: Dictionary) -> Array:
 		if not room_ids.has(activity_room):
 			continue
 		entries.append("%s — %s" % [
-			str(actor.get("name",id)),life.status(actor)])
+			str(actor.get("name",id)),public_journal.status(world,life,actor)])
 	entries.sort()
 	return entries
 
@@ -3120,8 +3110,8 @@ func update_hud() -> void:
 	if qa_visual_preview:
 		hud_status.text += "\nВИД: QA-ПРОСМОТР (не утверждено)"
 	if not tracked.is_empty():
-		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), life.status(tracked)]
-		if architecture_review and life.candidate_cups.beverages.enabled:
+		hud_status.text += "\nСлежение: %s — %s" % [tracked.get("name", "?"), public_journal.status(world,life,tracked)]
+		if architecture_review and life.candidate_cups.beverages.enabled and world.public_cutaway_allowed(world.room_by_id(str(tracked.get("room_id","")))):
 			var beverage=life.candidate_cups.beverages
 			var prefs:Dictionary=beverage.history(follow_id)
 			var counts:Dictionary=prefs["drink_counts"]
