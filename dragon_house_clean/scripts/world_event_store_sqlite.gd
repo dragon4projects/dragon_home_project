@@ -10,6 +10,13 @@ extends RefCounted
 var path: String = ""
 var events: Array = []
 var event_ids:Dictionary={}
+# Detached last committed projection. Never trust a cache across setup,
+# a failed transaction, or an explicit authoritative rebuild.
+var _projection_cache:Dictionary={}
+var _projection_known:=false
+var last_projection_writes:=0
+var last_projection_deletes:=0
+var last_append_profile:Dictionary={}
 var sequence: int = 0
 var status: String = "UNINITIALIZED"
 var last_error: String = ""
@@ -86,6 +93,8 @@ func _open_current() -> bool:
 	return true
 
 func _close() -> void:
+	_projection_known=false
+	_projection_cache.clear()
 	if db != null:
 		db.call("close_db")
 		db = null
@@ -358,14 +367,8 @@ func _insert_event(event: Dictionary, preserve_seq: bool = false) -> bool:
 		payload_json
 	])
 
-func _sync_projection(projection: Dictionary) -> bool:
-	if not _query("DELETE FROM objects;"):
-		return false
-	var ids: Array = projection.keys()
-	ids.sort()
-	for raw_id in ids:
-		var object: Dictionary = projection[raw_id]
-		if not _query("""INSERT INTO objects(
+func _write_projection_row(raw_id:Variant,object:Dictionary)->bool:
+	return _query("""INSERT OR REPLACE INTO objects(
 			object_id,canonical_owner,current_holder,current_location,state,
 			last_explicit_location,movement_reason,movement_authority,
 			ambient_move_allowed,ambient_hide_allowed,ambient_protected,
@@ -384,9 +387,49 @@ func _sync_projection(projection: Dictionary) -> bool:
 			1 if bool(object.get("ambient_protected",false)) else 0,
 			str(object.get("updated_event_id","")),
 			JSON.stringify(object)
-		]):
-			return false
+	])
+
+func _sync_projection(projection: Dictionary) -> bool:
+	if not _query("DELETE FROM objects;"):return false
+	var ids:Array=projection.keys()
+	ids.sort()
+	for id in ids:
+		if not _write_projection_row(id,projection[id]):return false
 	return true
+
+# Derive the exact delta, not merely the object_id advertised by an event.
+# This also supports batches, additions and removals in the supplied projection.
+func _projection_delta(projection:Dictionary)->Dictionary:
+	var changed:Dictionary={}
+	var removed:Array=[]
+	for id in projection:
+		if not _projection_cache.has(id) or _projection_cache[id]!=projection[id]:
+			changed[id]=projection[id]
+	for id in _projection_cache:
+		if not projection.has(id):removed.append(id)
+	return {"changed":changed,"removed":removed}
+
+func _sync_projection_delta(delta:Dictionary)->bool:
+	for id in delta.removed:
+		if not _query("DELETE FROM objects WHERE object_id=?;",[str(id)]):return false
+	var ids:Array=delta.changed.keys()
+	ids.sort()
+	for id in ids:
+		if not _write_projection_row(id,delta.changed[id]):return false
+	return true
+
+func _remember_projection(projection:Dictionary)->void:
+	_projection_cache=projection.duplicate(true)
+	_projection_known=true
+
+# Only called by runtime after comparing the persisted derived table
+# with the authoritative replay. No write or additional trust here.
+func accept_verified_projection(projection:Dictionary)->void:
+	_remember_projection(projection)
+
+func _remember_delta(delta:Dictionary)->void:
+	for id in delta.removed:_projection_cache.erase(id)
+	for id in delta.changed:_projection_cache[id]=delta.changed[id].duplicate(true)
 
 func _backup() -> bool:
 	last_warning = ""
@@ -454,6 +497,7 @@ func import_canonical_events(input_events: Array, projection: Dictionary) -> Arr
 			last_error = "SQLite canonical import changed event identity/order"
 			status = "WRITE_FAILED"
 			return []
+	_remember_projection(projection)
 	var backup_ok: bool = _backup()
 	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
@@ -464,6 +508,7 @@ func rebuild_projection(projection: Dictionary) -> bool:
 	if db == null:
 		last_error = "SQLite connection is unavailable"
 		return false
+	_projection_known=false
 	if not _query("BEGIN IMMEDIATE;"):
 		status = "WRITE_FAILED"
 		return false
@@ -475,6 +520,7 @@ func rebuild_projection(projection: Dictionary) -> bool:
 		_query("ROLLBACK;")
 		status = "WRITE_FAILED"
 		return false
+	_remember_projection(projection)
 	var backup_ok: bool = _backup()
 	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
@@ -499,6 +545,10 @@ func append_many_with_projection(input_events: Array, projection: Dictionary) ->
 			last_error = "duplicate/empty event_id: " + id
 			return []
 		ids[id] = true
+	var begin_us:int=Time.get_ticks_usec()
+	var use_delta:bool=_projection_known
+	var delta:Dictionary=_projection_delta(projection) if use_delta else {}
+	var planned_us:int=Time.get_ticks_usec()
 	if not _query("BEGIN IMMEDIATE;"):
 		status = "WRITE_FAILED"
 		return []
@@ -507,7 +557,10 @@ func append_many_with_projection(input_events: Array, projection: Dictionary) ->
 			_query("ROLLBACK;")
 			status = "WRITE_FAILED"
 			return []
-	if not _sync_projection(projection):
+	var inserted_us:int=Time.get_ticks_usec()
+	var projected:bool=_sync_projection_delta(delta) if use_delta else _sync_projection(projection)
+	var projection_us:int=Time.get_ticks_usec()
+	if not projected:
 		_query("ROLLBACK;")
 		status = "WRITE_FAILED"
 		return []
@@ -516,15 +569,23 @@ func append_many_with_projection(input_events: Array, projection: Dictionary) ->
 		_query("ROLLBACK;")
 		status="WRITE_FAILED"
 		return []
+	var tail_us:int=Time.get_ticks_usec()
 	if not _query("COMMIT;"):
 		_query("ROLLBACK;")
 		status = "WRITE_FAILED"
 		return []
+	var commit_us:int=Time.get_ticks_usec()
+	if use_delta:_remember_delta(delta)
+	else:_remember_projection(projection)
+	last_projection_writes=delta.changed.size() if use_delta else projection.size()
+	last_projection_deletes=delta.removed.size() if use_delta else -1
 	for event in committed:
 		events.append(event)
 		event_ids[str(event["event_id"])]=true
 		sequence=int(event["seq"])
+	var cache_us:int=Time.get_ticks_usec()
 	var backup_ok: bool = _backup()
+	last_append_profile={"plan_us":planned_us-begin_us,"insert_us":inserted_us-planned_us,"projection_us":projection_us-inserted_us,"tail_us":tail_us-projection_us,"commit_us":commit_us-tail_us,"cache_us":cache_us-commit_us,"backup_us":Time.get_ticks_usec()-cache_us}
 	status = "READY" if backup_ok else "READY_BACKUP_STALE"
 	last_error = ""
 	return committed.duplicate(true)

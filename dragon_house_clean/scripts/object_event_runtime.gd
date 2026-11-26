@@ -223,6 +223,8 @@ func setup(p_world) -> bool:
 					_update_runtime_state()
 					return false
 				world.runtime_state["object_event_projection_rebuilt"] = true
+			elif store.has_method("accept_verified_projection"):
+				store.accept_verified_projection(projection)
 		_publish_projection(projection)
 		_reconcile_journal_from_store()
 		status = "REPLAYED_FROM_BACKUP" if store.status == "RECOVERED_FROM_BACKUP" else "REPLAYED"
