@@ -1,0 +1,77 @@
+name: Depth7 sprite intake 66
+on:
+  push:
+    branches: [integration/depth7-house-20261126]
+    paths: [.github/workflows/depth7-sprite66-intake.yml]
+permissions:
+  contents: write
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Verify and stage only reviewed candidate files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = integration/depth7-house-20261126
+          curl -fsSL --retry 3 --max-time 120 -o "$RUNNER_TEMP/intake.zip" 'https://d2ol7oe51mr4n9.cloudfront.net/user_3JdI9kJ82xObF8Bi3EgU4P6DaoR/c537bac4-0037-4df2-8409-ff593a540f06.zip'
+          echo "0ce230d6f8e3f13eb98ed127b5ed07382df5b21b8716aeb3d75af2aedf24df1a  $RUNNER_TEMP/intake.zip" | sha256sum -c -
+          python3 - <<'PY'
+          import zipfile, json, hashlib, pathlib, re, os
+          with zipfile.ZipFile(pathlib.Path(os.environ['RUNNER_TEMP'])/'intake.zip') as z:
+              prefix='overlay/dragon_house_clean/'
+              manifest=prefix+'data/asset_proposals/DH_SPRITE_20261126_INTAKE/frames.json'
+              records=json.loads(z.read(manifest))
+              assert len(records)==42 and len({r['path'] for r in records})==42
+              paths=[]
+              for r in records:
+                  p=r['path']
+                  assert re.fullmatch(r'assets/(?:residents/RES_(?:04|07|08)/wardrobes/(?:HOME|CITY)|creatures/(?:manjka|npc_ai_magic_sphere))/[A-Z_0-9/]+/[0-9]+\.png',p),p
+                  b=z.read(prefix+p)
+                  assert b.startswith(b'\x89PNG\r\n\x1a\n') and len(b)==r['size'] and hashlib.sha256(b).hexdigest()==r['sha256'],p
+                  paths.append(p)
+              for n in z.namelist():
+                  if not n.startswith(prefix) or n.endswith('/'):continue
+                  p=n[len(prefix):]
+                  assert '..' not in pathlib.PurePosixPath(p).parts
+                  assert p in paths or re.fullmatch(r'data/asset_proposals/DH_SPRITE_20261126_INTAKE/[a-z0-9_]+\.(?:json|jsonl)',p) or p=='tests/test_sprite66_intake.gd',p
+                  dest=pathlib.Path('dragon_house_clean')/p
+                  assert not dest.exists() or dest.read_bytes()==z.read(n),f'conflict: {p}'
+                  dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(z.read(n))
+              pathlib.Path(os.environ['RUNNER_TEMP'],'paths.txt').write_text('\n'.join('dragon_house_clean/'+p for p in paths)+'\n')
+          print('SPRITE_INTAKE_VERIFIED',len(paths))
+          PY
+          git lfs install --local
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          while IFS= read -r p; do git add -- "$p"; done < "$RUNNER_TEMP/paths.txt"
+          git add -- dragon_house_clean/data/asset_proposals/DH_SPRITE_20261126_INTAKE dragon_house_clean/tests/test_sprite66_intake.gd
+          while IFS= read -r p; do git cat-file -p ":$p" | grep -q '^version https://git-lfs.github.com/spec/v1$'; done < "$RUNNER_TEMP/paths.txt"
+          git commit -m 'assets: verified sprite intake 66 (42 candidate frames)'
+          git push origin HEAD:refs/heads/integration/depth7-house-20261126
+      - name: Independent LFS byte verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config lfs.storage "$RUNNER_TEMP/verify-lfs"
+          while IFS= read -r p; do rm -- "$p"; done < "$RUNNER_TEMP/paths.txt"
+          includes=$(paste -sd, "$RUNNER_TEMP/paths.txt")
+          git lfs fetch --include="$includes" --exclude="" origin HEAD
+          git lfs checkout
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('dragon_house_clean')
+          records=json.loads((root/'data/asset_proposals/DH_SPRITE_20261126_INTAKE/frames.json').read_text())
+          for r in records:
+              p=root/r['path']
+              assert p.stat().st_size==r['size'] and hashlib.sha256(p.read_bytes()).hexdigest()==r['sha256'],p
+          print('SPRITE66_LFS_REMOTE_PASS',len(records))
+          PY
