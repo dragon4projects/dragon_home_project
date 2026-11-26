@@ -37,5 +37,11 @@ func run() -> void:
 	view.set_view(world,"FOLLOW",str(common["id"]),1)
 	assert(view.mode=="FOLLOW" and view.level==1)
 
+	for mode in view.MODES:
+		view.set_view(world,mode,"",0)
+		for all_visible in [false,true]:
+			view.all_levels_visible=all_visible
+			assert(not view.actor_visible({"active":false,"level":0}))
+			assert(view.actor_visible({"active":true,"level":0}))
 	print("SEMANTIC_VIEW_V019_PASS modes=HOUSE_LEVEL_ROOM_FOLLOW levels=-1_0_1 connector_context=yes")
 	quit(0)

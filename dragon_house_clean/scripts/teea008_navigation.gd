@@ -474,6 +474,9 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 	elif intent=="READ_BOOK":
 		state="READ"
 		anchor=raw.get("pelvis",[])
+	elif intent=="WATCH_FILM":
+		state="SIT_N"
+		anchor=raw.get("pelvis",[])
 	else:
 		anchor=raw.get("pelvis",[])
 	if anchor.size()!=3:
@@ -490,8 +493,10 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String)->Dictionary:
 			return {}
 	else:
 		var facing:Array=raw.get("facing",[])
-		if facing.size()!=3 or float(facing[2])<0.5:
-			return {}
+		if facing.size()!=3:return {}
+		if state=="SIT_N":
+			if float(facing[2])> -0.5:return {}
+		elif float(facing[2])<0.5:return {}
 		var feet:Array=raw.get("feet",[])
 		if feet.size()!=3:
 			return {}

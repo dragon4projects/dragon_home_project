@@ -83,6 +83,9 @@ func group_visible(group: Dictionary) -> bool:
 	return str(group.get("type","")) == "lift" and abs(group_level-level) == 1
 
 func actor_visible(actor: Dictionary) -> bool:
+	# Inactive actors do not acquire visibility from camera mode. All
+	# resident/creature sprites and their held props use this same gate.
+	if not bool(actor.get("active",false)):return false
 	if all_levels_visible or mode == "HOUSE":
 		return true
 	return int(actor.get("level",0)) == level

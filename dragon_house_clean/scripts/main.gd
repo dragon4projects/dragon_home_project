@@ -2377,7 +2377,20 @@ func desired_actor_animation(actor: Dictionary) -> String:
 		if not contact.is_empty():
 			return str(contact["state"])
 		if str(actor.get("intent",""))=="WATCH_FILM":
-			return "IDLE_N"
+			return AssetBankResolverScript.social_idle_state(Vector2(0,-1),effective_camera_yaw())
+		if str(actor.get("intent",""))=="VIEW_ART":
+			var object:Dictionary=world.objects.get(str(actor.get("viewing_object_id","")),{})
+			var room:Dictionary=world.room_by_id(str(actor.get("room_id","")))
+			var target:Array=object.get("current_anchor",[])
+			if not room.is_empty() and str(object.get("current_room_id",""))==str(room.get("id","")) and target.size()==2:
+				var c:Vector3=world.room_center_pos(room)
+				var facing:=Vector2(c.x+float(target[0])-float(actor.get("x",c.x)),float(target[1])-float(actor.get("z",0)))
+				return AssetBankResolverScript.social_idle_state(facing,effective_camera_yaw())
+			return "IDLE_S"
+		if str(actor.get("intent","")) in ["WATCH_FIRE","BROWSE_BOOK_CATALOG","BROWSE_FILMS","BROWSE_AUDIO"]:
+			# Some historical VIEW frames are seated. A standing claim is not
+			# evidence of a chair; use a grounded idle until a measured pose exists.
+			return "IDLE_S"
 		if str(actor.get("intent","")) in ["GET_COFFEE","TALK_PAIR","TALK_GROUP","REST","SLEEP","READ_BOOK","WORK_CREATE","LISTEN_MUSIC"]:
 			# Uncalibrated activity art can contain a seated body. Never use it
 			# at a standing approach point or at a stale furniture claim.

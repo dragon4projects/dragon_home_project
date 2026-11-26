@@ -594,24 +594,16 @@
           "book_baked": false
         },
         "IDLE_S": {
-          "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_S/0001.png",
-          "sha256": "9e40480031cda36b1499fe9c9f1794348c12ebcf33e8170d8bc756c96b65c538",
+          "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_NE/0001.png",
+          "sha256": "24ac07920d62c9a2cd9acd41c65d70f7d3b103e2c27684573483df2dd8f127cf",
           "canvas": [
             512,
             512
           ],
-          "alpha_bbox": [
-            205,
-            136,
-            295,
-            480
-          ],
-          "contact_px": [
-            250.0,
-            480
-          ],
+          "alpha_bbox": [209, 136, 304, 480],
+          "contact_px": [256.5, 480],
           "contact_method": "ALPHA_BOUND_SUPPORT_POINT",
-          "contact_span_px": 90,
+          "contact_span_px": 95,
           "book_baked": false
         }
       }

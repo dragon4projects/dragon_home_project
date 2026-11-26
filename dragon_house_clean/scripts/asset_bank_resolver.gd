@@ -94,6 +94,12 @@ func _entry(resident_id: String, wardrobe: String, state: String) -> Dictionary:
 	var wardrobes: Dictionary = actor.get("wardrobes",{})
 	var bank: Dictionary = wardrobes.get(wardrobe,{})
 	var states: Dictionary = bank.get("states",{})
+	# RES_07's legacy filenames describe a different compass convention.
+	# Keep original bytes/provenance; select by visually audited direction.
+	# No exact rear-left frame exists: prefer the true rear to a front view.
+	if resident_id=="RES_07" and wardrobe=="HOME" and str(actor.get("appearance_profile",""))=="EXISTING_EVMOCHKA":
+		var corrected:Dictionary={"IDLE_N":"IDLE_SW","IDLE_S":"IDLE_NE","IDLE_E":"IDLE_NW","IDLE_W":"IDLE_SE","IDLE_NE":"IDLE_W","IDLE_NW":"IDLE_SW","IDLE_SW":"IDLE_N","IDLE_SE":"IDLE_E"}
+		state=str(corrected.get(state,state))
 	return states.get(state,{})
 
 func _real_image_bytes(relative: String) -> bool:

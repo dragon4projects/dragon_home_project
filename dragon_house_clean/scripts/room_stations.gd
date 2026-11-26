@@ -705,6 +705,12 @@ func _candidate_claim(actor:Dictionary,room:Dictionary,index:int,spot:Dictionary
 	if intent=="WATCH_FILM":
 		if str(spot.get("candidate_kind",""))!="seat":
 			return {}
+		var rear_contact:Dictionary=candidate_navigation.pose_contact(actor,spot,intent)
+		if not rear_contact.is_empty():
+			claim["contact"]=rear_contact
+			claim["kind"]="seat"
+			claim["pose_hint"]="SIT_N"
+			return claim
 		claim["pose_hint"]="IDLE_N"
 	elif intent=="WORK_CREATE" and kind!="work":
 		return {}
@@ -737,7 +743,7 @@ func _candidate_single(world,actor:Dictionary,room:Dictionary,intent:String,poin
 					break
 			if blocked:
 				continue
-		if claim.has("contact") or intent in ["WORK_CREATE","WATCH_FILM"]:
+		if claim.has("contact") or intent=="WORK_CREATE":
 			return claim
 		if fallback.is_empty():
 			fallback=claim

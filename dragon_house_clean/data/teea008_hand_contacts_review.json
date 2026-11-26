@@ -100,18 +100,15 @@
       "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
     },
     "RES_07": {
-      "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_S/0001.png",
-      "sha256": "9e40480031cda36b1499fe9c9f1794348c12ebcf33e8170d8bc756c96b65c538",
+      "path": "assets/residents/RES_07/wardrobes/HOME/IDLE_NE/0001.png",
+      "sha256": "24ac07920d62c9a2cd9acd41c65d70f7d3b103e2c27684573483df2dd8f127cf",
       "canvas": [
         512,
         512
       ],
       "wardrobe": "HOME",
       "appearance_profile": "EXISTING_EVMOCHKA",
-      "hand_px": [
-        284,
-        317
-      ],
+      "hand_px": [293, 315],
       "side": "right",
       "status": "MANUAL_VISUAL_ESTIMATE_IDLE_FRAME"
     },

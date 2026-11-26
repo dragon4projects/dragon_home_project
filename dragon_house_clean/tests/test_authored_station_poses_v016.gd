@@ -23,11 +23,20 @@ func run()->void:
 		"phase":"perform","intent":"TALK_PAIR",
 		"station_kind":"seat","station_pose_hint":"TALK"
 	}
+	# A claim alone is not an active conversation.
+	assert(scene.desired_actor_animation(seated_talk)=="IDLE_S")
+	scene.life.world=scene.world
+	scene.world.runtime_state["pair_sessions"]={"QA":{"phase":"active","members":["QA_A","QA_B"]}}
+	seated_talk["id"]="QA_A"
+	seated_talk["social_session_id"]="QA"
 	assert(scene.desired_actor_animation(seated_talk)=="RELAXED_SIT")
 	var standing_talk={
 		"phase":"perform","intent":"TALK_PAIR",
 		"station_kind":"standing","station_pose_hint":"TALK"
 	}
+	assert(scene.desired_actor_animation(standing_talk)=="IDLE_S")
+	standing_talk["id"]="QA_B"
+	standing_talk["social_session_id"]="QA"
 	assert(scene.desired_actor_animation(standing_talk)=="TALK")
 
 	var floor_sleep={
@@ -37,4 +46,5 @@ func run()->void:
 	assert(scene.desired_actor_animation(floor_sleep)=="SLEEP")
 
 	print("AUTHORED_STATION_POSES_V016_PASS work=USE seated_talk=RELAXED_SIT standing_talk=TALK floor_rest=SLEEP unsafe_work=IDLE_S")
+	scene.free()
 	quit(0)
