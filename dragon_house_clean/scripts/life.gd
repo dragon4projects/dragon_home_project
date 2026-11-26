@@ -2556,6 +2556,8 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 		revision+="|OWNER_THEATRE_STAGE_V2"
 	if world.canonical_house_seed and candidate_navigation.layouts.get("library/R3",{}).get("reading_guest_detail_revision","")=="READING_GUEST_DETAILS_V1":
 		revision+="|READING_GUEST_DETAILS_V1"
+	if world.canonical_house_seed and candidate_navigation.layouts.get("rest_social_upper/R3",{}).get("owner_sofa_revision","")=="OWNER_SOFA_V1":
+		revision+="|OWNER_SOFA_V1"
 	if revision=="" or str(world.runtime_state.get("teea008_geometry_revision",""))==revision:
 		return 0
 	var affected:Dictionary={}
@@ -2575,14 +2577,16 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 	if chair_changed:known_revision+="|OWNER_CHAIR_V1"
 	var theatre_stage_changed:bool=revision.contains("|OWNER_THEATRE_STAGE_V2") and not prior.contains("|OWNER_THEATRE_STAGE_V2")
 	if theatre_stage_changed:known_revision+="|OWNER_THEATRE_STAGE_V2"
-	var reading_changed:bool=revision.ends_with("|READING_GUEST_DETAILS_V1") and not prior.ends_with("|READING_GUEST_DETAILS_V1")
+	var reading_changed:bool=revision.contains("|READING_GUEST_DETAILS_V1") and not prior.contains("|READING_GUEST_DETAILS_V1")
 	if reading_changed:known_revision+="|READING_GUEST_DETAILS_V1"
+	var sofa_changed:bool=revision.ends_with("|OWNER_SOFA_V1") and not prior.ends_with("|OWNER_SOFA_V1")
+	if sofa_changed:known_revision+="|OWNER_SOFA_V1"
 	var known_upgrade:bool=world.canonical_house_seed and prior!="" and revision==known_revision
 	var hearth_changed:bool=prior.begins_with("CANONICAL_SOCIAL_INTERIOR_20261125_V1|")
 	var library_changed:bool=prior.contains("|LIBRARY_GALLERY_V1|")
 	for room in world.rooms:
 		var key:String=candidate_navigation.key(room)
-		var changed:bool=(hearth_changed and key=="common/R3") or ((library_changed or reading_changed) and key=="library/R3") or (social_changed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3"]) or (centaur_changed and key=="guest_centaur/R2") or ((theatre_changed or theatre_stage_changed) and key=="cinema/R3") or (clusters_changed and key in ["library/R3","music/R3","study/R3","workshop/R3"]) or (chair_changed and key in ["rest_social_upper/R3","rest_social_lower/R3","music/R3"])
+		var changed:bool=(hearth_changed and key=="common/R3") or ((library_changed or reading_changed) and key=="library/R3") or (social_changed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3"]) or (centaur_changed and key=="guest_centaur/R2") or ((theatre_changed or theatre_stage_changed) and key=="cinema/R3") or (clusters_changed and key in ["library/R3","music/R3","study/R3","workshop/R3"]) or (chair_changed and key in ["rest_social_upper/R3","rest_social_lower/R3","music/R3"]) or (sofa_changed and key in ["rest_social_upper/R3","rest_social_lower/R3"])
 		if (known_upgrade and changed) or (not known_upgrade and (key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3","cinema/R3","music/R3","study/R3","workshop/R3","guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]))):
 			affected[str(room["id"])]=true
 	var count:=0

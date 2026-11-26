@@ -357,6 +357,7 @@ func _review_layout_delta(raw:Dictionary)->Dictionary:
 	return row
 
 func _asset_path(asset:String)->String:
+	if asset=="blendkit_sofa_repaired":return "res://assets/decor_bank/blendkit_sofa/repaired.glb"
 	if asset=="blendkit_sofa_set_chair":return "res://assets/decor_bank/blendkit_sofa_set/chair.gltf"
 	if asset.begins_with("owner_theatre_") or asset.begins_with("blendkit_") or asset=="owner_hp_notebook_lowpoly" or asset in ["owner_sleeping_dragon","artifact_glass_cube_s","artifact_glass_cube_m","artifact_glass_cube_l"]:
 		return "res://assets/decor_bank/"+asset+"/model.gltf"
@@ -654,6 +655,7 @@ func _apply_social_interiors()->void:
 	_apply_owner_room_clusters()
 	_apply_owner_chair_and_glass_v1()
 	_apply_reading_guest_details()
+	_apply_owner_sofa_v1()
 
 # Supported, noninteractive replacements only. Preserve existing table/support
 # IDs and skip any candidate which cannot fit its real carrier or peers.
@@ -809,6 +811,41 @@ func _apply_reading_guest_details()->void:
 			if collision:continue
 			row["instances"].append({"instance_id":spec["instance_id"],"asset_id":spec["asset_id"],"room_local_xyz":pos,"rotation_deg_xyz":[0,0,0],"uniform_scale":spec["uniform_scale"],"bounds_min_m":lo,"bounds_max_m":hi,"physical_footprint_xz":[[lo[0],lo[2]],[hi[0],lo[2]],[hi[0],hi[2]],[lo[0],hi[2]]],"placement_policy":policy,"support_ref":host_id+"."+str(spec["instance_id"]) if policy=="supported" else null,"station_candidates":[],"support_slots":[],"owner_approved":false,"reading_guest_detail_revision":"READING_GUEST_DETAILS_V1"})
 		row["reading_guest_detail_revision"]="READING_GUEST_DETAILS_V1"
+
+# Source-derived low-poly sofa, two measured cushion contacts.
+# Original source texture and defective previous conversion remain untouched.
+func _apply_owner_sofa_v1()->void:
+	if not ResourceLoader.exists(_asset_path("blendkit_sofa_repaired"),"PackedScene"):return
+	for key in ["rest_social_upper/R3","rest_social_lower/R3"]:
+		var row:Dictionary=layouts.get(key,{})
+		if row.is_empty():continue
+		for item in row["instances"]:
+			if item["instance_id"]!="rest_r3_sofa":continue
+			assert(item.get("support_slots",[]).is_empty() and item["station_candidates"].size()==2)
+			var pos:Array=item["room_local_xyz"]
+			var x:float=float(pos[0])
+			var y:float=float(pos[1])
+			var z:float=float(pos[2])
+			item["asset_id"]="blendkit_sofa_repaired"
+			item["uniform_scale"]=1.0
+			item["rotation_deg_xyz"]=[0,0,0]
+			item["bounds_min_m"]=[x-1.030317,y,z-.463736]
+			item["bounds_max_m"]=[x+1.030945,y+.807852,z+.463807]
+			item["physical_footprint_xz"]=[[x-1.030317,z-.463736],[x+1.030945,z-.463736],[x+1.030945,z+.463807],[x-1.030317,z+.463807]]
+			for n in range(2):
+				var st:Dictionary=item["station_candidates"][n]
+				var sx:float=-.45 if n==0 else .45
+				var sy:float=.428 if n==0 else .427
+				st["pelvis_contact_xyz"]=[sx,sy,.15]
+				st["feet_contact_xyz"]=[sx,0,.55]
+				st["approach_xz"]=[sx,.87]
+				st["room_pelvis_contact_xyz"]=[x+sx,y+sy,z+.15]
+				st["room_feet_contact_xyz"]=[x+sx,y,z+.55]
+				st["room_approach_xz"]=[x+sx,z+.87]
+				st["room_facing_xyz"]=[0,0,1]
+				st["seating_width_m"]=.78
+				st["seat_depth_m"]=.45
+			row["owner_sofa_revision"]="OWNER_SOFA_V1"
 
 # Owner permits furniture relocation. Only two unsupported chairs move;
 # preserve support IDs, cup homes, dragon and the authored shell.
