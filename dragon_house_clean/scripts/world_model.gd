@@ -368,7 +368,24 @@ func visual_groups() -> Array:
 
 func _append_journal(event_name: String, actor_id: String = "", subject_id: String = "",
 		from_value: String = "", to_value: String = "", details: Dictionary = {}) -> void:
+	# Capture visibility at event time, not just when somebody opens the UI.
+	# Legacy unmarked entries remain diagnostic-only.
+	var public_rooms:Array=[]
+	var public_ok:bool=str(details.get("visibility","house_public"))=="house_public"
+	for value in [from_value,to_value,str(details.get("event_room_id",""))]:
+		var event_room:Dictionary=room_by_id(value)
+		if event_room.is_empty():continue
+		if not public_cutaway_allowed(event_room):public_ok=false
+		elif not public_rooms.has(value):public_rooms.append(value)
+	var actor:Dictionary=residents.get(actor_id,creatures.get(actor_id,{}))
+	if not actor.is_empty() and not public_cutaway_allowed(room_by_id(str(actor.get("room_id","")))):public_ok=false
+	# Replayed object events do not contain historical guest-door visibility.
+	if details.has("event_id"):
+		for rid in public_rooms:
+			if str(room_by_id(rid).get("type",""))=="guest":public_ok=false
 	journal.append({
+		"public_projection_allowed":public_ok and not public_rooms.is_empty(),
+		"public_room_ids":public_rooms,
 		"event": event_name,
 		"actor_id": actor_id,
 		"subject_id": subject_id,
