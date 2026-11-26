@@ -1,0 +1,176 @@
+{
+  "status": "REVIEW_ONLY_NOT_LIVE",
+  "base": "e6e0f63868fb258f6ef22acf6b2bc6f5077ba1f0",
+  "source_archive_sha256": "ba8709557b87cec63c6fce53563f8ccc30f69dd895d840e4f68e3758d2484d27",
+  "totals": {
+    "issues": 0,
+    "measured": 592,
+    "pending": 563,
+    "seat_candidates": 123,
+    "special": 1,
+    "support_slots": 336,
+    "supported": 79,
+    "wall": 203
+  },
+  "scale_corrections": 53,
+  "rooms": {
+    "L0_cinema": {
+      "compiled": 54,
+      "pending": 33,
+      "floor_xz_overlap_candidates": [
+        [
+          "L0_cinema_F20",
+          "L0_cinema_F18",
+          [
+            0.0517,
+            0.2242
+          ]
+        ]
+      ],
+      "seat_candidates": 12
+    },
+    "L0_kitchen": {
+      "compiled": 64,
+      "pending": 36,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 3
+    },
+    "L0_reading": {
+      "compiled": 69,
+      "pending": 39,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 10
+    },
+    "L0_workshop": {
+      "compiled": 59,
+      "pending": 28,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 3
+    },
+    "L1_common": {
+      "compiled": 46,
+      "pending": 19,
+      "floor_xz_overlap_candidates": [
+        [
+          "L1_common_F03",
+          "L1_common_F02",
+          [
+            0.0175,
+            0.2236
+          ]
+        ],
+        [
+          "L1_common_F22",
+          "L1_common_F17",
+          [
+            0.7371,
+            0.0198
+          ]
+        ]
+      ],
+      "seat_candidates": 11
+    },
+    "L1_gallery": {
+      "compiled": 73,
+      "pending": 103,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 1
+    },
+    "L1_lounge": {
+      "compiled": 69,
+      "pending": 45,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 12
+    },
+    "L1_study": {
+      "compiled": 67,
+      "pending": 44,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 7
+    },
+    "L2_cinema": {
+      "compiled": 53,
+      "pending": 35,
+      "floor_xz_overlap_candidates": [
+        [
+          "L2_cinema_F20",
+          "L2_cinema_F18",
+          [
+            0.0517,
+            0.2242
+          ]
+        ]
+      ],
+      "seat_candidates": 14
+    },
+    "L2_library": {
+      "compiled": 70,
+      "pending": 38,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 12
+    },
+    "L2_lounge": {
+      "compiled": 71,
+      "pending": 42,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 15
+    },
+    "L2_music": {
+      "compiled": 71,
+      "pending": 48,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 11
+    },
+    "Lm2_centaur": {
+      "compiled": 19,
+      "pending": 13,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 0
+    },
+    "Lm2_miu": {
+      "compiled": 17,
+      "pending": 9,
+      "floor_xz_overlap_candidates": [
+        [
+          "Lm2_miu_F10",
+          "Lm2_miu_F08",
+          [
+            0.2095,
+            0.0196
+          ]
+        ]
+      ],
+      "seat_candidates": 3
+    },
+    "Lm2_vampire": {
+      "compiled": 16,
+      "pending": 6,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 3
+    },
+    "private_A": {
+      "compiled": 14,
+      "pending": 9,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 1
+    },
+    "private_B": {
+      "compiled": 14,
+      "pending": 6,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 2
+    },
+    "private_C": {
+      "compiled": 14,
+      "pending": 7,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 1
+    },
+    "private_D": {
+      "compiled": 15,
+      "pending": 3,
+      "floor_xz_overlap_candidates": [],
+      "seat_candidates": 2
+    }
+  }
+}
