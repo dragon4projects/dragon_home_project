@@ -1215,6 +1215,7 @@ func reconcile_book_possession()->int:
 				actor["held_book"]=actual
 				repaired+=1
 			if not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):continue
+			if actor.has("station_replan_lift_pending"):continue
 			if candidate_navigation==null:
 				if str(actor.get("activity_media_category","")) in ["","books"]:_set_concrete_media(actor,"books",media_runtime._lookup("books",actual))
 				continue
@@ -1242,7 +1243,7 @@ func reconcile_book_possession()->int:
 		if cached!="":
 			actor.erase("held_book")
 			repaired+=1
-		if candidate_navigation==null:continue
+		if candidate_navigation==null or actor.has("station_replan_lift_pending"):continue
 		if stage=="fetch":
 			var book:Dictionary=media_runtime._lookup("books",task)
 			var room_id:String=str(actor.get("book_source_room",""))
@@ -1295,6 +1296,7 @@ func reconcile_concrete_media() -> int:
 		if not bool(actor.get("active",false)):
 			media_runtime.cancel_timed_media(actor,clock)
 			continue
+		if actor.has("station_replan_lift_pending"):continue
 		if actor.has("reading_session") and not media_runtime.reading_session_valid(actor,clock):actor.erase("reading_session")
 		var active_id:String=str(actor.get("activity_media_id",""))
 		var held_book:String=str(actor.get("held_book",""))
@@ -1684,6 +1686,16 @@ func _move(actor: Dictionary, delta: float) -> void:
 		if not current_room.is_empty():
 			actor["level"] = current_room["level"]
 		actor["waypoint_index"] = idx + 1
+		if world.canonical_house_seed and str(point["kind"])=="lift" and actor.has("station_replan_lift_pending"):
+			# Stop at the next actual landing, even on a multi-floor trip.
+			# Never enter the invalidated destination or strand a rider in air.
+			var recovered:bool=_finish_review_geometry_replan(actor,false) if actor.has("teea008_geometry_replan_pending") else _recover_traffic_stall(actor,next)
+			if recovered:
+				actor.erase("station_replan_lift_pending")
+				actor.erase("book_recovery_lift_drain")
+				actor.erase("social_cancelled_lift")
+				world._append_journal("STATION_REPLAN_LIFT_LANDED",str(actor["id"]),str(actor["id"]),"",str(actor["room_id"]))
+				return
 		if world.canonical_house_seed and str(point["kind"])=="lift" and (idx+1>=waypoints.size() or str(waypoints[idx+1]["kind"])!="lift"):
 			canonical_lifts.release(actor)
 			if bool(actor.get("book_recovery_lift_drain",false)):
@@ -1772,6 +1784,9 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	var elapsed := life_scheduler.consume_elapsed(id,clock)
 	_advance_needs(actor,elapsed)
+	if actor.has("station_replan_lift_pending") and str(actor.get("phase",""))=="travel":
+		_schedule_actor(actor,"STATION_REPLAN_LIFT_DRAIN")
+		return
 	if actor.has("social_join_session_id"):
 		_update_pending_join(actor)
 		return
@@ -2165,6 +2180,7 @@ func _reset_recovered_cup_route(actor:Dictionary)->void:
 	# Never abandon a physical lift route between floors. Its ordinary
 	# arrival will settle the recovered task; no new cup action is started.
 	if world.canonical_house_seed and canonical_lifts._vertical(actor) and canonical_lifts._in_air(actor):
+		actor["station_replan_lift_pending"]=true
 		return
 	stations.release(actor)
 	if world.canonical_house_seed:canonical_lifts.release(actor)
@@ -2380,9 +2396,11 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 	var id:String=str(actor["id"])
 	actor["room_id"]=str(room["id"])
 	actor["level"]=int(room["level"])
-	stations.release(actor)
-	end_catalog_browse(actor)
+	# Settle reading before clearing its station proof.
 	end_concrete_media(actor)
+	stations.release(actor)
+	if world.canonical_house_seed:canonical_lifts.release(actor)
+	end_catalog_browse(actor)
 	actor.erase("viewing_object_id")
 	_cancel_pair_for(actor,"TRAFFIC_PARTNER_REPLAN")
 	if actor.has("held_book") and actor.has("book_task_stage"):
@@ -2402,6 +2420,7 @@ func _recover_traffic_stall(actor:Dictionary,at:Vector3)->bool:
 	actor["waypoints"]=[]
 	actor["waypoint_index"]=0
 	actor["until"]=clock+2.0+float(id.hash()%7)*0.35
+	actor.erase("station_replan_lift_pending")
 	moving_ids.erase(id)
 	_schedule_actor(actor,"TRAFFIC_REPLAN")
 	return true
@@ -2417,9 +2436,13 @@ func _migrate_review_geometry(previously_initialized:bool)->int:
 	if revision=="" or str(world.runtime_state.get("teea008_geometry_revision",""))==revision:
 		return 0
 	var affected:Dictionary={}
+	var prior:String=str(world.runtime_state.get("teea008_geometry_revision",""))
+	# The V2 furniture delta moved only the two hearth chairs. Do not cancel
+	# unrelated reading, cinema and guest activities on this known upgrade.
+	var hearth_only:bool=world.canonical_house_seed and prior.begins_with("CANONICAL_SOCIAL_INTERIOR_20261125_V1|") and revision==prior.replace("CANONICAL_SOCIAL_INTERIOR_20261125_V1|","CANONICAL_SOCIAL_INTERIOR_20261125_V2_HEARTH|")
 	for room in world.rooms:
 		var key:String=candidate_navigation.key(room)
-		if key=="common/R3" or (world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3","cinema/R3","music/R3","study/R3","workshop/R3","guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]):
+		if key=="common/R3" or (not hearth_only and world.canonical_house_seed and key in ["kitchen/R3","rest_social_upper/R3","rest_social_lower/R3","library/R3","artifact/R3","cinema/R3","music/R3","study/R3","workshop/R3","guest_centaur/R2","guest_vampire/R1","guest_miu/R1"]):
 			affected[str(room["id"])]=true
 	var count:=0
 	if previously_initialized:
