@@ -3457,7 +3457,10 @@ func apply_camera(delta: float) -> void:
 			selected_room = actor_room
 			update_render_lod()
 		var target_room: Dictionary = world.room_by_id(actor.get("room_id", ""))
-		if not target_room.is_empty() and world.allows_transit(target_room):
+		# Do not track private interior coordinates even when the owner can
+		# enter that room. Public frontage is the only visible exception.
+		var public_frontage:bool=world.allows_transit(target_room) and str(actor.get("phase",""))=="travel" and float(actor.get("z",0))>=1.35
+		if world.public_cutaway_allowed(target_room) or public_frontage:
 			var target := Vector3(float(actor.get("x", 0)),
 				float(actor.get("visual_y", float(actor.get("level", 0))*H)) + 1.05,
 				float(actor.get("z", 0)))
