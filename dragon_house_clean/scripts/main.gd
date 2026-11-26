@@ -5,6 +5,11 @@ const Depth7Space=preload("res://scripts/depth7_space.gd")
 const Depth7SupportMigration=preload("res://scripts/depth7_support_migration.gd")
 const Depth7Layout=preload("res://scripts/depth7_layout.gd")
 const Depth7Hearth=preload("res://scripts/depth7_hearth.gd")
+const DenseV2Runtime=preload("res://scripts/dense_v2_runtime.gd")
+var dense_v2=DenseV2Runtime.new()
+var dense_v2_qa:bool=false
+var dense_v2_artwork_picker:FileDialog
+var dense_v2_pending_frame:String=""
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
@@ -319,6 +324,10 @@ func _ready() -> void:
 	if architecture_review:
 		# Do not reinterpret or overwrite the legacy world or its event stores.
 		world.save_path="user://dragon_house_canonical_architecture_20261125.json"
+	dense_v2_qa=architecture_review and OS.get_environment("DRAGON_DENSE_V2_QA")=="1"
+	if dense_v2_qa:
+		# QA state is deliberately independent of the owner's existing world.
+		world.save_path="user://dragon_house_dense_v2_qa.json"
 	if not world.load_or_seed():
 		_show_recovery_blocked()
 		return
@@ -355,6 +364,12 @@ func _ready() -> void:
 		Depth7Layout.move_media(teea008_review.surfaces,Depth7Layout.FUNCTION_KEYS)
 		for room in world.rooms:
 			if str(room.get("type","")) in ["private","lift"]:room["depth7"]=true
+	if dense_v2_qa:
+		if not dense_v2.install(world,teea008_review.layouts):
+			push_error("DENSE_V2_QA layout mapping rejected; no legacy-save fallback")
+			_show_recovery_blocked()
+			return
+		print("DENSE_V2_QA_LIVE_ROOMS ",dense_v2.by_room.size())
 	semantic_view.install(world,"HOUSE")
 	semantic_view.all_levels_visible=architecture_review
 	asset_banks.initialize()
@@ -1541,6 +1556,17 @@ func _populate_furniture(group_node: Node3D) -> void:
 	var physical_room:Dictionary=world.room_by_id(str(group.get("primary_id","")))
 	if physical_room.is_empty():
 		return
+	if dense_v2_qa and dense_v2.has_room(str(physical_room["id"])):
+		var dense_root:=Node3D.new()
+		dense_root.name="DenseV2PhysicalFurniture"
+		dense_root.set_meta("room_id",str(physical_room["id"]))
+		decoration_layer.add_child(dense_root)
+		dense_v2.mount(dense_root,str(physical_room["id"]),false)
+		for at in [Vector3(-float(group["width"])*W*.28,2.3,-5.7),Vector3(float(group["width"])*W*.28,2.3,-5.7),Vector3(0,2.2,-.8)]:
+			_add_warm_room_light(decoration_layer,at,.75)
+		detailed_room_groups[group_node.name]=true
+		detail_materialization_count+=1
+		return
 	var root:=Node3D.new()
 	root.name="PhysicalFurniture"
 	decoration_layer.add_child(root)
@@ -1644,6 +1670,25 @@ func _depth7_library_finish(parent:Node3D,span:float)->void:
 		var stile:=box(finish,Vector3(x,.62,-7.966),Vector3(.075,1.04,.08),Color("#503626"))
 		stile.name="WainscotStile"
 
+func _dense_v2_finish(structure:Node3D,kind:String)->void:
+	var wall:MeshInstance3D=structure.get_node_or_null("StructuralRearBackup")
+	var floor:MeshInstance3D=structure.get_node_or_null("CutawayFloorSlab")
+	if wall==null or floor==null:return
+	var accent:Dictionary={"library":Color("#7b8891"),"artifact":Color("#526e70"),"cinema":Color("#52566b"),"music":Color("#655b75"),"study":Color("#687f70"),"workshop":Color("#8b8b82"),"kitchen":Color("#a7a69a"),"rest":Color("#6c7d82"),"guest":Color("#82798c")}
+	var m:=StandardMaterial3D.new()
+	m.albedo_texture=_texture_from_source("res://assets/materials/texture_albedo/rough_linen_diff_1k.jpg")
+	m.albedo_color=accent.get(kind,Color("#72767a"))
+	m.uv1_scale=Vector3(4,1,1)
+	m.roughness=.92
+	wall.material_override=m
+	if kind in ["artifact","workshop","kitchen"]:
+		var tile:=StandardMaterial3D.new()
+		tile.albedo_texture=_texture_from_source("res://assets/materials/texture_albedo/stone_pathway_diff_2k.jpg")
+		tile.albedo_color=Color("#aeb4bb")
+		tile.uv1_scale=Vector3(5,3,1)
+		tile.roughness=.86
+		floor.material_override=tile
+
 func make_room(group: Dictionary) -> void:
 	# One shell per logical R1/R2/R3 merge group, not N adjacent full-walled rooms.
 	# Individual module IDs remain in the World Core so residents keep legal routes.
@@ -1717,7 +1762,12 @@ func make_room(group: Dictionary) -> void:
 		for z in [Depth7Space.center(1),Depth7Space.center(3),Depth7Space.center(5)]:
 			box(structure,Vector3(0,-.004,z),Vector3(span-.22,.008,.06),palette["floor"])
 		var overview:=Node3D.new();overview.name="Layer_OverviewCues";n.add_child(overview)
-		var count:int=teea008_review.populate_overview(overview,art_type,int(group["width"]),Callable(self,"depth_visual_scale"))
+		var count:int=0
+		if dense_v2_qa and dense_v2.has_room(str(live_room["id"])):
+			count=dense_v2.mount(overview,str(live_room["id"]),true)
+			_dense_v2_finish(structure,t)
+		else:
+			count=teea008_review.populate_overview(overview,art_type,int(group["width"]),Callable(self,"depth_visual_scale"))
 		overview.set_meta("real_model_count",count)
 		var furniture:=Node3D.new();furniture.name="LocalFurniture";n.add_child(furniture)
 		var label:=label3(n,str(live_room.get("display_name",room_names.get(t,t))),Vector3(0,3.35,.40),24,Color("#f4d9b9"))
@@ -2758,6 +2808,14 @@ func build_interface() -> void:
 	content_viewer = ContentViewerScript.new()
 	root.add_child(content_viewer)
 	content_viewer.bind(life.media_runtime)
+	if dense_v2_qa:
+		content_viewer.artwork_assignment_requested.connect(_choose_dense_v2_artwork)
+		dense_v2_artwork_picker=FileDialog.new()
+		dense_v2_artwork_picker.access=FileDialog.ACCESS_FILESYSTEM
+		dense_v2_artwork_picker.file_mode=FileDialog.FILE_MODE_OPEN_FILE
+		dense_v2_artwork_picker.filters=PackedStringArray(["*.png, *.jpg, *.jpeg, *.webp ; Изображения"])
+		root.add_child(dense_v2_artwork_picker)
+		dense_v2_artwork_picker.file_selected.connect(_assign_dense_v2_artwork)
 	media_panel = MediaPanelScript.new()
 	root.add_child(media_panel)
 	media_panel.bind(world,life.media_runtime,content_viewer)
@@ -2940,7 +2998,9 @@ func _open_hearth_picture(entry:Dictionary)->bool:
 func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 	if camera == null:
 		return {}
-	var frame_hit:Dictionary=_hearth_picture_hit(point)
+	var frame_hit:Dictionary=_dense_v2_frame_hit(point)
+	if not frame_hit.is_empty():return frame_hit
+	frame_hit=_hearth_picture_hit(point)
 	if not frame_hit.is_empty():return frame_hit
 	var cube_hit:Dictionary=_artifact_cube_hotspot(point)
 	if not cube_hit.is_empty():return cube_hit
@@ -3022,6 +3082,11 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	var item_id := str(entry.get("item_id",""))
 	var record: Dictionary = {}
 	if category=="hearth_picture":return _open_hearth_picture(entry)
+	if category=="dense_v2_frame":
+		var frame:MeshInstance3D=_dense_v2_find_frame(item_id)
+		if frame==null:return false
+		var path:String=DenseV2Runtime.REVIEW.artwork_path(item_id)
+		return content_viewer.open_record("paintings",{"id":item_id,"title":"Картина / постер · "+item_id,"preview_path":path,"description":"" if FileAccess.file_exists(path) else "Рамка пока пуста.","dense_v2_assignable":true})
 	if category=="teea008_surface":
 		var surface:Dictionary=teea008_review.surfaces.get(item_id,{})
 		if surface.is_empty() or not world.public_cutaway_allowed(world.room_by_id(str(entry.get("room_id","")))):
@@ -4549,3 +4614,52 @@ func _open_drink_qa()->void:
 		report.text=beverage.summary(actor_id))
 	actions.add_child(reset)
 	window.popup_centered()
+
+func _dense_v2_find_frame(id:String)->MeshInstance3D:
+	if not dense_v2_qa or id=="":return null
+	for node in get_tree().get_nodes_in_group("dense_v2_wall_holder"):
+		if node is MeshInstance3D and node.is_visible_in_tree() and str(node.get_meta("slot_id",""))==id and world.public_cutaway_allowed(world.room_by_id(str(node.get_meta("room_id","")))):return node
+	return null
+
+func _dense_v2_frame_hit(point:Vector2)->Dictionary:
+	if not dense_v2_qa or not current_mode in ["ROOM","FOLLOW"]:return {}
+	var origin:Vector3=camera.project_ray_origin(point)
+	var direction:Vector3=camera.project_ray_normal(point)
+	var closest:float=INF
+	var found:Dictionary={}
+	for frame in get_tree().get_nodes_in_group("dense_v2_wall_holder"):
+		if not frame is MeshInstance3D or not frame.is_visible_in_tree():continue
+		var room_id:String=str(frame.get_meta("room_id",""))
+		if room_id!=selected_room or not world.public_cutaway_allowed(world.room_by_id(room_id)):continue
+		var inv:Transform3D=frame.global_transform.affine_inverse()
+		var a:Vector3=inv*origin
+		var b:Vector3=inv.basis*direction
+		if b.z>=-.00001:continue
+		var t:float=-a.z/b.z
+		var hit:Vector3=a+b*t
+		var half:Vector2=frame.get_meta("surface_size",Vector2.ZERO)*.5
+		if t<=0 or t>=closest or absf(hit.x)>half.x or absf(hit.y)>half.y:continue
+		closest=t
+		found={"category":"dense_v2_frame","item_id":str(frame.get_meta("slot_id","")),"room_id":room_id,"anchor":frame,"display_name":"Картина / постер"}
+	return found
+
+func _choose_dense_v2_artwork(id:String)->void:
+	if _dense_v2_find_frame(id)==null or dense_v2_artwork_picker==null:return
+	dense_v2_pending_frame=id
+	dense_v2_artwork_picker.popup_centered_ratio(.75)
+
+func _assign_dense_v2_artwork(path:String)->void:
+	var id:String=dense_v2_pending_frame
+	dense_v2_pending_frame=""
+	var frame:MeshInstance3D=_dense_v2_find_frame(id)
+	if frame==null or not FileAccess.file_exists(path):return
+	var file:=FileAccess.open(path,FileAccess.READ)
+	if file==null or file.get_length()>32*1024*1024:return
+	file.close()
+	var image:=Image.new()
+	if image.load(path)!=OK or image.get_width()>8192 or image.get_height()>8192:return
+	var dest:String=DenseV2Runtime.REVIEW.artwork_path(id)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dest.get_base_dir()))
+	if image.save_png(dest)!=OK:return
+	DenseV2Runtime.REVIEW.refresh_artwork(frame)
+	open_content_hotspot({"category":"dense_v2_frame","item_id":id})

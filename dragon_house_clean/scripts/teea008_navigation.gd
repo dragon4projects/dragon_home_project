@@ -124,6 +124,7 @@ func hand_contact(actor:Dictionary,state:String,frame:int)->Dictionary:
 	return record
 
 func key(room:Dictionary)->String:
+	if layouts.has(str(room.get("dense_v2_layout",""))):return str(room["dense_v2_layout"])
 	var kind:String=str(room.get("interior_variant",room.get("type","")))
 	if kind=="guest":
 		kind=str(room.get("candidate_room_id","")).trim_suffix("_01")

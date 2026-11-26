@@ -1,176 +1,198 @@
 {
-  "status": "REVIEW_ONLY_NOT_LIVE",
-  "base": "e6e0f63868fb258f6ef22acf6b2bc6f5077ba1f0",
-  "source_archive_sha256": "ba8709557b87cec63c6fce53563f8ccc30f69dd895d840e4f68e3758d2484d27",
+  "status": "LIVE_QA_CANDIDATE_NOT_RELEASE",
+  "base": "d686f190e9279b894df7c0860b43b1b9cdca70e7",
+  "source_sha256": "ba8709557b87cec63c6fce53563f8ccc30f69dd895d840e4f68e3758d2484d27",
   "totals": {
+    "added": 613,
+    "excluded": 53,
     "issues": 0,
-    "measured": 592,
-    "pending": 563,
+    "measured": 540,
+    "pending": 562,
     "seat_candidates": 123,
     "special": 1,
     "support_slots": 336,
     "supported": 79,
     "wall": 203
   },
-  "scale_corrections": 53,
   "rooms": {
     "L0_cinema": {
-      "compiled": 54,
+      "compiled": 85,
       "pending": 33,
-      "floor_xz_overlap_candidates": [
-        [
-          "L0_cinema_F20",
-          "L0_cinema_F18",
-          [
-            0.0517,
-            0.2242
-          ]
-        ]
-      ],
-      "seat_candidates": 12
+      "excluded": 2,
+      "floor_overlap_pairs": [],
+      "monitor": 1,
+      "frame_holders": 32
     },
     "L0_kitchen": {
-      "compiled": 64,
+      "compiled": 94,
       "pending": 36,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 3
+      "excluded": 3,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "L0_reading": {
-      "compiled": 69,
+      "compiled": 93,
       "pending": 39,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 10
+      "excluded": 6,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 30
     },
     "L0_workshop": {
-      "compiled": 59,
+      "compiled": 84,
       "pending": 28,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 3
+      "excluded": 4,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 29
     },
     "L1_common": {
-      "compiled": 46,
+      "compiled": 77,
       "pending": 19,
-      "floor_xz_overlap_candidates": [
-        [
-          "L1_common_F03",
-          "L1_common_F02",
-          [
-            0.0175,
-            0.2236
-          ]
-        ],
-        [
-          "L1_common_F22",
-          "L1_common_F17",
-          [
-            0.7371,
-            0.0198
-          ]
-        ]
-      ],
-      "seat_candidates": 11
+      "excluded": 2,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "L1_gallery": {
-      "compiled": 73,
-      "pending": 103,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 1
+      "compiled": 102,
+      "pending": 102,
+      "excluded": 4,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 31
     },
     "L1_lounge": {
-      "compiled": 69,
+      "compiled": 97,
       "pending": 45,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 12
+      "excluded": 4,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 32
     },
     "L1_study": {
-      "compiled": 67,
+      "compiled": 94,
       "pending": 44,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 7
+      "excluded": 4,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 31
     },
     "L2_cinema": {
-      "compiled": 53,
+      "compiled": 84,
       "pending": 35,
-      "floor_xz_overlap_candidates": [
-        [
-          "L2_cinema_F20",
-          "L2_cinema_F18",
-          [
-            0.0517,
-            0.2242
-          ]
-        ]
-      ],
-      "seat_candidates": 14
+      "excluded": 2,
+      "floor_overlap_pairs": [],
+      "monitor": 1,
+      "frame_holders": 32
     },
     "L2_library": {
-      "compiled": 70,
+      "compiled": 94,
       "pending": 38,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 12
+      "excluded": 6,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 30
     },
     "L2_lounge": {
-      "compiled": 71,
+      "compiled": 100,
       "pending": 42,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 15
+      "excluded": 4,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "L2_music": {
-      "compiled": 71,
+      "compiled": 100,
       "pending": 48,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 11
+      "excluded": 4,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "Lm2_centaur": {
-      "compiled": 19,
+      "compiled": 50,
       "pending": 13,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 0
+      "excluded": 2,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "Lm2_miu": {
-      "compiled": 17,
+      "compiled": 49,
       "pending": 9,
-      "floor_xz_overlap_candidates": [
-        [
-          "Lm2_miu_F10",
-          "Lm2_miu_F08",
-          [
-            0.2095,
-            0.0196
-          ]
-        ]
-      ],
-      "seat_candidates": 3
+      "excluded": 1,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "Lm2_vampire": {
-      "compiled": 16,
+      "compiled": 48,
       "pending": 6,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 3
+      "excluded": 1,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "private_A": {
-      "compiled": 14,
+      "compiled": 46,
       "pending": 9,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 1
+      "excluded": 1,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "private_B": {
-      "compiled": 14,
+      "compiled": 46,
       "pending": 6,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 2
+      "excluded": 1,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "private_C": {
-      "compiled": 14,
+      "compiled": 46,
       "pending": 7,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 1
+      "excluded": 1,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     },
     "private_D": {
-      "compiled": 15,
+      "compiled": 47,
       "pending": 3,
-      "floor_xz_overlap_candidates": [],
-      "seat_candidates": 2
+      "excluded": 1,
+      "floor_overlap_pairs": [],
+      "monitor": 0,
+      "frame_holders": 33
     }
+  },
+  "compiled_partitions": {
+    "dense_v2_compiled_0.zip": "870bf828125036f05b5cd6adb7fd35d82ce3577c55d326202a7a2e25e98bfbd4",
+    "dense_v2_compiled_1.zip": "779e269b89ec0fea6cfff6fbf044002f5638f3cf49efbe4285834c593094a5cf",
+    "dense_v2_compiled_2.zip": "88bd1309e8014da4b378f8156becb2cd3edc7ea451012d8f81bcd047b3a6cf8c"
+  },
+  "runtime_qa": {
+    "activated_rooms": 14,
+    "routes_checked": 850,
+    "route_failures": 0,
+    "position_samples": 2632,
+    "blocked_positions": 0,
+    "simulation_seconds": 60,
+    "visited_rooms": 14,
+    "withheld_station_ids": [
+      "L2_cinema_F01.view",
+      "L0_cinema_F01.view",
+      "L0_cinema_F10.seat_1"
+    ],
+    "library_seats": [
+      12,
+      10
+    ],
+    "gallery_holder_test": 43,
+    "frame_assignment_aspect": "PASS",
+    "orb_hover": "PASS",
+    "artifact_grid_6_4_1": "UNIT_PASS_NOT_BOUND_TO_ARTIFACT_WORLD_STATE"
   }
 }

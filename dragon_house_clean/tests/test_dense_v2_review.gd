@@ -4,15 +4,17 @@ func _initialize()->void:call_deferred("run")
 func run()->void:
  var v=V.new();assert(v.initialize())
  var compiled:Dictionary={}
- var totals={"measured":0,"special":0,"pending":0,"issues":0,"seat_candidates":0,"support_slots":0,"supported":0,"wall":0}
+ var totals={"measured":0,"special":0,"pending":0,"issues":0,"seat_candidates":0,"support_slots":0,"supported":0,"wall":0,"excluded":0,"added":0}
  for room in v.index.rooms:
   var r:Dictionary=v.compile_room(room.key)
   assert(not r.is_empty())
   compiled[room.key]=r
   totals.pending+=r.pending.size()
+  totals.excluded+=r.excluded.size()
   totals.issues+=r.issues.size()
   for p in r.placements:
-   if p.has("special"):totals.special+=1
+   if str(p.id).contains("_SIDE_FRAME_") or str(p.id).ends_with("_TV_MONITOR") or str(p.id).ends_with("_ORB"):totals.added+=1
+   elif p.has("special"):totals.special+=1
    else:
     if p.role=="supported_decor":totals.supported+=1
     elif p.role=="wall_or_ceiling":totals.wall+=1
@@ -20,7 +22,7 @@ func run()->void:
     totals.seat_candidates+=p.get("station_candidates",[]).filter(func(x):return x.kind=="seat").size()
     totals.support_slots+=p.get("support_slots",[]).size()
   print("DENSE_V2 ",room.key," measured=",r.placements.size()," pending=",r.pending.size()," issues=",r.issues.size())
- assert(totals.measured+totals.special+totals.pending+totals.supported+totals.wall==1438)
+ assert(totals.measured+totals.special+totals.pending+totals.supported+totals.wall+totals.excluded==1438)
  var path:="user://dense_v2_measurement.json"
  var file:=FileAccess.open(path,FileAccess.WRITE);file.store_string(JSON.stringify({"totals":totals,"rooms":compiled,"corrections":v.corrections}));file.close()
  print("DENSE_V2_MEASURED ",totals," report=",ProjectSettings.globalize_path(path))

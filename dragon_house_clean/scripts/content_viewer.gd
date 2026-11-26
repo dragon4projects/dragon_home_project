@@ -2,6 +2,8 @@ extends PanelContainer
 ## Full-screen viewer for explicit Dragon House content records.
 ## It never invents content. Missing local bytes remain a visible, non-fatal state.
 
+signal artwork_assignment_requested(slot_id:String)
+var artwork_assign:Button
 var category := ""
 var item: Dictionary = {}
 var media_runtime
@@ -27,6 +29,11 @@ func _ready() -> void:
 	title_label.text = "ПРОСМОТР"
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title_label)
+	artwork_assign=Button.new()
+	artwork_assign.text="Назначить изображение"
+	artwork_assign.visible=false
+	artwork_assign.pressed.connect(func():artwork_assignment_requested.emit(str(item.get("id",""))))
+	header.add_child(artwork_assign)
 	var close := Button.new()
 	close.text = "Закрыть [Esc]"
 	close.pressed.connect(close_viewer)
@@ -94,6 +101,7 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 	stop_playback()
 	category = p_category
 	item = record.duplicate(true)
+	artwork_assign.visible=bool(item.get("dense_v2_assignable",false))
 	var title := str(item.get("title",item.get("display_name","Без названия")))
 	title_label.text = title
 	var byline_raw = item.get("artist",item.get("author",""))
