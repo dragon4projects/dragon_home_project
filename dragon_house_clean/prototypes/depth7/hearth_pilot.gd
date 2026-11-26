@@ -85,7 +85,7 @@ func dragon_crop()->AABB:
  assert(not first and surfaces>0)
  var scale_value:float=minf(5.40/bounds.size.x,4.30/bounds.size.z)
  n.scale=Vector3.ONE*scale_value
- n.position=Vector3(4.33,-bounds.position.y*scale_value,-1.59)-Vector3(bounds.get_center().x*scale_value,0,bounds.get_center().z*scale_value)
+ n.position=Vector3(4.76,-bounds.position.y*scale_value,-1.59)-Vector3(bounds.get_center().x*scale_value,0,bounds.get_center().z*scale_value)
  var final:=n.global_transform*bounds
  for b in blockers:
   assert(minf(b.end.x,final.end.x)-maxf(b.position.x,final.position.x)<.005 or minf(b.end.z,final.end.z)-maxf(b.position.z,final.position.z)<.005)
@@ -104,6 +104,7 @@ func reachable(start:Vector2,goal:Vector2)->bool:
  var origin:=Vector2(-7.12,-7.70)
  var a:=Vector2i(roundi((start.x-origin.x)/step),roundi((start.y-origin.y)/step))
  var b:=Vector2i(roundi((goal.x-origin.x)/step),roundi((goal.y-origin.y)/step))
+ if not clear(start) or not clear(goal) or not clear(origin+Vector2(a)*step) or not clear(origin+Vector2(b)*step):return false
  var pending:Array[Vector2i]=[a];var seen:Dictionary={a:true};var k:=0
  while k<pending.size():
   var q:=pending[k];k+=1
@@ -118,6 +119,10 @@ func reachable(start:Vector2,goal:Vector2)->bool:
 func arch(cx:float,z:float)->void:
  # Decorative masonry arch in front of actual rear wall. Recessed dark pane.
  box("WindowRecess",Vector3(cx,1.41,z-.075),Vector3(1.23,1.72,.09),mats["glass"])
+ # Insets remain deliberately dark, not a fabricated exterior view.
+ for dx in [-.61,.61]:
+  box("WindowInnerFrame",Vector3(cx+dx,1.41,z+.015),Vector3(.07,1.72,.09),mats["trim"])
+ box("WindowTopFrame",Vector3(cx,2.26,z+.015),Vector3(1.24,.07,.09),mats["trim"])
  for sx in [-.70,.70]:
   box("StoneJamb",Vector3(cx+sx,.94,z),Vector3(.24,1.88,.22),mats["stone"])
  for i in range(11):
@@ -160,9 +165,19 @@ func run()->void:
  material("rock",Color("#807469"),"dark_rock_diff_2k.jpg",Vector3(.68,.68,.68))
  material("floor",Color("#877567"),"stone_pathway_diff_2k.jpg",Vector3(.55,.55,.55))
  material("wood",Color("#69503b"),"weathered_brown_planks_diff_1k.jpg",Vector3(.7,.7,.7))
- material("glass",Color("#45616d"))
+ material("glass",Color("#23333a"))
+ material("trim",Color("#3d2921"),"natural_walnut_veneer_diff_1k.jpg",Vector3(.8,.8,.8))
+ material("brass",Color("#9b7545"))
+ material("hearth_tile",Color("#51483e"),"tiger_rock_diff_2k.jpg",Vector3(.80,.80,.80))
  box("Floor",Vector3(0,-.16,-3.20),Vector3(14.4,.32,9.70),mats["floor"])
  box("RearWall",Vector3(0,1.48,-8.19),Vector3(14.4,2.96,.28),mats["rock"])
+ # Real shallow floor finishes, flush with walking surface; no navigation blockers.
+ for i in range(15):
+  var x:float=-6.72+float(i)*.96
+  box("AisleFlagstone",Vector3(x,.002,1.13),Vector3(.94,.004,.94),mats["hearth_tile"])
+ for x in [-6.96,6.96]:
+  box("FloorEdge",Vector3(x,.005,-3.20),Vector3(.16,.01,9.70),mats["trim"])
+ box("RearSkirting",Vector3(0,.12,-7.93),Vector3(14.1,.24,.14),mats["trim"])
  # Individual staggered stone blocks, material reused, shallow relief only.
  for row in range(6):
   for col in range(18):
@@ -181,8 +196,10 @@ func run()->void:
  asset("wooden_bookshelf_worn",Vector3(3.25,0,-7.36),1.12,0,true)
  var fireplace:=asset("sketchfab_fireplace_annabelle_fibonacci",Vector3(-.18,0,-7.43),1.70,0,true)
  box("ChimneyBreast",Vector3(-.18,2.47,-7.84),Vector3(2.72,1.09,.33),mats["stone"])
+ box("ChimneyMantel",Vector3(-.18,1.99,-7.58),Vector3(3.02,.15,.54),mats["wood"])
+ box("HearthApron",Vector3(-.18,.004,-6.53),Vector3(3.35,.008,.78),mats["hearth_tile"])
  asset("sofa_03",Vector3(-5.30,0,-6.91),1.0,0,true)
- asset("common_woven_rug",Vector3(-4.95,.008,-5.63),1.4)
+ asset("common_woven_rug",Vector3(-5.18,.008,-5.71),1.45)
  asset("common_woven_rug",Vector3(-.10,.007,-5.22),.86)
  asset("wooden_lantern_01",Vector3(-1.87,.005,-6.86),1.40)
  asset("vintage_grandfather_clock_01",Vector3(6.35,0,-7.30),1.0,0,true)
@@ -201,10 +218,15 @@ func run()->void:
  asset("wooden_lantern_01",Vector3(2.30,0,-6.92),1.2)
  asset("wicker_basket_01",Vector3(-1.95,0,-6.65),1.6)
  asset("vintage_oil_lamp",Vector3(3.33,.79955,-4.36),.82)
+ # A third timber bay gives the rear room a recognizable scale.
+ for x in [-6.86,6.86]:
+  box("SideHighBeam",Vector3(x,2.99,-5.70),Vector3(.25,.25,3.72),mats["wood"])
+ for x in [-6.93,6.93]:
+  box("SideColumn",Vector3(x,1.49,-5.02),Vector3(.19,2.98,.22),mats["wood"])
  # Band 6 is local approach pockets; band 5 stays traversable.
  # Band 4: inward-facing chairs and real coffee/bar table.
- asset("blendkit_sofa_repaired",Vector3(-4.90,0,-4.27),.88,180,true)
- asset("blendkit_sofa_set_chair",Vector3(-2.75,0,-4.27),.88,145,true)
+ asset("blendkit_sofa_repaired",Vector3(-4.90,0,-4.22),.88,165,true)
+ asset("blendkit_sofa_set_chair",Vector3(-2.70,0,-4.24),.88,145,true)
  asset("wooden_table_02",Vector3(2.85,0,-4.26),1.0,0,true)
  asset("wine_bottles_01",Vector3(2.60,.79955,-4.35),.72)
  asset("brass_goblets",Vector3(3.10,.79955,-4.12),.75)
@@ -225,7 +247,9 @@ func run()->void:
  for x in [-6.65,-3.45,3.48,6.75]:
   asset("industrial_wall_lamp",Vector3(x,2.12,-7.70),1.0)
   light(Vector3(x,2.05,-6.95),Color("#ffbd72"),1.3,4.1)
- light(Vector3(-.18,1.10,-6.48),Color("#ff9d42"),2.1,4.3)
+ light(Vector3(-.18,1.10,-6.48),Color("#ff9d42"),2.6,4.3)
+ light(Vector3(-4.9,1.75,-5.78),Color("#ffcb94"),.85,3.1)
+ light(Vector3(2.85,1.75,-4.18),Color("#ffe1b5"),.85,2.8)
  box("RearCeilingSlab",Vector3(0,3.17,-7.37),Vector3(14.4,.19,1.40),mats["rock"])
  box("CeilingFrontHeader",Vector3(0,3.04,-6.63),Vector3(14.4,.23,.24),mats["wood"])
  light(Vector3(-4.3,2.65,-.95),Color("#ffd8a4"),1.45,5.0)
@@ -234,21 +258,27 @@ func run()->void:
  # Full front aisle continuous, rear lanes accessible on left and central gaps.
  for i in range(95):
   assert(clear(Vector2(-7.05+14.10*float(i)/94.0,1.15)),"front aisle blocked")
- var targets=[Vector2(-4.9,-2.65),Vector2(-4.6,-5.20),Vector2(3.0,-5.20),Vector2(-3.65,-6.50)]
+ # Verify horizontal continuity on the actual centerlines outside the dragon exclusion.
+ var band3_end:float=dragon.position.x-RADIUS-.02
+ for i in range(81):
+  assert(clear(Vector2(lerpf(-7.05,band3_end,float(i)/80),-2.68)),"band 3 left continuity")
+ for i in range(95):
+  assert(clear(Vector2(lerpf(-7.05,7.05,float(i)/94),-5.34)),"band 5 continuity")
+ var targets=[Vector2(-4.9,-2.65),Vector2(-4.6,-5.34),Vector2(3.0,-5.34),Vector2(-3.65,-6.50),Vector2(3.25,-6.50),Vector2(-.18,-6.35),Vector2(2.85,-5.34),Vector2(-4.28,-1.82),Vector2(-5.30,-5.91),Vector2(6.35,-6.50)]
  var route_count:=0
  for q in targets:
   assert(clear(q),str(["approach",q]))
   for e in [Vector2(-7.05,1.15),Vector2(7.05,1.15)]:
    assert(reachable(e,q),str(["unreachable",e,q]));route_count+=1
- print("DEPTH7_PILOT_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
- var f=FileAccess.open("/home/user/dragon_qa/iter54_placement.json",FileAccess.WRITE)
+ print("DEPTH7_REFINED_GEOMETRY_PASS dragon=",dragon," routes=",route_count," assets=",placements.size())
+ var f=FileAccess.open("/home/user/dragon_qa/iter56_placement.json",FileAccess.WRITE)
  f.store_string(JSON.stringify({"bands_front_to_back":BANDS,"room_width":14.4,"dragon_bounds":[dragon.position,dragon.size],"placements":placements,"route_checks":route_count},"  "));f.close()
  scale_actor("RES_07",Vector3(0.35,0,1.15))
- cam=Camera3D.new();stage.add_child(cam);cam.projection=Camera3D.PROJECTION_ORTHOGONAL;cam.size=8.85;cam.current=true
- cam.position=Vector3(-.5,5.7,17);cam.look_at(Vector3(0,.95,-3.35))
- await capture("/home/user/dragon_qa/iter54_hearth.png")
- cam.position=Vector3(-8,11,18);cam.look_at(Vector3(0,.75,-3.35));cam.size=10.8
- await capture("/home/user/dragon_qa/iter54_oblique.png")
+ cam=Camera3D.new();stage.add_child(cam);cam.projection=Camera3D.PROJECTION_PERSPECTIVE;cam.fov=25.0;cam.current=true
+ cam.position=Vector3(-.5,7.2,20.0);cam.look_at(Vector3(0,1.05,-3.35))
+ await capture("/home/user/dragon_qa/iter56_hearth.png")
+ cam.position=Vector3(-8,11,20);cam.look_at(Vector3(0,.75,-3.35));cam.fov=27.0
+ await capture("/home/user/dragon_qa/iter56_oblique.png")
  # Technical plan, same scene, visible seven bands, not a generated drawing.
  for i in range(BANDS.size()):
   var m:=StandardMaterial3D.new();m.albedo_color=Color("#d8b078");m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -256,7 +286,7 @@ func run()->void:
  for i in range(7):
   var label:=Label3D.new();label.text=str(i+1);label.font_size=45;label.modulate=Color("#fff2ce");label.pixel_size=.008;label.rotation_degrees.x=-90
   stage.add_child(label);label.position=Vector3(-7.03,.06,(BANDS[i]+BANDS[i+1])*.5)
- cam.position=Vector3(0,22,-3.2);cam.look_at(Vector3(0,0,-3.2),Vector3(0,0,-1));cam.size=10.6
- await capture("/home/user/dragon_qa/iter54_plan.png")
- print("DEPTH7_PILOT_RENDER_PASS 3")
+ cam.projection=Camera3D.PROJECTION_ORTHOGONAL;cam.position=Vector3(0,22,-3.2);cam.look_at(Vector3(0,0,-3.2),Vector3(0,0,-1));cam.size=10.6
+ await capture("/home/user/dragon_qa/iter56_plan.png")
+ print("DEPTH7_REFINED_RENDER_PASS 3")
  quit()
