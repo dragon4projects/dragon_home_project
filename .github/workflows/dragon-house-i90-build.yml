@@ -1,0 +1,139 @@
+name: Dragon House I90 - macOS and Windows
+on:
+  push:
+    branches: [integration/sprite-complete-20261126]
+    paths:
+      - '.github/workflows/dragon-house-i90-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dragon-house-i90-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GODOT: /tmp/Godot_v4.7.2-stable_linux.x86_64
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify and hydrate assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 dragon_house_clean/tools/verify_teea008_delivery.py
+          bash dragon_house_clean/tools/hydrate_iter1_candidate_assets.sh
+          find dragon_house_clean/assets/props -maxdepth 1 -type f -name '*.blend' -delete
+          python3 -m pip install --disable-pip-version-check --quiet pillow scipy
+          python3 dragon_house_clean/tools/build_room_visual_components_review.py
+          python3 dragon_house_clean/tools/prepare_teea008_live_export.py dragon_house_clean
+          printf 'OWNER_REVIEW_ONLY\n' > dragon_house_clean/data/integration_candidates/DENSE_V2_SERVICES_OWNER_QA.enabled
+          test ! -e dragon_house_clean/assets/residents/.gdignore
+          test ! -e dragon_house_clean/assets/creatures/.gdignore
+          echo "SOURCE_COMMIT=$GITHUB_SHA"
+      - name: Install official Godot and desktop templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x "$GODOT"
+          "$GODOT" --headless --version
+          curl -fLsS --retry 3 -o /tmp/godot_export.tpz https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          dest="$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          mkdir -p "$dest"
+          unzip -jo /tmp/godot_export.tpz templates/version.txt templates/macos.zip templates/windows_release_x86_64.exe -d "$dest"
+      - name: Import and run I90 integration tests
+        working-directory: dragon_house_clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 1200 "$GODOT" --headless --path . --editor --import --quit > i90_import.log 2>&1
+          if grep -Eq 'SCRIPT ERROR|Parse Error|ERROR:' i90_import.log; then tail -100 i90_import.log; exit 1; fi
+          for t in test_complete_sprite_intake test_dense_v2_services test_dense_v2_service_routes; do
+            XDG_DATA_HOME="$RUNNER_TEMP/$t" timeout 300 "$GODOT" --headless --path . --script "res://tests/$t.gd" 2>&1 | tee "$t.log"
+            grep -q '_PASS' "$t.log"
+            if grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed' "$t.log"; then exit 1; fi
+          done
+      - name: Export both desktop platforms
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p releases/windows
+          cd dragon_house_clean
+          "$GODOT" --headless --path . --export-release 'macOS' ../releases/DragonHouse_I90_Mac_Universal.zip > ../releases/mac_export.log 2>&1
+          "$GODOT" --headless --path . --export-release 'Windows Desktop' ../releases/windows/DragonHouse.exe > ../releases/windows_export.log 2>&1
+          cd ../releases
+          test -s windows/DragonHouse.exe
+          test -s windows/DragonHouse.pck
+          test -s windows/libgdsqlite.windows.template_release.x86_64.dll
+          unzip -tq DragonHouse_I90_Mac_Universal.zip
+          unzip -Z1 DragonHouse_I90_Mac_Universal.zip > mac_contents.txt
+          grep -qi 'gdsqlite.*macos.*template_release' mac_contents.txt
+          if grep -Eq 'SCRIPT ERROR|Parse Error|Export failed|ERROR:' mac_export.log windows_export.log; then exit 1; fi
+      - name: Audit both exported PCKs and package Windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pack-audit"
+          printf 'config_version=5\n' > "$RUNNER_TEMP/pack-audit/project.godot"
+          cp dragon_house_clean/tools/audit_teea008_pack.gd dragon_house_clean/tools/audit_complete_sprite_pack.gd "$RUNNER_TEMP/pack-audit/"
+          cd releases
+          unzip -jo DragonHouse_I90_Mac_Universal.zip '*.pck' -d "$RUNNER_TEMP/pack-audit"
+          macpack=$(find "$RUNNER_TEMP/pack-audit" -maxdepth 1 -type f -name '*.pck' -print -quit)
+          test -n "$macpack"
+          for pack in "$macpack" "$PWD/windows/DragonHouse.pck"; do
+            for script in audit_teea008_pack audit_complete_sprite_pack; do
+              timeout 180 "$GODOT" --headless --path "$RUNNER_TEMP/pack-audit" --script "res://$script.gd" -- "$pack" 2>&1 | tee -a pack_audit.log
+            done
+          done
+          test "$(grep -c TEEA008_PACK_AUDIT_PASS pack_audit.log)" -eq 2
+          test "$(grep -c COMPLETE_SPRITE_PACK_AUDIT_PASS pack_audit.log)" -eq 2
+          if grep -Eq 'SCRIPT ERROR|Parse Error|Assertion failed|ERROR:' pack_audit.log; then exit 1; fi
+          printf 'Dragon House I90 owner-review build. Keep the EXE, PCK and DLL together.\n' > windows/README.txt
+          (cd windows && zip -qr -3 ../DragonHouse_I90_Windows_x64.zip .)
+          unzip -tq DragonHouse_I90_Windows_x64.zip
+          sha256sum DragonHouse_I90_*.zip > SHA256SUMS.txt
+          printf 'Source commit: %s\nGodot: 4.7.2\nOwner QA; native platform launch not tested here.\n' "$GITHUB_SHA" > BUILD_INFO.txt
+          cat SHA256SUMS.txt
+      - name: Publish Mac artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-I90-Mac-Universal
+          path: |
+            releases/DragonHouse_I90_Mac_Universal.zip
+            releases/SHA256SUMS.txt
+            releases/BUILD_INFO.txt
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 7
+      - name: Publish Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-I90-Windows-x64
+          path: |
+            releases/DragonHouse_I90_Windows_x64.zip
+            releases/SHA256SUMS.txt
+            releases/BUILD_INFO.txt
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 7
+      - name: Publish QA logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonHouse-I90-QA
+          path: |
+            dragon_house_clean/i90_import.log
+            dragon_house_clean/test_complete_sprite_intake.log
+            dragon_house_clean/test_dense_v2_services.log
+            dragon_house_clean/test_dense_v2_service_routes.log
+            releases/*_export.log
+            releases/pack_audit.log
+          if-no-files-found: ignore
+          retention-days: 7

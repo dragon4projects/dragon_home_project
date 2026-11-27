@@ -67,7 +67,7 @@ func install(bank)->bool:
    if not safe or not path.begins_with(directory) or not hashes.has(path) or used.has(path):
     return _fail("incorrect bank/path "+path)
    var dims:Array=hashes[path].canvas
-   if dims!=([1024,640] if wardrobe==null else [512,512]):return _fail("incorrect canvas "+path)
+   if dims.size()!=2 or int(dims[0])!=(1024 if wardrobe==null else 512) or int(dims[1])!=(640 if wardrobe==null else 512):return _fail("incorrect canvas "+path)
    used[path]=true
   var prior:Dictionary=states.get(state,{})
   if prior.get("status","")=="PASS" and not prior.get("frames",[]).is_empty():
@@ -104,7 +104,7 @@ func install_poses(nav,bank)->int:
    var frames:Array=bank._entry(actor,incoming.wardrobe,state).get("frames",[])
    var point:Array=p.get("contact_px",[])
    var box:Array=p.get("alpha_bbox",[])
-   if frames.size()!=1 or bank._normalize_frame(frames[0])!=path or not nav._pose_source_valid("res://"+path,p) or p.get("canvas",[])!=[512,512] or point.size()!=2 or box.size()!=4 or float(p.get("contact_span_px",0))<=0:continue
+   if frames.size()!=1 or bank._normalize_frame(frames[0])!=path or not nav._pose_source_valid("res://"+path,p) or p.get("canvas",[]).size()!=2 or int(p.canvas[0])!=512 or int(p.canvas[1])!=512 or point.size()!=2 or box.size()!=4 or float(p.get("contact_span_px",0))<=0:continue
    if not Rect2(float(box[0]),float(box[1]),float(box[2])-float(box[0]),float(box[3])-float(box[1])).has_point(Vector2(point[0],point[1])):continue
    existing.states[state]=p.duplicate(true)
    count+=1
