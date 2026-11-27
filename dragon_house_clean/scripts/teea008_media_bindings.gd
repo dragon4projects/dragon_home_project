@@ -1,6 +1,8 @@
 extends RefCounted
 ## Concrete room-instance media binding. Variant IDs are templates, never
 ## globally shared mutable selection. No fake media or automatic UI playback.
+const DenseDevices=preload("res://scripts/dense_v2_media_devices.gd")
+const LocalMediaImport=preload("res://scripts/local_media_catalog_import.gd")
 var world
 var bank
 var media
@@ -12,13 +14,15 @@ func setup(model,review,media_runtime)->void:
 
 func _key(room_id:String,surface_id:String)->String:
 	# The cover sleeve and actual boombox share exactly one persistent binding.
-	var spec_data:Dictionary=bank.surfaces.get(surface_id,{})
+	var spec_data:Dictionary=spec(room_id,surface_id)
 	return room_id+"|"+str(spec_data.get("binding_alias",surface_id))
 
 func spec(room_id:String,surface_id:String)->Dictionary:
 	var room:Dictionary=world.room_by_id(room_id)
 	if not world.public_cutaway_allowed(room):
 		return {}
+	if str(room.get("dense_v2_layout",""))!="":
+		return DenseDevices.spec_for(room,surface_id)
 	var kind:String=str(room.get("type",""))
 	var variant:String="%s/R%d" % [kind,int(room.get("size_modules",1))]
 	var surface:Dictionary=bank.surfaces.get(surface_id,{})
@@ -51,7 +55,7 @@ func assign(room_id:String,surface_id:String,category:String,item_id:String)->bo
 			# A source-backed film may be shown as a static catalog preview.
 			# This does not grant WATCH_FILM eligibility or local playback.
 			var preview_path:String=str(item.get("preview",item.get("preview_path","")))
-			var approved_path:bool=preview_path.begins_with("res://assets/media/previews/") or preview_path.begins_with("user://filmix_previews/") or preview_path.begins_with("user://filmix_bundle_previews/")
+			var approved_path:bool=preview_path.begins_with("res://assets/media/previews/") or preview_path.begins_with("user://filmix_previews/") or preview_path.begins_with("user://filmix_bundle_previews/") or LocalMediaImport.verified_import_preview(item)
 			if not approved_path or not (ResourceLoader.exists(preview_path,"Texture2D") or FileAccess.file_exists(preview_path)):
 				return false
 	var bindings:Dictionary=world.runtime_state.get("teea008_room_media_bindings",{})
@@ -117,7 +121,7 @@ func resolve(room_id:String,surface_id:String)->Dictionary:
 		var active:Dictionary=active_film(room_id,"",true)
 		if not active.is_empty():
 			return active
-	if surface_id.ends_with(".audio.01") or surface_id=="music.r3.audio.now_playing":
+	if surface_id.ends_with(".audio.01") or surface_id=="music.r3.audio.now_playing" or surface_id.ends_with(".audio.device"):
 		var track:Dictionary=active_track(room_id,"",true)
 		if not track.is_empty():return track
 	return pinned(room_id,surface_id)

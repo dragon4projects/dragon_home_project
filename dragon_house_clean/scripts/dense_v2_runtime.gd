@@ -27,6 +27,9 @@ var route_repairs:Array=[]
 var withheld_stations:Array=[]
 var review=REVIEW.new()
 const SERVICES=preload("res://scripts/dense_v2_service_overlay.gd")
+const BOOKS=preload("res://scripts/dense_v2_book_overlay.gd")
+const OWNER_DESIGN=preload("res://scripts/dense_v2_owner_design.gd")
+const SEATS=preload("res://scripts/dense_v2_seat_overlay.gd")
 
 func install(world,layouts:Dictionary,enable_services:bool=false)->bool:
  var data:Dictionary={}
@@ -51,6 +54,14 @@ func install(world,layouts:Dictionary,enable_services:bool=false)->bool:
   if not overlay.initialize():return false
   for k in overlay.KEYS:
    if not rooms.has(k) or not overlay.apply(rooms[k]):return false
+ var books=BOOKS.new()
+ var book_overlay:bool=enable_services and FileAccess.file_exists(BOOKS.PATH)
+ if book_overlay and not books.initialize():return false
+ var seats=SEATS.new()
+ var seat_overlay:bool=book_overlay and FileAccess.file_exists(SEATS.PATH)
+ if seat_overlay and not seats.initialize():return false
+ var design:Dictionary=OWNER_DESIGN.read_manifest()
+ if FileAccess.file_exists(OWNER_DESIGN.PATH) and design.is_empty():return false
  var prospective:Dictionary={}
  var planned_layouts:Dictionary={}
  for k in ROOMS:
@@ -60,12 +71,23 @@ func install(world,layouts:Dictionary,enable_services:bool=false)->bool:
   if not world.public_cutaway_allowed(room):continue
   var compiled:Dictionary=data.get("rooms",{}).get(k,{})
   if compiled.is_empty() or not compiled.get("issues",[]).is_empty():return false
+  if seat_overlay and not seats.apply(compiled):return false
+  if not OWNER_DESIGN.apply_base(compiled,review) or not OWNER_DESIGN.apply_props(compiled,design):return false
+  var baseline:Dictionary=compiled.duplicate(true)
+  compiled=preload("res://scripts/local_furniture_layout.gd").load_saved(world,str(room.id),compiled)
+  if compiled.is_empty():return false
   var row:Dictionary=review.navigation_row(compiled,spec[2],spec[3])
   if compiled.has("service_sources"):
    row["service_sources"]=compiled.service_sources
    row["service_cups"]=compiled.service_cups
-  prospective[str(room.id)]={"compiled":compiled,"variant":row.variant_id}
+  if book_overlay and not books.apply(compiled,row):return false
+  prospective[str(room.id)]={"compiled":compiled,"base_compiled":baseline,"variant":row.variant_id}
   planned_layouts[row.variant_id]=row
+ var edits=world.runtime_state.get("local_furniture_offsets_v1",{})
+ if typeof(edits)!=TYPE_DICTIONARY:return false
+ for rid in edits:
+  if typeof(edits[rid])!=TYPE_DICTIONARY:return false
+  if not prospective.has(rid) and not edits[rid].is_empty():return false
  if prospective.is_empty():return false
  # Commit only after verifying the entire room-to-plan mapping.
  for id in prospective:

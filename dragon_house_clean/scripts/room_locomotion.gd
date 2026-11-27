@@ -52,7 +52,7 @@ func _append_if_distinct(travel: Array, point: Dictionary) -> void:
 		return
 	var a: Vector3 = Vector3(float(previous[0]),float(previous[1]),float(previous[2]))
 	var b: Vector3 = Vector3(float(current[0]),float(current[1]),float(current[2]))
-	if a.distance_to(b)>0.01 or str(travel[-1].get("room_id",""))!=str(point.get("room_id","")):
+	if a.distance_to(b)>(0.00001 if candidate_navigation!=null else 0.01) or str(travel[-1].get("room_id",""))!=str(point.get("room_id","")):
 		travel.append(point)
 
 func _last_position(travel: Array) -> Vector3:

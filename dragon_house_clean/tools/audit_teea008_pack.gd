@@ -44,6 +44,15 @@ func run()->void:
 		var complete=JSON.parse_string(FileAccess.get_file_as_string(complete_path))
 		assert(complete.size()==204)
 		for rec in complete:expected_paths["res://"+str(rec.path)]=true
+	var side_path:="res://data/asset_proposals/DH_I93_SIDE_READ/frames.json"
+	if FileAccess.file_exists(side_path):
+		var side:=read_dict(side_path)
+		for rec in side.get("frames",[]):
+			var path:String="res://"+str(rec.path)
+			assert(proof.frames.get(path,"")==rec.sha256,path)
+			var tex:=ResourceLoader.load(path,"Texture2D") as Texture2D
+			assert(tex!=null and tex.get_size()==Vector2(512,512),path)
+			expected_paths[path]=true
 	assert(proof.get("frames",{}).size()==expected_paths.size())
 	var verified:=0
 	for profile in poses["profiles"].values():

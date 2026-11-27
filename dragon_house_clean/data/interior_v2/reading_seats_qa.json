@@ -1,0 +1,614 @@
+{
+ "books_sha256": "a741a139925ac126db3a8ad54afd02356e7d0f8f2409bbb25fb5163bea6dd972",
+ "compiled_sha256": {
+  "0": "076b37c555f6b2605f4cec4aa78f56699ad91ac1e08168843bf81ef80775d356",
+  "1": "2173a5224dbb7944cd8234df7f8b718ef0c7d919e03d08f00d6b9a705488f5a7",
+  "2": "e896cf47f811c39291e37d1eb56005d2671e2c3253e7c431ffbe9926582b40fe"
+ },
+ "rooms": {
+  "L0_reading": {
+   "count": 6,
+   "hosts": [
+    {
+     "id": "L0_reading_F19",
+     "path": "res://assets/teea008_review/decor_bank/modern_arm_chair_01/model.gltf",
+     "pivot": [
+      2.59980010986328,
+      0.0249998588114977,
+      -5.57499980926514
+     ],
+     "replacement": {},
+     "scale": 0.8202,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        2.60598587989807,
+        -6.27499961853027
+       ],
+       "room_facing_xyz": [
+        -1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        2.19185352325439,
+        0.025000000372529,
+        -5.57499980926514
+       ],
+       "room_local_xyz": [
+        2.60598587989807,
+        0.398145258426666,
+        -5.57499980926514
+       ],
+       "room_pelvis_contact_xyz": [
+        2.60598587989807,
+        0.398145258426666,
+        -5.57499980926514
+       ],
+       "seat_depth_m": 0.147636,
+       "seating_width_m": 0.442908,
+       "station_candidate_id": "L0_reading_F19.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.0295272
+      }
+     ],
+     "yaw": -90.0
+    },
+    {
+     "id": "L0_reading_F25",
+     "path": "res://assets/teea008_review/decor_bank/gallinera_chair/model.gltf",
+     "pivot": [
+      -0.394199728965759,
+      0.0249997060745955,
+      -2.67499995231628
+     ],
+     "replacement": {},
+     "scale": 0.984,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        -0.388917982578278,
+        -3.375
+       ],
+       "room_facing_xyz": [
+        -1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        -0.751309931278229,
+        0.025000000372529,
+        -2.67499995231628
+       ],
+       "room_local_xyz": [
+        -0.388918042182922,
+        0.476917445659637,
+        -2.67499995231628
+       ],
+       "room_pelvis_contact_xyz": [
+        -0.388918042182922,
+        0.476917445659637,
+        -2.67499995231628
+       ],
+       "seat_depth_m": 0.17712,
+       "seating_width_m": 0.45264,
+       "station_candidate_id": "L0_reading_F25.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.035424
+      }
+     ],
+     "yaw": -90.0
+    },
+    {
+     "id": "L0_reading_F30",
+     "path": "res://assets/teea008_review/decor_bank/mid_century_lounge_chair/model.gltf",
+     "pivot": [
+      -2.87850046157837,
+      0.0250000506639481,
+      -0.100000001490116
+     ],
+     "replacement": {
+      "asset": "modern_arm_chair_01",
+      "bounds_max": [
+       -2.39938402175903,
+       1.01847994327545,
+       0.298393756151199
+      ],
+      "bounds_min": [
+       -3.35761570930481,
+       0.025000000372529,
+       -0.49839374423027
+      ],
+      "fits": true,
+      "footprint_error": 0.0005577816045843,
+      "id": "L0_reading_F30",
+      "path": "res://assets/teea008_review/decor_bank/modern_arm_chair_01/model.gltf",
+      "pivot": [
+       -2.87849998474121,
+       0.0249998066574335,
+       -0.100000463426113
+      ],
+      "requested_scale": 1.1294,
+      "role": "floor",
+      "scale": 1.1294,
+      "yaw": 90.0
+     },
+     "scale": 1.1294,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        -2.88701748847961,
+        0.699999570846558
+       ],
+       "room_facing_xyz": [
+        1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        -2.33938431739807,
+        0.025000000372529,
+        -0.100000485777855
+       ],
+       "room_local_xyz": [
+        -2.88701748847961,
+        0.538814008235931,
+        -0.100000463426113
+       ],
+       "room_pelvis_contact_xyz": [
+        -2.88701748847961,
+        0.538814008235931,
+        -0.100000463426113
+       ],
+       "seat_depth_m": 0.203292,
+       "seating_width_m": 0.609876,
+       "station_candidate_id": "L0_reading_F30.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.0406584
+      }
+     ],
+     "yaw": 90.0
+    },
+    {
+     "id": "L0_reading_F32",
+     "path": "res://assets/teea008_review/decor_bank/painted_wooden_chair_02/model.gltf",
+     "pivot": [
+      -1.22430002689362,
+      0.0250000320374966,
+      -0.0999996662139893
+     ],
+     "replacement": {
+      "asset": "painted_wooden_chair_02",
+      "bounds_max": [
+       -0.962605834007263,
+       1.02401101589203,
+       0.15271869301796
+      ],
+      "bounds_min": [
+       -1.48599410057068,
+       0.025000000372529,
+       -0.352718740701675
+      ],
+      "fits": true,
+      "footprint_error": 0.00058596755843609,
+      "id": "L0_reading_F32",
+      "path": "res://assets/teea008_review/decor_bank/painted_wooden_chair_02/model.gltf",
+      "pivot": [
+       -1.22430002689362,
+       0.0250000264495611,
+       -0.0999997481703758
+      ],
+      "requested_scale": 1.1294,
+      "role": "floor",
+      "scale": 0.93,
+      "yaw": -90.0
+     },
+     "scale": 1.1294,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        -1.21964752674103,
+        -0.799999713897705
+       ],
+       "room_facing_xyz": [
+        -1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        -1.54599404335022,
+        0.025000000372529,
+        -0.099999763071537
+       ],
+       "room_local_xyz": [
+        -1.21964764595032,
+        0.487318754196167,
+        -0.0999997481703758
+       ],
+       "room_pelvis_contact_xyz": [
+        -1.21964764595032,
+        0.487318754196167,
+        -0.0999997481703758
+       ],
+       "seat_depth_m": 0.1674,
+       "seating_width_m": 0.4464,
+       "station_candidate_id": "L0_reading_F32.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.03348
+      }
+     ],
+     "yaw": -90.0
+    },
+    {
+     "id": "L0_reading_F33",
+     "path": "res://assets/decor_bank/blendkit_sofa/model.gltf",
+     "pivot": [
+      1.27090036869049,
+      0.0250001754611731,
+      -0.670400321483612
+     ],
+     "replacement": {
+      "asset": "blendkit_sofa/repaired.glb",
+      "bounds_max": [
+       2.44787335395813,
+       0.946109592914581,
+       -0.14077627658844
+      ],
+      "bounds_min": [
+       0.0939266681671143,
+       0.0249999985098839,
+       -1.20002365112305
+      ],
+      "fits": true,
+      "footprint_error": 0.00045633382978849,
+      "id": "L0_reading_F33",
+      "path": "res://assets/decor_bank/blendkit_sofa/repaired.glb",
+      "pivot": [
+       1.27054131031036,
+       0.023548848927021,
+       -0.670439958572388
+      ],
+      "requested_scale": 1.1429,
+      "role": "floor",
+      "scale": 1.14199288420877,
+      "yaw": 0.0
+     },
+     "scale": 1.1429,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        0.281644493341446,
+        0.20293253660202
+       ],
+       "room_facing_xyz": [
+        0.0,
+        0.0,
+        1.0
+       ],
+       "room_feet_contact_xyz": [
+        0.756644487380981,
+        0.0249999985098839,
+        -0.0807763934135437
+       ],
+       "room_local_xyz": [
+        0.756644487380981,
+        0.513843178749084,
+        -0.619791567325592
+       ],
+       "room_pelvis_contact_xyz": [
+        0.756644487380981,
+        0.513843178749084,
+        -0.619791567325592
+       ],
+       "seat_depth_m": 0.205558719157579,
+       "seating_width_m": 0.982113880419545,
+       "station_candidate_id": "L0_reading_F33.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.0411117438315158
+      },
+      {
+       "id": "seat_2",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        2.25943803787231,
+        0.20293253660202
+       ],
+       "room_facing_xyz": [
+        0.0,
+        0.0,
+        1.0
+       ],
+       "room_feet_contact_xyz": [
+        1.78443813323975,
+        0.0249999985098839,
+        -0.0807763934135437
+       ],
+       "room_local_xyz": [
+        1.78443813323975,
+        0.514014899730682,
+        -0.619791567325592
+       ],
+       "room_pelvis_contact_xyz": [
+        1.78443813323975,
+        0.514014899730682,
+        -0.619791567325592
+       ],
+       "seat_depth_m": 0.205558719157579,
+       "seating_width_m": 0.982113880419545,
+       "station_candidate_id": "L0_reading_F33.seat_2",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.0411117438315158
+      }
+     ],
+     "yaw": 0.0
+    }
+   ]
+  },
+  "L2_library": {
+   "count": 4,
+   "hosts": [
+    {
+     "id": "L2_library_F19",
+     "path": "res://assets/teea008_review/decor_bank/mid_century_lounge_chair/model.gltf",
+     "pivot": [
+      2.61020040512085,
+      0.0250000357627869,
+      -5.57499980926514
+     ],
+     "replacement": {
+      "asset": "modern_arm_chair_01",
+      "bounds_max": [
+       2.95814657211304,
+       0.746491253376007,
+       -5.28567552566528
+      ],
+      "bounds_min": [
+       2.26225352287292,
+       0.025000000372529,
+       -5.86432361602783
+      ],
+      "fits": true,
+      "footprint_error": 0.00038649639463983,
+      "id": "L2_library_F19",
+      "path": "res://assets/teea008_review/decor_bank/modern_arm_chair_01/model.gltf",
+      "pivot": [
+       2.61020016670227,
+       0.0249998588114977,
+       -5.57499933242798
+      ],
+      "requested_scale": 0.8202,
+      "role": "floor",
+      "scale": 0.8202,
+      "yaw": -90.0
+     },
+     "scale": 0.8202,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        2.61638593673706,
+        -6.27499914169312
+       ],
+       "room_facing_xyz": [
+        -1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        2.20225381851196,
+        0.025000000372529,
+        -5.57499933242798
+       ],
+       "room_local_xyz": [
+        2.61638593673706,
+        0.398145258426666,
+        -5.57499933242798
+       ],
+       "room_pelvis_contact_xyz": [
+        2.61638593673706,
+        0.398145258426666,
+        -5.57499933242798
+       ],
+       "seat_depth_m": 0.147636,
+       "seating_width_m": 0.442908,
+       "station_candidate_id": "L2_library_F19.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.0295272
+      }
+     ],
+     "yaw": -90.0
+    },
+    {
+     "id": "L2_library_F25",
+     "path": "res://assets/teea008_review/decor_bank/modern_arm_chair_01/model.gltf",
+     "pivot": [
+      -0.075699970126152,
+      0.0249998308718204,
+      -2.67499971389771
+     ],
+     "replacement": {},
+     "scale": 0.984,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        -0.068278893828392,
+        -3.37499976158142
+       ],
+       "room_facing_xyz": [
+        -1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        -0.553133964538574,
+        0.025000000372529,
+        -2.67499971389771
+       ],
+       "room_local_xyz": [
+        -0.0682789534330368,
+        0.472665131092072,
+        -2.67499971389771
+       ],
+       "room_pelvis_contact_xyz": [
+        -0.0682789534330368,
+        0.472665131092072,
+        -2.67499971389771
+       ],
+       "seat_depth_m": 0.17712,
+       "seating_width_m": 0.53136,
+       "station_candidate_id": "L2_library_F25.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.035424
+      }
+     ],
+     "yaw": -90.0
+    },
+    {
+     "id": "L2_library_F30",
+     "path": "res://assets/teea008_review/decor_bank/gallinera_chair/model.gltf",
+     "pivot": [
+      -2.79930019378662,
+      0.0249996613711119,
+      -0.100000165402889
+     ],
+     "replacement": {},
+     "scale": 1.1294,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        -2.80536222457886,
+        0.599999845027924
+       ],
+       "room_facing_xyz": [
+        1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        -2.39828777313232,
+        0.0249999985098839,
+        -0.10000018030405
+       ],
+       "room_local_xyz": [
+        -2.80536222457886,
+        0.543694674968719,
+        -0.100000165402889
+       ],
+       "room_pelvis_contact_xyz": [
+        -2.80536222457886,
+        0.543694674968719,
+        -0.100000165402889
+       ],
+       "seat_depth_m": 0.203292,
+       "seating_width_m": 0.519524,
+       "station_candidate_id": "L2_library_F30.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.0406584
+      }
+     ],
+     "yaw": 90.0
+    },
+    {
+     "id": "L2_library_F32",
+     "path": "res://assets/teea008_review/decor_bank/painted_wooden_chair_02/model.gltf",
+     "pivot": [
+      -1.14919996261597,
+      0.0250000320374966,
+      -0.0999996662139893
+     ],
+     "replacement": {
+      "asset": "painted_wooden_chair_02",
+      "bounds_max": [
+       -0.887505888938904,
+       1.02401101589203,
+       0.15271869301796
+      ],
+      "bounds_min": [
+       -1.41089415550232,
+       0.025000000372529,
+       -0.352718740701675
+      ],
+      "fits": true,
+      "footprint_error": 0.00058596755843609,
+      "id": "L2_library_F32",
+      "path": "res://assets/teea008_review/decor_bank/painted_wooden_chair_02/model.gltf",
+      "pivot": [
+       -1.14919996261597,
+       0.0250000264495611,
+       -0.0999997481703758
+      ],
+      "requested_scale": 1.1294,
+      "role": "floor",
+      "scale": 0.93,
+      "yaw": -90.0
+     },
+     "scale": 1.1294,
+     "stations": [
+      {
+       "id": "seat_1",
+       "kind": "seat",
+       "pose_hint": "RELAXED_SIT",
+       "room_approach_xz": [
+        -1.14454746246338,
+        -0.799999713897705
+       ],
+       "room_facing_xyz": [
+        -1.0,
+        0.0,
+        -0.0000000437113882867379
+       ],
+       "room_feet_contact_xyz": [
+        -1.47089409828186,
+        0.025000000372529,
+        -0.099999763071537
+       ],
+       "room_local_xyz": [
+        -1.14454758167267,
+        0.487318754196167,
+        -0.0999997481703758
+       ],
+       "room_pelvis_contact_xyz": [
+        -1.14454758167267,
+        0.487318754196167,
+        -0.0999997481703758
+       ],
+       "seat_depth_m": 0.1674,
+       "seating_width_m": 0.4464,
+       "station_candidate_id": "L2_library_F32.seat_1",
+       "status": "I92_SAMPLED_SEAT_SURFACE_AND_ROUTE_CANDIDATE",
+       "support_variation_max_m": 0.03348
+      }
+     ],
+     "yaw": -90.0
+    }
+   ]
+  }
+ },
+ "schema": 1,
+ "services_sha256": "1e8bec48e62e49c5cff7010781a729f936255b5bdd161310bbd7aa23ddaa3046",
+ "source_sha256": "ba8709557b87cec63c6fce53563f8ccc30f69dd895d840e4f68e3758d2484d27"
+}

@@ -139,7 +139,7 @@ func status(actor: Dictionary) -> String:
 	return str(HUMAN_STATUS.get(intent,"отдыхает"))
 
 const INTENTS := {
-	"REST": ["rest", "private", "guest"], "SLEEP": ["rest", "private", "guest"],
+	"REST": ["rest", "private", "guest"], "SLEEP": ["private", "guest"],
 	"WORK_CREATE": ["study", "workshop"], "READ_BOOK": ["library", "rest"],
 	"BROWSE_BOOK_CATALOG": ["library"],
 	"BROWSE_FILMS": ["cinema"], "BROWSE_AUDIO": ["music"],
@@ -152,6 +152,8 @@ const INTENTS := {
 func setup(p_world) -> void:
 	world = p_world
 	clock = world.sim_clock
+	if not world.private_access_changed.is_connected(_private_access_changed):
+		world.private_access_changed.connect(_private_access_changed)
 	var previously_initialized:bool=bool(world.runtime_state.get("teea008_navigation_initialized",false))
 	if candidate_navigation!=null:
 		stations.candidate_navigation=candidate_navigation
@@ -229,6 +231,12 @@ func setup(p_world) -> void:
 			life_scheduler.schedule_at(id,maxf(clock,float(actor["until"])),"RESTORED_MEDIA_COMMITMENT")
 	# Existing pre-scheduler saves retain their commitments. First wake only
 	# reconciles/schedules them; it does not cancel an unexpired action.
+	for id in active_ids:
+		var actor:Dictionary=world.residents[id]
+		if not actor.has("private_visit_room"):continue
+		if actor.get("private_visit_stage")!="exit" and not world.private_visit_allowed(world.room_by_id(str(actor.private_visit_room)),id):
+			_begin_private_exit(actor)
+		wake_actor(id,"RESTORED_PRIVATE_VISIT")
 	world.runtime_state["life_scheduler"] = life_scheduler.snapshot()
 
 # Credit only a valid, previously seated reading session at the saved
@@ -442,6 +450,8 @@ func _utilities(actor: Dictionary) -> Dictionary:
 		scores["WORK_CREATE"] += 0.45
 	if actor["id"] == "MANJKA":
 		return {"REST": 0.2 + rest, "PURPOSEFUL_EXPLORE": 1.0 + curiosity}
+	if candidate_navigation!=null and candidate_cups.beverages.enabled and (not candidate_cups.beverages.autonomous_visit_ready(str(actor["id"]),clock) or clock<float(actor.get("drink_retry_at",0.0))):
+		scores.erase("GET_COFFEE")
 	if not media_runtime.has_reading_choice(str(actor["id"]),clock):
 		scores.erase("READ_BOOK")
 	if world.media.get("books",[]).is_empty():
@@ -537,12 +547,13 @@ func choose_intent(actor: Dictionary) -> Dictionary:
 				for public_room in world.rooms:
 					var kind:String=str(public_room.get("type",""))
 					if not types.has(kind) and candidate_navigation.layouts.get(candidate_navigation.key(public_room),{}).has("service_sources"):types.append(kind)
-		if candidate_navigation!=null and intent in ["REST","SLEEP"]:
+		if candidate_navigation!=null and intent=="REST":
 			types=types.duplicate()
 			if not types.has("common"):
 				types.append("common")
 		var candidates: Array = []
 		for room in world.matching_rooms(types, actor["id"]):
+			if intent=="SLEEP" and str(room.get("id",""))!=str(actor.get("home_room_id","")):continue
 			if candidate_navigation!=null and not planning_routes.has(str(room["id"])):continue
 			if (str(room.get("type","")) == "guest"
 					and intent in ["REST","SLEEP"]
@@ -929,7 +940,7 @@ func _group_recruitable(other:Dictionary)->bool:
 	# Idle until is a planner retry deadline, not an activity commitment.
 	if str(other.get("phase","idle"))!="idle" and float(other.get("until",0.0))>clock:return false
 	if float(other.get("needs",{}).get("social",0.0))<0.25:return false
-	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","book_task_stage","held_book","reading_session","watch_session","listen_session","viewing_object_id","activity_media_id"]:
+	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","secondary_cup_id","book_task_stage","held_book","reading_session","watch_session","listen_session","viewing_object_id","activity_media_id"]:
 		if other.has(key):return false
 	var phase:String=str(other.get("phase","idle"))
 	return phase=="idle" or (phase=="perform" and str(other.get("intent","")) in ["REST","SLEEP","WATCH_FIRE","WORK_CREATE","PURPOSEFUL_EXPLORE","BROWSE_BOOK_CATALOG","BROWSE_FILMS","BROWSE_AUDIO"])
@@ -1021,7 +1032,7 @@ func _create_group_record(members:Array,room:Dictionary,deadline:float)->String:
 func _may_join_group(actor:Dictionary)->bool:
 	if str(actor.get("id","")) in ["","MANJKA"] or not bool(actor.get("active",false)) or not bool(actor.get("autonomy_enabled",true)):return false
 	if str(actor.get("phase",""))!="idle" or float(actor.get("until",0))>clock or float(actor.get("social_join_retry_at",0))>clock:return false
-	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","book_task_stage","held_book","reading_session","watch_session","listen_session"]:
+	for key in ["social_session_id","social_join_session_id","partner_id","cup_task_stage","secondary_cup_id","book_task_stage","held_book","reading_session","watch_session","listen_session"]:
 		if actor.has(key) and str(actor[key])!="":return false
 	return float(actor.get("needs",{}).get("social",0))>=0.35 and _social_start_allowed(actor)
 
@@ -1178,7 +1189,7 @@ func _choose_partner(actor: Dictionary, destination: Dictionary) -> Dictionary:
 			continue
 		if other.get("partner_id", "") != "" or other.has("social_session_id") or other.has("social_join_session_id") or other.get("phase", "idle") != "idle":
 			continue
-		if other.get("held_book","") != "" or other.has("book_task_stage") or other.has("cup_task_stage") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):
+		if other.get("held_book","") != "" or other.has("book_task_stage") or other.has("cup_task_stage") or other.has("secondary_cup_id") or other.has("reading_session") or other.has("watch_session") or other.has("listen_session"):
 			continue
 		if float(other.get("until", 0.0)) > clock:
 			continue
@@ -1455,7 +1466,7 @@ func _assign(actor: Dictionary, task: Dictionary) -> void:
 	if candidate_navigation!=null and intent=="GET_COFFEE":
 		if candidate_cups.beverages.enabled:
 			actor["drink_context"]=candidate_cups.beverages.context_for(str(actor.get("intent","")),daypart())
-		_begin_cup_task(actor,room)
+		_begin_cup_task(actor,room,true)
 		return
 	var route: Array = world.find_route(actor["room_id"], room["id"], actor["id"])
 	if route.is_empty():
@@ -1667,7 +1678,86 @@ func _travel_adjustment(actor: Dictionary, at: Vector3, target: Vector3,
 			return {"target":adjusted,"wait":false}
 	return {"target":adjusted,"wait":false}
 
+func _private_access_changed(room_id:String,visitor_id:String)->void:
+	var actor:Dictionary=world.residents.get(visitor_id,{})
+	if actor.get("private_visit_room","")==room_id and not world.private_visit_allowed(world.room_by_id(room_id),visitor_id):
+		_begin_private_exit(actor)
+
+func begin_private_visit(visitor_id:String,room_id:String)->bool:
+	var actor:Dictionary=world.residents.get(visitor_id,{})
+	var room:Dictionary=world.room_by_id(room_id)
+	if actor.is_empty() or not world.private_visit_allowed(room,visitor_id) or not world.PrivateDoorAccess.at_frontage(world,room,visitor_id):return false
+	if actor.has("private_visit_room") or actor.get("phase","")!="idle" or actor.has("held_book") or actor.has("book_task_stage") or actor.has("cup_task_stage") or actor.has("social_session_id") or actor.has("social_join_session_id") or actor.get("station_room_id","")!="":return false
+	for obj in world.objects.values():
+		if obj.get("current_holder_id","")==visitor_id:return false
+	# Do not create a public station or infer an interior. This is a private
+	# threshold visit, with one explicitly admitted visitor at a time.
+	for other in world.residents.values():
+		if other.get("private_visit_room","")==room_id:return false
+	actor["private_visit_room"]=room_id
+	actor["private_visit_stage"]="enter"
+	actor["phase"]="travel"
+	actor["intent"]="VISIT_PRIVATE"
+	actor["waypoints"]=[locomotion.waypoint(float(actor.x),float(actor.visual_y),.8,room_id,"private_visit")]
+	actor["waypoint_index"]=0
+	actor["until"]=clock+12.0
+	_schedule_actor(actor,"PRIVATE_THRESHOLD_VISIT")
+	return true
+
+func leave_private_visit(visitor_id:String)->bool:
+	var actor:Dictionary=world.residents.get(visitor_id,{})
+	if not actor.has("private_visit_room"):return false
+	return _begin_private_exit(actor)
+
+func _begin_private_exit(actor:Dictionary)->bool:
+	var rid:String=str(actor.get("private_visit_room",""))
+	var room:Dictionary=world.room_by_id(rid)
+	if rid=="" or room.is_empty() or str(actor.get("room_id",""))!=rid:return false
+	if actor.get("private_visit_stage","")=="exit":return true
+	actor["private_visit_stage"]="exit"
+	actor["phase"]="travel"
+	actor["intent"]="VISIT_PRIVATE"
+	actor["waypoints"]=[locomotion.waypoint(float(actor.x),float(actor.visual_y),world.PrivateDoorAccess.FRONTAGE_Z,rid,"private_visit")]
+	actor["waypoint_index"]=0
+	actor["until"]=clock+12.0
+	_schedule_actor(actor,"PRIVATE_SAFE_EXIT")
+	return true
+
+func _move_private_visit(actor:Dictionary,delta:float)->void:
+	var rid:String=str(actor.get("private_visit_room",""))
+	var room:Dictionary=world.room_by_id(rid)
+	var id:String=str(actor.get("id",""))
+	if not world.PrivateDoorAccess.valid_room(room) or actor.get("room_id","")!=rid or id==room.get("owner_id","") or id=="MANJKA" or actor.get("private_visit_stage","") not in ["enter","inside","exit"]:
+		# Corrupt visit metadata cannot create movement through an unknown room.
+		actor.erase("private_visit_room");actor.erase("private_visit_stage")
+		actor["phase"]="idle";actor["waypoints"]=[];actor["waypoint_index"]=0
+		moving_ids.erase(id);_schedule_actor(actor,"INVALID_PRIVATE_VISIT")
+		return
+	if actor.get("private_visit_stage")!="exit" and not world.private_visit_allowed(room,id):
+		_begin_private_exit(actor)
+	var exiting:bool=actor.get("private_visit_stage")=="exit"
+	var target:float=world.PrivateDoorAccess.FRONTAGE_Z if exiting else .8
+	actor["z"]=move_toward(float(actor.z),target,2.25*minf(delta,.15))
+	actor["moving_axis"]="depth"
+	if absf(float(actor.z)-target)>.001:return
+	moving_ids.erase(id)
+	actor["waypoints"]=[];actor["waypoint_index"]=0
+	if exiting:
+		actor.erase("private_visit_room");actor.erase("private_visit_stage")
+		actor["phase"]="idle";actor["intent"]="REST";actor["until"]=clock
+		# Remove a used one-visit ticket, if still present. Revoked tickets
+		# already disappeared; no additional authorization is required to exit.
+		world.control_private_door(rid,id,"leave",id)
+		_schedule_actor(actor,"PRIVATE_EXIT_COMPLETE")
+	else:
+		actor["private_visit_stage"]="inside"
+		actor["phase"]="perform";actor["until"]=clock+12.0
+		_schedule_actor(actor,"PRIVATE_VISIT_ACTIVE")
+
 func _move(actor: Dictionary, delta: float) -> void:
+	if actor.has("private_visit_room"):
+		_move_private_visit(actor,delta)
+		return
 	var waypoints: Array = actor.get("waypoints", [])
 	var idx: int = int(actor.get("waypoint_index", 0))
 	if idx >= waypoints.size():
@@ -1737,7 +1827,10 @@ func _move(actor: Dictionary, delta: float) -> void:
 		if candidate_traffic.stalled(str(actor["id"]),idx,next,authored_target,delta):
 			if _recover_traffic_stall(actor,next):
 				return
-	if next.distance_to(authored_target) <= 0.025:
+	# A near-corner shortcut can enter an isolated clear pocket.
+	# For candidate horizontal paths, reach the actual qualified waypoint.
+	var arrival_epsilon:float=0.00005 if candidate_navigation!=null and str(point["kind"])!="lift" else 0.025
+	if next.distance_to(authored_target) <= arrival_epsilon:
 		if candidate_navigation!=null:
 			candidate_traffic.clear_progress(str(actor["id"]))
 		actor["room_id"] = point["room_id"]
@@ -1901,6 +1994,12 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	var elapsed := life_scheduler.consume_elapsed(id,clock)
 	_advance_needs(actor,elapsed)
+	if actor.has("private_visit_room"):
+		if actor.get("private_visit_stage")!="exit" and not world.private_visit_allowed(world.room_by_id(str(actor.private_visit_room)),id):
+			_begin_private_exit(actor)
+		if actor.get("phase")=="travel":moving_ids[id]=true
+		life_scheduler.schedule_in(id,clock,2.0,"PRIVATE_VISIT_CHECK")
+		return
 	if actor.has("station_replan_lift_pending") and str(actor.get("phase",""))=="travel":
 		_schedule_actor(actor,"STATION_REPLAN_LIFT_DRAIN")
 		return
@@ -1953,6 +2052,8 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 		return
 	if actor.get("partner_id","") != "":
 		_cancel_pair_for(actor,"STALE_PARTNER_LINK")
+	if candidate_navigation!=null and actor.has("secondary_cup_id") and not actor.has("book_task_stage") and not actor.has("held_book") and not actor.has("social_session_id") and not actor.has("social_join_session_id"):
+		_restore_secondary_cup(actor)
 	if candidate_navigation!=null and actor.has("cup_task_stage"):
 		if str(actor.get("cup_task_stage",""))=="serve":
 			# A restored/replanned non-travelling service route cannot pour
@@ -1962,12 +2063,20 @@ func _process_due_actor(id: String, wake_reason: String) -> void:
 			return
 		if str(actor.get("cup_task_stage",""))=="hold":
 			if str(world.physical_object(str(actor.get("cup_task_id",""))).get("current_holder_id",""))==id:
+				var sipped:bool=false
 				if candidate_cups.beverages.enabled and int(actor.get("drink_sips_left",0))>0:
-					var sipped:bool=candidate_cups.beverages.sip(str(actor["cup_task_id"]),id)
+					sipped=candidate_cups.beverages.sip(str(actor["cup_task_id"]),id)
 					actor["drink_sips_left"]=int(actor["drink_sips_left"])-1 if sipped else 0
 					if sipped and int(actor["drink_sips_left"])>0 and float(candidate_cups.beverages.content(str(actor["cup_task_id"])).get("remaining_ml",0))>0:
 						actor["until"]=clock+3.0
 						_schedule_actor(actor,"DRINK_SIP")
+						return
+				# Choose a compatible primary action only after a genuine sip.
+				# Keep the same cup, no extra pour or preference credit.
+				if sipped and float(candidate_cups.beverages.content(str(actor.get("cup_task_id",""))).get("remaining_ml",0))>0 and rng.randf()<0.35:
+					var next_task:Dictionary=choose_intent(actor)
+					if _try_compose_cup(actor,next_task):
+						_schedule_actor(actor,"SECONDARY_CUP_PRIMARY_ACTION")
 						return
 				actor.erase("drink_service_id")
 				if not candidate_cups.put_back(actor):
@@ -2279,6 +2388,11 @@ func reconcile_cup_tasks()->Array:
 		var id:String=str(raw_id)
 		var actor:Dictionary=world.residents[id]
 		var actual:String=str(held.get(id,""))
+		if actor.has("secondary_cup_id"):
+			if actual==str(actor.secondary_cup_id) and _secondary_cup_valid(actor):
+				_clear_cup_task(actor)
+				continue
+			actor.erase("secondary_cup_id")
 		var task:String=str(actor.get("cup_task_id",""))
 		var stage:String=str(actor.get("cup_task_stage",""))
 		if actual!="":
@@ -2345,7 +2459,50 @@ func _clear_cup_task(actor:Dictionary)->void:
 	for key in ["cup_task_id","cup_task_room","cup_task_slot","cup_task_stage","drink_sips_left","drink_context","drink_service_id","drink_service_plan","drink_service_approach"]:
 		actor.erase(key)
 
-func _begin_cup_task(actor:Dictionary,room:Dictionary)->void:
+# Keep ownership and beverage state independent of the primary commitment.
+# Only a real nonempty cup may follow a resident into a reading/social action.
+func _secondary_cup_valid(actor:Dictionary)->bool:
+	var cid:String=str(actor.get("secondary_cup_id",""))
+	var obj:Dictionary=world.physical_object(cid)
+	return cid!="" and obj.get("viewer_category","")=="cups" and obj.get("current_holder_id","")==actor.get("id","")
+
+func _try_compose_cup(actor:Dictionary,task:Dictionary)->bool:
+	if candidate_navigation==null or not candidate_cups.beverages.enabled or task.get("intent","") not in ["READ_BOOK","TALK_PAIR","TALK_GROUP"]:return false
+	if actor.get("cup_task_stage","")!="hold" or actor.has("held_book") or actor.has("book_task_stage") or actor.has("social_session_id") or actor.has("secondary_cup_id"):return false
+	var cid:String=str(actor.get("cup_task_id",""))
+	var obj:Dictionary=world.physical_object(cid)
+	if obj.get("viewer_category","")!="cups" or obj.get("current_holder_id","")!=actor.get("id","") or float(candidate_cups.beverages.content(cid).get("remaining_ml",0))<=0:return false
+	var room:Dictionary=task.get("room",{})
+	if not world.public_cutaway_allowed(room):return false
+	actor["secondary_cup_id"]=cid
+	_clear_cup_task(actor)
+	_assign(actor,task)
+	if actor.has("book_task_stage") or actor.has("social_session_id"):return true
+	_restore_secondary_cup(actor)
+	return false
+
+func _restore_secondary_cup(actor:Dictionary)->bool:
+	if not actor.has("secondary_cup_id"):return false
+	var cid:String=str(actor.get("secondary_cup_id",""))
+	var valid:bool=_secondary_cup_valid(actor)
+	actor.erase("secondary_cup_id")
+	if not valid:return false
+	var obj:Dictionary=world.physical_object(cid)
+	_clear_cup_task(actor)
+	actor["cup_task_id"]=cid
+	actor["cup_task_stage"]="hold"
+	actor["cup_task_room"]=str(obj.get("home_room_id",""))
+	actor["cup_task_slot"]=""
+	actor["drink_sips_left"]=0
+	actor["intent"]="GET_COFFEE"
+	actor["phase"]="idle"
+	actor["until"]=clock
+	return true
+
+func _begin_cup_task(actor:Dictionary,room:Dictionary,autonomous:bool=false)->void:
+	if autonomous and candidate_cups.beverages.enabled and not candidate_cups.beverages.autonomous_visit_ready(str(actor["id"]),clock):
+		actor["until"]=clock+8.0
+		return
 	var context:String=str(actor.get("drink_context","GENERIC"))
 	_clear_cup_task(actor)
 	actor["drink_context"]=context
@@ -2373,6 +2530,7 @@ func _begin_cup_task(actor:Dictionary,room:Dictionary)->void:
 		_schedule_actor(actor,"CUP_ROUTE")
 		return
 	actor["until"]=clock+8.0
+	if autonomous:actor["drink_retry_at"]=clock+60.0
 
 func _route_drink_source(actor:Dictionary)->bool:
 	var room:Dictionary=world.room_by_id(str(actor.get("cup_task_room","")))

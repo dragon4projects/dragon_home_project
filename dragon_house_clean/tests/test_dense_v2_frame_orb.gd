@@ -37,7 +37,7 @@ func run()->void:
  assert(absf(orb.position.y-start)>.01)
  assert(orb.pixel_size*375.0>=.99)
  # Restore the QA-only test image to empty. Real owner slots were never accessed.
- DirAccess.remove_absolute(ProjectSettings.globalize_path(scene.DenseV2Runtime.REVIEW.artwork_path(id)))
+ DirAccess.remove_absolute(ProjectSettings.globalize_path(scene.DenseWallArt.record_path(id)))
  scene.DenseV2Runtime.REVIEW.refresh_artwork(holder)
  if DisplayServer.get_name()!="headless":
   scene.update_residents();scene.update_creatures(.125)

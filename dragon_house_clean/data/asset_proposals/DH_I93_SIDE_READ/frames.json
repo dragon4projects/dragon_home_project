@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "status": "SIDE_READING_PILOT_CANDIDATE",
+  "frames": [
+    {
+      "actor_id": "RES_07",
+      "appearance_profile": "EXISTING_EVMOCHKA",
+      "wardrobe": "HOME",
+      "state": "READ_E",
+      "path": "assets/residents/RES_07/wardrobes/HOME/READ_E/0001.png",
+      "sha256": "7ef7824c1656263bffa90b3234a5ffb669fec8420eacc4e381b3380f32a45797",
+      "size": 38584,
+      "canvas": [
+        512,
+        512
+      ],
+      "alpha_bbox": [
+        226,
+        235,
+        341,
+        480
+      ],
+      "contact_px": [
+        259,
+        393
+      ],
+      "contact_span_px": 65,
+      "contact_method": "MANUAL_SIDE_HIP_ESTIMATE_FRONT_WIDTH_CONSERVATIVE",
+      "book_baked": true,
+      "source_seat_sha256": "74f264baff4521a6d72b1b5fa9133f6d79fe5ca1a005b30561f825e755e5c242",
+      "source_seat_path": "assets/residents/RES_07/wardrobes/HOME/SIT_E/0001.png",
+      "source_sheet_sha256": "276523c0a12822f390c96c0f83726467b7029837c4213b6ffa231f30c1360b45",
+      "source_job": "e698c055-b8cf-4ddb-815d-d018968dd06b",
+      "source_front_sha256": "72ab008b7f7629b67c3eb48914f696e1e3581698ad446c87155bf973d34e24a9"
+    },
+    {
+      "actor_id": "RES_07",
+      "appearance_profile": "EXISTING_EVMOCHKA",
+      "wardrobe": "HOME",
+      "state": "READ_W",
+      "path": "assets/residents/RES_07/wardrobes/HOME/READ_W/0001.png",
+      "sha256": "6d0883836992c721f75a7981860fc04344076e258fcfb6cd8a446507714720bd",
+      "size": 38397,
+      "canvas": [
+        512,
+        512
+      ],
+      "alpha_bbox": [
+        167,
+        235,
+        284,
+        480
+      ],
+      "contact_px": [
+        255,
+        390
+      ],
+      "contact_span_px": 65,
+      "contact_method": "MANUAL_SIDE_HIP_ESTIMATE_FRONT_WIDTH_CONSERVATIVE",
+      "book_baked": true,
+      "source_seat_sha256": "5966b29f5ecb6fe1f7e6166dc901959affeb56e1c8d7c757e4da154c6329ba57",
+      "source_seat_path": "assets/residents/RES_07/wardrobes/HOME/SIT_W/0001.png",
+      "source_sheet_sha256": "276523c0a12822f390c96c0f83726467b7029837c4213b6ffa231f30c1360b45",
+      "source_job": "e698c055-b8cf-4ddb-815d-d018968dd06b",
+      "source_front_sha256": "72ab008b7f7629b67c3eb48914f696e1e3581698ad446c87155bf973d34e24a9"
+    },
+    {
+      "actor_id": "RES_04",
+      "appearance_profile": "LISA_02",
+      "wardrobe": "HOME",
+      "state": "READ_E",
+      "path": "assets/residents/RES_04/wardrobes/HOME/READ_E/0001.png",
+      "sha256": "879fbee4690337c42899fe27feb6e89d4e2e609a8f3562772a9bb86cdd013a45",
+      "size": 42692,
+      "canvas": [
+        512,
+        512
+      ],
+      "alpha_bbox": [
+        224,
+        234,
+        348,
+        479
+      ],
+      "contact_px": [
+        256,
+        394
+      ],
+      "contact_span_px": 79,
+      "contact_method": "MANUAL_SIDE_HIP_ESTIMATE_FRONT_WIDTH_CONSERVATIVE",
+      "book_baked": true,
+      "source_seat_sha256": "69d49d01cd3c22e39ad94f4ed20cb477ca690216223692db3b75711fddbd2640",
+      "source_seat_path": "assets/residents/RES_04/wardrobes/HOME/SIT_E/0001.png",
+      "source_sheet_sha256": "276523c0a12822f390c96c0f83726467b7029837c4213b6ffa231f30c1360b45",
+      "source_job": "e698c055-b8cf-4ddb-815d-d018968dd06b",
+      "source_front_sha256": "74736eff2b8839babe6d63179cc5e437db981bcb74a11eca07a0794cacfa169e"
+    },
+    {
+      "actor_id": "RES_04",
+      "appearance_profile": "LISA_02",
+      "wardrobe": "HOME",
+      "state": "READ_W",
+      "path": "assets/residents/RES_04/wardrobes/HOME/READ_W/0001.png",
+      "sha256": "f7509f01d4bae135be843d6c11e0c0dc4134566d68a913eb996b6d83b7db2067",
+      "size": 43060,
+      "canvas": [
+        512,
+        512
+      ],
+      "alpha_bbox": [
+        164,
+        232,
+        289,
+        480
+      ],
+      "contact_px": [
+        255,
+        393
+      ],
+      "contact_span_px": 79,
+      "contact_method": "MANUAL_SIDE_HIP_ESTIMATE_FRONT_WIDTH_CONSERVATIVE",
+      "book_baked": true,
+      "source_seat_sha256": "fb9407ff8b5ffcc90330b1426c39a20ba7f5747b7434bfd78b83f4fe84f3d8b1",
+      "source_seat_path": "assets/residents/RES_04/wardrobes/HOME/SIT_W/0001.png",
+      "source_sheet_sha256": "276523c0a12822f390c96c0f83726467b7029837c4213b6ffa231f30c1360b45",
+      "source_job": "e698c055-b8cf-4ddb-815d-d018968dd06b",
+      "source_front_sha256": "74736eff2b8839babe6d63179cc5e437db981bcb74a11eca07a0794cacfa169e"
+    }
+  ]
+}

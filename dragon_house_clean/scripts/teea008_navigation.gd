@@ -222,6 +222,9 @@ func segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
 		# Use the same round body clearance as point navigation, including the
 		# explicit exception for furniture on the three passage bands.
 		return sampled_segment_clear(room,a,b)
+	return _obstacle_segment_clear(room,a,b)
+
+func _obstacle_segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
 	# Exact segment-to-AABB distance (rounded clearance rather than square
 	# expansion). Independent QA still samples the segment at 2.5 cm.
 	var sweep:=Rect2(Vector2(minf(a.x,b.x),minf(a.y,b.y)),Vector2(absf(a.x-b.x),absf(a.y-b.y))).grow(RADIUS)
@@ -240,27 +243,31 @@ func segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
 	return true
 
 func sampled_segment_clear(room:Dictionary,a:Vector2,b:Vector2)->bool:
-	# Preserve the exact 2.5cm samples and passage exceptions. Resolve
-	# immutable room bounds and broad-phase obstacles ONCE, not per sample.
+	# Preserve the passage-band exception but test the continuous swept
+	# segment elsewhere. Fixed-step samples depended on the segment start;
+	# a planned leg could pass while its next movement subsegment failed.
 	if not has_layout(room):return true
 	var hw:float=float(room.get("size_modules",1))*2.4
 	var min_z:float=_back(room)+RADIUS-0.001
 	for p in [a,b]:
 		if absf(p.x)>hw+0.001 or p.y<min_z or p.y>FRONT+0.001:return false
-	var sweep:=Rect2(Vector2(minf(a.x,b.x),minf(a.y,b.y)),Vector2(absf(a.x-b.x),absf(a.y-b.y))).grow(RADIUS+.00001)
-	var relevant:Array=[]
-	for box:Rect2 in _obstacles(room):
-		if sweep.intersects(box,true):relevant.append(box)
-	if relevant.is_empty():return true
-	var depth7:bool=DEPTH7.enabled_for(room)
-	var threshold:float=RADIUS*RADIUS-0.000001
-	var steps:int=maxi(1,ceili(a.distance_to(b)/0.025))
-	for i in range(steps+1):
-		var p:Vector2=a.lerp(b,float(i)/float(steps))
-		if depth7 and DEPTH7.passage(p.y):continue
-		for box:Rect2 in relevant:
-			var near:=Vector2(clampf(p.x,box.position.x,box.end.x),clampf(p.y,box.position.y,box.end.y))
-			if p.distance_squared_to(near)<threshold:return false
+	if not DEPTH7.enabled_for(room):return _obstacle_segment_clear(room,a,b)
+	if not clear(room,a) or not clear(room,b):return false
+	var dz:float=b.y-a.y
+	if absf(dz)<0.000001:
+		return DEPTH7.passage(a.y) or _obstacle_segment_clear(room,a,b)
+	var cuts:Array[float]=[0.0,1.0]
+	# band() assigns a boundary to the earlier (frontward) band, with
+	# 0.1mm tolerance. Split at that actual boundary.
+	for edge in DEPTH7.EDGES:
+		var t:float=(edge-0.0001-a.y)/dz
+		if t>0.0 and t<1.0:cuts.append(t)
+	cuts.sort()
+	for i in range(cuts.size()-1):
+		var lo:float=cuts[i]
+		var hi:float=cuts[i+1]
+		if DEPTH7.passage(a.lerp(b,(lo+hi)*0.5).y):continue
+		if not _obstacle_segment_clear(room,a.lerp(b,lo),a.lerp(b,hi)):return false
 	return true
 
 func _grid(room:Dictionary)->AStarGrid2D:
@@ -583,7 +590,7 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String,view_yaw:float=
 		anchor=raw.get("floor",raw.get("lie_surface",[]))
 		exclusive=raw.has("lie_surface") and not raw.has("floor")
 	elif intent=="READ_BOOK":
-		state="READ"
+		state="READ" if not measured or directional in ["","RELAXED_SIT"] else "READ_"+directional.trim_prefix("SIT_")
 		anchor=raw.get("pelvis",[])
 	elif intent=="WATCH_FILM":
 		if measured and directional!="" and not pose_profile(actor,directional).is_empty():state=directional
@@ -611,7 +618,9 @@ func pose_contact(actor:Dictionary,spot:Dictionary,intent:String,view_yaw:float=
 		if state=="SIT_E_OCCLUDED":
 			if float(facing[0])<0.9:return {}
 			return {"state":state,"local_xyz":anchor,"instance_xyz":raw["instance_xyz"],"contact_px":px,"canvas":canvas,"exclusive":false,"book_baked":false,"evidence":"OCCLUDED_SIDE_CROP_NOT_FULL_BODY"}
-		if measured and state.begins_with("SIT_") and state!="SIT_E_OCCLUDED":
+		if measured and state.begins_with("READ_"):
+			if "SIT_"+state.trim_prefix("READ_")!=directional:return {}
+		elif measured and state.begins_with("SIT_") and state!="SIT_E_OCCLUDED":
 			if state!=directional:return {}
 		elif state=="SIT_N":
 			if float(facing[2])> -0.5:return {}
@@ -705,6 +714,19 @@ func book_slots(room:Dictionary)->Array:
 	if not str(room.get("type","")) in ["library","rest"]:
 		return out
 	var row:Dictionary=layouts.get(variant,{})
+	if row.has("measured_book_slots"):
+		var stations:Dictionary={}
+		for spot in candidate_spots(room):
+			if spot.get("kind","")=="standing":stations[str(spot.id)]=true
+		for slot in row.measured_book_slots:
+			if stations.has(str(slot.station_id)):out.append(slot.duplicate(true))
+		# Existing supports remain first for stable and balanced home allocation.
+		out.sort_custom(func(a,b):
+			var a_new:bool=str(a.id).contains(".I91_B_")
+			var b_new:bool=str(b.id).contains(".I91_B_")
+			return int(a_new)<int(b_new) if a_new!=b_new else str(a.id)<str(b.id))
+		book_slot_cache[variant]=out
+		return out
 	var used:Dictionary={}
 	for item in row.get("instances",[]):
 		var ref:String=str(item.get("support_ref",""))

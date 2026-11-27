@@ -4,6 +4,8 @@ const SAVE_PATH := "user://dragon_house_world_v01.json"
 const ObjectEventRuntime = preload("res://scripts/object_event_runtime.gd")
 const RoomSpaceV2 = preload("res://scripts/room_space_v2.gd")
 const CanonicalHouseSeed = preload("res://scripts/canonical_house_seed.gd")
+const PrivateDoorAccess = preload("res://scripts/private_door_access.gd")
+signal private_access_changed(room_id:String, visitor_id:String)
 var canonical_house_seed := false
 var room_space = RoomSpaceV2.new()
 var save_path: String = SAVE_PATH
@@ -196,12 +198,14 @@ func make_room(x: int, level: int, room_type: String,
 		"display_name": "Гостевая" if room_type == "guest" else "",
 	}
 	room["connectors"]=room_space.default_connectors(room_type,modules)
+	if canonical_house_seed and not immutable_topology and room_type=="common" and modules==3:
+		room["interior_variant"]="runtime_common"
 	next_room_id += 1
 	rooms.append(room)
 	return room
 
 func can_build_room(x: int, level: int, room_type: String, size_modules: int = 1) -> bool:
-	if not ROOM_TYPES.has(room_type):
+	if recovery_blocked or not ROOM_TYPES.has(room_type) or size_modules<1 or size_modules>3:
 		return false
 	var modules:=room_space.normalize_size(size_modules)
 	if room_type=="lift" and modules!=1:
@@ -230,8 +234,13 @@ func can_build(x: int, level: int, room_type: String) -> bool:
 func build_room(x: int, level: int, room_type: String, size_modules: int = 1) -> bool:
 	if not can_build_room(x,level,room_type,size_modules):
 		return false
+	var previous_id:=next_room_id
+	while not room_by_id("ROOM_%04d" % next_room_id).is_empty():next_room_id+=1
 	make_room(x,level,room_type,size_modules,false)
-	save_world()
+	if not save_world():
+		rooms.pop_back()
+		next_room_id=previous_id
+		return false
 	return true
 
 func build(x: int, level: int, room_type: String) -> bool:
@@ -252,6 +261,14 @@ func is_accessible(room: Dictionary, actor_id: String = "") -> bool:
 	if room.get("privacy", "public") != "public":
 		return actor_id != "" and room.get("owner_id", "") == actor_id
 	return true
+
+# Explicit visit entry is distinct from generic station/object access.
+# Do not grant furniture ownership or public view merely because of a visit.
+func private_visit_allowed(room:Dictionary,visitor_id:String)->bool:
+	return PrivateDoorAccess.permitted(self,room,visitor_id)
+
+func control_private_door(room_id:String,authority_actor_id:String,operation:String,visitor_id:String="",flag:bool=false)->bool:
+	return PrivateDoorAccess.mutate(self,room_id,authority_actor_id,operation,visitor_id,flag)
 
 func public_cutaway_allowed(room: Dictionary) -> bool:
 	if room.is_empty() or str(room.get("privacy","public")) != "public":
@@ -1421,6 +1438,7 @@ func _read_snapshot(path: String) -> Dictionary:
 	for key in ["residents","objects","creatures"]:
 		for row in parsed.get(key,{}).values():
 			if typeof(row)!=TYPE_DICTIONARY:return {}
+	if not PrivateDoorAccess.validate_snapshot(state.get(PrivateDoorAccess.KEY,{}),parsed.rooms,parsed.residents):return {}
 	var catalog:Dictionary=parsed.get("media",{})
 	for key in ["books","films","tracks"]:
 		if catalog.has(key) and typeof(catalog[key])!=TYPE_ARRAY:return {}
@@ -1491,6 +1509,10 @@ func load_or_seed() -> bool:
 	creatures = parsed.get("creatures", {})
 	journal = parsed.get("journal", [])
 	runtime_state = parsed.get("runtime_state", {})
+	# A rollback can predate a revocation. Never resurrect an old admission
+	# or standing invitation from the fallback generation.
+	var access_reset:bool=from_backup and runtime_state.has(PrivateDoorAccess.KEY)
+	if access_reset:runtime_state.erase(PrivateDoorAccess.KEY)
 	next_room_id = int(parsed.get("next_room_id", rooms.size() + 1))
 	sim_clock = float(parsed.get("sim_clock", 0.0))
 	last_checkpoint_clock=sim_clock
@@ -1512,7 +1534,7 @@ func load_or_seed() -> bool:
 		return _block_world_recovery("EVENT_RECOVERY_REQUIRED","Object event recovery failed; saved world retained.")
 	if not reconcile_object_carriers():
 		return _block_world_recovery("CARRIER_RECOVERY_REQUIRED","Object holder conflicts require recovery; saved world retained.")
-	if migrated or social_changed:
+	if migrated or social_changed or access_reset:
 		if not save_world():
 			return _block_world_recovery("MIGRATION_SAVE_FAILED","Cannot commit migrated world; saved world retained.")
 	load_status="RECOVERED_BACKUP" if from_backup else "LOADED"

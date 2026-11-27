@@ -15,15 +15,19 @@ var complete_sprite_intake=CompleteSpriteIntake.new()
 var complete_sprite_ready:bool=false
 const DenseArtifactWorld=preload("res://scripts/dense_v2_artifact_world.gd")
 const DenseArtifactImport=preload("res://scripts/dense_v2_artifact_import.gd")
+const DenseWallArt=preload("res://scripts/dense_v2_wall_artwork.gd")
 var dense_artifact_empty_nodes:Dictionary={}
 var dense_artifact_visual_signature:String=""
 var dense_v2_artwork_picker:FileDialog
 var dense_v2_pending_frame:String=""
+var dense_v2_pending_art_category:String="paintings"
+var dense_v2_pending_art_title:String=""
 const WorldScript = preload("res://scripts/world_model.gd")
 const LifeScript = preload("res://scripts/life.gd")
 const MediaPanelScript = preload("res://scripts/media_station_ui.gd")
 const ContentViewerScript = preload("res://scripts/content_viewer.gd")
 const ObjectImportScript = preload("res://scripts/runtime_object_import.gd")
+const LocalMediaImportScript = preload("res://scripts/local_media_catalog_import.gd")
 const WallPlacementScript = preload("res://scripts/wall_display_placement.gd")
 const AssetBankResolverScript = preload("res://scripts/asset_bank_resolver.gd")
 const InteriorSkinScript = preload("res://scripts/interior_skin.gd")
@@ -364,7 +368,11 @@ func _ready() -> void:
 				teea008_review.layouts["common/R3"]=row
 				for room in world.rooms:
 					if str(room.get("type",""))=="common" and int(room.get("size_modules",1))==3:
-						room["depth7"]=true
+						if bool(room.get("immutable_topology",false)):
+							room["depth7"]=true
+						else:
+							room["interior_variant"]="runtime_common"
+							room.erase("depth7")
 	if architecture_review and teea008_review.enabled:
 		for key in Depth7Layout.SOCIAL_KEYS+Depth7Layout.FUNCTION_KEYS+Depth7Layout.GUEST_KEYS:
 			var previous:Dictionary=teea008_review.layouts.get(key,{})
@@ -427,7 +435,18 @@ func _ready() -> void:
 		if architecture_review:
 			print("DEPTH7_POSE_CONTACTS ",life.candidate_navigation.install_depth7_pose_intake())
 			if complete_sprite_ready:print("COMPLETE_SPRITE_POSES ",complete_sprite_intake.install_poses(life.candidate_navigation,asset_banks))
+			var side_reads:int=preload("res://scripts/directional_reading_intake.gd").new().install(asset_banks,life.candidate_navigation)
+			if side_reads<0:
+				push_error("Invalid directional reading intake")
+				world.load_status="SPRITE_INTAKE_RECOVERY_REQUIRED"
+				_show_recovery_blocked()
+				return
+			print("I93_DIRECTIONAL_READS ",side_reads)
 			print("DEPTH7_CUP_HANDS ",life.candidate_navigation.install_depth7_cup_hands())
+		if not preload("res://scripts/local_cup_support_transaction.gd").finish(world,life.candidate_navigation):
+			world._block_world_recovery("CUP_SUPPORT_EDIT_RECOVERY_REQUIRED","Cannot recover saved furniture support edit.")
+			_show_recovery_blocked()
+			return
 		if architecture_review and not legacy_depth_layouts.is_empty():
 			var old_nav=TEEA008NavigationScript.new()
 			old_nav.configure(legacy_depth_layouts)
@@ -1741,7 +1760,7 @@ func make_room(group: Dictionary) -> void:
 	n.set_meta("facade_only",facade_only)
 	if architecture_review and t=="guest":canonical_guest_nodes[str(n.name)]=n
 	var live_room:Dictionary=world.room_by_id(str(group["primary_id"]))
-	if architecture_review and not facade_only and Depth7Space.enabled_for(live_room) and t=="common":
+	if architecture_review and not facade_only and Depth7Space.enabled_for(live_room) and t=="common" and bool(live_room.get("immutable_topology",false)):
 		group["art_type"]="common"
 		group["has_art"]=false
 		group["teea008_review"]=true
@@ -1768,14 +1787,20 @@ func make_room(group: Dictionary) -> void:
 	if architecture_review and t=="lift" and Depth7Space.enabled_for(live_room):
 		var structure:=Node3D.new();structure.name="Layer_Structure";n.add_child(structure)
 		box(structure,Vector3(0,1.50,-8.14),Vector3(span,3.0,.18),palette["rock"]).name="StructuralRearBackup"
+		# Continuous finished landing, not exposed rails and disconnected
+		# timber strips. Simulation lift capacity and vertical routes unchanged.
+		box(structure,Vector3(0,-.07,-3.20),Vector3(span,.14,9.70),palette["floor"]).name="LiftFinishedLanding"
+		box(structure,Vector3(0,3.06,-7.60),Vector3(span,.12,1.05),palette["wood"]).name="LiftCeilingTrim"
 		for side in [-1,1]:
 			var xx:float=float(side)*(span*.5-.10)
-			box(structure,Vector3(xx,1.50,-4.18),Vector3(.14,3.0,7.72),palette["rock"]).name="ConnectorRearReturn_%s"%("L" if side<0 else "R")
-			for band in [1,3,5]:
-				box(structure,Vector3(float(side)*1.48,1.9,Depth7Space.center(band)),Vector3(.11,3.8,.12),palette["bronze"]).name="LiftRail_%d_%d"%[side,band]
+			for band in [2,4,6,7]:
+				var front:float=Depth7Space.EDGES[band-1]
+				var back:float=Depth7Space.EDGES[band]
+				box(structure,Vector3(xx,1.50,(front+back)*.5),Vector3(.14,3.0,front-back),palette["rock"]).name="LiftReturn_%d_%d"%[side,band]
+			# Recessed frame behind the visible landing, not a room-sized cage.
+			box(structure,Vector3(float(side)*1.48,1.50,-7.82),Vector3(.13,3.0,.16),palette["bronze"]).name="LiftRearRail_%d"%side
 		for band in [1,3,5]:
-			box(structure,Vector3(0,-.04,Depth7Space.center(band)),Vector3(span-.2,.08,.82),palette["copper"]).name="LiftLane_%d"%band
-		box(structure,Vector3(0,-.04,1.5),Vector3(span,.08,.30),palette["floor"]).name="FrontConnector"
+			box(structure,Vector3(0,.002,Depth7Space.center(band)),Vector3(span-.28,.008,.66),palette["copper"]).name="LiftLane_%d"%band
 		label3(n,"Лифт",Vector3(0,3.35,.40),24,Color("#f4d9b9")).name="RoomRoofLabel"
 		return
 	var art_type := _review_room_art_type(group)
@@ -2346,7 +2371,12 @@ func update_physical_objects() -> void:
 				anchor.rotation=Vector3.ZERO
 				anchor.position=Vector3(holder_x+0.24*held_scale,float(holder.get("visual_y",0.0))+0.92*held_scale,holder_z+0.16)
 				anchor.set_meta("hand_contact_status","UNCALIBRATED_MOVING_OR_NONMODEL")
-				_place_cup_at_verified_hand(anchor,holder)
+				var verified_grip:bool=_place_cup_at_verified_hand(anchor,holder)
+				# A combined book/cup pose needs its own calibrated hand frame.
+				# No floating cup or second baked book as a substitute.
+				if str(holder.get("secondary_cup_id",""))==str(object_id) and not verified_grip:
+					anchor.visible=false
+					anchor.set_meta("hand_contact_status","SECONDARY_CUP_CONTACT_UNQUALIFIED")
 			continue
 		if str(object.get("state","")) == "STASHED":
 			# Hidden means hidden: the canonical location remains in world state,
@@ -2816,6 +2846,8 @@ func animate_verified_actor(id: String, actor: Dictionary, delta: float) -> void
 				if not grip.is_empty():feet=float(grip.get("feet_px",feet))
 			sprite.position=Vector3(0,maxf(0.15,(feet-float(texture.get_height())*0.5)*sprite.pixel_size),0)
 
+var local_house_controls=preload("res://scripts/local_house_controls.gd").new()
+
 func build_interface() -> void:
 	var layer := CanvasLayer.new()
 	add_child(layer)
@@ -2920,6 +2952,21 @@ func build_interface() -> void:
 		drinks_button.text="Напитки · QA"
 		drinks_button.pressed.connect(_open_drink_qa)
 		hud_main_body.add_child(drinks_button)
+	if architecture_review:
+		local_house_controls.bind(self)
+		var doors_button:=Button.new()
+		doors_button.text="Двери · явные команды"
+		doors_button.pressed.connect(local_house_controls.open_doors)
+		hud_main_body.add_child(doors_button)
+		var interior_button:=Button.new()
+		interior_button.text="Обстановка · опоры"
+		interior_button.pressed.connect(local_house_controls.open_editor)
+		hud_main_body.add_child(interior_button)
+		if dense_v2_qa:
+			var furniture_button:=Button.new()
+			furniture_button.text="Обстановка · мебель"
+			furniture_button.pressed.connect(local_house_controls.open_furniture)
+			hud_main_body.add_child(furniture_button)
 	var journal_button := Button.new()
 	journal_button.text = "Журнал дома [J]"
 	journal_button.pressed.connect(toggle_journal)
@@ -3153,7 +3200,7 @@ func content_hotspot_at_screen(point: Vector2) -> Dictionary:
 			if not item.is_empty():
 				surface["display_name"]=str(item.get("title",item.get("display_name","Без названия")))
 			else:
-				var category:String=str(teea008_review.surfaces.get(str(surface["item_id"]),{}).get("legacy_runtime_category",""))
+				var category:String=str(teea008_media_bindings.spec(str(surface["room_id"]),str(surface["item_id"])).get("legacy_runtime_category",""))
 				surface["display_name"]={"books":"Книжная полка","films":"Кинозона","tracks":"Аудиотека","artifacts":"Полка артефактов"}.get(category,"Место для экспозиции")
 			found=surface
 	return found
@@ -3174,10 +3221,12 @@ func open_content_hotspot(entry: Dictionary) -> bool:
 	if category=="dense_v2_frame":
 		var frame:MeshInstance3D=_dense_v2_find_frame(item_id)
 		if frame==null:return false
+		var artwork:Dictionary=DenseWallArt.load_record(item_id)
+		if not artwork.is_empty():return content_viewer.open_record(str(artwork.category),artwork)
 		var path:String=DenseV2Runtime.REVIEW.artwork_path(item_id)
-		return content_viewer.open_record("paintings",{"id":item_id,"title":"Картина / постер · "+item_id,"preview_path":path,"description":"" if FileAccess.file_exists(path) else "Рамка пока пуста.","dense_v2_assignable":true})
+		return content_viewer.open_record("paintings",{"id":item_id,"title":"Картина / постер" if FileAccess.file_exists(path) else "Пустая рамка","preview_path":path,"description":"Исходник старого назначения не подтверждён." if FileAccess.file_exists(path) else "Рамка пока пуста.","dense_v2_assignable":true,"dense_wall_frame":true})
 	if category=="teea008_surface":
-		var surface:Dictionary=teea008_review.surfaces.get(item_id,{})
+		var surface:Dictionary=teea008_media_bindings.spec(str(entry.get("room_id","")),item_id)
 		if surface.is_empty() or not world.public_cutaway_allowed(world.room_by_id(str(entry.get("room_id","")))):
 			return false
 		var bound_category:String=str(surface.get("legacy_runtime_category",""))
@@ -3355,6 +3404,21 @@ func door_note_at_screen(point:Vector2)->String:
 	return found
 
 func _import_media(path: String) -> void:
+	var local_import=LocalMediaImportScript.new()
+	var parsed=local_import.read_manifest(path)
+	if typeof(parsed)!=TYPE_DICTIONARY:
+		notice.text="Ошибка импорта: некорректный JSON или размер больше 4 МиБ"
+		return
+	if typeof(parsed)==TYPE_DICTIONARY and (parsed.has("books") or parsed.has("films") or parsed.has("tracks") or parsed.has("audio")):
+		var imported:Dictionary=local_import.import_file(world,life.media_runtime,path)
+		if not imported.get("ok",false):
+			notice.text="Ошибка медиакаталога: "+str(imported.get("error",""))
+			return
+		media_panel.refresh()
+		_update_physical_books()
+		notice.text="Медиакаталог: добавлено %d · повторов %d · книг на полках %d" % [int(imported.added),int(imported.duplicates),int(imported.placed_books)]
+		update_hud()
+		return
 	var importer=ObjectImportScript.new()
 	var result:Dictionary=importer.import_file(world,path,teea008_review if teea008_review.enabled else null,life.candidate_navigation)
 	if not bool(result.get("ok",false)):
@@ -4497,7 +4561,8 @@ func _update_physical_books()->void:
 			if actor.is_empty() or not semantic_view.actor_visible(actor) or not world.public_cutaway_allowed(room):continue
 			# Only an actually rendered, calibrated pose with a baked book may hide the physical volume.
 			var contact:Dictionary=_active_station_render_contact(actor)
-			if str(contact.get("state",""))=="READ" and bool(contact.get("book_baked",false)) and str(actor_animations.get(holder_id,{}).get("state",""))=="READ":continue
+			var reading_state:String=str(contact.get("state",""))
+			if reading_state.begins_with("READ") and bool(contact.get("book_baked",false)) and str(actor_animations.get(holder_id,{}).get("state",""))==reading_state:continue
 			var z:float=float(actor.get("z",0))
 			scale_value=depth_scale_for_room(str(room["id"]),z)
 			position_value=Vector3(depth_visual_x(str(room["id"]),float(actor["x"]),z)+0.20*scale_value,float(actor.get("visual_y",0))+0.90*scale_value,z+0.14)
@@ -4738,7 +4803,8 @@ func _dense_v2_frame_hit(point:Vector2)->Dictionary:
 		var half:Vector2=frame.get_meta("surface_size",Vector2.ZERO)*.5
 		if t<=0 or t>=closest or absf(hit.x)>half.x or absf(hit.y)>half.y:continue
 		closest=t
-		found={"category":"dense_v2_frame","item_id":str(frame.get_meta("slot_id","")),"room_id":room_id,"anchor":frame,"display_name":"Картина / постер"}
+		var slot:String=str(frame.get_meta("slot_id",""))
+		found={"category":"dense_v2_frame","item_id":slot,"room_id":room_id,"anchor":frame,"display_name":str(frame.get_meta("artwork_title","Картина / постер"))}
 	return found
 
 func _choose_dense_v2_artwork(id:String)->void:
@@ -4748,6 +4814,11 @@ func _choose_dense_v2_artwork(id:String)->void:
 		if not is_instance_valid(holder) or not holder.is_visible_in_tree():return
 	elif _dense_v2_find_frame(id)==null:return
 	dense_v2_pending_frame=id
+	dense_v2_pending_art_category="paintings"
+	dense_v2_pending_art_title=""
+	if not id.begins_with("DG:"):
+		dense_v2_pending_art_category=str(content_viewer.artwork_kind.get_item_metadata(content_viewer.artwork_kind.selected))
+		dense_v2_pending_art_title=content_viewer.artwork_title.text
 	dense_v2_artwork_picker.popup_centered_ratio(.75)
 
 func _assign_dense_v2_artwork(path:String)->void:
@@ -4768,14 +4839,12 @@ func _assign_dense_v2_artwork(path:String)->void:
 		open_content_hotspot({"category":"artifacts","item_id":assigned})
 		return
 	var frame:MeshInstance3D=_dense_v2_find_frame(id)
-	if frame==null or not FileAccess.file_exists(path):return
-	var file:=FileAccess.open(path,FileAccess.READ)
-	if file==null or file.get_length()>32*1024*1024:return
-	file.close()
-	var image:=Image.new()
-	if image.load(path)!=OK or image.get_width()>8192 or image.get_height()>8192:return
-	var dest:String=DenseV2Runtime.REVIEW.artwork_path(id)
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dest.get_base_dir()))
-	if image.save_png(dest)!=OK:return
+	if frame==null:return
+	var importer=DenseWallArt.new()
+	var artwork:Dictionary=importer.assign(id,path,dense_v2_pending_art_category,dense_v2_pending_art_title)
+	if artwork.is_empty():
+		notice.text=importer.error
+		return
 	DenseV2Runtime.REVIEW.refresh_artwork(frame)
+	notice.text="Изображение назначено; оригинал сохранён"
 	open_content_hotspot({"category":"dense_v2_frame","item_id":id})

@@ -52,6 +52,16 @@ if (complete/"frames.json").is_file():
     for profile in json.loads((complete/"pose_contacts.json").read_text())["profiles"].values():
         for state in profile["states"].values():
             if frames.get("res://"+state["path"])!=state["sha256"]:raise SystemExit("complete contact hash mismatch")
+side=root/"data/asset_proposals/DH_I93_SIDE_READ/frames.json"
+if side.is_file():
+    for rec in json.loads(side.read_text())["frames"]:
+        path=root/rec["path"]
+        digest=hashlib.file_digest(path.open("rb"),"sha256").hexdigest()
+        if digest!=rec["sha256"] or path.stat().st_size!=rec["size"]:raise SystemExit("directional reading frame mismatch "+str(path))
+        if frames.get("res://"+rec["source_seat_path"])!=rec["source_seat_sha256"]:raise SystemExit("directional reading source seat mismatch")
+        key="res://"+rec["path"]
+        if key in frames and frames[key]!=digest:raise SystemExit("directional reading proof conflict")
+        frames[key]=digest
 (data/"TEEA008_POSE_EXPORT_PROOF.json").write_text(json.dumps({"owner_approved":False,"frames":frames},indent=2)+"\n")
 (data/"TEEA008_LIVE_REVIEW.enabled").write_text("OWNER_REVIEW_ONLY\n")
 print("TEEA008_EXPORT_STAGE_PASS verified_source_frames=",len(frames))

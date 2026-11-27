@@ -1048,7 +1048,19 @@ func install_canonical_book_catalog()->Dictionary:
 			for field in ["work_id","series_id","series_name","series_index","series_catalog_status","series_catalog_last_index","series_status","publication_year","preview_status"]:
 				if source.has(field) and not book.has(field):book[field]=source[field]
 		if bool(book.get("physical",true)):continue
-		for room in world.matching_rooms(["library"]):
+		var libraries:Array=world.matching_rooms(["library"])
+		# In the measured dense layouts fill both reading rooms, not only the
+		# first room. Existing book identities and assignments are untouched.
+		if libraries.any(func(r):return str(r.get("dense_v2_layout",""))!=""):
+			var counts:Dictionary={}
+			for value in world.runtime_state.get("teea008_book_slot_assignments",{}).values():
+				var rid:String=str(value.get("room_id",""))
+				counts[rid]=int(counts.get(rid,0))+1
+			libraries.sort_custom(func(a,b):
+				var n:int=int(counts.get(a.id,0))
+				var m:int=int(counts.get(b.id,0))
+				return n<m if n!=m else str(a.id)<str(b.id))
+		for room in libraries:
 			var slot:Dictionary=free_book_slot(id,room)
 			if slot.is_empty():continue
 			book["physical"]=true

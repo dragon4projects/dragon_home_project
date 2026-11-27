@@ -35,7 +35,7 @@ func register_review_mugs()->int:
 			var asset:String=str(item.get("asset_id",""))
 			if not asset in ["candidate_dragon_mug_red","candidate_guest_mug_blue"]:continue
 			var id:String="TEEA008_REVIEW_"+asset
-			if str(room["type"])!="common":
+			if str(room["type"])!="common" or not bool(room.get("immutable_topology",false)):
 				id="SOCIAL_REVIEW_"+str(room["id"])+"_"+str(item["instance_id"])
 			if not world.physical_object(id).is_empty():continue
 			var pos:Array=item["room_local_xyz"]

@@ -4,6 +4,8 @@ extends PanelContainer
 
 signal artwork_assignment_requested(slot_id:String)
 var artwork_assign:Button
+var artwork_kind:OptionButton
+var artwork_title:LineEdit
 var category := ""
 var item: Dictionary = {}
 var media_runtime
@@ -29,6 +31,16 @@ func _ready() -> void:
 	title_label.text = "ПРОСМОТР"
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title_label)
+	artwork_kind=OptionButton.new()
+	artwork_kind.add_item("Картина");artwork_kind.set_item_metadata(0,"paintings")
+	artwork_kind.add_item("Постер");artwork_kind.set_item_metadata(1,"posters")
+	artwork_kind.visible=false
+	header.add_child(artwork_kind)
+	artwork_title=LineEdit.new()
+	artwork_title.placeholder_text="Название (или имя файла)"
+	artwork_title.custom_minimum_size.x=210
+	artwork_title.visible=false
+	header.add_child(artwork_title)
 	artwork_assign=Button.new()
 	artwork_assign.text="Назначить изображение"
 	artwork_assign.visible=false
@@ -102,6 +114,10 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 	category = p_category
 	item = record.duplicate(true)
 	artwork_assign.visible=bool(item.get("dense_v2_assignable",false))
+	artwork_kind.visible=bool(item.get("dense_wall_frame",false))
+	artwork_title.visible=artwork_kind.visible
+	artwork_kind.select(1 if p_category=="posters" else 0)
+	artwork_title.text=str(item.get("title","")) if item.get("local_import_v1",false) else ""
 	var title := str(item.get("title",item.get("display_name","Без названия")))
 	title_label.text = title
 	var byline_raw = item.get("artist",item.get("author",""))
@@ -121,9 +137,19 @@ func open_record(p_category: String, record: Dictionary, texture_override: Textu
 	text_view.text = ""
 	text_view.visible = false
 	var preview_path := str(item.get("preview",item.get("preview_path","")))
+	if bool(item.get("local_import_v1",false)) and str(item.get("full_image_path",""))!="":
+		var original:String=str(item.full_image_path)
+		if FileAccess.file_exists(original) and FileAccess.get_sha256(original)==str(item.get("master_sha256","")):
+			preview_path=original
+		else:
+			preview_path=""
+			meta_label.text+="\nОригинал отсутствует или повреждён."
 	preview.texture = texture_override if texture_override!=null else _load_preview(preview_path)
 	var text_path := str(item.get("content_path",item.get("text_path","")))
 	var body := _safe_text(text_path)
+	if bool(item.get("local_import_v1",false)) and text_path!="" and FileAccess.get_sha256(text_path)!=str(item.get("content_sha256","")):
+		body=""
+		meta_label.text+="\nТекст отсутствует или повреждён."
 	if p_category == "books" and body != "":
 		text_view.text = body
 		text_view.visible = true

@@ -3,6 +3,7 @@ const LearnedHabits=preload("res://scripts/learned_habits.gd")
 ## Persisted beverage state is separate from the event-sourced object projection.
 ## Only the accepted object holder can sip; replays of object movement cannot
 ## reset contents or preferences. No physics, recipes or intoxication.
+const AUTONOMOUS_VISIT_INTERVAL:=900.0
 const LOG_PATH="user://house_content/logs/drink_choices.jsonl"
 var world
 var config:Dictionary={}
@@ -46,6 +47,15 @@ func history(actor_id:String)->Dictionary:
 	if not prefs.has(actor_id):
 		prefs[actor_id]={"drink_counts":{},"last_drink_id":"","recent_drinks":[],"total_choices":0,"completed_drinks":[],"last_choice":{}}
 	return prefs[actor_id]
+
+# Only autonomous selection is paced; an already started drink can be sipped
+# normally. Old saves use the first successful choice time as a fallback.
+func autonomous_visit_ready(actor_id:String,now:float)->bool:
+	if not enabled:return true
+	var prefs:Dictionary=_store()["preferences"].get(actor_id,{})
+	var last:Dictionary=prefs.get("last_choice",{})
+	var stamp:float=float(prefs.get("last_sip_sim_clock",last.get("sim_clock",-AUTONOMOUS_VISIT_INTERVAL)))
+	return now>=stamp+AUTONOMOUS_VISIT_INTERVAL
 
 func learned_weight(n:int)->float:
 	return 1.0 if n<5 else 1.0+2.35*pow(float(mini(n,30)-4),1.5)
@@ -181,6 +191,7 @@ func sip(cup_id:String,actor_id:String)->bool:
 	if c.is_empty() or float(c.get("remaining_ml",0))<=0 or str(c.get("consumer_id",""))!=actor_id:return false
 	if str(world.physical_object(cup_id).get("current_holder_id",""))!=actor_id:return false
 	var prefs:=history(actor_id)
+	prefs["last_sip_sim_clock"]=float(world.sim_clock)
 	var id:String=str(c["content_id"])
 	c["remaining_ml"]=maxf(0.0,float(c["remaining_ml"])-float(c["serving_ml"])*float(config["sip_fraction"]))
 	if c.has("pending_choice"):

@@ -1,0 +1,4549 @@
+{
+ "rooms": {
+  "L0_cinema": {
+   "placements": [
+    {
+     "asset": "classic_laptop",
+     "bounds_max": [
+      -4.99110317230225,
+      0.915286064147949,
+      -2.51959562301636
+     ],
+     "bounds_min": [
+      -5.40889644622803,
+      0.566845953464508,
+      -2.83040428161621
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "side_table_01",
+     "host_pivot": [
+      -5.19999980926514,
+      0.0250004641711712,
+      -2.67499995231628
+     ],
+     "host_scale": 0.984,
+     "host_yaw": 0.0,
+     "id": "L0_cinema_I96_DECOR_01",
+     "path": "res://assets/teea008_review/decor_bank/classic_laptop/model.gltf",
+     "pivot": [
+      -5.19999980926514,
+      0.566846072673798,
+      -2.67500019073486
+     ],
+     "role": "supported_decor",
+     "scale": 0.984,
+     "support_host": "L0_cinema_F23",
+     "yaw": 0.0
+    },
+    {
+     "asset": "owner_hp_notebook_lowpoly",
+     "bounds_max": [
+      -3.21510291099548,
+      0.653723239898682,
+      0.0679939687252045
+     ],
+     "bounds_min": [
+      -3.45009708404541,
+      0.413147121667862,
+      -0.26799401640892
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "coffee_table_round_01",
+     "host_pivot": [
+      -3.33260011672974,
+      0.0249999482184649,
+      -0.100000001490116
+     ],
+     "host_scale": 0.9882,
+     "host_yaw": 0.0,
+     "id": "L0_cinema_I96_DECOR_02",
+     "path": "res://assets/decor_bank/owner_hp_notebook_lowpoly/model.gltf",
+     "pivot": [
+      -3.33260011672974,
+      0.413147568702698,
+      -0.100000321865082
+     ],
+     "role": "supported_decor",
+     "scale": 0.9882,
+     "support_host": "L0_cinema_F27",
+     "yaw": 0.0
+    },
+    {
+     "asset": "classic_laptop",
+     "bounds_max": [
+      0.409634649753571,
+      0.931926190853119,
+      0.529947519302368
+     ],
+     "bounds_min": [
+      -0.0198346376419067,
+      0.573748171329498,
+      0.210452526807785
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "industrial_coffee_table",
+     "host_pivot": [
+      0.194900065660477,
+      0.025000337511301,
+      0.370200037956238
+     ],
+     "host_scale": 1.0115,
+     "host_yaw": 0.0,
+     "id": "L0_cinema_I96_DECOR_03",
+     "path": "res://assets/teea008_review/decor_bank/classic_laptop/model.gltf",
+     "pivot": [
+      0.194900080561638,
+      0.573748290538788,
+      0.370199769735336
+     ],
+     "role": "supported_decor",
+     "scale": 1.0115,
+     "support_host": "L0_cinema_F30",
+     "yaw": 0.0
+    },
+    {
+     "asset": "owner_hp_notebook_lowpoly",
+     "bounds_max": [
+      3.80519700050354,
+      0.809734880924225,
+      0.0679939985275269
+     ],
+     "bounds_min": [
+      3.57020282745361,
+      0.569158732891083,
+      -0.267993986606598
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "side_table_01",
+     "host_pivot": [
+      3.68770003318787,
+      0.0250004660338163,
+      -0.100000001490116
+     ],
+     "host_scale": 0.9882,
+     "host_yaw": 0.0,
+     "id": "L0_cinema_I96_DECOR_04",
+     "path": "res://assets/decor_bank/owner_hp_notebook_lowpoly/model.gltf",
+     "pivot": [
+      3.68770003318787,
+      0.569159150123596,
+      -0.100000306963921
+     ],
+     "role": "supported_decor",
+     "scale": 0.9882,
+     "support_host": "L0_cinema_F32",
+     "yaw": 0.0
+    }
+   ],
+   "withheld_hosts": []
+  },
+  "L0_reading": {
+   "floor_additions": [
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -4.43874073028564,
+      1.71083199977875,
+      -7.52507638931274
+     ],
+     "bounds_min": [
+      -5.56125926971436,
+      0.0249999761581421,
+      -8.0
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L0_reading_I96_WALL_SHELF_01",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "role": "floor",
+     "scale": 0.86,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 0.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      7.12000036239624,
+      1.98526978492737,
+      -4.91737270355225
+     ],
+     "bounds_min": [
+      6.56776332855225,
+      0.0250000357627869,
+      -6.22262716293335
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L0_reading_I96_WALL_SHELF_02",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": -90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      7.12000036239624,
+      1.98526978492737,
+      -2.01737284660339
+     ],
+     "bounds_min": [
+      6.56776332855225,
+      0.0250000357627869,
+      -3.32262706756592
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L0_reading_I96_WALL_SHELF_03",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": -90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -3.18874073028564,
+      1.71083199977875,
+      -7.52507638931274
+     ],
+     "bounds_min": [
+      -4.31125926971436,
+      0.0249999761581421,
+      -8.0
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L0_reading_I98_WALL_SHELF_04",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "role": "floor",
+     "scale": 0.86,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 0.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -6.56776285171509,
+      1.98526978492737,
+      -2.01737284660339
+     ],
+     "bounds_min": [
+      -7.11999988555908,
+      0.0250000357627869,
+      -3.32262706756592
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L0_reading_I98_WALL_SHELF_05",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      7.12000036239624,
+      1.98526978492737,
+      -6.69737339019775
+     ],
+     "bounds_min": [
+      6.56776332855225,
+      0.0250000357627869,
+      -8.0026273727417
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L0_reading_I98_WALL_SHELF_06",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": -90.0
+    }
+   ],
+   "placements": [
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      1.8957337141037,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      1.71055269241333,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I96_SHELF_BOOK_001",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      1.71055269241333,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      1.56917893886566,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      1.38399791717529,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I96_SHELF_BOOK_002",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      1.38399791717529,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      1.25308167934418,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      1.06790065765381,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I96_SHELF_BOOK_003",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      1.06790065765381,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      0.994909644126892,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      0.809728562831879,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I96_SHELF_BOOK_004",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      0.809728562831879,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      0.758796632289886,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      0.573615550994873,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I96_SHELF_BOOK_005",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      0.573615550994873,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.7904109954834,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.60522997379303,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_006",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.60522997379303,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.422856092453,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.23767507076263,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_007",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.23767507076263,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.12265610694885,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.937475085258484,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_008",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.937475085258484,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.848106145858765,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.662925064563751,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_009",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.662925064563751,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.582486152648926,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.397305101156235,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_010",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.397305130958557,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.7904109954834,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.60522997379303,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_011",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.60522997379303,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.422856092453,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.23767507076263,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_012",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.23767507076263,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.12265610694885,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      0.937475085258484,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_013",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      0.937475085258484,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_014",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.60522997379303,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_015",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.23767507076263,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_016",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.937475085258484,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.848106145858765,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.662925064563751,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_017",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.662925064563751,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.582486152648926,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.397305101156235,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_018",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.397305130958557,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_019",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.60522997379303,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_020",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.23767507076263,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I96_SHELF_BOOK_021",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      0.937475085258484,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      1.8957337141037,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      1.71055269241333,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I98_SHELF_BOOK_022",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      1.71055269241333,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      1.56917893886566,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      1.38399791717529,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I98_SHELF_BOOK_023",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      1.38399791717529,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      1.25308167934418,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      1.06790065765381,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I98_SHELF_BOOK_024",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      1.06790065765381,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      0.994909644126892,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      0.809728562831879,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I98_SHELF_BOOK_025",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      0.809728562831879,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      0.758796632289886,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      0.573615550994873,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L0_reading_I98_SHELF_BOOK_026",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      0.573615550994873,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_027",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      1.60522997379303,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_028",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      1.23767507076263,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_029",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.937475085258484,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      0.848106145858765,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.662925064563751,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_030",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.662925064563751,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      0.582486152648926,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.397305101156235,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_031",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.397305130958557,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_032",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      1.60522997379303,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_033",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      1.23767507076263,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_034",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      0.937475085258484,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_05",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.7904109954834,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.60522997379303,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_035",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.60522997379303,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.422856092453,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.23767507076263,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_036",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.23767507076263,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.12265610694885,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.937475085258484,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_037",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.937475085258484,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.848106145858765,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.662925064563751,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_038",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.662925064563751,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.582486152648926,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.397305101156235,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_039",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.397305130958557,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.7904109954834,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.60522997379303,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_040",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.60522997379303,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.422856092453,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.23767507076263,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_041",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.23767507076263,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.12265610694885,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      0.937475085258484,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L0_reading_I98_SHELF_BOOK_042",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      0.937475085258484,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L0_reading_I98_WALL_SHELF_06",
+     "yaw": -90.0
+    }
+   ]
+  },
+  "L0_workshop": {
+   "placements": [
+    {
+     "asset": "blendkit_beaker_flask",
+     "bounds_max": [
+      2.59670567512512,
+      0.787711262702942,
+      -7.30069398880005
+     ],
+     "bounds_min": [
+      2.49809455871582,
+      0.689304828643799,
+      -7.39930486679077
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "painted_wooden_table",
+     "host_pivot": [
+      2.54739952087402,
+      0.0249999687075615,
+      -7.34999990463257
+     ],
+     "host_scale": 0.99,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_01",
+     "path": "res://assets/decor_bank/blendkit_beaker_flask/model.gltf",
+     "pivot": [
+      2.54739999771118,
+      0.689304530620575,
+      -7.34999942779541
+     ],
+     "role": "supported_decor",
+     "scale": 0.99,
+     "support_host": "L0_workshop_F08",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_glass_ceramic_and_glass_pots",
+     "bounds_max": [
+      -3.74829983711243,
+      0.881715714931488,
+      -5.86163854598999
+     ],
+     "bounds_min": [
+      -4.17829990386963,
+      0.718762338161469,
+      -5.98856258392334
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "painted_wooden_table",
+     "host_pivot": [
+      -3.96330046653748,
+      0.0249999668449163,
+      -5.92510032653809
+     ],
+     "host_scale": 1.0339,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_02",
+     "path": "res://assets/decor_bank/blendkit_glass_ceramic_and_glass_pots/model.gltf",
+     "pivot": [
+      -3.96329951286316,
+      0.718762338161469,
+      -5.92510032653809
+     ],
+     "role": "supported_decor",
+     "scale": 0.36193115494432,
+     "support_host": "L0_workshop_F12",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_dome_01_glass",
+     "bounds_max": [
+      0.0606025606393814,
+      0.996680974960327,
+      -5.75049781799316
+     ],
+     "bounds_min": [
+      -0.0994025617837906,
+      0.827713370323181,
+      -5.91050291061401
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "WoodenTable_03",
+     "host_pivot": [
+      -0.0194003600627184,
+      0.0250000581145287,
+      -5.83049964904785
+     ],
+     "host_scale": 1.0073,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_03",
+     "path": "res://assets/decor_bank/blendkit_dome_01_glass/model.gltf",
+     "pivot": [
+      -0.0193996410816908,
+      0.827713429927826,
+      -5.83050012588501
+     ],
+     "role": "supported_decor",
+     "scale": 1.0073,
+     "support_host": "L0_workshop_F15",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_beaker_flask",
+     "bounds_max": [
+      2.24171757698059,
+      0.927790880203247,
+      -5.82178211212158
+     ],
+     "bounds_min": [
+      2.14168214797974,
+      0.827963054180145,
+      -5.92181777954102
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_table_02",
+     "host_pivot": [
+      2.19169998168945,
+      0.0251256916671991,
+      -5.8717999458313
+     ],
+     "host_scale": 1.0043,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_04",
+     "path": "res://assets/decor_bank/blendkit_beaker_flask/model.gltf",
+     "pivot": [
+      2.19169998168945,
+      0.827962756156921,
+      -5.8717999458313
+     ],
+     "role": "supported_decor",
+     "scale": 1.0043,
+     "support_host": "L0_workshop_F17",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_kitchen_set_6_glass_conteiner_2",
+     "bounds_max": [
+      -4.69727802276611,
+      1.13665175437927,
+      -2.53510212898254
+     ],
+     "bounds_min": [
+      -4.99992179870605,
+      0.985045611858368,
+      -2.81489753723145
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "industrial_storage_cart",
+     "host_pivot": [
+      -4.84859991073608,
+      0.0249995943158865,
+      -2.67499995231628
+     ],
+     "host_scale": 1.148,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_05",
+     "path": "res://assets/decor_bank/blendkit_kitchen_set_6_glass_conteiner_2/model.gltf",
+     "pivot": [
+      -4.84454822540283,
+      0.98504513502121,
+      -2.67139172554016
+     ],
+     "role": "supported_decor",
+     "scale": 1.148,
+     "support_host": "L0_workshop_F20",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_beaker_flask",
+     "bounds_max": [
+      -2.10853123664856,
+      1.01143980026245,
+      -3.03073143959045
+     ],
+     "bounds_min": [
+      -2.23606824874878,
+      0.884167551994324,
+      -3.15826845169067
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "painted_wooden_table",
+     "host_pivot": [
+      -2.1723005771637,
+      0.0249999593943357,
+      -3.09450006484985
+     ],
+     "host_scale": 1.2804,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_06",
+     "path": "res://assets/decor_bank/blendkit_beaker_flask/model.gltf",
+     "pivot": [
+      -2.17229986190796,
+      0.88416713476181,
+      -3.09450006484985
+     ],
+     "role": "supported_decor",
+     "scale": 1.2804,
+     "support_host": "L0_workshop_F21",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_decorational_glass_cover_storage",
+     "bounds_max": [
+      2.78343081474304,
+      1.46439504623413,
+      -2.81906867027283
+     ],
+     "bounds_min": [
+      2.46916890144348,
+      0.988208174705505,
+      -3.13333058357239
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "WoodenTable_03",
+     "host_pivot": [
+      2.62629961967468,
+      0.0250000692903996,
+      -2.97619938850403
+     ],
+     "host_scale": 1.2087,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_07",
+     "path": "res://assets/decor_bank/blendkit_decorational_glass_cover_storage/model.gltf",
+     "pivot": [
+      2.62629985809326,
+      0.988208174705505,
+      -2.97619962692261
+     ],
+     "role": "supported_decor",
+     "scale": 1.2087,
+     "support_host": "L0_workshop_F24",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_beaker_flask",
+     "bounds_max": [
+      6.11827993392944,
+      1.51169574260712,
+      -6.05069446563721
+     ],
+     "bounds_min": [
+      6.01966905593872,
+      1.41328930854797,
+      -6.14930534362793
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "steel_frame_shelves_03",
+     "host_pivot": [
+      6.06897449493408,
+      0.0250003933906555,
+      -6.10000038146973
+     ],
+     "host_scale": 0.99,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_09",
+     "path": "res://assets/decor_bank/blendkit_beaker_flask/model.gltf",
+     "pivot": [
+      6.06897449493408,
+      1.4132889509201,
+      -6.09999990463257
+     ],
+     "role": "supported_decor",
+     "scale": 0.99,
+     "support_host": "L0_workshop_F03",
+     "yaw": 0.0
+    },
+    {
+     "asset": "blendkit_dome_01_glass",
+     "bounds_max": [
+      5.24322843551636,
+      1.74497365951538,
+      -7.27137184143066
+     ],
+     "bounds_min": [
+      5.08597135543823,
+      1.57890796661377,
+      -7.42862892150879
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "chinese_cabinet",
+     "host_pivot": [
+      5.16459989547729,
+      0.0250000469386578,
+      -7.34999990463257
+     ],
+     "host_scale": 0.99,
+     "host_yaw": 0.0,
+     "id": "L0_workshop_I96_DECOR_10",
+     "path": "res://assets/decor_bank/blendkit_dome_01_glass/model.gltf",
+     "pivot": [
+      5.16460037231445,
+      1.57890796661377,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.99,
+     "support_host": "L0_workshop_F10",
+     "yaw": 0.0
+    }
+   ],
+   "withheld_hosts": [
+    "F29"
+   ]
+  },
+  "L2_cinema": {
+   "placements": [
+    {
+     "asset": "owner_hp_notebook_lowpoly",
+     "bounds_max": [
+      -3.29040312767029,
+      0.653723239898682,
+      0.0679939687252045
+     ],
+     "bounds_min": [
+      -3.52539730072021,
+      0.413147121667862,
+      -0.26799401640892
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "coffee_table_round_01",
+     "host_pivot": [
+      -3.40790009498596,
+      0.0249999482184649,
+      -0.100000001490116
+     ],
+     "host_scale": 0.9882,
+     "host_yaw": 0.0,
+     "id": "L2_cinema_I96_DECOR_02",
+     "path": "res://assets/decor_bank/owner_hp_notebook_lowpoly/model.gltf",
+     "pivot": [
+      -3.40790009498596,
+      0.413147568702698,
+      -0.100000321865082
+     ],
+     "role": "supported_decor",
+     "scale": 0.9882,
+     "support_host": "L2_cinema_F27",
+     "yaw": 0.0
+    },
+    {
+     "asset": "classic_laptop",
+     "bounds_max": [
+      0.409061461687088,
+      0.929505348205566,
+      0.475121080875397
+     ],
+     "bounds_min": [
+      -0.0192614495754242,
+      0.572283387184143,
+      0.156478941440582
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "industrial_coffee_table",
+     "host_pivot": [
+      0.194900065660477,
+      0.025000337511301,
+      0.315800040960312
+     ],
+     "host_scale": 1.0088,
+     "host_yaw": 0.0,
+     "id": "L2_cinema_I96_DECOR_03",
+     "path": "res://assets/teea008_review/decor_bank/classic_laptop/model.gltf",
+     "pivot": [
+      0.194900080561638,
+      0.572283506393433,
+      0.31579977273941
+     ],
+     "role": "supported_decor",
+     "scale": 1.0088,
+     "support_host": "L2_cinema_F30",
+     "yaw": 0.0
+    },
+    {
+     "asset": "owner_hp_notebook_lowpoly",
+     "bounds_max": [
+      3.88049721717834,
+      0.809734880924225,
+      0.0679939985275269
+     ],
+     "bounds_min": [
+      3.64550304412842,
+      0.569158732891083,
+      -0.267993986606598
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "side_table_01",
+     "host_pivot": [
+      3.76300001144409,
+      0.0250004660338163,
+      -0.100000001490116
+     ],
+     "host_scale": 0.9882,
+     "host_yaw": 0.0,
+     "id": "L2_cinema_I96_DECOR_04",
+     "path": "res://assets/decor_bank/owner_hp_notebook_lowpoly/model.gltf",
+     "pivot": [
+      3.76300001144409,
+      0.569159150123596,
+      -0.100000306963921
+     ],
+     "role": "supported_decor",
+     "scale": 0.9882,
+     "support_host": "L2_cinema_F32",
+     "yaw": 0.0
+    }
+   ],
+   "withheld_hosts": [
+    "F23"
+   ]
+  },
+  "L2_library": {
+   "floor_additions": [
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -4.43874073028564,
+      1.71083199977875,
+      -7.52507638931274
+     ],
+     "bounds_min": [
+      -5.56125926971436,
+      0.0249999761581421,
+      -8.0
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I96_WALL_SHELF_01",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "role": "floor",
+     "scale": 0.86,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 0.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      7.12000036239624,
+      1.98526978492737,
+      -6.69737339019775
+     ],
+     "bounds_min": [
+      6.56776332855225,
+      0.0250000357627869,
+      -8.0026273727417
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I96_WALL_SHELF_02",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": -90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      7.12000036239624,
+      1.98526978492737,
+      -2.01737284660339
+     ],
+     "bounds_min": [
+      6.56776332855225,
+      0.0250000357627869,
+      -3.32262706756592
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I96_WALL_SHELF_03",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": -90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -3.18874073028564,
+      1.71083199977875,
+      -7.52507638931274
+     ],
+     "bounds_min": [
+      -4.31125926971436,
+      0.0249999761581421,
+      -8.0
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I98_WALL_SHELF_04",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "role": "floor",
+     "scale": 0.86,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 0.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -1.43874061107635,
+      1.71083199977875,
+      -7.52507638931274
+     ],
+     "bounds_min": [
+      -2.56125926971436,
+      0.0249999761581421,
+      -8.0
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I98_WALL_SHELF_05",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -2.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "role": "floor",
+     "scale": 0.86,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 0.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -6.56776285171509,
+      1.98526978492737,
+      -4.91737270355225
+     ],
+     "bounds_min": [
+      -7.11999988555908,
+      0.0250000357627869,
+      -6.22262716293335
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I98_WALL_SHELF_06",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      -6.56776285171509,
+      1.98526978492737,
+      -2.01737284660339
+     ],
+     "bounds_min": [
+      -7.11999988555908,
+      0.0250000357627869,
+      -3.32262706756592
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I98_WALL_SHELF_07",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": 90.0
+    },
+    {
+     "asset": "wooden_bookshelf_worn",
+     "bounds_max": [
+      7.12000036239624,
+      1.98526978492737,
+      -4.91737270355225
+     ],
+     "bounds_min": [
+      6.56776332855225,
+      0.0250000357627869,
+      -6.22262716293335
+     ],
+     "evidence": "DECORATIVE_LIBRARY_BOOKCASE_MEASURED",
+     "fits": true,
+     "id": "L2_library_I98_WALL_SHELF_08",
+     "path": "res://assets/teea008_review/decor_bank/wooden_bookshelf_worn/model.gltf",
+     "pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "role": "floor",
+     "scale": 1.0,
+     "station_candidates": [],
+     "support_slots": [],
+     "yaw": -90.0
+    }
+   ],
+   "placements": [
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      1.8957337141037,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      1.71055269241333,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I96_SHELF_BOOK_001",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      1.71055269241333,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      1.56917893886566,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      1.38399791717529,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I96_SHELF_BOOK_002",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      1.38399791717529,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      1.25308167934418,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      1.06790065765381,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I96_SHELF_BOOK_003",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      1.06790065765381,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      0.994909644126892,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      0.809728562831879,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I96_SHELF_BOOK_004",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      0.809728562831879,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -4.78500032424927,
+      0.758796632289886,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -5.21500015258789,
+      0.573615550994873,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -5.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I96_SHELF_BOOK_005",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -5.0,
+      0.573615550994873,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_01",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.7904109954834,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.60522997379303,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_006",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.60522997379303,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.422856092453,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.23767507076263,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_007",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.23767507076263,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.12265610694885,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.937475085258484,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_008",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.937475085258484,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.848106145858765,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.662925064563751,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_009",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.662925064563751,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.582486152648926,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.397305101156235,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_010",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.397305130958557,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.7904109954834,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.60522997379303,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_011",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.60522997379303,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.422856092453,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.23767507076263,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_012",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.23767507076263,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.12265610694885,
+      -7.13500070571899
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      0.937475085258484,
+      -7.56500053405762
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -7.34999990463257
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_013",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      0.937475085258484,
+      -7.35000038146973
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_02",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_014",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.60522997379303,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_015",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.23767507076263,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_016",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.937475085258484,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.848106145858765,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.662925064563751,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_017",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.662925064563751,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.582486152648926,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.397305101156235,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_018",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.397305130958557,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_019",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.60522997379303,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_020",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.23767507076263,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I96_SHELF_BOOK_021",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      0.937475085258484,
+      -2.67000031471252
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I96_WALL_SHELF_03",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      1.8957337141037,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      1.71055269241333,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_022",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      1.71055269241333,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      1.56917893886566,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      1.38399791717529,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_023",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      1.38399791717529,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      1.25308167934418,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      1.06790065765381,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_024",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      1.06790065765381,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      0.994909644126892,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      0.809728562831879,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_025",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      0.809728562831879,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -3.53499984741211,
+      0.758796632289886,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -3.96499991416931,
+      0.573615550994873,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -3.75,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_026",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -3.75000023841858,
+      0.573615550994873,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_04",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -1.78499984741211,
+      1.8957337141037,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -2.21499991416931,
+      1.71055269241333,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -2.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_027",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -2.00000023841858,
+      1.71055269241333,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_05",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -1.78499984741211,
+      1.56917893886566,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -2.21499991416931,
+      1.38399791717529,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -2.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_028",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -2.00000023841858,
+      1.38399791717529,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_05",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -1.78499984741211,
+      1.25308167934418,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -2.21499991416931,
+      1.06790065765381,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -2.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_029",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -2.00000023841858,
+      1.06790065765381,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_05",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -1.78499984741211,
+      0.994909644126892,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -2.21499991416931,
+      0.809728562831879,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -2.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_030",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -2.00000023841858,
+      0.809728562831879,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_05",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -1.78499984741211,
+      0.758796632289886,
+      -7.69874286651611
+     ],
+     "bounds_min": [
+      -2.21499991416931,
+      0.573615550994873,
+      -7.82633304595947
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -2.0,
+      0.0250000357627869,
+      -7.76253795623779
+     ],
+     "host_scale": 0.86,
+     "host_yaw": 0.0,
+     "id": "L2_library_I98_SHELF_BOOK_031",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -2.00000023841858,
+      0.573615550994873,
+      -7.76253843307495
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_05",
+     "yaw": 0.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.7904109954834,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      1.60522997379303,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_032",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      1.60522997379303,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.422856092453,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      1.23767507076263,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_033",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      1.23767507076263,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.12265610694885,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.937475085258484,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_034",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.937475085258484,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      0.848106145858765,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.662925064563751,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_035",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.662925064563751,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      0.582486152648926,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.397305101156235,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_036",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.397305130958557,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.7904109954834,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      1.60522997379303,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_037",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      1.60522997379303,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.422856092453,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      1.23767507076263,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_038",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      1.23767507076263,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.12265610694885,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      0.937475085258484,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_039",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      0.937475085258484,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_06",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_040",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      1.60522997379303,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_041",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      1.23767507076263,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_042",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.937475085258484,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      0.848106145858765,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.662925064563751,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_043",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.662925064563751,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.78008651733398,
+      0.582486152648926,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.90767669677734,
+      0.397305101156235,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_044",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.84388208389282,
+      0.397305130958557,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.7904109954834,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      1.60522997379303,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_045",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      1.60522997379303,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.422856092453,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      1.23767507076263,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_046",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      1.23767507076263,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      -6.5868034362793,
+      1.12265610694885,
+      -2.45499992370605
+     ],
+     "bounds_min": [
+      -6.71439361572266,
+      0.937475085258484,
+      -2.88499999046326
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      -6.84388160705566,
+      0.0250000953674316,
+      -2.67000007629395
+     ],
+     "host_scale": 1.0,
+     "host_yaw": 90.0,
+     "id": "L2_library_I98_SHELF_BOOK_047",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      -6.65059900283813,
+      0.937475085258484,
+      -2.66999983787537
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_07",
+     "yaw": 90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.7904109954834,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.60522997379303,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_048",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.60522997379303,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.422856092453,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      1.23767507076263,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_049",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      1.23767507076263,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      1.12265610694885,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.937475085258484,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_050",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.937475085258484,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.848106145858765,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.662925064563751,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_051",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.662925064563751,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.90767669677734,
+      0.582486152648926,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.78008651733398,
+      0.397305101156235,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_052",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.84388208389282,
+      0.397305130958557,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.7904109954834,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.60522997379303,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_053",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.60522997379303,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.422856092453,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      1.23767507076263,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_054",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      1.23767507076263,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    },
+    {
+     "asset": "book_encyclopedia_set_01",
+     "bounds_max": [
+      6.71439409255981,
+      1.12265610694885,
+      -5.35500001907349
+     ],
+     "bounds_min": [
+      6.58680391311646,
+      0.937475085258484,
+      -5.78499984741211
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "wooden_bookshelf_worn",
+     "host_pivot": [
+      6.84388160705566,
+      0.0250000953674316,
+      -5.57000017166138
+     ],
+     "host_scale": 1.0,
+     "host_yaw": -90.0,
+     "id": "L2_library_I98_SHELF_BOOK_055",
+     "path": "res://assets/teea008_review/decor_bank/book_encyclopedia_set_01/model.gltf",
+     "pivot": [
+      6.65059947967529,
+      0.937475085258484,
+      -5.56999969482422
+     ],
+     "role": "supported_decor",
+     "scale": 0.779978246851956,
+     "support_host": "L2_library_I98_WALL_SHELF_08",
+     "yaw": -90.0
+    }
+   ]
+  },
+  "L2_music": {
+   "placements": [
+    {
+     "asset": "cassette_player",
+     "bounds_max": [
+      0.0958568900823593,
+      0.476863771677017,
+      -5.55745887756348
+     ],
+     "bounds_min": [
+      0.00294311717152596,
+      0.306899607181549,
+      -5.59254026412964
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "coffee_table_round_01",
+     "host_pivot": [
+      0.0494000017642975,
+      0.0249999612569809,
+      -5.57499980926514
+     ],
+     "host_scale": 0.7177,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_02",
+     "path": "res://assets/teea008_review/decor_bank/cassette_player/model.gltf",
+     "pivot": [
+      0.0494001656770706,
+      0.306899935007095,
+      -5.57499980926514
+     ],
+     "role": "supported_decor",
+     "scale": 0.7177,
+     "support_host": "L2_music_F14",
+     "yaw": 0.0
+    },
+    {
+     "asset": "classic_laptop",
+     "bounds_max": [
+      3.11738395690918,
+      0.625997066497803,
+      -5.16203117370605
+     ],
+     "bounds_min": [
+      2.80641674995422,
+      0.366649985313416,
+      -5.3933687210083
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "WoodenTable_01",
+     "host_pivot": [
+      2.96189999580383,
+      0.0250000283122063,
+      -5.27769994735718
+     ],
+     "host_scale": 0.7324,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_03",
+     "path": "res://assets/teea008_review/decor_bank/classic_laptop/model.gltf",
+     "pivot": [
+      2.96190023422241,
+      0.36665004491806,
+      -5.27769994735718
+     ],
+     "role": "supported_decor",
+     "scale": 0.7324,
+     "support_host": "L2_music_F17",
+     "yaw": 0.0
+    },
+    {
+     "asset": "cassette_player",
+     "bounds_max": [
+      -3.1272337436676,
+      0.803182125091553,
+      -0.0758483707904816
+     ],
+     "bounds_min": [
+      -3.25516653060913,
+      0.569158732891083,
+      -0.124151639640331
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "side_table_01",
+     "host_pivot": [
+      -3.19120001792908,
+      0.0250004660338163,
+      -0.100000001490116
+     ],
+     "host_scale": 0.9882,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_07",
+     "path": "res://assets/teea008_review/decor_bank/cassette_player/model.gltf",
+     "pivot": [
+      -3.1911997795105,
+      0.569159150123596,
+      -0.0999999046325684
+     ],
+     "role": "supported_decor",
+     "scale": 0.9882,
+     "support_host": "L2_music_F28",
+     "yaw": 0.0
+    },
+    {
+     "asset": "portable_cassette_player",
+     "bounds_max": [
+      0.305062234401703,
+      0.555761575698853,
+      0.435293883085251
+     ],
+     "bounds_min": [
+      0.129537731409073,
+      0.423163056373596,
+      0.395106106996536
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "coffee_table_round_01",
+     "host_pivot": [
+      0.217299997806549,
+      0.0249999463558197,
+      0.415199995040894
+     ],
+     "host_scale": 1.0137,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_08",
+     "path": "res://assets/teea008_review/decor_bank/portable_cassette_player/model.gltf",
+     "pivot": [
+      0.217300415039062,
+      0.423163205385208,
+      0.415199667215347
+     ],
+     "role": "supported_decor",
+     "scale": 1.0137,
+     "support_host": "L2_music_F31",
+     "yaw": 0.0
+    },
+    {
+     "asset": "classic_laptop",
+     "bounds_max": [
+      3.39620018005371,
+      1.55912911891937,
+      0.0599448978900909
+     ],
+     "bounds_min": [
+      2.96620011329651,
+      1.20050847530365,
+      -0.25994485616684
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "ClassicConsole_01",
+     "host_pivot": [
+      3.18119955062866,
+      0.024999838322401,
+      -0.0999999642372131
+     ],
+     "host_scale": 1.3176,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_09",
+     "path": "res://assets/teea008_review/decor_bank/classic_laptop/model.gltf",
+     "pivot": [
+      3.18120002746582,
+      1.20050859451294,
+      -0.100000232458115
+     ],
+     "role": "supported_decor",
+     "scale": 1.0127499698177,
+     "support_host": "L2_music_F32",
+     "yaw": 0.0
+    },
+    {
+     "asset": "cassette_player",
+     "bounds_max": [
+      4.84645700454712,
+      0.584323048591614,
+      -5.55745887756348
+     ],
+     "bounds_min": [
+      4.75354337692261,
+      0.414358913898468,
+      -5.59254026412964
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "industrial_coffee_table",
+     "host_pivot": [
+      4.80000019073486,
+      0.0250002406537533,
+      -5.57499980926514
+     ],
+     "host_scale": 0.7177,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_11",
+     "path": "res://assets/teea008_review/decor_bank/cassette_player/model.gltf",
+     "pivot": [
+      4.80000019073486,
+      0.414359241724014,
+      -5.57499980926514
+     ],
+     "role": "supported_decor",
+     "scale": 0.7177,
+     "support_host": "L2_music_F37",
+     "yaw": 0.0
+    },
+    {
+     "asset": "cassette_player",
+     "bounds_max": [
+      4.85573291778564,
+      0.703015327453613,
+      -2.65395736694336
+     ],
+     "bounds_min": [
+      4.74426746368408,
+      0.499115198850632,
+      -2.69604301452637
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "side_table_01",
+     "host_pivot": [
+      4.80000019073486,
+      0.0250004064291716,
+      -2.67499995231628
+     ],
+     "host_scale": 0.861,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_13",
+     "path": "res://assets/teea008_review/decor_bank/cassette_player/model.gltf",
+     "pivot": [
+      4.80000019073486,
+      0.499115586280823,
+      -2.67500019073486
+     ],
+     "role": "supported_decor",
+     "scale": 0.861,
+     "support_host": "L2_music_F41",
+     "yaw": 0.0
+    },
+    {
+     "asset": "portable_cassette_player",
+     "bounds_max": [
+      -4.7144455909729,
+      0.698421716690063,
+      -0.0804115906357765
+     ],
+     "bounds_min": [
+      -4.88555479049683,
+      0.569158732891083,
+      -0.119588419795036
+     ],
+     "evidence": "ACTUAL_TRIANGLE_SUPPORT_CLEARANCE",
+     "fits": true,
+     "host_asset": "side_table_01",
+     "host_pivot": [
+      -4.80000019073486,
+      0.0250004660338163,
+      -0.100000001490116
+     ],
+     "host_scale": 0.9882,
+     "host_yaw": 0.0,
+     "id": "L2_music_I96_DECOR_14",
+     "path": "res://assets/teea008_review/decor_bank/portable_cassette_player/model.gltf",
+     "pivot": [
+      -4.79999971389771,
+      0.569158852100372,
+      -0.100000314414501
+     ],
+     "role": "supported_decor",
+     "scale": 0.9882,
+     "support_host": "L2_music_F42",
+     "yaw": 0.0
+    }
+   ],
+   "withheld_hosts": [
+    "F12",
+    "F19",
+    "F22",
+    "F24",
+    "F35",
+    "F39"
+   ]
+  }
+ },
+ "schema": 1.0,
+ "sources": {
+  "res://data/interior_v2/book_supports_qa.json": "a741a139925ac126db3a8ad54afd02356e7d0f8f2409bbb25fb5163bea6dd972",
+  "res://data/interior_v2/dense_v2_compiled_0.zip": "076b37c555f6b2605f4cec4aa78f56699ad91ac1e08168843bf81ef80775d356",
+  "res://data/interior_v2/dense_v2_compiled_1.zip": "2173a5224dbb7944cd8234df7f8b718ef0c7d919e03d08f00d6b9a705488f5a7",
+  "res://data/interior_v2/dense_v2_compiled_2.zip": "e896cf47f811c39291e37d1eb56005d2671e2c3253e7c431ffbe9926582b40fe",
+  "res://data/interior_v2/dense_v2_source.zip": "ba8709557b87cec63c6fce53563f8ccc30f69dd895d840e4f68e3758d2484d27",
+  "res://data/interior_v2/reading_seats_qa.json": "145b49d3716018ff2f54606ae6b6f42c6f5f977782809821c5dc2e8fe364a5f4",
+  "res://data/interior_v2/services_qa.json": "1e8bec48e62e49c5cff7010781a729f936255b5bdd161310bbd7aa23ddaa3046"
+ }
+}

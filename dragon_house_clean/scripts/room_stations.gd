@@ -213,6 +213,7 @@ func display_claim(world, actor: Dictionary, room: Dictionary,
 	if not world.is_accessible(room,id):
 		return {}
 	var used:Dictionary=used_slots(world,str(room["id"]),[id])
+	if not _has_capacity(room,used,1):return {}
 	var points:Array=layout_for_world(world,room)
 	for idx in range(points.size()):
 		if used.has(idx):
@@ -261,6 +262,13 @@ func used_slots(world, room_id: String, ignore_ids: Array = []) -> Dictionary:
 		planning_occupancy[cache_key]=used
 	return used
 
+# Physical station count and concurrent reservation capacity are distinct.
+# Exclusive furniture may mark several slots for a single resident.
+func _has_capacity(room:Dictionary,used:Dictionary,requested:int=1)->bool:
+	var actors:Dictionary={}
+	for id in used.values():actors[str(id)]=true
+	return actors.size()+requested<=capacity(room)
+
 func available_count(world, room: Dictionary) -> int:
 	if world.canonical_house_seed and _owned_hidden_room(room):
 		return maxi(0,1-used_slots(world,str(room["id"])).size())
@@ -269,7 +277,10 @@ func available_count(world, room: Dictionary) -> int:
 	var slots:int=capacity(room)
 	if candidate_navigation!=null and candidate_navigation.has_layout(room):
 		slots=layout_for_world(world,room).size()
-	return maxi(0,slots-used_slots(world,str(room["id"])).size())
+	var used:Dictionary=used_slots(world,str(room["id"]))
+	var occupants:Dictionary={}
+	for id in used.values():occupants[str(id)]=true
+	return maxi(0,mini(slots-used.size(),capacity(room)-occupants.size()))
 
 func _claim(room: Dictionary, index: int, spot: Dictionary) -> Dictionary:
 	return {"room_id":str(room["id"]),"slot":index,
@@ -281,6 +292,7 @@ func _claim(room: Dictionary, index: int, spot: Dictionary) -> Dictionary:
 
 func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> Dictionary:
 	var id: String = str(actor.get("id",""))
+	if intent=="SLEEP" and str(actor.get("home_room_id",""))!=str(room.get("id","")):return {}
 	if world.canonical_house_seed and _owned_hidden_room(room):
 		if not world.is_accessible(room,id) or not intent in ["REST","SLEEP"]:return {}
 		if not used_slots(world,str(room["id"]),[id]).is_empty():return {}
@@ -288,6 +300,7 @@ func single(world, actor: Dictionary, room: Dictionary, intent: String = "") -> 
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,id) or capacity(room)==0:
 		return {}
 	var used: Dictionary = used_slots(world,str(room["id"]),[id])
+	if not _has_capacity(room,used,1):return {}
 	var points: Array = layout_for_world(world,room)
 	if points.is_empty():
 		return {}
@@ -359,6 +372,7 @@ func pair(world, actor: Dictionary, partner: Dictionary, room: Dictionary) -> Di
 	if room.is_empty() or room.get("privacy","public") != "public" or not world.is_accessible(room,str(actor.get("id",""))) or not world.is_accessible(room,str(partner.get("id",""))):
 		return {}
 	var used: Dictionary=used_slots(world,str(room["id"]),[str(actor["id"]),str(partner["id"])])
+	if not _has_capacity(room,used,2):return {}
 	var points: Array=layout_for_world(world,room)
 	if candidate_navigation!=null and candidate_navigation.has_layout(room):
 		# Facing inward with existing directional standing art is physically
@@ -421,6 +435,7 @@ func group_claims(world,actors:Array,room:Dictionary)->Dictionary:
 		if id=="" or ids.has(id) or not world.is_accessible(room,id):return {}
 		ids.append(id)
 	var used:Dictionary=used_slots(world,str(room["id"]),ids)
+	if not _has_capacity(room,used,actors.size()):return {}
 	var points:Array=layout_for_world(world,room)
 	var selected:Array=_group_indexes(room,points,used,actors.size())
 	if selected.size()!=actors.size():return {}
@@ -434,11 +449,12 @@ func can_reserve_group(world,room:Dictionary,actor_id:String="")->bool:
 	if room.is_empty() or str(room.get("privacy",""))!="public":return false
 	var points:Array=layout_for_world(world,room)
 	var used:Dictionary=used_slots(world,str(room["id"]),[actor_id])
+	if not _has_capacity(room,used,3):return false
 	return _group_indexes(room,points,used,3).size()==3
 
 func _group_indexes(room:Dictionary,points:Array,used:Dictionary,count:int)->Array:
 	var available:Array=[]
-	for i in range(mini(points.size(),capacity(room))):
+	for i in range(points.size()):
 		var spot:Dictionary=points[i]
 		if not used.has(i) and str(spot.get("kind",""))=="standing" and str(spot.get("furniture_id",""))=="":available.append(i)
 	if available.size()<count:return []
@@ -463,11 +479,12 @@ func _group_indexes(room:Dictionary,points:Array,used:Dictionary,count:int)->Arr
 func group_join_claim(world,actor:Dictionary,room:Dictionary,positions:Array)->Dictionary:
 	if positions.size()<3 or positions.size()>=6 or not world.is_accessible(room,str(actor.get("id",""))):return {}
 	var used:Dictionary=used_slots(world,str(room["id"]),[str(actor["id"])])
+	if not _has_capacity(room,used,1):return {}
 	var points:Array=layout_for_world(world,room)
 	var at:Vector2=world.room_world_to_local(room,Vector3(float(actor.get("x",0)),float(actor.get("visual_y",0)),float(actor.get("z",0))))
 	var best:Dictionary={}
 	var nearest:float=INF
-	for i in range(mini(points.size(),capacity(room))):
+	for i in range(points.size()):
 		var spot:Dictionary=points[i]
 		if used.has(i) or str(spot.get("kind",""))!="standing" or str(spot.get("furniture_id",""))!="":continue
 		var trial:Array=positions.duplicate()
@@ -531,6 +548,7 @@ func reconcile(world, before_invalidate:Callable=Callable()) -> int:
 	# Prefer the lexicographically first existing claim if an old save has
 	# duplicates; later actors replan normally instead of overlapping.
 	var claimed: Dictionary = {}
+	var occupants:Dictionary={}
 	var fixed := 0
 	var ordered: Array = world.residents.keys()
 	ordered.sort()
@@ -555,6 +573,8 @@ func reconcile(world, before_invalidate:Callable=Callable()) -> int:
 		var invalid: bool = not bool(actor.get("active",false)) or room.is_empty() or (
 			not world.is_accessible(room,str(id))) or slot < 0 or slot >= authored.size() or (
 			not ["travel","perform"].has(str(actor.get("phase","idle")))) or claimed.has(key)
+		if not invalid:
+			invalid=int(occupants.get(room_id,0))>=capacity(room) or (str(actor.get("intent",""))=="SLEEP" and str(actor.get("home_room_id",""))!=room_id)
 		if not invalid and str(actor.get("phase",""))=="travel":
 			var route: Array=actor.get("waypoints",[])
 			invalid = route.is_empty() or typeof(route[-1])!=TYPE_DICTIONARY or (
@@ -596,6 +616,7 @@ func reconcile(world, before_invalidate:Callable=Callable()) -> int:
 			fixed += 1
 		else:
 			claimed[key] = true
+			occupants[room_id]=int(occupants.get(room_id,0))+1
 			if not restored_claim.is_empty():
 				var habit:Dictionary=actor.get("solo_habit_commitment",{}).duplicate(true)
 				commit_claim(actor,restored_claim)
@@ -772,6 +793,7 @@ func cup_claim(world,actor:Dictionary,room:Dictionary,slot_id:String)->Dictionar
 	if not world.is_accessible(room,str(actor["id"])):
 		return {}
 	var used:Dictionary=used_slots(world,str(room["id"]),[str(actor["id"])])
+	if not _has_capacity(room,used,1):return {}
 	var points:Array=layout_for_world(world,room)
 	for index in range(points.size()):
 		if not used.has(index) and str(points[index].get("cup_slot_id",""))==slot_id:
@@ -782,6 +804,7 @@ func book_shelf_claim(world,actor:Dictionary,room:Dictionary,intent:String,stati
 	if station_id=="" or not world.is_accessible(room,str(actor["id"])):
 		return {}
 	var used:Dictionary=used_slots(world,str(room["id"]),[str(actor["id"])])
+	if not _has_capacity(room,used,1):return {}
 	var points:Array=layout_for_world(world,room)
 	for index in range(points.size()):
 		if not used.has(index) and str(points[index].get("id",""))==station_id:

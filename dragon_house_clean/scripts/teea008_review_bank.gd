@@ -388,6 +388,12 @@ func _apply_sketchfab_common_delta()->void:
 
 
 func apply_architecture_layouts()->void:
+	# The canonical hearth is a unique, owner-assigned installation.
+	# Added common rooms retain the original generic furnishing bank.
+	var generic:Dictionary=layouts.get("common/R3",{}).duplicate(true)
+	if not generic.is_empty():
+		generic["variant_id"]="runtime_common/R3"
+		layouts["runtime_common/R3"]=generic
 	# Reuse measured R1 furniture without scaling up the entire guest room.
 	# R2 is a single 9.6 m physical room; the remainder is unoccupied space.
 	var centaur:Dictionary=layouts.get("guest_centaur/R1",{}).duplicate(true)

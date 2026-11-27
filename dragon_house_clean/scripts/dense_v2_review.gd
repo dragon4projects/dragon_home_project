@@ -4,6 +4,8 @@ extends RefCounted
 const SOURCE="res://data/interior_v2/dense_v2_source.zip"
 const BANK=preload("res://scripts/teea008_review_bank.gd")
 const H=preload("res://scripts/depth7_hearth.gd")
+const MEDIA_DEVICES=preload("res://scripts/dense_v2_media_devices.gd")
+const WALL_ART=preload("res://scripts/dense_v2_wall_artwork.gd")
 const FLOOR_ROLES=["floor","rug","screen_or_side_panel"]
 var index:Dictionary={}
 var source_archive:=ZIPReader.new()
@@ -382,6 +384,7 @@ func mount_review(parent:Node3D,compiled:Dictionary)->int:
   wrapper.scale=Vector3.ONE*float(p.scale)
   parent.add_child(wrapper)
   wrapper.add_child(scene.instantiate())
+  MEDIA_DEVICES.mount(wrapper,p,str(parent.get_meta("room_id","")))
   if wrapper.has_meta("display_slot_id"):
    add_frame_surface(parent,p)
   for player in wrapper.find_children("*","AnimationPlayer",true,false):player.stop()
@@ -428,7 +431,10 @@ func add_frame_surface(parent:Node3D,p:Dictionary)->void:
 
 static func refresh_artwork(node:MeshInstance3D)->void:
  var aperture:Vector2=node.get_meta("surface_size",Vector2.ONE)
- var path:String=artwork_path(str(node.get_meta("slot_id","")))
+ var slot:String=str(node.get_meta("slot_id",""))
+ var artwork:Dictionary=WALL_ART.load_record(slot)
+ node.set_meta("artwork_title",str(artwork.get("title","Картина / постер")))
+ var path:String=WALL_ART.display_path(slot)
  var image:=Image.new()
  var material:=StandardMaterial3D.new()
  material.albedo_color=Color("#302e30")
